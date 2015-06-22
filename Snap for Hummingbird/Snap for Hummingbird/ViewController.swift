@@ -12,7 +12,7 @@ import AVFoundation
 import CoreLocation
 import SystemConfiguration.CaptiveNetwork
 import CoreMotion
-
+import WebKit
 
 
 class ViewController: UIViewController, CLLocationManagerDelegate {
@@ -24,12 +24,20 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     let locationManager = CLLocationManager()
     let altimeter = CMAltimeter()
     let motionManager = CMMotionManager()
+    let synth = AVSpeechSynthesizer()
     
     var currentAltitude: Float = 0 //meters
     var currentPressure: Float = 0 //kPa
     var currentLocation:CLLocationCoordinate2D = CLLocationCoordinate2D()
     var x: Double = 0, y: Double = 0, z: Double = 0
     @IBOutlet weak var mainWebView: UIWebView!
+    var webView: WKWebView?
+    
+    override func loadView() {
+        super.loadView()
+        self.webView = WKWebView()
+        self.view = self.webView
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -65,13 +73,12 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                     self.z = data.acceleration.z
                 })
             })
+
         }
-        
         let url = NSURL(string: "http://snap.berkeley.edu/snapsource/snap.html#cloud:Username=BirdBrainTech&ProjectName=HummingbirdStartiPad")
         let requestPage = NSURLRequest(URL: url!)
-        mainWebView.scalesPageToFit = true
-        mainWebView.contentMode = UIViewContentMode.ScaleAspectFit
-        mainWebView.loadRequest(requestPage)
+        webView?.contentMode = UIViewContentMode.ScaleAspectFit
+        webView?.loadRequest(requestPage)
     }
     
     //for shake
@@ -210,12 +217,12 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         }
         server["/speak/(.+)"] = { request in
             let captured = request.capturedUrlGroups
-            var words = captured[0]
-            let synth = AVSpeechSynthesizer()
+            var words = String(captured[0])
             var utterance = AVSpeechUtterance(string: words)
             utterance.rate = 0.3
-            synth.speakUtterance(utterance)
+            self.synth.speakUtterance(utterance)
             return .OK(.RAW(words))
+            
         }
         server["/iPad/shake"] = {request in
             let checkShake = self.checkShaken()
