@@ -39,6 +39,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         self.view = self.webView
     }
     
+    override func prefersStatusBarHidden() -> Bool {
+        return true
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         prepareServer()

@@ -23,7 +23,6 @@
 		BA88B6351B2233C9009EF1C3 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BA88B6341B2233C9009EF1C3 /* Images.xcassets */; };
 		BA88B6381B2233C9009EF1C3 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = BA88B6361B2233C9009EF1C3 /* LaunchScreen.xib */; };
 		BA88B65B1B223990009EF1C3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BA88B6591B223990009EF1C3 /* Main.storyboard */; };
-		BAD6F9871B2F219E008C67E0 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = BAD6F9861B2F219E008C67E0 /* LICENSE */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -204,7 +203,6 @@
 			files = (
 				BA88B6381B2233C9009EF1C3 /* LaunchScreen.xib in Resources */,
 				BA88B6351B2233C9009EF1C3 /* Images.xcassets in Resources */,
-				BAD6F9871B2F219E008C67E0 /* LICENSE in Resources */,
 				BA88B65B1B223990009EF1C3 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -333,11 +331,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/HummingbirdLibrary-dgsakmhhffmucfbwdyjnjehkkpgr/Build/Products/Debug-iphoneos",
-					"$(PROJECT_DIR)",
-				);
 				INFOPLIST_FILE = Snap/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -357,11 +350,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/HummingbirdLibrary-dgsakmhhffmucfbwdyjnjehkkpgr/Build/Products/Debug-iphoneos",
-					"$(PROJECT_DIR)",
-				);
 				INFOPLIST_FILE = Snap/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

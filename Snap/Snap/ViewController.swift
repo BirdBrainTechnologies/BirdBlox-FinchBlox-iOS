@@ -36,12 +36,14 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         self.webView = WKWebView()
         self.view = self.webView
     }
+    override func prefersStatusBarHidden() -> Bool {
+        return true
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         prepareServer()
         server.start(listenPort: 22179, error: nil)
-        navigationController!.setNavigationBarHidden(true, animated:true)
 
         self.locationManager.requestAlwaysAuthorization()
         self.locationManager.requestWhenInUseAuthorization()
