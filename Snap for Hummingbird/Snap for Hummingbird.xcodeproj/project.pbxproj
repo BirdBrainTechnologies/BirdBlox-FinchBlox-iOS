@@ -10,7 +10,6 @@
 		BA7F0A621B25D0D9007DD94E /* SwifterActiveRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7F0A571B25D0D9007DD94E /* SwifterActiveRecord.swift */; };
 		BA7F0A631B25D0D9007DD94E /* SwifterDatabaseProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7F0A581B25D0D9007DD94E /* SwifterDatabaseProxy.swift */; };
 		BA7F0A641B25D0D9007DD94E /* SwifterSQLiteDatabaseProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7F0A5A1B25D0D9007DD94E /* SwifterSQLiteDatabaseProxy.swift */; };
-		BA7F0A651B25D0D9007DD94E /* DemoServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7F0A5B1B25D0D9007DD94E /* DemoServer.swift */; };
 		BA7F0A661B25D0D9007DD94E /* HttpHandlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7F0A5C1B25D0D9007DD94E /* HttpHandlers.swift */; };
 		BA7F0A671B25D0D9007DD94E /* HttpParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7F0A5D1B25D0D9007DD94E /* HttpParser.swift */; };
 		BA7F0A681B25D0D9007DD94E /* HttpRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7F0A5E1B25D0D9007DD94E /* HttpRequest.swift */; };
@@ -50,7 +49,6 @@
 		BA7F0A581B25D0D9007DD94E /* SwifterDatabaseProxy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwifterDatabaseProxy.swift; sourceTree = "<group>"; };
 		BA7F0A591B25D0D9007DD94E /* SwifterOSX-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SwifterOSX-Bridging-Header.h"; sourceTree = "<group>"; };
 		BA7F0A5A1B25D0D9007DD94E /* SwifterSQLiteDatabaseProxy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwifterSQLiteDatabaseProxy.swift; sourceTree = "<group>"; };
-		BA7F0A5B1B25D0D9007DD94E /* DemoServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DemoServer.swift; sourceTree = "<group>"; };
 		BA7F0A5C1B25D0D9007DD94E /* HttpHandlers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpHandlers.swift; sourceTree = "<group>"; };
 		BA7F0A5D1B25D0D9007DD94E /* HttpParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpParser.swift; sourceTree = "<group>"; };
 		BA7F0A5E1B25D0D9007DD94E /* HttpRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpRequest.swift; sourceTree = "<group>"; };
@@ -90,7 +88,6 @@
 			children = (
 				BAD6F9861B2F219E008C67E0 /* LICENSE */,
 				BA7F0A551B25D0D9007DD94E /* ActiveRecord */,
-				BA7F0A5B1B25D0D9007DD94E /* DemoServer.swift */,
 				BA7F0A5C1B25D0D9007DD94E /* HttpHandlers.swift */,
 				BA7F0A5D1B25D0D9007DD94E /* HttpParser.swift */,
 				BA7F0A5E1B25D0D9007DD94E /* HttpRequest.swift */,
@@ -233,7 +230,6 @@
 				BA7F0A6A1B25D0D9007DD94E /* HttpServer.swift in Sources */,
 				BA7F0A671B25D0D9007DD94E /* HttpParser.swift in Sources */,
 				BA88B62E1B2233C9009EF1C3 /* AppDelegate.swift in Sources */,
-				BA7F0A651B25D0D9007DD94E /* DemoServer.swift in Sources */,
 				BA7F0A641B25D0D9007DD94E /* SwifterSQLiteDatabaseProxy.swift in Sources */,
 				BA7F0A6B1B25D0D9007DD94E /* Socket.swift in Sources */,
 				BA88B65A1B223990009EF1C3 /* ConnectionViewController.swift in Sources */,
