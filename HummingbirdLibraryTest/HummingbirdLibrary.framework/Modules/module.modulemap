@@ -1,0 +1,10 @@
+framework module HummingbirdLibrary {
+  umbrella header "HummingbirdLibrary.h"
+
+  export *
+  module * { export * }
+}
+
+module HummingbirdLibrary.Swift {
+    header "HummingbirdLibrary-Swift.h"
+}

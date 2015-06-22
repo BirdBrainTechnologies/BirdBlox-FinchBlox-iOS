@@ -1,0 +1,416 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 47;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		BA7F0A621B25D0D9007DD94E /* SwifterActiveRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7F0A571B25D0D9007DD94E /* SwifterActiveRecord.swift */; };
+		BA7F0A631B25D0D9007DD94E /* SwifterDatabaseProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7F0A581B25D0D9007DD94E /* SwifterDatabaseProxy.swift */; };
+		BA7F0A641B25D0D9007DD94E /* SwifterSQLiteDatabaseProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7F0A5A1B25D0D9007DD94E /* SwifterSQLiteDatabaseProxy.swift */; };
+		BA7F0A651B25D0D9007DD94E /* DemoServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7F0A5B1B25D0D9007DD94E /* DemoServer.swift */; };
+		BA7F0A661B25D0D9007DD94E /* HttpHandlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7F0A5C1B25D0D9007DD94E /* HttpHandlers.swift */; };
+		BA7F0A671B25D0D9007DD94E /* HttpParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7F0A5D1B25D0D9007DD94E /* HttpParser.swift */; };
+		BA7F0A681B25D0D9007DD94E /* HttpRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7F0A5E1B25D0D9007DD94E /* HttpRequest.swift */; };
+		BA7F0A691B25D0D9007DD94E /* HttpResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7F0A5F1B25D0D9007DD94E /* HttpResponse.swift */; };
+		BA7F0A6A1B25D0D9007DD94E /* HttpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7F0A601B25D0D9007DD94E /* HttpServer.swift */; };
+		BA7F0A6B1B25D0D9007DD94E /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7F0A611B25D0D9007DD94E /* Socket.swift */; };
+		BA7F0A741B25D463007DD94E /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BA7F0A731B25D463007DD94E /* libsqlite3.dylib */; };
+		BA7F0A761B25E5D2007DD94E /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA7F0A751B25E5D2007DD94E /* AVFoundation.framework */; };
+		BA88B62E1B2233C9009EF1C3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA88B62D1B2233C9009EF1C3 /* AppDelegate.swift */; };
+		BA88B6301B2233C9009EF1C3 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA88B62F1B2233C9009EF1C3 /* ViewController.swift */; };
+		BA88B6351B2233C9009EF1C3 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BA88B6341B2233C9009EF1C3 /* Images.xcassets */; };
+		BA88B6381B2233C9009EF1C3 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = BA88B6361B2233C9009EF1C3 /* LaunchScreen.xib */; };
+		BA88B65A1B223990009EF1C3 /* ConnectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA88B6581B223990009EF1C3 /* ConnectionViewController.swift */; };
+		BA88B65B1B223990009EF1C3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BA88B6591B223990009EF1C3 /* Main.storyboard */; };
+		BAB1C6C41B3873EE0020B113 /* HummingbirdLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BAB1C6C21B3873E50020B113 /* HummingbirdLibrary.framework */; };
+		BAB1C6C51B3873EE0020B113 /* HummingbirdLibrary.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BAB1C6C21B3873E50020B113 /* HummingbirdLibrary.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		BAD6F9871B2F219E008C67E0 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = BAD6F9861B2F219E008C67E0 /* LICENSE */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		BA88B6511B223408009EF1C3 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				BAB1C6C51B3873EE0020B113 /* HummingbirdLibrary.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		BA7F0A561B25D0D9007DD94E /* Swifter-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Swifter-Bridging-Header.h"; sourceTree = "<group>"; };
+		BA7F0A571B25D0D9007DD94E /* SwifterActiveRecord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwifterActiveRecord.swift; sourceTree = "<group>"; };
+		BA7F0A581B25D0D9007DD94E /* SwifterDatabaseProxy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwifterDatabaseProxy.swift; sourceTree = "<group>"; };
+		BA7F0A591B25D0D9007DD94E /* SwifterOSX-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SwifterOSX-Bridging-Header.h"; sourceTree = "<group>"; };
+		BA7F0A5A1B25D0D9007DD94E /* SwifterSQLiteDatabaseProxy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwifterSQLiteDatabaseProxy.swift; sourceTree = "<group>"; };
+		BA7F0A5B1B25D0D9007DD94E /* DemoServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DemoServer.swift; sourceTree = "<group>"; };
+		BA7F0A5C1B25D0D9007DD94E /* HttpHandlers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpHandlers.swift; sourceTree = "<group>"; };
+		BA7F0A5D1B25D0D9007DD94E /* HttpParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpParser.swift; sourceTree = "<group>"; };
+		BA7F0A5E1B25D0D9007DD94E /* HttpRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpRequest.swift; sourceTree = "<group>"; };
+		BA7F0A5F1B25D0D9007DD94E /* HttpResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpResponse.swift; sourceTree = "<group>"; };
+		BA7F0A601B25D0D9007DD94E /* HttpServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpServer.swift; sourceTree = "<group>"; };
+		BA7F0A611B25D0D9007DD94E /* Socket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Socket.swift; sourceTree = "<group>"; };
+		BA7F0A731B25D463007DD94E /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
+		BA7F0A751B25E5D2007DD94E /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		BA88B6281B2233C9009EF1C3 /* Snap for Hummingbird.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Snap for Hummingbird.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		BA88B62C1B2233C9009EF1C3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BA88B62D1B2233C9009EF1C3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		BA88B62F1B2233C9009EF1C3 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		BA88B6341B2233C9009EF1C3 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		BA88B6371B2233C9009EF1C3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
+		BA88B6581B223990009EF1C3 /* ConnectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionViewController.swift; sourceTree = "<group>"; };
+		BA88B6591B223990009EF1C3 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		BAB1C6C21B3873E50020B113 /* HummingbirdLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = HummingbirdLibrary.framework; sourceTree = "<group>"; };
+		BAD6F9861B2F219E008C67E0 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = LICENSE; path = "../Snap for Hummingbird/LICENSE"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		BA88B6251B2233C9009EF1C3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BA7F0A761B25E5D2007DD94E /* AVFoundation.framework in Frameworks */,
+				BAB1C6C41B3873EE0020B113 /* HummingbirdLibrary.framework in Frameworks */,
+				BA7F0A741B25D463007DD94E /* libsqlite3.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		BA7F0A541B25D0D9007DD94E /* Swifter */ = {
+			isa = PBXGroup;
+			children = (
+				BAD6F9861B2F219E008C67E0 /* LICENSE */,
+				BA7F0A551B25D0D9007DD94E /* ActiveRecord */,
+				BA7F0A5B1B25D0D9007DD94E /* DemoServer.swift */,
+				BA7F0A5C1B25D0D9007DD94E /* HttpHandlers.swift */,
+				BA7F0A5D1B25D0D9007DD94E /* HttpParser.swift */,
+				BA7F0A5E1B25D0D9007DD94E /* HttpRequest.swift */,
+				BA7F0A5F1B25D0D9007DD94E /* HttpResponse.swift */,
+				BA7F0A601B25D0D9007DD94E /* HttpServer.swift */,
+				BA7F0A611B25D0D9007DD94E /* Socket.swift */,
+			);
+			path = Swifter;
+			sourceTree = "<group>";
+		};
+		BA7F0A551B25D0D9007DD94E /* ActiveRecord */ = {
+			isa = PBXGroup;
+			children = (
+				BA7F0A561B25D0D9007DD94E /* Swifter-Bridging-Header.h */,
+				BA7F0A571B25D0D9007DD94E /* SwifterActiveRecord.swift */,
+				BA7F0A581B25D0D9007DD94E /* SwifterDatabaseProxy.swift */,
+				BA7F0A591B25D0D9007DD94E /* SwifterOSX-Bridging-Header.h */,
+				BA7F0A5A1B25D0D9007DD94E /* SwifterSQLiteDatabaseProxy.swift */,
+			);
+			path = ActiveRecord;
+			sourceTree = "<group>";
+		};
+		BA88B61F1B2233C9009EF1C3 = {
+			isa = PBXGroup;
+			children = (
+				BAB1C6C21B3873E50020B113 /* HummingbirdLibrary.framework */,
+				BA7F0A751B25E5D2007DD94E /* AVFoundation.framework */,
+				BA7F0A731B25D463007DD94E /* libsqlite3.dylib */,
+				BA7F0A541B25D0D9007DD94E /* Swifter */,
+				BA88B62A1B2233C9009EF1C3 /* Snap for Hummingbird */,
+				BA88B6291B2233C9009EF1C3 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		BA88B6291B2233C9009EF1C3 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BA88B6281B2233C9009EF1C3 /* Snap for Hummingbird.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		BA88B62A1B2233C9009EF1C3 /* Snap for Hummingbird */ = {
+			isa = PBXGroup;
+			children = (
+				BA88B62D1B2233C9009EF1C3 /* AppDelegate.swift */,
+				BA88B62F1B2233C9009EF1C3 /* ViewController.swift */,
+				BA88B6581B223990009EF1C3 /* ConnectionViewController.swift */,
+				BA88B6591B223990009EF1C3 /* Main.storyboard */,
+				BA88B6341B2233C9009EF1C3 /* Images.xcassets */,
+				BA88B6361B2233C9009EF1C3 /* LaunchScreen.xib */,
+				BA88B62B1B2233C9009EF1C3 /* Supporting Files */,
+			);
+			path = "Snap for Hummingbird";
+			sourceTree = "<group>";
+		};
+		BA88B62B1B2233C9009EF1C3 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				BA88B62C1B2233C9009EF1C3 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		BA88B6271B2233C9009EF1C3 /* Snap for Hummingbird */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BA88B6471B2233C9009EF1C3 /* Build configuration list for PBXNativeTarget "Snap for Hummingbird" */;
+			buildPhases = (
+				BA88B6241B2233C9009EF1C3 /* Sources */,
+				BA88B6251B2233C9009EF1C3 /* Frameworks */,
+				BA88B6261B2233C9009EF1C3 /* Resources */,
+				BA88B6511B223408009EF1C3 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Snap for Hummingbird";
+			productName = "Snap for Hummingbird";
+			productReference = BA88B6281B2233C9009EF1C3 /* Snap for Hummingbird.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		BA88B6201B2233C9009EF1C3 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0630;
+				ORGANIZATIONNAME = "Birdbrain Technologies LLC.";
+				TargetAttributes = {
+					BA88B6271B2233C9009EF1C3 = {
+						CreatedOnToolsVersion = 6.3.2;
+						DevelopmentTeam = N6XC9HC8PB;
+					};
+				};
+			};
+			buildConfigurationList = BA88B6231B2233C9009EF1C3 /* Build configuration list for PBXProject "Snap for Hummingbird" */;
+			compatibilityVersion = "Xcode 6.3";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = BA88B61F1B2233C9009EF1C3;
+			productRefGroup = BA88B6291B2233C9009EF1C3 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				BA88B6271B2233C9009EF1C3 /* Snap for Hummingbird */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		BA88B6261B2233C9009EF1C3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BA88B6381B2233C9009EF1C3 /* LaunchScreen.xib in Resources */,
+				BA88B6351B2233C9009EF1C3 /* Images.xcassets in Resources */,
+				BAD6F9871B2F219E008C67E0 /* LICENSE in Resources */,
+				BA88B65B1B223990009EF1C3 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		BA88B6241B2233C9009EF1C3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BA88B6301B2233C9009EF1C3 /* ViewController.swift in Sources */,
+				BA7F0A681B25D0D9007DD94E /* HttpRequest.swift in Sources */,
+				BA7F0A6A1B25D0D9007DD94E /* HttpServer.swift in Sources */,
+				BA7F0A671B25D0D9007DD94E /* HttpParser.swift in Sources */,
+				BA88B62E1B2233C9009EF1C3 /* AppDelegate.swift in Sources */,
+				BA7F0A651B25D0D9007DD94E /* DemoServer.swift in Sources */,
+				BA7F0A641B25D0D9007DD94E /* SwifterSQLiteDatabaseProxy.swift in Sources */,
+				BA7F0A6B1B25D0D9007DD94E /* Socket.swift in Sources */,
+				BA88B65A1B223990009EF1C3 /* ConnectionViewController.swift in Sources */,
+				BA7F0A621B25D0D9007DD94E /* SwifterActiveRecord.swift in Sources */,
+				BA7F0A691B25D0D9007DD94E /* HttpResponse.swift in Sources */,
+				BA7F0A661B25D0D9007DD94E /* HttpHandlers.swift in Sources */,
+				BA7F0A631B25D0D9007DD94E /* SwifterDatabaseProxy.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		BA88B6361B2233C9009EF1C3 /* LaunchScreen.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				BA88B6371B2233C9009EF1C3 /* Base */,
+			);
+			name = LaunchScreen.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		BA88B6451B2233C9009EF1C3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		BA88B6461B2233C9009EF1C3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		BA88B6481B2233C9009EF1C3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/HummingbirdLibrary-dgsakmhhffmucfbwdyjnjehkkpgr/Build/Products/Debug-iphoneos",
+					"$(PROJECT_DIR)",
+				);
+				INFOPLIST_FILE = "Snap for Hummingbird/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Swifter/ActiveRecord/Swifter-Bridging-Header.h";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		BA88B6491B2233C9009EF1C3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/HummingbirdLibrary-dgsakmhhffmucfbwdyjnjehkkpgr/Build/Products/Debug-iphoneos",
+					"$(PROJECT_DIR)",
+				);
+				INFOPLIST_FILE = "Snap for Hummingbird/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Swifter/ActiveRecord/Swifter-Bridging-Header.h";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		BA88B6231B2233C9009EF1C3 /* Build configuration list for PBXProject "Snap for Hummingbird" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BA88B6451B2233C9009EF1C3 /* Debug */,
+				BA88B6461B2233C9009EF1C3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BA88B6471B2233C9009EF1C3 /* Build configuration list for PBXNativeTarget "Snap for Hummingbird" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BA88B6481B2233C9009EF1C3 /* Debug */,
+				BA88B6491B2233C9009EF1C3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = BA88B6201B2233C9009EF1C3 /* Project object */;
+}
