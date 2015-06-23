@@ -157,8 +157,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             if (temp < 0){
                 intensity = 0
             }
-            else if (temp > 255){
-                intensity = 255
+            else if (temp > 100){
+                intensity = 100
             }
             else{
                 intensity = UInt8(temp)
@@ -174,8 +174,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             if (temp < 0){
                 rValue = 0
             }
-            else if (temp > 255){
-                rValue = 255
+            else if (temp > 100){
+                rValue = 100
             }
             else{
                 rValue = UInt8(temp)
@@ -185,8 +185,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             if (temp < 0){
                 gValue = 0
             }
-            else if (temp > 255){
-                gValue = 255
+            else if (temp > 100){
+                gValue = 100
             }
             else{
                 gValue = UInt8(temp)
@@ -196,8 +196,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             if (temp < 0){
                 bValue = 0
             }
-            else if (temp > 255){
-                bValue = 255
+            else if (temp > 100){
+                bValue = 100
             }
             else{
                 bValue = UInt8(temp)
@@ -232,7 +232,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             if (temp < 0){
                 angle = 0
             }
-            else if (temp > 180 && temp != 255){
+            else if (temp > 180){
                 angle = 180
             }
             else{
