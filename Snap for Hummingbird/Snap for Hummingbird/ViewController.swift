@@ -151,8 +151,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     func prepareServer(){
         server["/hummingbird/out/led/(.+)/(.+)"] = { request in
             let captured = request.capturedUrlGroups
-            let port = UInt8(captured[0].toInt()!)
-            let temp = captured[1].toInt()!
+            let port = UInt8((captured[0]).toInt()!)
+            let temp = Int(round((captured[1] as NSString).floatValue))
             var intensity: UInt8
             if (temp < 0){
                 intensity = 0
@@ -169,7 +169,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         server["/hummingbird/out/triled/(.+)/(.+)/(.+)/(.+)"] = { request in
             let captured = request.capturedUrlGroups
             let port: UInt8 = UInt8(captured[0].toInt()!)
-            var temp = captured[1].toInt()!
+            var temp = Int(round((captured[1] as NSString).floatValue))
             var rValue: UInt8
             if (temp < 0){
                 rValue = 0
@@ -180,7 +180,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             else{
                 rValue = UInt8(temp)
             }
-            temp = captured[2].toInt()!
+            temp = Int(round((captured[2] as NSString).floatValue))
             var gValue: UInt8
             if (temp < 0){
                 gValue = 0
@@ -191,7 +191,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             else{
                 gValue = UInt8(temp)
             }
-            temp = captured[3].toInt()!
+            temp = Int(round((captured[3] as NSString).floatValue))
             var bValue: UInt8
             if (temp < 0){
                 bValue = 0
@@ -208,7 +208,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         server["/hummingbird/out/vibration/(.+)/(.+)"] = { request in
             let captured = request.capturedUrlGroups
             let port: UInt8 = UInt8(captured[0].toInt()!)
-            let temp = captured[1].toInt()!
+            let temp = Int(round((captured[1] as NSString).floatValue))
             var intensity: UInt8
             if (temp < 0){
                 intensity = 0
@@ -227,7 +227,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             let captured = request.capturedUrlGroups
             let port: UInt8 = UInt8(captured[0].toInt()!)
             
-            let temp = captured[1].toInt()!
+            let temp = Int(round((captured[1] as NSString).floatValue))
             var angle: UInt8
             if (temp < 0){
                 angle = 0
@@ -245,7 +245,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         server["/hummingbird/out/motor/(.+)/(.+)"] = { request in
             let captured = request.capturedUrlGroups
             let port: UInt8 = UInt8(captured[0].toInt()!)
-            let temp = captured[1].toInt()!
+            let temp = Int(round((captured[1] as NSString).floatValue))
             var intensity: Int
             if (temp < -100){
                 intensity = -100
