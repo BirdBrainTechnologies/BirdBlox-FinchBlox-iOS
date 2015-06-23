@@ -152,37 +152,110 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         server["/hummingbird/out/led/(.+)/(.+)"] = { request in
             let captured = request.capturedUrlGroups
             let port = UInt8(captured[0].toInt()!)
-            let intensity = UInt8(captured[1].toInt()!)
+            let temp = captured[1].toInt()!
+            var intensity: UInt8
+            if (temp < 0){
+                intensity = 0
+            }
+            else if (temp > 255){
+                intensity = 255
+            }
+            else{
+                intensity = UInt8(temp)
+            }
             self.hbServe.setLED(port, intensity: intensity)
             return .OK(.RAW("LED set"))
         }
         server["/hummingbird/out/triled/(.+)/(.+)/(.+)/(.+)"] = { request in
             let captured = request.capturedUrlGroups
             let port: UInt8 = UInt8(captured[0].toInt()!)
-            let rValue: UInt8 = UInt8(captured[1].toInt()!)
-            let gValue: UInt8 = UInt8(captured[2].toInt()!)
-            let bValue: UInt8 = UInt8(captured[3].toInt()!)
+            var temp = captured[1].toInt()!
+            var rValue: UInt8
+            if (temp < 0){
+                rValue = 0
+            }
+            else if (temp > 255){
+                rValue = 255
+            }
+            else{
+                rValue = UInt8(temp)
+            }
+            temp = captured[2].toInt()!
+            var gValue: UInt8
+            if (temp < 0){
+                gValue = 0
+            }
+            else if (temp > 255){
+                gValue = 255
+            }
+            else{
+                gValue = UInt8(temp)
+            }
+            temp = captured[3].toInt()!
+            var bValue: UInt8
+            if (temp < 0){
+                bValue = 0
+            }
+            else if (temp > 255){
+                bValue = 255
+            }
+            else{
+                bValue = UInt8(temp)
+            }
             self.hbServe.setTriLED(port, r: rValue, g: gValue, b: bValue)
             return .OK(.RAW("Tri-LED set"))
         }
         server["/hummingbird/out/vibration/(.+)/(.+)"] = { request in
             let captured = request.capturedUrlGroups
             let port: UInt8 = UInt8(captured[0].toInt()!)
-            let intensity: UInt8 = UInt8(captured[1].toInt()!)
+            let temp = captured[1].toInt()!
+            var intensity: UInt8
+            if (temp < 0){
+                intensity = 0
+            }
+            else if (temp > 100){
+                intensity = 100
+            }
+            else{
+                intensity = UInt8(temp)
+            }
+            
             self.hbServe.setVibration(port, intensity: intensity)
             return .OK(.RAW("Vibration set"))
         }
         server["/hummingbird/out/servo/(.+)/(.+)"] = { request in
             let captured = request.capturedUrlGroups
             let port: UInt8 = UInt8(captured[0].toInt()!)
-            let angle: UInt8 = UInt8(captured[1].toInt()!)
+            
+            let temp = captured[1].toInt()!
+            var angle: UInt8
+            if (temp < 0){
+                angle = 0
+            }
+            else if (temp > 180 && temp != 255){
+                angle = 180
+            }
+            else{
+                angle = UInt8(temp)
+            }
+            
             self.hbServe.setServo(port, angle: angle)
             return .OK(.RAW("Servo set"))
         }
         server["/hummingbird/out/motor/(.+)/(.+)"] = { request in
             let captured = request.capturedUrlGroups
             let port: UInt8 = UInt8(captured[0].toInt()!)
-            let intensity: Int = Int(captured[1].toInt()!)
+            let temp = captured[1].toInt()!
+            var intensity: Int
+            if (temp < -100){
+                intensity = -100
+            }
+            else if (temp > 100){
+                intensity = 100
+            }
+            else{
+                intensity = temp
+            }
             self.hbServe.setMotor(port, speed: intensity)
             return .OK(.RAW("Motor set"))
         }

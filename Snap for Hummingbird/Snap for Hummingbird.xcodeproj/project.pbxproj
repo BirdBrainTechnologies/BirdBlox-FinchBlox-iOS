@@ -26,7 +26,6 @@
 		BA88B65B1B223990009EF1C3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BA88B6591B223990009EF1C3 /* Main.storyboard */; };
 		BAB1C6C41B3873EE0020B113 /* HummingbirdLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BAB1C6C21B3873E50020B113 /* HummingbirdLibrary.framework */; };
 		BAB1C6C51B3873EE0020B113 /* HummingbirdLibrary.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BAB1C6C21B3873E50020B113 /* HummingbirdLibrary.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		BAD6F9871B2F219E008C67E0 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = BAD6F9861B2F219E008C67E0 /* LICENSE */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -213,7 +212,6 @@
 			files = (
 				BA88B6381B2233C9009EF1C3 /* LaunchScreen.xib in Resources */,
 				BA88B6351B2233C9009EF1C3 /* Images.xcassets in Resources */,
-				BAD6F9871B2F219E008C67E0 /* LICENSE in Resources */,
 				BA88B65B1B223990009EF1C3 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
