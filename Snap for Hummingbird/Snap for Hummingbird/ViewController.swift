@@ -7,13 +7,11 @@
 //
 
 import UIKit
-import HummingbirdLibrary
 import AVFoundation
 import CoreLocation
 import SystemConfiguration.CaptiveNetwork
 import CoreMotion
 import WebKit
-
 
 class ViewController: UIViewController, CLLocationManagerDelegate {
 
@@ -46,7 +44,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         prepareServer()
-        server.start(listenPort: 22179, error: nil)
+        server.start(22179)
         navigationController!.setNavigationBarHidden(true, animated:true)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("changedStatus:"), name: BluetoothStatusChangedNotification, object: nil)
         
@@ -62,8 +60,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         if(CMAltimeter.isRelativeAltitudeAvailable()){
             altimeter.startRelativeAltitudeUpdatesToQueue(NSOperationQueue.mainQueue(), withHandler: {data, error in
                 if(error == nil) {
-                    self.currentAltitude = Float(data.relativeAltitude)
-                    self.currentPressure = Float(data.pressure)
+                    self.currentAltitude = Float(data!.relativeAltitude)
+                    self.currentPressure = Float(data!.pressure)
                 }
             })
         }
@@ -72,9 +70,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         if(self.motionManager.accelerometerAvailable) {
             self.motionManager.startAccelerometerUpdatesToQueue(queue, withHandler: {data, error in
                 dispatch_async(dispatch_get_main_queue(), {
-                    self.x = data.acceleration.x
-                    self.y = data.acceleration.y
-                    self.z = data.acceleration.z
+                    self.x = data!.acceleration.x
+                    self.y = data!.acceleration.y
+                    self.z = data!.acceleration.z
                 })
             })
 
@@ -89,7 +87,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     override func canBecomeFirstResponder() -> Bool {
         return true
     }
-    override func motionEnded(motion: UIEventSubtype, withEvent event: UIEvent) {
+    override func motionEnded(motion: UIEventSubtype, withEvent event: UIEvent?) {
         if (motion == UIEventSubtype.MotionShake){
             wasShaken = true
             shakenTimer = NSTimer.scheduledTimerWithTimeInterval(NSTimeInterval(5), target: self, selector: "expireShake", userInfo: nil, repeats: false)
@@ -109,21 +107,22 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     }
     //end shake
     //location
-    func locationManager(manager: CLLocationManager!, didUpdateLocations locations: [AnyObject]!) {
-        currentLocation = manager.location.coordinate
+    func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        currentLocation = manager.location!.coordinate
     }
     //end location
     
     //get ssid
-    func getSSIDInfo() -> CFDictionary?{
-        if let
-            ifs = CNCopySupportedInterfaces().takeUnretainedValue() as? [String],
-            ifName = ifs.first,
-            info = CNCopyCurrentNetworkInfo(ifName as CFStringRef)
-        {
-            return info.takeUnretainedValue()
+    func getSSIDInfo() -> String{
+        var ssid:NSString = "null"
+        let ifs:NSArray = CNCopySupportedInterfaces()!
+        for ifName: NSString in ifs as! [NSString]{
+            let info: NSDictionary = CNCopyCurrentNetworkInfo(ifName)!
+            if (info["SSID"] != nil){
+                ssid = info["SSID"] as! NSString
+            }
         }
-        return nil
+        return ssid as String
     }
     //end ssid
     
@@ -151,7 +150,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     func prepareServer(){
         server["/hummingbird/out/led/(.+)/(.+)"] = { request in
             let captured = request.capturedUrlGroups
-            let port = UInt8((captured[0]).toInt()!)
+            let port = UInt8(Int((captured[0]))!)
             let temp = Int(round((captured[1] as NSString).floatValue))
             var intensity: UInt8
             if (temp < 0){
@@ -168,7 +167,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         }
         server["/hummingbird/out/triled/(.+)/(.+)/(.+)/(.+)"] = { request in
             let captured = request.capturedUrlGroups
-            let port: UInt8 = UInt8(captured[0].toInt()!)
+            let port: UInt8 = UInt8(Int(captured[0])!)
             var temp = Int(round((captured[1] as NSString).floatValue))
             var rValue: UInt8
             if (temp < 0){
@@ -207,7 +206,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         }
         server["/hummingbird/out/vibration/(.+)/(.+)"] = { request in
             let captured = request.capturedUrlGroups
-            let port: UInt8 = UInt8(captured[0].toInt()!)
+            let port: UInt8 = UInt8(Int(captured[0])!)
             let temp = Int(round((captured[1] as NSString).floatValue))
             var intensity: UInt8
             if (temp < 0){
@@ -225,7 +224,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         }
         server["/hummingbird/out/servo/(.+)/(.+)"] = { request in
             let captured = request.capturedUrlGroups
-            let port: UInt8 = UInt8(captured[0].toInt()!)
+            let port: UInt8 = UInt8(Int(captured[0])!)
             
             let temp = Int(round((captured[1] as NSString).floatValue))
             var angle: UInt8
@@ -244,7 +243,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         }
         server["/hummingbird/out/motor/(.+)/(.+)"] = { request in
             let captured = request.capturedUrlGroups
-            let port: UInt8 = UInt8(captured[0].toInt()!)
+            let port: UInt8 = UInt8(Int(captured[0])!)
             let temp = Int(round((captured[1] as NSString).floatValue))
             var intensity: Int
             if (temp < -100){
@@ -261,41 +260,41 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         }
         server["/hummingbird/in/sensors"] = { request in
             var sensorData = self.hbServe.getAllSensorDataFromPoll()
-            var response: String = "" + String(rawto100scale(sensorData[0])) + " " + String(rawto100scale(sensorData[1])) + " " + String(rawto100scale(sensorData[2])) + " " + String(rawto100scale(sensorData[3]))
+            let response: String = "" + String(rawto100scale(sensorData[0])) + " " + String(rawto100scale(sensorData[1])) + " " + String(rawto100scale(sensorData[2])) + " " + String(rawto100scale(sensorData[3]))
             return .OK(.RAW(response))
         }
         server["/hummingbird/in/sensor/(.+)"] = { request in
             let captured = request.capturedUrlGroups
-            var port = UInt8(captured[0].toInt()!)
-            var sensorData = rawto100scale(self.hbServe.getSensorDataFromPoll(port))
-            var response: String = String(sensorData)
+            let port = UInt8(Int(captured[0])!)
+            let sensorData = rawto100scale(self.hbServe.getSensorDataFromPoll(port))
+            let response: String = String(sensorData)
             return .OK(.RAW(response))
         }
         server["/hummingbird/in/distance/(.+)"] = { request in
             let captured = request.capturedUrlGroups
-            var port = UInt8(captured[0].toInt()!)
-            var sensorData = rawToDistance(self.hbServe.getSensorDataFromPoll(port))
-            var response: String = String(sensorData)
+            let port = UInt8(Int(captured[0])!)
+            let sensorData = rawToDistance(self.hbServe.getSensorDataFromPoll(port))
+            let response: String = String(sensorData)
             return .OK(.RAW(response))
         }
         server["/hummingbird/in/sound/(.+)"] = { request in
             let captured = request.capturedUrlGroups
-            var port = UInt8(captured[0].toInt()!)
-            var sensorData = rawToSound(self.hbServe.getSensorDataFromPoll(port))
-            var response: String = String(sensorData)
+            let port = UInt8(Int(captured[0])!)
+            let sensorData = rawToSound(self.hbServe.getSensorDataFromPoll(port))
+            let response: String = String(sensorData)
             return .OK(.RAW(response))
         }
         server["/hummingbird/in/temperature/(.+)"] = { request in
             let captured = request.capturedUrlGroups
-            var port = UInt8(captured[0].toInt()!)
-            var sensorData = rawToTemp(self.hbServe.getSensorDataFromPoll(port))
-            var response: String = String(sensorData)
+            let port = UInt8(Int(captured[0])!)
+            let sensorData = rawToTemp(self.hbServe.getSensorDataFromPoll(port))
+            let response: String = String(sensorData)
             return .OK(.RAW(response))
         }
         server["/speak/(.+)"] = { request in
             let captured = request.capturedUrlGroups
-            var words = String(captured[0])
-            var utterance = AVSpeechUtterance(string: words)
+            let words = String(captured[0])
+            let utterance = AVSpeechUtterance(string: words)
             utterance.rate = 0.3
             self.synth.speakUtterance(utterance)
             return .OK(.RAW(words))
@@ -315,14 +314,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             return .OK(.RAW(String(retString)))
         }
         server["/iPad/ssid"] = {request in
-            if let
-            ssidInfo = self.getSSIDInfo() as? [String:AnyObject],
-            ssid = ssidInfo["SSID"] as? String
-            {
-                return .OK(.RAW(ssid))
-            } else{
-                return .OK(.RAW(""))
-            }
+            let ssid = self.getSSIDInfo()
+            return .OK(.RAW(ssid))
         }
         server["/iPad/pressure"] = {request in
             return .OK(.RAW(String(format: "%f", self.currentPressure)))
@@ -340,10 +333,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     func changedStatus(notification: NSNotification){
         let userinfo = notification.userInfo as! [String: Bool]
         if let isConnected: Bool = userinfo["isConnected"]{
-            var statString = ""
             if isConnected{
                 NSLog("device connected")
-                statString = "Connected"
                 hbServe.turnOffLightsMotor()
                 NSThread.sleepForTimeInterval(0.1)
                 hbServe.stopPolling()
@@ -352,7 +343,6 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             }
             else{
                 NSLog("device disconnected")
-                statString = "Disconnected"
 
             }
         }

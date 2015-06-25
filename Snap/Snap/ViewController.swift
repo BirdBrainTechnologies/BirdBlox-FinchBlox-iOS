@@ -43,7 +43,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         prepareServer()
-        server.start(listenPort: 22179, error: nil)
+        server.start(22180)
 
         self.locationManager.requestAlwaysAuthorization()
         self.locationManager.requestWhenInUseAuthorization()
@@ -57,8 +57,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         if(CMAltimeter.isRelativeAltitudeAvailable()){
             altimeter.startRelativeAltitudeUpdatesToQueue(NSOperationQueue.mainQueue(), withHandler: {data, error in
                 if(error == nil) {
-                    self.currentAltitude = Float(data.relativeAltitude)
-                    self.currentPressure = Float(data.pressure)
+                    self.currentAltitude = Float(data!.relativeAltitude)
+                    self.currentPressure = Float(data!.pressure)
                 }
             })
         }
@@ -67,9 +67,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         if(self.motionManager.accelerometerAvailable) {
             self.motionManager.startAccelerometerUpdatesToQueue(queue, withHandler: {data, error in
                 dispatch_async(dispatch_get_main_queue(), {
-                    self.x = data.acceleration.x
-                    self.y = data.acceleration.y
-                    self.z = data.acceleration.z
+                    self.x = data!.acceleration.x
+                    self.y = data!.acceleration.y
+                    self.z = data!.acceleration.z
                 })
             })
 
@@ -84,7 +84,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     override func canBecomeFirstResponder() -> Bool {
         return true
     }
-    override func motionEnded(motion: UIEventSubtype, withEvent event: UIEvent) {
+    override func motionEnded(motion: UIEventSubtype, withEvent event: UIEvent?) {
         if (motion == UIEventSubtype.MotionShake){
             wasShaken = true
             shakenTimer = NSTimer.scheduledTimerWithTimeInterval(NSTimeInterval(5), target: self, selector: "expireShake", userInfo: nil, repeats: false)
@@ -104,21 +104,22 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     }
     //end shake
     //location
-    func locationManager(manager: CLLocationManager!, didUpdateLocations locations: [AnyObject]!) {
-        currentLocation = manager.location.coordinate
+    @objc func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        currentLocation = manager.location!.coordinate
     }
     //end location
     
     //get ssid
-    func getSSIDInfo() -> CFDictionary?{
-        if let
-            ifs = CNCopySupportedInterfaces().takeUnretainedValue() as? [String],
-            ifName = ifs.first,
-            info = CNCopyCurrentNetworkInfo(ifName as CFStringRef)
-        {
-            return info.takeUnretainedValue()
+    func getSSIDInfo() -> String{
+        var ssid:NSString = "null"
+        let ifs:NSArray = CNCopySupportedInterfaces()!
+        for ifName: NSString in ifs as! [NSString]{
+            let info: NSDictionary = CNCopyCurrentNetworkInfo(ifName)!
+            if (info["SSID"] != nil){
+                ssid = info["SSID"] as! NSString
+            }
         }
-        return nil
+        return ssid as String
     }
     //end ssid
     
@@ -144,8 +145,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     func prepareServer(){
                 server["/speak/(.+)"] = { request in
             let captured = request.capturedUrlGroups
-            var words = String(captured[0])
-            var utterance = AVSpeechUtterance(string: words)
+            let words = String(captured[0])
+            let utterance = AVSpeechUtterance(string: words)
             utterance.rate = 0.3
             self.synth.speakUtterance(utterance)
             return .OK(.RAW(words))
@@ -165,14 +166,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             return .OK(.RAW(String(retString)))
         }
         server["/iPad/ssid"] = {request in
-            if let
-            ssidInfo = self.getSSIDInfo() as? [String:AnyObject],
-            ssid = ssidInfo["SSID"] as? String
-            {
-                return .OK(.RAW(ssid))
-            } else{
-                return .OK(.RAW(""))
-            }
+            let ssid = self.getSSIDInfo()
+            return .OK(.RAW(ssid))
         }
         server["/iPad/pressure"] = {request in
             return .OK(.RAW(String(format: "%f", self.currentPressure)))

@@ -3,19 +3,21 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 47;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BA7F0A621B25D0D9007DD94E /* SwifterActiveRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7F0A571B25D0D9007DD94E /* SwifterActiveRecord.swift */; };
-		BA7F0A631B25D0D9007DD94E /* SwifterDatabaseProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7F0A581B25D0D9007DD94E /* SwifterDatabaseProxy.swift */; };
-		BA7F0A641B25D0D9007DD94E /* SwifterSQLiteDatabaseProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7F0A5A1B25D0D9007DD94E /* SwifterSQLiteDatabaseProxy.swift */; };
-		BA7F0A661B25D0D9007DD94E /* HttpHandlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7F0A5C1B25D0D9007DD94E /* HttpHandlers.swift */; };
-		BA7F0A671B25D0D9007DD94E /* HttpParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7F0A5D1B25D0D9007DD94E /* HttpParser.swift */; };
-		BA7F0A681B25D0D9007DD94E /* HttpRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7F0A5E1B25D0D9007DD94E /* HttpRequest.swift */; };
-		BA7F0A691B25D0D9007DD94E /* HttpResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7F0A5F1B25D0D9007DD94E /* HttpResponse.swift */; };
-		BA7F0A6A1B25D0D9007DD94E /* HttpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7F0A601B25D0D9007DD94E /* HttpServer.swift */; };
-		BA7F0A6B1B25D0D9007DD94E /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7F0A611B25D0D9007DD94E /* Socket.swift */; };
+		BA27E2B91B3C958D00A0DF58 /* HttpHandlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA27E2B21B3C958D00A0DF58 /* HttpHandlers.swift */; };
+		BA27E2BA1B3C958D00A0DF58 /* HttpParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA27E2B31B3C958D00A0DF58 /* HttpParser.swift */; };
+		BA27E2BB1B3C958D00A0DF58 /* HttpRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA27E2B41B3C958D00A0DF58 /* HttpRequest.swift */; };
+		BA27E2BC1B3C958D00A0DF58 /* HttpResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA27E2B51B3C958D00A0DF58 /* HttpResponse.swift */; };
+		BA27E2BD1B3C958D00A0DF58 /* HttpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA27E2B61B3C958D00A0DF58 /* HttpServer.swift */; };
+		BA27E2BE1B3C958D00A0DF58 /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA27E2B71B3C958D00A0DF58 /* Socket.swift */; };
+		BA27E2C31B3C960000A0DF58 /* BluetoothDiscovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA27E2BF1B3C960000A0DF58 /* BluetoothDiscovery.swift */; };
+		BA27E2C41B3C960000A0DF58 /* BluetoothService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA27E2C01B3C960000A0DF58 /* BluetoothService.swift */; };
+		BA27E2C51B3C960000A0DF58 /* HummingbirdServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA27E2C11B3C960000A0DF58 /* HummingbirdServices.swift */; };
+		BA27E2C61B3C960000A0DF58 /* Utility.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA27E2C21B3C960000A0DF58 /* Utility.swift */; };
+		BA27E2C81B3CA18800A0DF58 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = BA27E2C71B3CA18800A0DF58 /* LICENSE */; };
 		BA7F0A741B25D463007DD94E /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BA7F0A731B25D463007DD94E /* libsqlite3.dylib */; };
 		BA7F0A761B25E5D2007DD94E /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA7F0A751B25E5D2007DD94E /* AVFoundation.framework */; };
 		BA88B62E1B2233C9009EF1C3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA88B62D1B2233C9009EF1C3 /* AppDelegate.swift */; };
@@ -24,8 +26,6 @@
 		BA88B6381B2233C9009EF1C3 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = BA88B6361B2233C9009EF1C3 /* LaunchScreen.xib */; };
 		BA88B65A1B223990009EF1C3 /* ConnectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA88B6581B223990009EF1C3 /* ConnectionViewController.swift */; };
 		BA88B65B1B223990009EF1C3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BA88B6591B223990009EF1C3 /* Main.storyboard */; };
-		BAB1C6C41B3873EE0020B113 /* HummingbirdLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BAB1C6C21B3873E50020B113 /* HummingbirdLibrary.framework */; };
-		BAB1C6C51B3873EE0020B113 /* HummingbirdLibrary.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BAB1C6C21B3873E50020B113 /* HummingbirdLibrary.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -35,7 +35,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				BAB1C6C51B3873EE0020B113 /* HummingbirdLibrary.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -43,17 +42,17 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		BA7F0A561B25D0D9007DD94E /* Swifter-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Swifter-Bridging-Header.h"; sourceTree = "<group>"; };
-		BA7F0A571B25D0D9007DD94E /* SwifterActiveRecord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwifterActiveRecord.swift; sourceTree = "<group>"; };
-		BA7F0A581B25D0D9007DD94E /* SwifterDatabaseProxy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwifterDatabaseProxy.swift; sourceTree = "<group>"; };
-		BA7F0A591B25D0D9007DD94E /* SwifterOSX-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SwifterOSX-Bridging-Header.h"; sourceTree = "<group>"; };
-		BA7F0A5A1B25D0D9007DD94E /* SwifterSQLiteDatabaseProxy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwifterSQLiteDatabaseProxy.swift; sourceTree = "<group>"; };
-		BA7F0A5C1B25D0D9007DD94E /* HttpHandlers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpHandlers.swift; sourceTree = "<group>"; };
-		BA7F0A5D1B25D0D9007DD94E /* HttpParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpParser.swift; sourceTree = "<group>"; };
-		BA7F0A5E1B25D0D9007DD94E /* HttpRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpRequest.swift; sourceTree = "<group>"; };
-		BA7F0A5F1B25D0D9007DD94E /* HttpResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpResponse.swift; sourceTree = "<group>"; };
-		BA7F0A601B25D0D9007DD94E /* HttpServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpServer.swift; sourceTree = "<group>"; };
-		BA7F0A611B25D0D9007DD94E /* Socket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Socket.swift; sourceTree = "<group>"; };
+		BA27E2B21B3C958D00A0DF58 /* HttpHandlers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpHandlers.swift; sourceTree = "<group>"; };
+		BA27E2B31B3C958D00A0DF58 /* HttpParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpParser.swift; sourceTree = "<group>"; };
+		BA27E2B41B3C958D00A0DF58 /* HttpRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpRequest.swift; sourceTree = "<group>"; };
+		BA27E2B51B3C958D00A0DF58 /* HttpResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpResponse.swift; sourceTree = "<group>"; };
+		BA27E2B61B3C958D00A0DF58 /* HttpServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpServer.swift; sourceTree = "<group>"; };
+		BA27E2B71B3C958D00A0DF58 /* Socket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Socket.swift; sourceTree = "<group>"; };
+		BA27E2BF1B3C960000A0DF58 /* BluetoothDiscovery.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetoothDiscovery.swift; sourceTree = "<group>"; };
+		BA27E2C01B3C960000A0DF58 /* BluetoothService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetoothService.swift; sourceTree = "<group>"; };
+		BA27E2C11B3C960000A0DF58 /* HummingbirdServices.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HummingbirdServices.swift; sourceTree = "<group>"; };
+		BA27E2C21B3C960000A0DF58 /* Utility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utility.swift; sourceTree = "<group>"; };
+		BA27E2C71B3CA18800A0DF58 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		BA7F0A731B25D463007DD94E /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		BA7F0A751B25E5D2007DD94E /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		BA88B6281B2233C9009EF1C3 /* Snap for Hummingbird.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Snap for Hummingbird.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -64,8 +63,6 @@
 		BA88B6371B2233C9009EF1C3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		BA88B6581B223990009EF1C3 /* ConnectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionViewController.swift; sourceTree = "<group>"; };
 		BA88B6591B223990009EF1C3 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
-		BAB1C6C21B3873E50020B113 /* HummingbirdLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = HummingbirdLibrary.framework; sourceTree = "<group>"; };
-		BAD6F9861B2F219E008C67E0 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = LICENSE; path = "../Snap for Hummingbird/LICENSE"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,7 +71,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				BA7F0A761B25E5D2007DD94E /* AVFoundation.framework in Frameworks */,
-				BAB1C6C41B3873EE0020B113 /* HummingbirdLibrary.framework in Frameworks */,
 				BA7F0A741B25D463007DD94E /* libsqlite3.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -85,34 +81,20 @@
 		BA7F0A541B25D0D9007DD94E /* Swifter */ = {
 			isa = PBXGroup;
 			children = (
-				BAD6F9861B2F219E008C67E0 /* LICENSE */,
-				BA7F0A551B25D0D9007DD94E /* ActiveRecord */,
-				BA7F0A5C1B25D0D9007DD94E /* HttpHandlers.swift */,
-				BA7F0A5D1B25D0D9007DD94E /* HttpParser.swift */,
-				BA7F0A5E1B25D0D9007DD94E /* HttpRequest.swift */,
-				BA7F0A5F1B25D0D9007DD94E /* HttpResponse.swift */,
-				BA7F0A601B25D0D9007DD94E /* HttpServer.swift */,
-				BA7F0A611B25D0D9007DD94E /* Socket.swift */,
+				BA27E2C71B3CA18800A0DF58 /* LICENSE */,
+				BA27E2B21B3C958D00A0DF58 /* HttpHandlers.swift */,
+				BA27E2B31B3C958D00A0DF58 /* HttpParser.swift */,
+				BA27E2B41B3C958D00A0DF58 /* HttpRequest.swift */,
+				BA27E2B51B3C958D00A0DF58 /* HttpResponse.swift */,
+				BA27E2B61B3C958D00A0DF58 /* HttpServer.swift */,
+				BA27E2B71B3C958D00A0DF58 /* Socket.swift */,
 			);
 			path = Swifter;
-			sourceTree = "<group>";
-		};
-		BA7F0A551B25D0D9007DD94E /* ActiveRecord */ = {
-			isa = PBXGroup;
-			children = (
-				BA7F0A561B25D0D9007DD94E /* Swifter-Bridging-Header.h */,
-				BA7F0A571B25D0D9007DD94E /* SwifterActiveRecord.swift */,
-				BA7F0A581B25D0D9007DD94E /* SwifterDatabaseProxy.swift */,
-				BA7F0A591B25D0D9007DD94E /* SwifterOSX-Bridging-Header.h */,
-				BA7F0A5A1B25D0D9007DD94E /* SwifterSQLiteDatabaseProxy.swift */,
-			);
-			path = ActiveRecord;
 			sourceTree = "<group>";
 		};
 		BA88B61F1B2233C9009EF1C3 = {
 			isa = PBXGroup;
 			children = (
-				BAB1C6C21B3873E50020B113 /* HummingbirdLibrary.framework */,
 				BA7F0A751B25E5D2007DD94E /* AVFoundation.framework */,
 				BA7F0A731B25D463007DD94E /* libsqlite3.dylib */,
 				BA7F0A541B25D0D9007DD94E /* Swifter */,
@@ -132,6 +114,10 @@
 		BA88B62A1B2233C9009EF1C3 /* Snap for Hummingbird */ = {
 			isa = PBXGroup;
 			children = (
+				BA27E2BF1B3C960000A0DF58 /* BluetoothDiscovery.swift */,
+				BA27E2C01B3C960000A0DF58 /* BluetoothService.swift */,
+				BA27E2C11B3C960000A0DF58 /* HummingbirdServices.swift */,
+				BA27E2C21B3C960000A0DF58 /* Utility.swift */,
 				BA88B62D1B2233C9009EF1C3 /* AppDelegate.swift */,
 				BA88B62F1B2233C9009EF1C3 /* ViewController.swift */,
 				BA88B6581B223990009EF1C3 /* ConnectionViewController.swift */,
@@ -178,7 +164,8 @@
 		BA88B6201B2233C9009EF1C3 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0630;
+				LastSwiftUpdateCheck = 0700;
+				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Birdbrain Technologies LLC.";
 				TargetAttributes = {
 					BA88B6271B2233C9009EF1C3 = {
@@ -188,7 +175,7 @@
 				};
 			};
 			buildConfigurationList = BA88B6231B2233C9009EF1C3 /* Build configuration list for PBXProject "Snap for Hummingbird" */;
-			compatibilityVersion = "Xcode 6.3";
+			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -212,6 +199,7 @@
 			files = (
 				BA88B6381B2233C9009EF1C3 /* LaunchScreen.xib in Resources */,
 				BA88B6351B2233C9009EF1C3 /* Images.xcassets in Resources */,
+				BA27E2C81B3CA18800A0DF58 /* LICENSE in Resources */,
 				BA88B65B1B223990009EF1C3 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -223,18 +211,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BA27E2C41B3C960000A0DF58 /* BluetoothService.swift in Sources */,
 				BA88B6301B2233C9009EF1C3 /* ViewController.swift in Sources */,
-				BA7F0A681B25D0D9007DD94E /* HttpRequest.swift in Sources */,
-				BA7F0A6A1B25D0D9007DD94E /* HttpServer.swift in Sources */,
-				BA7F0A671B25D0D9007DD94E /* HttpParser.swift in Sources */,
+				BA27E2B91B3C958D00A0DF58 /* HttpHandlers.swift in Sources */,
+				BA27E2BE1B3C958D00A0DF58 /* Socket.swift in Sources */,
 				BA88B62E1B2233C9009EF1C3 /* AppDelegate.swift in Sources */,
-				BA7F0A641B25D0D9007DD94E /* SwifterSQLiteDatabaseProxy.swift in Sources */,
-				BA7F0A6B1B25D0D9007DD94E /* Socket.swift in Sources */,
 				BA88B65A1B223990009EF1C3 /* ConnectionViewController.swift in Sources */,
-				BA7F0A621B25D0D9007DD94E /* SwifterActiveRecord.swift in Sources */,
-				BA7F0A691B25D0D9007DD94E /* HttpResponse.swift in Sources */,
-				BA7F0A661B25D0D9007DD94E /* HttpHandlers.swift in Sources */,
-				BA7F0A631B25D0D9007DD94E /* SwifterDatabaseProxy.swift in Sources */,
+				BA27E2C31B3C960000A0DF58 /* BluetoothDiscovery.swift in Sources */,
+				BA27E2C61B3C960000A0DF58 /* Utility.swift in Sources */,
+				BA27E2BC1B3C958D00A0DF58 /* HttpResponse.swift in Sources */,
+				BA27E2BD1B3C958D00A0DF58 /* HttpServer.swift in Sources */,
+				BA27E2BA1B3C958D00A0DF58 /* HttpParser.swift in Sources */,
+				BA27E2C51B3C960000A0DF58 /* HummingbirdServices.swift in Sources */,
+				BA27E2BB1B3C958D00A0DF58 /* HttpRequest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -273,6 +262,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -288,7 +278,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -327,7 +317,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -343,18 +333,18 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/HummingbirdLibrary-dgsakmhhffmucfbwdyjnjehkkpgr/Build/Products/Debug-iphoneos",
 					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = "Snap for Hummingbird/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = "BirdBrainTech.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "Swifter/ActiveRecord/Swifter-Bridging-Header.h";
+				SWIFT_INSTALL_OBJC_HEADER = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -367,18 +357,18 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/HummingbirdLibrary-dgsakmhhffmucfbwdyjnjehkkpgr/Build/Products/Debug-iphoneos",
 					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = "Snap for Hummingbird/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = "BirdBrainTech.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "Swifter/ActiveRecord/Swifter-Bridging-Header.h";
+				SWIFT_INSTALL_OBJC_HEADER = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

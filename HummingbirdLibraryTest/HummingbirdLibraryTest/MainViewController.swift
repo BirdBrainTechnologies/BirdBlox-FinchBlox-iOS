@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import HummingbirdLibrary
+//import HummingbirdLibrary
 
 class MainViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
 
@@ -38,7 +38,7 @@ class MainViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         return pickerSource.count
     }
-    func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String! {
+    func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         return pickerSource[row]
     }
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
@@ -59,15 +59,15 @@ class MainViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     }
     
     func pickerAlert(pickerNum: Int){
-        var pickerAlert: UIAlertController = UIAlertController(title: nil, message: "Please select the type of this sensor\n\n\n\n\n\n", preferredStyle: UIAlertControllerStyle.Alert)
+        let pickerAlert: UIAlertController = UIAlertController(title: nil, message: "Please select the type of this sensor\n\n\n\n\n\n", preferredStyle: UIAlertControllerStyle.Alert)
         pickerAlert.modalInPopover = true
-        var pickerFrame: CGRect = CGRectMake(10, 50, 250, 100)
-        var picker: UIPickerView = UIPickerView(frame: pickerFrame)
+        let pickerFrame: CGRect = CGRectMake(10, 50, 250, 100)
+        let picker: UIPickerView = UIPickerView(frame: pickerFrame)
         picker.delegate = self
         picker.dataSource = self
         picker.tag = pickerNum
         pickerAlert.view.addSubview(picker)
-        var okayAction = UIAlertAction(title: "Okay", style: UIAlertActionStyle.Default,handler: nil)
+        let okayAction = UIAlertAction(title: "Okay", style: UIAlertActionStyle.Default,handler: nil)
         pickerAlert.addAction(okayAction)
         pickerAlert.view.sizeToFit()
         self.presentViewController(pickerAlert, animated: true, completion: nil)
@@ -147,7 +147,7 @@ class MainViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     override func viewDidLoad() {
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("changedStatus:"), name: BluetoothStatusChangedNotification, object: nil)
         navigationController!.setNavigationBarHidden(true, animated:true)
-        println("view loaded")
+        print("view loaded")
         super.viewDidLoad()
         let ios8_2: NSOperatingSystemVersion = NSOperatingSystemVersion(majorVersion: 8, minorVersion: 2, patchVersion: 0);
         if (!NSProcessInfo().isOperatingSystemAtLeastVersion(ios8_2)){
@@ -164,13 +164,15 @@ class MainViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     }
     
     func setNameAlert(){
-        var alertController = UIAlertController(title: "Set Name", message: "Enter a name for your Hummingbird (up to 18 characters)", preferredStyle: UIAlertControllerStyle.Alert)
-        var okayAction = UIAlertAction(title: "Okay", style: UIAlertActionStyle.Default){
+        let alertController = UIAlertController(title: "Set Name", message: "Enter a name for your Hummingbird (up to 18 characters)", preferredStyle: UIAlertControllerStyle.Alert)
+        let okayAction = UIAlertAction(title: "Okay", style: UIAlertActionStyle.Default){
             (action) -> Void in
-            self.newName = (alertController.textFields?.first as! UITextField).text
-            self.startupStatus = 1
+            if let textField = alertController.textFields?.first{
+                self.newName = (textField as UITextField).text!
+                self.startupStatus = 1
+            }
         }
-        var cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: nil)
+        let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: nil)
         alertController.addTextFieldWithConfigurationHandler{
             (txtName) -> Void in
             txtName.placeholder = "<Enter a new name>"
@@ -183,16 +185,16 @@ class MainViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         setNameAlert()
     }
     func waitForRestart(name: String){
-        println("waiting for restart")
-        var alertController2 = UIAlertController(title: "Please wait", message: "The Hummingbird bluetooth adapter is processing the request to change its name, this could take up to 30 seconds\n\n\n\n\n", preferredStyle: UIAlertControllerStyle.Alert)
-        var spinner = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.Gray)
+        print("waiting for restart")
+        let alertController2 = UIAlertController(title: "Please wait", message: "The Hummingbird bluetooth adapter is processing the request to change its name, this could take up to 30 seconds\n\n\n\n\n", preferredStyle: UIAlertControllerStyle.Alert)
+        let spinner = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.Gray)
         spinner.center = CGPointMake(139.5,125.5)
         spinner.startAnimating()
         alertController2.view.addSubview(spinner)
-        println("presenting wait")
+        print("presenting wait")
         self.presentedViewController?.dismissViewControllerAnimated(true, completion: nil)
         self.presentViewController(alertController2, animated: true, completion: nil)
-        println("presented wait")
+        print("presented wait")
         self.hbServe.setName(name)
     }
     
@@ -201,7 +203,7 @@ class MainViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         if let isConnected: Bool = userinfo["isConnected"]{
             var statString = ""
             if isConnected{
-                println("device connected")
+                print("device connected")
                 statString = "Connected"
                 hbServe.turnOffLightsMotor()
                 leds = [0,0,0,0]
@@ -218,7 +220,7 @@ class MainViewController: UIViewController, UIPickerViewDataSource, UIPickerView
                 }
             }
             else{
-                println("device disconnected")
+                print("device disconnected")
                 statString = "Disconnected"
                 if(startupStatus == 1){
                     startupStatus = 2
@@ -380,7 +382,7 @@ class MainViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     
     
     @IBAction func Servo1Slider(sender: UISlider) {
-        var newValue = UInt8(sender.value)
+        let newValue = UInt8(sender.value)
         let dif = UInt8(abs(Int(newValue)-Int(servos[0])))
         if(dif>=10 || (newValue == 0 && dif != 0) || (newValue == 180 && dif != 0)){
             hbServe.setServo(1, angle: newValue)
@@ -389,7 +391,7 @@ class MainViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     }
     
     @IBAction func Servo2Slider(sender: UISlider) {
-        var newValue = UInt8(sender.value)
+        let newValue = UInt8(sender.value)
         let dif = UInt8(abs(Int(newValue)-Int(servos[1])))
         if(dif>=10 || (newValue == 0 && dif != 0) || (newValue == 180 && dif != 0)){
             hbServe.setServo(2, angle: newValue)
@@ -398,7 +400,7 @@ class MainViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     }
     
     @IBAction func Servo3Slider(sender: UISlider) {
-        var newValue = UInt8(sender.value)
+        let newValue = UInt8(sender.value)
         let dif = UInt8(abs(Int(newValue)-Int(servos[2])))
         if(dif>=10 || (newValue == 0 && dif != 0) || (newValue == 180 && dif != 0)){
             hbServe.setServo(3, angle: newValue)
@@ -406,7 +408,7 @@ class MainViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         }
     }
     @IBAction func Servo4Slider(sender: UISlider) {
-        var newValue = UInt8(sender.value)
+        let newValue = UInt8(sender.value)
         let dif = UInt8(abs(Int(newValue)-Int(servos[3])))
         if(dif>=10 || (newValue == 0 && dif != 0) || (newValue == 180 && dif != 0)){
             hbServe.setServo(4, angle: newValue)
@@ -439,20 +441,20 @@ class MainViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     }
     
     @IBAction func updateSensor1(sender: AnyObject) {
-        var data: UInt8 = hbServe.getSensorDataFromPoll(1)
+        let data: UInt8 = hbServe.getSensorDataFromPoll(1)
         sensor1.text = String(convertValue(picker[0], value: data))
     }
     
     @IBAction func updateSensor2(sender: AnyObject) {
-        var data: UInt8 = hbServe.getSensorDataFromPoll(2)
+        let data: UInt8 = hbServe.getSensorDataFromPoll(2)
         sensor2.text = String(convertValue(picker[1], value: data))
     }
     @IBAction func updateSensor3(sender: AnyObject) {
-        var data: UInt8 = hbServe.getSensorDataFromPoll(3)
+        let data: UInt8 = hbServe.getSensorDataFromPoll(3)
         sensor3.text = String(convertValue(picker[2], value: data))
     }
     @IBAction func updateSensor4(sender: AnyObject) {
-        var data: UInt8 = hbServe.getSensorDataFromPoll(4)
+        let data: UInt8 = hbServe.getSensorDataFromPoll(4)
         sensor4.text = String(convertValue(picker[3], value: data))
     }
     
@@ -469,7 +471,7 @@ class MainViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     
     var constantUpdateTimer = NSTimer()
     @IBAction func constantPoll(sender: UISwitch) {
-        println("switch toggled")
+        print("switch toggled")
         if(sender.on){
             link1Timer = NSTimer.scheduledTimerWithTimeInterval(0.1, target: self, selector: Selector("updateSensorInfo"), userInfo: nil, repeats: true)
         }else{
@@ -478,7 +480,7 @@ class MainViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     }
     var link1Timer = NSTimer()
     @IBAction func link1to1(sender: UISwitch) {
-        println("switch toggled")
+        print("switch toggled")
         if(sender.on){
             link1Timer = NSTimer.scheduledTimerWithTimeInterval(0.0, target: self, selector: Selector("setLED1fromSensor1"), userInfo: nil, repeats: true)
         }else{
@@ -487,8 +489,8 @@ class MainViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     }
     
     func setLED1fromSensor1(){
-            var currentValue = hbServe.getSensorDataFromPoll(1)
-            var value = UInt8(abs(self.convertValue(self.picker[0], value: currentValue)))
+            let currentValue = hbServe.getSensorDataFromPoll(1)
+            let value = UInt8(abs(self.convertValue(self.picker[0], value: currentValue)))
             let dif = UInt8(abs(Int(value)-Int(self.leds[0])))
             if(dif != 0){
                 self.hbServe.setLED(1, intensity: value)//set LED
