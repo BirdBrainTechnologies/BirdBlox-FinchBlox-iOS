@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BA27E2841B3C7ECB00A0DF58 /* HummingbirdLibrary.h in Headers */ = {isa = PBXBuildFile; fileRef = BA5E47D41B14FBBD00B15B75 /* HummingbirdLibrary.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BA2E9EF51B41CDB30008D32F /* HummingbirdLibrary.h in Headers */ = {isa = PBXBuildFile; fileRef = BA5E47D41B14FBBD00B15B75 /* HummingbirdLibrary.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		BA5E47EC1B14FF5E00B15B75 /* BluetoothDiscovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA5E47EB1B14FF5E00B15B75 /* BluetoothDiscovery.swift */; };
 		BA6E8D811B18AD86001ACDF8 /* Utility.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA6E8D801B18AD86001ACDF8 /* Utility.swift */; };
 		BA8CA36B1B1624CA00D079C5 /* BluetoothService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8CA36A1B1624CA00D079C5 /* BluetoothService.swift */; };
@@ -79,7 +79,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BA27E2841B3C7ECB00A0DF58 /* HummingbirdLibrary.h in Headers */,
+				BA2E9EF51B41CDB30008D32F /* HummingbirdLibrary.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -44,7 +44,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         prepareServer()
-        server.start(22179)
+        server.start(listenPort: 22179)
         navigationController!.setNavigationBarHidden(true, animated:true)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("changedStatus:"), name: BluetoothStatusChangedNotification, object: nil)
         
@@ -115,9 +115,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     //get ssid
     func getSSIDInfo() -> String{
         var ssid:NSString = "null"
-        let ifs:NSArray = CNCopySupportedInterfaces()!
+        let ifs:NSArray = CNCopySupportedInterfaces().takeUnretainedValue() as NSArray
         for ifName: NSString in ifs as! [NSString]{
-            let info: NSDictionary = CNCopyCurrentNetworkInfo(ifName)!
+            let info: NSDictionary = CNCopyCurrentNetworkInfo(ifName).takeUnretainedValue()
             if (info["SSID"] != nil){
                 ssid = info["SSID"] as! NSString
             }

@@ -11,6 +11,11 @@ import CoreBluetooth
 
 let sharedBluetoothDiscovery = BluetoothDiscovery()
 
+/**
+:Class: BluetoothDiscovery
+
+The class responsible for discovering new bluetooth devices and initializing a connection with them
+*/
 class BluetoothDiscovery: NSObject, CBCentralManagerDelegate {
     private var centralManager: CBCentralManager?
     private var peripheralBLE: CBPeripheral?
@@ -24,7 +29,9 @@ class BluetoothDiscovery: NSObject, CBCentralManagerDelegate {
         let centralQueue = dispatch_queue_create("com.BirdBrainTech", DISPATCH_QUEUE_SERIAL)
         centralManager = CBCentralManager(delegate: self, queue: centralQueue)
     }
-    
+    /**
+        Begins looking for new bluetooth LE devices of a specific UUID
+    */
     func startScan(){
         if let central = centralManager{
             discoveredDevices = [String: CBPeripheral]()
@@ -33,13 +40,18 @@ class BluetoothDiscovery: NSObject, CBCentralManagerDelegate {
             //central.scanForPeripheralsWithServices(nil, options: nil)
         }
     }
+    /**
+        Restarts the scan for bluetooth devices
+    */
     func restartScan(){
         if let central = centralManager{
             central.stopScan()
             startScan()
         }
     }
-    
+    /**
+        Once connected, we will start discovering services
+    */
     var serviceBLE: BluetoothService?{
         didSet{
             if let service = self.serviceBLE{
@@ -47,8 +59,10 @@ class BluetoothDiscovery: NSObject, CBCentralManagerDelegate {
             }
         }
     }
-    
-    func centralManager(central: CBCentralManager, didDiscoverPeripheral peripheral: CBPeripheral, advertisementData: [String : AnyObject], RSSI: NSNumber) {
+    /**
+        :Additional Info: After a device has been discovered, we will add it to our list of discovered devices unless we have connected to it before. In that case we simply reconnect to it.
+    */
+    func centralManager(central: CBCentralManager, didDiscoverPeripheral peripheral: CBPeripheral, advertisementData: [NSObject : AnyObject], RSSI: NSNumber) {
         if((peripheral.name == nil) || (peripheral.name == "")){
             return
         }
@@ -81,13 +95,11 @@ class BluetoothDiscovery: NSObject, CBCentralManagerDelegate {
             if(!alreadyAdded){
                 discoveredDevices[localname] = peripheral
             }
-            //self.peripheralBLE = peripheral
-            //self.serviceBLE = nil
-            //central.cancelPeripheralConnection(peripheral)
-            //central.connectPeripheral(peripheral, options: [CBConnectPeripheralOptionNotifyOnDisconnectionKey: NSNumber(bool:true)])
         }
     }
-    
+    /**
+        :Additional Info: After a device has been connected to, we make a new service from it
+    */
     func centralManager(central: CBCentralManager, didConnectPeripheral peripheral: CBPeripheral) {
         if (self.peripheralBLE == peripheral){
             dbg_print("connected to device: " + self.peripheralBLE!.name!)
@@ -97,6 +109,9 @@ class BluetoothDiscovery: NSObject, CBCentralManagerDelegate {
         }
         central.stopScan()
     }
+    /**
+        :Additional Info: After a device has been disconnected, we start scanning again
+    */
     func centralManager(central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: NSError?) {
         
         if(peripheral == self.peripheralBLE){
@@ -105,12 +120,14 @@ class BluetoothDiscovery: NSObject, CBCentralManagerDelegate {
         }
         self.startScan()
     }
-    
+    /**
+        clears the current bluetooth device we're connected to
+    */
     func clearDevices(){
         self.serviceBLE = nil
         self.peripheralBLE = nil
     }
-    
+
     func centralManagerDidUpdateState(central: CBCentralManager) {
         switch (central.state) {
         case CBCentralManagerState.PoweredOff:
@@ -140,18 +157,26 @@ class BluetoothDiscovery: NSObject, CBCentralManagerDelegate {
         }
 
     }
-    
+    /**
+        Initiates a new connection with a BLE device
+    */
     func connectToPeripheral(peripheral: CBPeripheral){
         self.peripheralBLE = peripheral
         self.serviceBLE = nil
         centralManager!.cancelPeripheralConnection(peripheral)
         centralManager!.connectPeripheral(peripheral, options: [CBConnectPeripheralOptionNotifyOnDisconnectionKey: NSNumber(bool:true)])
     }
-    
+    /**
+        Disconnects from the BLE device we're currently connected to
+    */
     func disconnectFromPeripheral(){
         centralManager?.cancelPeripheralConnection(peripheralBLE!)
     }
+    /**
+        Get the list of devices we have discovered
     
+        :returns: [String:CBPeripheral] a maping of a device name to the device of the devices we have found so far
+    */
     func getDiscovered() -> [String:CBPeripheral]{
         return discoveredDevices
     }
