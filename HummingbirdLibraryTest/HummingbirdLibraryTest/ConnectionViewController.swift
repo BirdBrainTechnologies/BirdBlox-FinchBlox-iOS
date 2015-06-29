@@ -59,7 +59,7 @@ class ConnectionViewController: UITableViewController{
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell: UITableViewCell = (tableView.dequeueReusableCellWithIdentifier("cellIdentifier", forIndexPath: indexPath) as UITableViewCell)
+        let cell: UITableViewCell = (tableView.dequeueReusableCellWithIdentifier("cellIdentifier", forIndexPath: indexPath) as! UITableViewCell)
         
         cell.textLabel?.text = items.keys.array[indexPath.row]
         cell.updateConstraintsIfNeeded()

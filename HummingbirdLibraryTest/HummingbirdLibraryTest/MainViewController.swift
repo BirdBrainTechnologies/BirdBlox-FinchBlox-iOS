@@ -167,8 +167,8 @@ class MainViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         let alertController = UIAlertController(title: "Set Name", message: "Enter a name for your Hummingbird (up to 18 characters)", preferredStyle: UIAlertControllerStyle.Alert)
         let okayAction = UIAlertAction(title: "Okay", style: UIAlertActionStyle.Default){
             (action) -> Void in
-            if let textField = alertController.textFields?.first{
-                self.newName = (textField as UITextField).text!
+            if let textField: AnyObject = alertController.textFields?.first{
+                self.newName = (textField as! UITextField).text!
                 self.startupStatus = 1
             }
         }

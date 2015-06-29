@@ -17,11 +17,14 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="cellIdentifier" textLabel="tR5-Np-osU" style="IBUITableViewCellStyleDefault" id="mCl-AO-6fW">
+                                <rect key="frame" x="0.0" y="86" width="600" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="mCl-AO-6fW" id="Z9x-bT-IyV">
+                                    <rect key="frame" x="0.0" y="0.0" width="567" height="43"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="tR5-Np-osU">
+                                            <rect key="frame" x="15" y="0.0" width="550" height="43"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -140,20 +143,6 @@
                                     <action selector="Servo4Slider:" destination="BYZ-38-t0r" eventType="valueChanged" id="FwM-AJ-K6Q"/>
                                 </connections>
                             </slider>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sensor 2" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uvp-xP-MwM" colorLabel="IBBuiltInLabel-Red">
-                                <rect key="frame" x="180" y="439" width="80" height="20"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="80" id="7Zh-wp-tb4"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                <nil key="highlightedColor"/>
-                                <variation key="default">
-                                    <mask key="constraints">
-                                        <exclude reference="7Zh-wp-tb4"/>
-                                    </mask>
-                                </variation>
-                            </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Vibration 1: " lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7Y4-ML-ECn">
                                 <rect key="frame" x="330" y="225" width="92" height="22"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -183,82 +172,13 @@
                                 <rect key="frame" x="438" y="260" width="122" height="32"/>
                                 <color key="tintColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <color key="thumbTintColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <variation key="heightClass=compact-widthClass=compact" ambiguous="YES" misplaced="YES">
+                                    <rect key="frame" x="238" y="234" width="134" height="31"/>
+                                </variation>
                                 <connections>
                                     <action selector="Vib2Slider:" destination="BYZ-38-t0r" eventType="valueChanged" id="H1h-T8-CNp"/>
                                 </connections>
                             </slider>
-                            <button opaque="NO" contentMode="scaleToFill" placeholderIntrinsicWidth="92" placeholderIntrinsicHeight="25" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="udl-XY-qxX" colorLabel="IBBuiltInLabel-Blue">
-                                <rect key="frame" x="260" y="502" width="81" height="27"/>
-                                <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="81" id="Nqf-Ey-SYE">
-                                        <variation key="heightClass=regular-widthClass=regular" constant="100"/>
-                                    </constraint>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <state key="normal" title="Set Name"/>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                        <integer key="value" value="10"/>
-                                    </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
-                                </userDefinedRuntimeAttributes>
-                                <connections>
-                                    <action selector="setName:" destination="BYZ-38-t0r" eventType="touchUpInside" id="OiJ-3H-TVX"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dnL-Iw-sDj" userLabel="Sensor 1 Type" colorLabel="IBBuiltInLabel-Red">
-                                <rect key="frame" x="30" y="459" width="80" height="20"/>
-                                <color key="backgroundColor" red="0.0" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="20" id="LDC-kI-oLJ">
-                                        <variation key="heightClass=regular-widthClass=regular" constant="30"/>
-                                    </constraint>
-                                    <constraint firstAttribute="width" constant="70" id="iih-mD-kVn">
-                                        <variation key="widthClass=compact" constant="66"/>
-                                    </constraint>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="11"/>
-                                <state key="normal" title="Temperature">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                        <integer key="value" value="10"/>
-                                    </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
-                                </userDefinedRuntimeAttributes>
-                                <variation key="default">
-                                    <mask key="constraints">
-                                        <exclude reference="iih-mD-kVn"/>
-                                    </mask>
-                                </variation>
-                                <variation key="widthClass=compact">
-                                    <mask key="constraints">
-                                        <include reference="iih-mD-kVn"/>
-                                    </mask>
-                                </variation>
-                                <connections>
-                                    <action selector="picker1Click:" destination="BYZ-38-t0r" eventType="touchUpInside" id="8Oq-Fk-cM5"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8Si-wM-Mi5" userLabel="Sensor 2 Type" colorLabel="IBBuiltInLabel-Red">
-                                <rect key="frame" x="180" y="459" width="80" height="20"/>
-                                <color key="backgroundColor" red="0.0" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="11"/>
-                                <state key="normal" title="Distance">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                        <integer key="value" value="10"/>
-                                    </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBound" value="YES"/>
-                                </userDefinedRuntimeAttributes>
-                                <connections>
-                                    <action selector="picker2Click:" destination="BYZ-38-t0r" eventType="touchUpInside" id="kzc-um-Ycq"/>
-                                </connections>
-                            </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Motor 1: " lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8eN-hM-giM">
                                 <rect key="frame" x="330" y="337" width="70" height="21"/>
                                 <constraints>
@@ -272,7 +192,7 @@
                                         <exclude reference="pX1-RH-qmk"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=compact-widthClass=compact" misplaced="YES">
+                                <variation key="heightClass=compact-widthClass=compact" ambiguous="YES" misplaced="YES">
                                     <rect key="frame" x="213" y="50" width="70" height="21"/>
                                 </variation>
                             </label>
@@ -324,7 +244,7 @@
                                         <exclude reference="wpO-vz-pqw"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=compact-widthClass=compact" misplaced="YES">
+                                <variation key="heightClass=compact-widthClass=compact" ambiguous="YES" misplaced="YES">
                                     <rect key="frame" x="285" y="82" width="4" height="31"/>
                                 </variation>
                                 <connections>
@@ -352,7 +272,7 @@
                                         <exclude reference="z4G-cZ-luM"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=compact-widthClass=compact" misplaced="YES">
+                                <variation key="heightClass=compact-widthClass=compact" ambiguous="YES" misplaced="YES">
                                     <rect key="frame" x="295" y="45" width="38" height="29"/>
                                 </variation>
                                 <variation key="heightClass=compact-widthClass=regular" misplaced="YES">
@@ -369,124 +289,13 @@
                                     <segment title="-"/>
                                 </segments>
                                 <color key="tintColor" red="1" green="0.5" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                <variation key="heightClass=compact-widthClass=compact" misplaced="YES">
+                                <variation key="heightClass=compact-widthClass=compact" ambiguous="YES" misplaced="YES">
                                     <rect key="frame" x="295" y="83" width="38" height="29"/>
                                 </variation>
                                 <connections>
                                     <action selector="DirectionChanged2:" destination="BYZ-38-t0r" eventType="valueChanged" id="2GB-8m-4Dx"/>
                                 </connections>
                             </segmentedControl>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="249" text="Sensor 1" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ced-33-jc1" colorLabel="IBBuiltInLabel-Red">
-                                <rect key="frame" x="30" y="438" width="80" height="21"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="80" id="Oi4-7z-Ull"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                <nil key="highlightedColor"/>
-                                <variation key="default">
-                                    <mask key="constraints">
-                                        <exclude reference="Oi4-7z-Ull"/>
-                                    </mask>
-                                </variation>
-                            </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" text="Sensor 1=LED1: " lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MCi-Hm-qoq" userLabel="Linker Label" colorLabel="IBBuiltInLabel-Blue">
-                                <rect key="frame" x="381" y="505" width="140" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <label userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wTF-uO-DSB" userLabel="Sensor 2 Value" colorLabel="IBBuiltInLabel-Red">
-                                <rect key="frame" x="180" y="480" width="80" height="21"/>
-                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <label userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6uE-O9-Yab" userLabel="Sensor 1 Value" colorLabel="IBBuiltInLabel-Red">
-                                <rect key="frame" x="30" y="480" width="80" height="21"/>
-                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sensor 3" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gYu-DO-ibm" colorLabel="IBBuiltInLabel-Red">
-                                <rect key="frame" x="330" y="439" width="80" height="20"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="80" id="7Kw-gq-zNj"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                <nil key="highlightedColor"/>
-                                <variation key="default">
-                                    <mask key="constraints">
-                                        <exclude reference="7Kw-gq-zNj"/>
-                                    </mask>
-                                </variation>
-                            </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sensor 4" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7Fn-oC-1gU" colorLabel="IBBuiltInLabel-Red">
-                                <rect key="frame" x="480" y="439" width="80" height="20"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SBb-cB-MAS" userLabel="Sensor 3 Type" colorLabel="IBBuiltInLabel-Red">
-                                <rect key="frame" x="330" y="459" width="80" height="20"/>
-                                <color key="backgroundColor" red="0.0" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="11"/>
-                                <state key="normal" title="Sound">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                        <integer key="value" value="10"/>
-                                    </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBound" value="YES"/>
-                                </userDefinedRuntimeAttributes>
-                                <connections>
-                                    <action selector="picker3Click:" destination="BYZ-38-t0r" eventType="touchUpInside" id="1EK-5s-2xp"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LEh-PF-7cN" userLabel="Sensor 4 Type" colorLabel="IBBuiltInLabel-Red">
-                                <rect key="frame" x="480" y="459" width="80" height="20"/>
-                                <color key="backgroundColor" red="0.0" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="11"/>
-                                <state key="normal" title="Rotary">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                        <integer key="value" value="10"/>
-                                    </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBound" value="YES"/>
-                                </userDefinedRuntimeAttributes>
-                                <connections>
-                                    <action selector="picker4Click:" destination="BYZ-38-t0r" eventType="touchUpInside" id="mjk-Ax-h9u"/>
-                                </connections>
-                            </button>
-                            <label userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8V5-5h-5Wh" userLabel="Sensor 3 Value" colorLabel="IBBuiltInLabel-Red">
-                                <rect key="frame" x="330" y="480" width="80" height="21"/>
-                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <label userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="INl-nP-Xbq" userLabel="Sensor 4 Value" colorLabel="IBBuiltInLabel-Red">
-                                <rect key="frame" x="480" y="480" width="80" height="21"/>
-                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="5cg-Tn-agQ" userLabel="Link Switch" colorLabel="IBBuiltInLabel-Blue">
-                                <rect key="frame" x="511" y="502" width="51" height="31"/>
-                                <variation key="heightClass=compact-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="343" y="565" width="51" height="31"/>
-                                </variation>
-                                <connections>
-                                    <action selector="link1to1:" destination="BYZ-38-t0r" eventType="valueChanged" id="g3o-XJ-R5t"/>
-                                </connections>
-                            </switch>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Led 1:  " lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0cG-Lb-Gt1" userLabel="Led 1:">
                                 <rect key="frame" x="30" y="65" width="58" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -691,6 +500,200 @@
                                     <rect key="frame" x="79" y="20" width="119" height="21"/>
                                 </variation>
                             </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sensor 2" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uvp-xP-MwM" colorLabel="IBBuiltInLabel-Red">
+                                <rect key="frame" x="180" y="439" width="80" height="20"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="80" id="7Zh-wp-tb4"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="7Zh-wp-tb4"/>
+                                    </mask>
+                                </variation>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" placeholderIntrinsicWidth="92" placeholderIntrinsicHeight="25" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="udl-XY-qxX" colorLabel="IBBuiltInLabel-Blue">
+                                <rect key="frame" x="260" y="502" width="81" height="27"/>
+                                <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="81" id="AFy-xa-gzc"/>
+                                    <constraint firstAttribute="width" constant="81" id="Nqf-Ey-SYE">
+                                        <variation key="heightClass=regular-widthClass=regular" constant="100"/>
+                                    </constraint>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <state key="normal" title="Set Name"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="10"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                </userDefinedRuntimeAttributes>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="AFy-xa-gzc"/>
+                                    </mask>
+                                </variation>
+                                <variation key="heightClass=regular-widthClass=compact">
+                                    <mask key="constraints">
+                                        <include reference="AFy-xa-gzc"/>
+                                        <exclude reference="Nqf-Ey-SYE"/>
+                                    </mask>
+                                </variation>
+                                <connections>
+                                    <action selector="setName:" destination="BYZ-38-t0r" eventType="touchUpInside" id="OiJ-3H-TVX"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dnL-Iw-sDj" userLabel="Sensor 1 Type" colorLabel="IBBuiltInLabel-Red">
+                                <rect key="frame" x="30" y="459" width="80" height="20"/>
+                                <color key="backgroundColor" red="0.0" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="20" id="LDC-kI-oLJ">
+                                        <variation key="heightClass=regular-widthClass=regular" constant="30"/>
+                                    </constraint>
+                                    <constraint firstAttribute="width" constant="70" id="iih-mD-kVn">
+                                        <variation key="widthClass=compact" constant="66"/>
+                                    </constraint>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                <state key="normal" title="Temperature">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="10"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                </userDefinedRuntimeAttributes>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="iih-mD-kVn"/>
+                                    </mask>
+                                </variation>
+                                <variation key="widthClass=compact">
+                                    <mask key="constraints">
+                                        <include reference="iih-mD-kVn"/>
+                                    </mask>
+                                </variation>
+                                <connections>
+                                    <action selector="picker1Click:" destination="BYZ-38-t0r" eventType="touchUpInside" id="8Oq-Fk-cM5"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8Si-wM-Mi5" userLabel="Sensor 2 Type" colorLabel="IBBuiltInLabel-Red">
+                                <rect key="frame" x="180" y="459" width="80" height="20"/>
+                                <color key="backgroundColor" red="0.0" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                <state key="normal" title="Distance">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="10"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBound" value="YES"/>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="picker2Click:" destination="BYZ-38-t0r" eventType="touchUpInside" id="kzc-um-Ycq"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="249" text="Sensor 1" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ced-33-jc1" colorLabel="IBBuiltInLabel-Red">
+                                <rect key="frame" x="30" y="438" width="80" height="21"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="80" id="Oi4-7z-Ull"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="Oi4-7z-Ull"/>
+                                    </mask>
+                                </variation>
+                            </label>
+                            <label userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wTF-uO-DSB" userLabel="Sensor 2 Value" colorLabel="IBBuiltInLabel-Red">
+                                <rect key="frame" x="180" y="480" width="80" height="21"/>
+                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6uE-O9-Yab" userLabel="Sensor 1 Value" colorLabel="IBBuiltInLabel-Red">
+                                <rect key="frame" x="30" y="480" width="80" height="21"/>
+                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sensor 3" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gYu-DO-ibm" colorLabel="IBBuiltInLabel-Red">
+                                <rect key="frame" x="330" y="439" width="80" height="20"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="80" id="7Kw-gq-zNj"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="7Kw-gq-zNj"/>
+                                    </mask>
+                                </variation>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sensor 4" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7Fn-oC-1gU" colorLabel="IBBuiltInLabel-Red">
+                                <rect key="frame" x="480" y="439" width="80" height="20"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SBb-cB-MAS" userLabel="Sensor 3 Type" colorLabel="IBBuiltInLabel-Red">
+                                <rect key="frame" x="330" y="459" width="80" height="20"/>
+                                <color key="backgroundColor" red="0.0" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                <state key="normal" title="Sound">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="10"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBound" value="YES"/>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="picker3Click:" destination="BYZ-38-t0r" eventType="touchUpInside" id="1EK-5s-2xp"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LEh-PF-7cN" userLabel="Sensor 4 Type" colorLabel="IBBuiltInLabel-Red">
+                                <rect key="frame" x="480" y="459" width="80" height="20"/>
+                                <color key="backgroundColor" red="0.0" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                <state key="normal" title="Rotary">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="10"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBound" value="YES"/>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="picker4Click:" destination="BYZ-38-t0r" eventType="touchUpInside" id="mjk-Ax-h9u"/>
+                                </connections>
+                            </button>
+                            <label userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8V5-5h-5Wh" userLabel="Sensor 3 Value" colorLabel="IBBuiltInLabel-Red">
+                                <rect key="frame" x="330" y="480" width="80" height="21"/>
+                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="INl-nP-Xbq" userLabel="Sensor 4 Value" colorLabel="IBBuiltInLabel-Red">
+                                <rect key="frame" x="480" y="480" width="80" height="21"/>
+                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Poll Sensors: " lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iVD-a9-jec" userLabel="Constant Poll:" colorLabel="IBBuiltInLabel-Blue">
                                 <rect key="frame" x="25" y="503" width="106" height="29"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -726,6 +729,21 @@
                                     <action selector="constantPoll:" destination="BYZ-38-t0r" eventType="valueChanged" id="WOr-p0-Ota"/>
                                 </connections>
                             </switch>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" text="Sensor 1=LED1: " lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MCi-Hm-qoq" userLabel="Linker Label" colorLabel="IBBuiltInLabel-Blue">
+                                <rect key="frame" x="381" y="505" width="140" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="5cg-Tn-agQ" userLabel="Link Switch" colorLabel="IBBuiltInLabel-Blue">
+                                <rect key="frame" x="511" y="502" width="51" height="31"/>
+                                <variation key="heightClass=compact-widthClass=compact" ambiguous="YES" misplaced="YES">
+                                    <rect key="frame" x="343" y="565" width="51" height="31"/>
+                                </variation>
+                                <connections>
+                                    <action selector="link1to1:" destination="BYZ-38-t0r" eventType="valueChanged" id="g3o-XJ-R5t"/>
+                                </connections>
+                            </switch>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
@@ -750,7 +768,9 @@
                             </constraint>
                             <constraint firstItem="cVe-9O-2pY" firstAttribute="height" secondItem="n2z-uq-zcF" secondAttribute="height" id="2dv-QL-px7"/>
                             <constraint firstItem="ziA-Ft-8gT" firstAttribute="trailing" secondItem="CC8-yg-7cY" secondAttribute="trailing" id="2hB-Lj-mlP"/>
-                            <constraint firstItem="5cg-Tn-agQ" firstAttribute="top" secondItem="MCi-Hm-qoq" secondAttribute="bottom" constant="4" id="39u-XZ-Ydo"/>
+                            <constraint firstItem="5cg-Tn-agQ" firstAttribute="top" secondItem="MCi-Hm-qoq" secondAttribute="bottom" constant="4" id="39u-XZ-Ydo">
+                                <variation key="heightClass=regular-widthClass=compact" constant="-26"/>
+                            </constraint>
                             <constraint firstItem="CVs-oH-bzJ" firstAttribute="leading" secondItem="CH1-73-Vxb" secondAttribute="leading" id="3NB-Qc-gsc">
                                 <variation key="heightClass=compact" constant="134"/>
                             </constraint>
@@ -821,6 +841,7 @@
                             <constraint firstItem="MCi-Hm-qoq" firstAttribute="top" secondItem="INl-nP-Xbq" secondAttribute="bottom" constant="4" id="A0W-FR-nYh">
                                 <variation key="heightClass=compact" constant="-74"/>
                                 <variation key="widthClass=compact" constant="4"/>
+                                <variation key="heightClass=regular-widthClass=compact" constant="46"/>
                                 <variation key="heightClass=regular-widthClass=regular" constant="5"/>
                             </constraint>
                             <constraint firstItem="7Fn-oC-1gU" firstAttribute="leading" secondItem="gYu-DO-ibm" secondAttribute="trailing" constant="70" id="A0v-bN-IGT">
@@ -840,6 +861,7 @@
                             <constraint firstItem="ML9-Xg-5re" firstAttribute="baseline" secondItem="2cY-Ef-DL5" secondAttribute="firstBaseline" constant="-1" id="B7S-2l-lSi"/>
                             <constraint firstItem="CVs-oH-bzJ" firstAttribute="trailing" secondItem="g4T-7j-V9u" secondAttribute="trailing" id="BFc-L8-Sh4"/>
                             <constraint firstItem="8Af-P1-t07" firstAttribute="top" secondItem="iVD-a9-jec" secondAttribute="bottom" id="BWO-J1-X2c"/>
+                            <constraint firstItem="udl-XY-qxX" firstAttribute="leading" secondItem="MCi-Hm-qoq" secondAttribute="leading" id="BhT-vL-rWm"/>
                             <constraint firstItem="CC8-yg-7cY" firstAttribute="trailing" secondItem="b08-wc-8sc" secondAttribute="trailing" id="BjQ-Ck-a6f">
                                 <variation key="heightClass=compact" constant="-122"/>
                                 <variation key="heightClass=regular" constant="5"/>
@@ -849,6 +871,7 @@
                                 <variation key="heightClass=compact" constant="0.0"/>
                             </constraint>
                             <constraint firstItem="MCi-Hm-qoq" firstAttribute="top" secondItem="2cY-Ef-DL5" secondAttribute="bottom" constant="9" id="C6k-ck-VcW"/>
+                            <constraint firstItem="5cg-Tn-agQ" firstAttribute="leading" secondItem="MCi-Hm-qoq" secondAttribute="trailing" constant="8" symbolic="YES" id="C74-xr-Khv"/>
                             <constraint firstItem="dnL-Iw-sDj" firstAttribute="baseline" secondItem="8Si-wM-Mi5" secondAttribute="firstBaseline" id="CBR-vT-uyY"/>
                             <constraint firstItem="xXU-7A-ZCd" firstAttribute="leading" secondItem="L3N-n9-rec" secondAttribute="leading" id="CKd-iW-ewA"/>
                             <constraint firstItem="2cY-Ef-DL5" firstAttribute="top" secondItem="ML9-Xg-5re" secondAttribute="bottom" constant="4" id="CT7-nC-gsf"/>
@@ -872,7 +895,7 @@
                                 <variation key="heightClass=compact" constant="48"/>
                                 <variation key="heightClass=regular" constant="123"/>
                                 <variation key="widthClass=compact" constant="132"/>
-                                <variation key="heightClass=regular-widthClass=compact" constant="109"/>
+                                <variation key="heightClass=regular-widthClass=compact" constant="94"/>
                                 <variation key="heightClass=regular-widthClass=regular" constant="116"/>
                             </constraint>
                             <constraint firstItem="jgB-uj-mI4" firstAttribute="leading" secondItem="8eN-hM-giM" secondAttribute="leading" constant="3" id="EXi-lU-dyU"/>
@@ -925,6 +948,7 @@
                             <constraint firstItem="iVD-a9-jec" firstAttribute="top" secondItem="6uE-O9-Yab" secondAttribute="bottom" constant="2" id="J6g-a8-g9d">
                                 <variation key="heightClass=compact" constant="-133"/>
                                 <variation key="widthClass=compact" constant="4"/>
+                                <variation key="heightClass=regular-widthClass=compact" constant="-92"/>
                                 <variation key="heightClass=regular-widthClass=regular" constant="1"/>
                             </constraint>
                             <constraint firstItem="8Af-P1-t07" firstAttribute="top" secondItem="5cg-Tn-agQ" secondAttribute="top" id="JNd-fj-z2d"/>
@@ -973,6 +997,7 @@
                                 <variation key="widthClass=compact" constant="31"/>
                                 <variation key="heightClass=regular-widthClass=regular" constant="0.0"/>
                             </constraint>
+                            <constraint firstItem="MCi-Hm-qoq" firstAttribute="centerY" secondItem="5cg-Tn-agQ" secondAttribute="centerY" id="LvO-uX-8hp"/>
                             <constraint firstItem="ZBE-MX-hKv" firstAttribute="leading" secondItem="iVD-a9-jec" secondAttribute="leading" constant="2" id="Lz2-QY-q9U"/>
                             <constraint firstItem="5MR-sP-MQ7" firstAttribute="top" secondItem="0cG-Lb-Gt1" secondAttribute="bottom" constant="78" id="MFd-ik-CX0">
                                 <variation key="heightClass=compact" constant="7"/>
@@ -1008,6 +1033,7 @@
                             <constraint firstItem="5cg-Tn-agQ" firstAttribute="top" secondItem="udl-XY-qxX" secondAttribute="top" id="P1b-XJ-DVd">
                                 <variation key="heightClass=compact" constant="233"/>
                                 <variation key="widthClass=compact" constant="-2"/>
+                                <variation key="heightClass=regular-widthClass=compact" constant="33"/>
                                 <variation key="heightClass=regular-widthClass=regular" constant="-1"/>
                             </constraint>
                             <constraint firstItem="n2z-uq-zcF" firstAttribute="centerY" secondItem="Wrc-mY-wEj" secondAttribute="centerY" constant="0.5" id="P42-w0-s2M">
@@ -1015,9 +1041,10 @@
                             </constraint>
                             <constraint firstItem="ced-33-jc1" firstAttribute="baseline" secondItem="uvp-xP-MwM" secondAttribute="baseline" id="PcL-HB-gmP">
                                 <variation key="heightClass=compact" constant="0.0"/>
-                                <variation key="heightClass=regular-widthClass=compact" constant="10"/>
+                                <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
                             </constraint>
                             <constraint firstItem="8eN-hM-giM" firstAttribute="centerY" secondItem="CVs-oH-bzJ" secondAttribute="centerY" constant="-0.5" id="QM2-ay-SBb"/>
+                            <constraint firstItem="udl-XY-qxX" firstAttribute="leading" secondItem="6uE-O9-Yab" secondAttribute="leading" id="QUr-gX-kFq"/>
                             <constraint firstItem="MCi-Hm-qoq" firstAttribute="trailing" secondItem="5cg-Tn-agQ" secondAttribute="trailing" constant="81" id="QZr-Ye-A0B"/>
                             <constraint firstItem="lPX-Bn-dUs" firstAttribute="trailing" secondItem="Wrc-mY-wEj" secondAttribute="trailing" id="Qem-sN-jIM"/>
                             <constraint firstItem="g4T-7j-V9u" firstAttribute="leading" secondItem="ML9-Xg-5re" secondAttribute="trailing" id="Qg0-2P-9wi"/>
@@ -1069,7 +1096,9 @@
                             </constraint>
                             <constraint firstItem="sVm-PA-eTK" firstAttribute="centerY" secondItem="ziA-Ft-8gT" secondAttribute="centerY" id="UxE-13-X9M"/>
                             <constraint firstItem="Wrc-mY-wEj" firstAttribute="height" secondItem="eqj-oZ-HMF" secondAttribute="height" id="UxK-gr-g1X"/>
-                            <constraint firstItem="8Af-P1-t07" firstAttribute="top" secondItem="iVD-a9-jec" secondAttribute="bottom" constant="7" id="Uy6-QW-QjB"/>
+                            <constraint firstItem="8Af-P1-t07" firstAttribute="top" secondItem="iVD-a9-jec" secondAttribute="bottom" constant="7" id="Uy6-QW-QjB">
+                                <variation key="heightClass=regular-widthClass=compact" constant="-25"/>
+                            </constraint>
                             <constraint firstItem="HhT-17-pLF" firstAttribute="centerY" secondItem="udl-XY-qxX" secondAttribute="centerY" constant="-2" id="Uyf-td-VF2"/>
                             <constraint firstItem="g4T-7j-V9u" firstAttribute="top" secondItem="CVs-oH-bzJ" secondAttribute="bottom" constant="8" symbolic="YES" id="V3R-YJ-yNl">
                                 <variation key="heightClass=compact" constant="28"/>
@@ -1096,6 +1125,7 @@
                             <constraint firstAttribute="trailingMargin" secondItem="MCi-Hm-qoq" secondAttribute="trailing" constant="63" id="WwH-au-Qx2">
                                 <variation key="heightClass=compact" constant="27"/>
                                 <variation key="widthClass=compact" constant="0.0"/>
+                                <variation key="heightClass=regular-widthClass=compact" constant="244"/>
                             </constraint>
                             <constraint firstItem="g5k-Ih-1qe" firstAttribute="leading" secondItem="WHb-xY-uc4" secondAttribute="trailing" constant="4" id="Y9c-d1-XNE"/>
                             <constraint firstItem="nBT-TB-ggu" firstAttribute="top" secondItem="eqj-oZ-HMF" secondAttribute="bottom" constant="8" id="YxR-WS-P4a"/>
@@ -1103,6 +1133,7 @@
                             <constraint firstItem="udl-XY-qxX" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="Z6Y-Uf-7ah">
                                 <variation key="heightClass=compact" constant="-1.5"/>
                                 <variation key="widthClass=compact" constant="0.0"/>
+                                <variation key="heightClass=regular-widthClass=compact" constant="-147.5"/>
                             </constraint>
                             <constraint firstItem="ziA-Ft-8gT" firstAttribute="height" secondItem="CC8-yg-7cY" secondAttribute="height" id="Z9G-jf-Lad"/>
                             <constraint firstItem="jgB-uj-mI4" firstAttribute="top" secondItem="8eN-hM-giM" secondAttribute="bottom" id="ZMF-51-OEP"/>
@@ -1127,6 +1158,7 @@
                             </constraint>
                             <constraint firstItem="iVD-a9-jec" firstAttribute="leading" secondItem="ced-33-jc1" secondAttribute="leading" id="aEo-IS-c0Z">
                                 <variation key="widthClass=compact" constant="6"/>
+                                <variation key="heightClass=regular-widthClass=compact" constant="142"/>
                             </constraint>
                             <constraint firstItem="3X6-73-Tck" firstAttribute="leading" secondItem="0cG-Lb-Gt1" secondAttribute="leading" id="aYO-zq-kKh"/>
                             <constraint firstItem="ziA-Ft-8gT" firstAttribute="top" secondItem="Uic-SH-lzC" secondAttribute="bottom" constant="4" id="an7-YL-S5O"/>
@@ -1137,6 +1169,7 @@
                                 <variation key="heightClass=compact" constant="0.0"/>
                             </constraint>
                             <constraint firstItem="g4T-7j-V9u" firstAttribute="leading" secondItem="ML9-Xg-5re" secondAttribute="trailing" id="bQb-9p-Txi"/>
+                            <constraint firstItem="udl-XY-qxX" firstAttribute="top" secondItem="6uE-O9-Yab" secondAttribute="bottom" constant="8" symbolic="YES" id="blj-H8-mau"/>
                             <constraint firstItem="zgf-ue-pM5" firstAttribute="leading" secondItem="a3v-sP-yOn" secondAttribute="leading" id="bqF-fS-uXX">
                                 <variation key="heightClass=compact" constant="-111"/>
                             </constraint>
@@ -1194,7 +1227,9 @@
                             </constraint>
                             <constraint firstItem="eqj-oZ-HMF" firstAttribute="leading" secondItem="nBT-TB-ggu" secondAttribute="leading" id="gqZ-ye-EVB"/>
                             <constraint firstItem="HhT-17-pLF" firstAttribute="leading" secondItem="sLz-hY-SJH" secondAttribute="trailing" constant="8" id="h3s-se-718"/>
-                            <constraint firstItem="8Af-P1-t07" firstAttribute="leading" secondItem="iVD-a9-jec" secondAttribute="leading" id="hEr-1A-n1A"/>
+                            <constraint firstItem="8Af-P1-t07" firstAttribute="leading" secondItem="iVD-a9-jec" secondAttribute="leading" id="hEr-1A-n1A">
+                                <variation key="heightClass=regular-widthClass=compact" constant="102"/>
+                            </constraint>
                             <constraint firstItem="jgB-uj-mI4" firstAttribute="baseline" secondItem="8eN-hM-giM" secondAttribute="baseline" id="hJK-Ww-lSv"/>
                             <constraint firstItem="2cY-Ef-DL5" firstAttribute="centerY" secondItem="ML9-Xg-5re" secondAttribute="centerY" constant="2" id="hL4-OW-LBR">
                                 <variation key="heightClass=compact" constant="27"/>
@@ -1286,7 +1321,7 @@
                             <constraint firstItem="g5k-Ih-1qe" firstAttribute="leading" secondItem="WHb-xY-uc4" secondAttribute="trailing" constant="4" id="oAt-XH-nLl"/>
                             <constraint firstItem="dnL-Iw-sDj" firstAttribute="top" secondItem="ced-33-jc1" secondAttribute="bottom" id="oQH-OM-5NJ">
                                 <variation key="heightClass=compact" constant="1"/>
-                                <variation key="heightClass=regular-widthClass=compact" constant="-10"/>
+                                <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
                             </constraint>
                             <constraint firstItem="gYu-DO-ibm" firstAttribute="centerY" secondItem="uvp-xP-MwM" secondAttribute="centerY" id="oYQ-JL-bOs"/>
                             <constraint firstItem="ced-33-jc1" firstAttribute="leading" secondItem="ZBE-MX-hKv" secondAttribute="leading" constant="-1" id="ocv-gY-ULJ">
@@ -1299,7 +1334,10 @@
                             </constraint>
                             <constraint firstItem="CVs-oH-bzJ" firstAttribute="leading" secondItem="8eN-hM-giM" secondAttribute="trailing" id="pbR-AE-Ob3"/>
                             <constraint firstItem="SBb-cB-MAS" firstAttribute="baseline" secondItem="LEh-PF-7cN" secondAttribute="firstBaseline" id="pqU-e4-c65"/>
-                            <constraint firstItem="MCi-Hm-qoq" firstAttribute="trailing" secondItem="5cg-Tn-agQ" secondAttribute="trailing" id="pyM-gf-j7K"/>
+                            <constraint firstItem="MCi-Hm-qoq" firstAttribute="trailing" secondItem="5cg-Tn-agQ" secondAttribute="trailing" id="pyM-gf-j7K">
+                                <variation key="heightClass=regular-widthClass=compact" constant="-57"/>
+                            </constraint>
+                            <constraint firstItem="MCi-Hm-qoq" firstAttribute="top" secondItem="udl-XY-qxX" secondAttribute="bottom" constant="13" id="q2L-wm-84i"/>
                             <constraint firstItem="jgB-uj-mI4" firstAttribute="height" secondItem="2cY-Ef-DL5" secondAttribute="height" constant="1" id="q4h-TF-SXq"/>
                             <constraint firstItem="8Si-wM-Mi5" firstAttribute="trailing" secondItem="uvp-xP-MwM" secondAttribute="trailing" id="qGd-7c-gfC">
                                 <variation key="heightClass=compact" constant="0.0"/>
@@ -1331,8 +1369,6 @@
                             <constraint firstItem="8V5-5h-5Wh" firstAttribute="leading" secondItem="SBb-cB-MAS" secondAttribute="leading" id="sho-9q-kbR">
                                 <variation key="heightClass=compact" constant="0.0"/>
                             </constraint>
-                            <constraint firstItem="MCi-Hm-qoq" firstAttribute="trailing" secondItem="5cg-Tn-agQ" secondAttribute="trailing" id="sqH-Qb-ilh"/>
-                            <constraint firstItem="5cg-Tn-agQ" firstAttribute="top" secondItem="MCi-Hm-qoq" secondAttribute="bottom" constant="4" id="ste-ZN-ESa"/>
                             <constraint firstItem="ced-33-jc1" firstAttribute="width" secondItem="uvp-xP-MwM" secondAttribute="width" id="tST-Wr-93b">
                                 <variation key="heightClass=compact" constant="0.0"/>
                             </constraint>
@@ -1342,6 +1378,7 @@
                                 <variation key="heightClass=compact" constant="104"/>
                                 <variation key="heightClass=regular" constant="53"/>
                                 <variation key="widthClass=compact" constant="94"/>
+                                <variation key="heightClass=regular-widthClass=compact" constant="69"/>
                                 <variation key="heightClass=regular-widthClass=regular" constant="47"/>
                             </constraint>
                             <constraint firstItem="uvp-xP-MwM" firstAttribute="leading" secondItem="ced-33-jc1" secondAttribute="trailing" constant="70" id="udA-fa-g2w">
@@ -1528,6 +1565,9 @@
                                 <exclude reference="cow-QT-3U2"/>
                                 <exclude reference="pbR-AE-Ob3"/>
                                 <exclude reference="7HT-GZ-0Rp"/>
+                                <exclude reference="BhT-vL-rWm"/>
+                                <exclude reference="QUr-gX-kFq"/>
+                                <exclude reference="blj-H8-mau"/>
                                 <exclude reference="6RN-Zw-wet"/>
                                 <exclude reference="DXF-AU-jbi"/>
                                 <exclude reference="Gte-wD-dhU"/>
@@ -1538,16 +1578,17 @@
                                 <exclude reference="C6k-ck-VcW"/>
                                 <exclude reference="Fc8-xA-T4O"/>
                                 <exclude reference="Gni-lg-6nq"/>
+                                <exclude reference="LvO-uX-8hp"/>
                                 <exclude reference="MKW-kN-sby"/>
                                 <exclude reference="QZr-Ye-A0B"/>
                                 <exclude reference="hXL-yV-A3o"/>
                                 <exclude reference="pyM-gf-j7K"/>
-                                <exclude reference="sqH-Qb-ilh"/>
+                                <exclude reference="q2L-wm-84i"/>
                                 <exclude reference="90E-qn-H2e"/>
                                 <exclude reference="39u-XZ-Ydo"/>
+                                <exclude reference="C74-xr-Khv"/>
                                 <exclude reference="RLC-F5-4cn"/>
                                 <exclude reference="qRh-y1-OZW"/>
-                                <exclude reference="ste-ZN-ESa"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=compact">
@@ -1720,8 +1761,19 @@
                         <variation key="heightClass=regular-widthClass=compact">
                             <mask key="constraints">
                                 <exclude reference="KFL-e7-EHg"/>
-                                <include reference="sqH-Qb-ilh"/>
-                                <include reference="ste-ZN-ESa"/>
+                                <exclude reference="4Sd-YE-ok3"/>
+                                <include reference="BhT-vL-rWm"/>
+                                <include reference="QUr-gX-kFq"/>
+                                <exclude reference="Z6Y-Uf-7ah"/>
+                                <include reference="blj-H8-mau"/>
+                                <exclude reference="A0W-FR-nYh"/>
+                                <include reference="LvO-uX-8hp"/>
+                                <exclude reference="WwH-au-Qx2"/>
+                                <exclude reference="pyM-gf-j7K"/>
+                                <include reference="q2L-wm-84i"/>
+                                <exclude reference="39u-XZ-Ydo"/>
+                                <include reference="C74-xr-Khv"/>
+                                <exclude reference="P1b-XJ-DVd"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=regular-widthClass=regular">
