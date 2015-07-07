@@ -18,29 +18,27 @@ enum HttpResponseBody {
         switch self {
         case .JSON(let object):
             if NSJSONSerialization.isValidJSONObject(object) {
-                do {
-                    let json = try NSJSONSerialization.dataWithJSONObject(object, options: NSJSONWritingOptions.PrettyPrinted)
+                var serializationError: NSError?
+                if let json = NSJSONSerialization.dataWithJSONObject(object, options: NSJSONWritingOptions.PrettyPrinted, error: &serializationError) {
                     if let nsString = NSString(data: json, encoding: NSUTF8StringEncoding) {
                         return nsString as String
                     }
-                } catch let serializationError as NSError {
-                    return "Serialisation error: \(serializationError)"
                 }
+                return "Serialisation error: \(serializationError)"
             }
             return "Invalid object to serialise."
-        case .XML(_):
+        case .XML(let data):
             return "XML serialization not supported."
         case .PLIST(let object):
             let format = NSPropertyListFormat.XMLFormat_v1_0
             if NSPropertyListSerialization.propertyList(object, isValidForFormat: format) {
-                do {
-                    let plist = try NSPropertyListSerialization.dataWithPropertyList(object, format: format, options: 0)
-                    if let nsString = NSString(data: plist, encoding: NSUTF8StringEncoding) {
+                var serializationError: NSError?
+                if let plist = NSPropertyListSerialization.dataWithPropertyList(object, format: format, options: 0, error: &serializationError) {
+                    if let nsString = NSString(data: plist, encoding: NSUTF8StringEncoding)  {
                         return nsString as String
                     }
-                } catch let serializationError as NSError {
-                    return "Serialisation error: \(serializationError)"
                 }
+                return "Serialisation error: \(serializationError)"
             }
             return "Invalid object to serialise."
         case .RAW(let body):
@@ -91,7 +89,7 @@ enum HttpResponse {
     
     func headers() -> [String: String] {
         var headers = [String:String]()
-        headers["Server"] = "Snap Server"
+        headers["Server"] = "Swifter"
         headers["Access-Control-Allow-Origin"] = "*"
         switch self {
         case .MovedPermanently(let location) : headers["Location"] = location

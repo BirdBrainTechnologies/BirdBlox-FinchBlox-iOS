@@ -7,12 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BA27E2A01B3C8D3A00A0DF58 /* HttpHandlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA27E29A1B3C8D3A00A0DF58 /* HttpHandlers.swift */; };
-		BA27E2A11B3C8D3A00A0DF58 /* HttpParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA27E29B1B3C8D3A00A0DF58 /* HttpParser.swift */; };
-		BA27E2A21B3C8D3A00A0DF58 /* HttpRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA27E29C1B3C8D3A00A0DF58 /* HttpRequest.swift */; };
-		BA27E2A31B3C8D3A00A0DF58 /* HttpResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA27E29D1B3C8D3A00A0DF58 /* HttpResponse.swift */; };
-		BA27E2A41B3C8D3A00A0DF58 /* HttpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA27E29E1B3C8D3A00A0DF58 /* HttpServer.swift */; };
-		BA27E2A51B3C8D3A00A0DF58 /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA27E29F1B3C8D3A00A0DF58 /* Socket.swift */; };
+		BA05495F1B4C151900A6FA8B /* HttpHandlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA0549591B4C151900A6FA8B /* HttpHandlers.swift */; };
+		BA0549601B4C151900A6FA8B /* HttpParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA05495A1B4C151900A6FA8B /* HttpParser.swift */; };
+		BA0549611B4C151900A6FA8B /* HttpRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA05495B1B4C151900A6FA8B /* HttpRequest.swift */; };
+		BA0549621B4C151900A6FA8B /* HttpResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA05495C1B4C151900A6FA8B /* HttpResponse.swift */; };
+		BA0549631B4C151900A6FA8B /* HttpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA05495D1B4C151900A6FA8B /* HttpServer.swift */; };
+		BA0549641B4C151900A6FA8B /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA05495E1B4C151900A6FA8B /* Socket.swift */; };
+		BA0549661B4C152F00A6FA8B /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA0549651B4C152F00A6FA8B /* CoreData.framework */; };
+		BA0549681B4C154000A6FA8B /* CustomURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA0549671B4C154000A6FA8B /* CustomURLProtocol.swift */; };
+		BA05496A1B4C155000A6FA8B /* HBCache.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = BA0549691B4C155000A6FA8B /* HBCache.xcdatamodel */; };
+		BA05496C1B4C160B00A6FA8B /* iPadstart.xml in Resources */ = {isa = PBXBuildFile; fileRef = BA05496B1B4C160B00A6FA8B /* iPadstart.xml */; };
+		BA05496D1B4C180A00A6FA8B /* HBCache.xcdatamodel in Resources */ = {isa = PBXBuildFile; fileRef = BA0549691B4C155000A6FA8B /* HBCache.xcdatamodel */; };
 		BA27E2A71B3C8D6100A0DF58 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = BA27E2A61B3C8D6100A0DF58 /* LICENSE */; };
 		BA7F0A741B25D463007DD94E /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BA7F0A731B25D463007DD94E /* libsqlite3.dylib */; };
 		BA7F0A761B25E5D2007DD94E /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA7F0A751B25E5D2007DD94E /* AVFoundation.framework */; };
@@ -37,12 +42,16 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		BA27E29A1B3C8D3A00A0DF58 /* HttpHandlers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpHandlers.swift; sourceTree = "<group>"; };
-		BA27E29B1B3C8D3A00A0DF58 /* HttpParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpParser.swift; sourceTree = "<group>"; };
-		BA27E29C1B3C8D3A00A0DF58 /* HttpRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpRequest.swift; sourceTree = "<group>"; };
-		BA27E29D1B3C8D3A00A0DF58 /* HttpResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpResponse.swift; sourceTree = "<group>"; };
-		BA27E29E1B3C8D3A00A0DF58 /* HttpServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpServer.swift; sourceTree = "<group>"; };
-		BA27E29F1B3C8D3A00A0DF58 /* Socket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Socket.swift; sourceTree = "<group>"; };
+		BA0549591B4C151900A6FA8B /* HttpHandlers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpHandlers.swift; sourceTree = "<group>"; };
+		BA05495A1B4C151900A6FA8B /* HttpParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpParser.swift; sourceTree = "<group>"; };
+		BA05495B1B4C151900A6FA8B /* HttpRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpRequest.swift; sourceTree = "<group>"; };
+		BA05495C1B4C151900A6FA8B /* HttpResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpResponse.swift; sourceTree = "<group>"; };
+		BA05495D1B4C151900A6FA8B /* HttpServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpServer.swift; sourceTree = "<group>"; };
+		BA05495E1B4C151900A6FA8B /* Socket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Socket.swift; sourceTree = "<group>"; };
+		BA0549651B4C152F00A6FA8B /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		BA0549671B4C154000A6FA8B /* CustomURLProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomURLProtocol.swift; sourceTree = "<group>"; };
+		BA0549691B4C155000A6FA8B /* HBCache.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = HBCache.xcdatamodel; sourceTree = "<group>"; };
+		BA05496B1B4C160B00A6FA8B /* iPadstart.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = iPadstart.xml; sourceTree = "<group>"; };
 		BA27E2A61B3C8D6100A0DF58 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		BA7F0A731B25D463007DD94E /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		BA7F0A751B25E5D2007DD94E /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
@@ -60,6 +69,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BA0549661B4C152F00A6FA8B /* CoreData.framework in Frameworks */,
 				BA7F0A761B25E5D2007DD94E /* AVFoundation.framework in Frameworks */,
 				BA7F0A741B25D463007DD94E /* libsqlite3.dylib in Frameworks */,
 			);
@@ -71,13 +81,13 @@
 		BA27E2991B3C8CE000A0DF58 /* Swifter */ = {
 			isa = PBXGroup;
 			children = (
+				BA0549591B4C151900A6FA8B /* HttpHandlers.swift */,
+				BA05495A1B4C151900A6FA8B /* HttpParser.swift */,
+				BA05495B1B4C151900A6FA8B /* HttpRequest.swift */,
+				BA05495C1B4C151900A6FA8B /* HttpResponse.swift */,
+				BA05495D1B4C151900A6FA8B /* HttpServer.swift */,
+				BA05495E1B4C151900A6FA8B /* Socket.swift */,
 				BA27E2A61B3C8D6100A0DF58 /* LICENSE */,
-				BA27E29A1B3C8D3A00A0DF58 /* HttpHandlers.swift */,
-				BA27E29B1B3C8D3A00A0DF58 /* HttpParser.swift */,
-				BA27E29C1B3C8D3A00A0DF58 /* HttpRequest.swift */,
-				BA27E29D1B3C8D3A00A0DF58 /* HttpResponse.swift */,
-				BA27E29E1B3C8D3A00A0DF58 /* HttpServer.swift */,
-				BA27E29F1B3C8D3A00A0DF58 /* Socket.swift */,
 			);
 			name = Swifter;
 			sourceTree = "<group>";
@@ -85,6 +95,7 @@
 		BA88B61F1B2233C9009EF1C3 = {
 			isa = PBXGroup;
 			children = (
+				BA0549651B4C152F00A6FA8B /* CoreData.framework */,
 				BA7F0A751B25E5D2007DD94E /* AVFoundation.framework */,
 				BA7F0A731B25D463007DD94E /* libsqlite3.dylib */,
 				BA27E2991B3C8CE000A0DF58 /* Swifter */,
@@ -104,6 +115,9 @@
 		BA88B62A1B2233C9009EF1C3 /* Snap */ = {
 			isa = PBXGroup;
 			children = (
+				BA05496B1B4C160B00A6FA8B /* iPadstart.xml */,
+				BA0549691B4C155000A6FA8B /* HBCache.xcdatamodel */,
+				BA0549671B4C154000A6FA8B /* CustomURLProtocol.swift */,
 				BA88B62D1B2233C9009EF1C3 /* AppDelegate.swift */,
 				BA88B62F1B2233C9009EF1C3 /* ViewController.swift */,
 				BA88B6591B223990009EF1C3 /* Main.storyboard */,
@@ -183,9 +197,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				BA88B6381B2233C9009EF1C3 /* LaunchScreen.xib in Resources */,
+				BA05496C1B4C160B00A6FA8B /* iPadstart.xml in Resources */,
 				BA88B6351B2233C9009EF1C3 /* Images.xcassets in Resources */,
 				BA27E2A71B3C8D6100A0DF58 /* LICENSE in Resources */,
 				BA88B65B1B223990009EF1C3 /* Main.storyboard in Resources */,
+				BA05496D1B4C180A00A6FA8B /* HBCache.xcdatamodel in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -196,14 +212,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BA27E2A51B3C8D3A00A0DF58 /* Socket.swift in Sources */,
-				BA27E2A31B3C8D3A00A0DF58 /* HttpResponse.swift in Sources */,
-				BA27E2A11B3C8D3A00A0DF58 /* HttpParser.swift in Sources */,
-				BA27E2A21B3C8D3A00A0DF58 /* HttpRequest.swift in Sources */,
-				BA27E2A41B3C8D3A00A0DF58 /* HttpServer.swift in Sources */,
+				BA0549641B4C151900A6FA8B /* Socket.swift in Sources */,
+				BA0549621B4C151900A6FA8B /* HttpResponse.swift in Sources */,
+				BA0549601B4C151900A6FA8B /* HttpParser.swift in Sources */,
+				BA05496A1B4C155000A6FA8B /* HBCache.xcdatamodel in Sources */,
+				BA0549611B4C151900A6FA8B /* HttpRequest.swift in Sources */,
+				BA0549631B4C151900A6FA8B /* HttpServer.swift in Sources */,
 				BA88B6301B2233C9009EF1C3 /* ViewController.swift in Sources */,
 				BA88B62E1B2233C9009EF1C3 /* AppDelegate.swift in Sources */,
-				BA27E2A01B3C8D3A00A0DF58 /* HttpHandlers.swift in Sources */,
+				BA05495F1B4C151900A6FA8B /* HttpHandlers.swift in Sources */,
+				BA0549681B4C154000A6FA8B /* CustomURLProtocol.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

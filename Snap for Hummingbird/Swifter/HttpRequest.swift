@@ -13,5 +13,4 @@ struct HttpRequest {
     let headers: [String: String]
 	let body: String?
     var capturedUrlGroups: [String]
-    var address: String?
 }

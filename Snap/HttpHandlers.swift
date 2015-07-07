@@ -28,14 +28,11 @@ class HttpHandlers {
                 var isDir: ObjCBool = false;
                 if ( fileManager.fileExistsAtPath(filePath, isDirectory: &isDir) ) {
                     if ( isDir ) {
-                        do {
-                            let files = try fileManager.contentsOfDirectoryAtPath(filePath)
+                        if let files = fileManager.contentsOfDirectoryAtPath(filePath, error: nil) {
                             var response = "<h3>\(filePath)</h3></br><table>"
-                            response += "".join(files.map { "<tr><td><a href=\"\(request.url)/\($0)\">\($0)</a></td></tr>"} )
+                            response += join("", map(files, { "<tr><td><a href=\"\(request.url)/\($0)\">\($0)</a></td></tr>"}))
                             response += "</table>"
                             return HttpResponse.OK(.HTML(response))
-                        } catch  {
-                            return HttpResponse.NotFound
                         }
                     } else {
                         if let fileBody = NSData(contentsOfFile: filePath) {
