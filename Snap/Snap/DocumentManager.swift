@@ -1,6 +1,6 @@
 //
 //  DocumentManager.swift
-//  Snap for Hummingbird
+//  Snap
 //
 //  Created by birdbrain on 7/13/15.
 //  Copyright (c) 2015 Birdbrain Technologies LLC. All rights reserved.
@@ -18,17 +18,17 @@ let fileManager = NSFileManager.defaultManager()
 let updateKey = "LastUpdatedSnap"
 
 public func getUpdate(){
-        let zippedData = NSData(contentsOfURL: snapURL!)!
-        zippedData.writeToFile(zipPath, atomically: true)
-        Main.unzipFileAtPath(zipPath, toDestination: unzipPath)
-        if !fileManager.fileExistsAtPath(lastUpdatePath){
-            let dict: NSDictionary = NSDictionary(object: NSDate(), forKey: updateKey)
-            let newLog: NSData = NSKeyedArchiver.archivedDataWithRootObject(dict)
-            fileManager.createFileAtPath(lastUpdatePath, contents: newLog, attributes: nil)
-        }
+    let zippedData = NSData(contentsOfURL: snapURL!)!
+    zippedData.writeToFile(zipPath, atomically: true)
+    Main.unzipFileAtPath(zipPath, toDestination: unzipPath)
+    if !fileManager.fileExistsAtPath(lastUpdatePath){
         let dict: NSDictionary = NSDictionary(object: NSDate(), forKey: updateKey)
-        let log: NSData = NSKeyedArchiver.archivedDataWithRootObject(dict)
-        log.writeToFile(lastUpdatePath, atomically: true)
+        let newLog: NSData = NSKeyedArchiver.archivedDataWithRootObject(dict)
+        fileManager.createFileAtPath(lastUpdatePath, contents: newLog, attributes: nil)
+    }
+    let dict: NSDictionary = NSDictionary(object: NSDate(), forKey: updateKey)
+    let log: NSData = NSKeyedArchiver.archivedDataWithRootObject(dict)
+    log.writeToFile(lastUpdatePath, atomically: true)
 }
 
 public func getSnapPath() -> String {

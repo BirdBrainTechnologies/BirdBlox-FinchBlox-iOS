@@ -96,23 +96,27 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     }
     
     override func viewDidAppear(animated: Bool) {
+        webView?.contentMode = UIViewContentMode.ScaleAspectFit
         if(isConnectedToInternet()){
+            if(shouldUpdate()){
+                getUpdate()
+            }
             let url = NSURL(string: "http://snap.berkeley.edu/snapsource/snap.html#open:http://localhost:22180/project.xml")
             let requestPage = NSURLRequest(URL: url!)
-            
-            webView?.contentMode = UIViewContentMode.ScaleAspectFit
-            
+            let connectionAlert = UIAlertController(title: "Connected", message: "The app is currently connecting to the snap website. If would like to use the app as a server, simply open the iPad starter project or a project built from it on a computer and use this IP address: " + getWiFiAddress()!, preferredStyle: UIAlertControllerStyle.Alert)
+            connectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
+            self.presentViewController(connectionAlert, animated: true, completion: nil)
             webView?.loadRequest(requestPage)
         }
         else{
-            println("No Internet")
-            let noConnectionAlert = UIAlertController(title: "Cannot Connect", message: "This app required an internet connection to work. There is currently no connection avaliable. A cached version of the web page will be opened if avaliable.", preferredStyle: UIAlertControllerStyle.Alert)
+            let noConnectionAlert = UIAlertController(title: "Cannot Connect", message: "This app required an internet connection to work. There is currently no connection avaliable. A local version of the web page will be opened but cloud storage will be avaliable.", preferredStyle: UIAlertControllerStyle.Alert)
             noConnectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
             self.presentViewController(noConnectionAlert, animated: true, completion: nil)
-            let url = NSURL(string: "http://snap.berkeley.edu/snapsource/snap.html#open:http://localhost:22180/project.xml")
+
+            let url = NSURL(string: "http://localhost:22180/snap/snap.html#open:http://localhost:22180/project.xml")
             let requestPage = NSURLRequest(URL: url!)
             
-            webView?.contentMode = UIViewContentMode.ScaleAspectFit
+            
             
             webView?.loadRequest(requestPage)
         }
@@ -160,6 +164,41 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         return ssid as String
     }
     //end ssid
+    // Return IP address of WiFi interface (en0) as a String, or `nil`
+    func getWiFiAddress() -> String? {
+        var address : String?
+        
+        // Get list of all interfaces on the local machine:
+        var ifaddr : UnsafeMutablePointer<ifaddrs> = nil
+        if getifaddrs(&ifaddr) == 0 {
+            
+            // For each interface ...
+            for (var ptr = ifaddr; ptr != nil; ptr = ptr.memory.ifa_next) {
+                let interface = ptr.memory
+                
+                // Check for IPv4 or IPv6 interface:
+                let addrFamily = interface.ifa_addr.memory.sa_family
+                if addrFamily == UInt8(AF_INET) || addrFamily == UInt8(AF_INET6) {
+                    
+                    // Check interface name:
+                    if let name = String.fromCString(interface.ifa_name) where name == "en0" {
+                        
+                        // Convert interface address to a human readable string:
+                        var addr = interface.ifa_addr.memory
+                        var hostname = [CChar](count: Int(NI_MAXHOST), repeatedValue: 0)
+                        getnameinfo(&addr, socklen_t(interface.ifa_addr.memory.sa_len),
+                            &hostname, socklen_t(hostname.count),
+                            nil, socklen_t(0), NI_NUMERICHOST)
+                        address = String.fromCString(hostname)
+                    }
+                }
+            }
+            freeifaddrs(ifaddr)
+        }
+        
+        return address
+    }
+    //end ip
     
     //start orientation
     func getOrientation() -> String{
@@ -224,6 +263,25 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             let rawText = String(contentsOfFile: path!, encoding: NSUTF8StringEncoding, error: nil)
             
             return .OK(.RAW(rawText!))
+        }
+        server["/snap/(.+)"] = {request in
+            let captured = request.capturedUrlGroups
+            let file = String(captured[0])
+            let splited = file.componentsSeparatedByString(".")
+            if (count(splited) < 2){
+                return .OK(.RAW(""))
+            }
+            let path = getSnapPath().stringByAppendingPathComponent(file)
+            let rawText = String(contentsOfFile: path, encoding: NSUTF8StringEncoding, error: nil)
+            if (rawText == nil){
+                return .OK(.RAW(""))
+            }
+            if(splited[1] == "html"){
+                return .OK(.HTML(rawText!))
+            }
+            else{
+                return .OK(.RAW(rawText!))
+            }
         }
     }
     override func didReceiveMemoryWarning() {

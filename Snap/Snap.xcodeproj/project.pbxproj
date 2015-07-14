@@ -14,10 +14,15 @@
 		BA0549631B4C151900A6FA8B /* HttpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA05495D1B4C151900A6FA8B /* HttpServer.swift */; };
 		BA0549641B4C151900A6FA8B /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA05495E1B4C151900A6FA8B /* Socket.swift */; };
 		BA0549661B4C152F00A6FA8B /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA0549651B4C152F00A6FA8B /* CoreData.framework */; };
-		BA0549681B4C154000A6FA8B /* CustomURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA0549671B4C154000A6FA8B /* CustomURLProtocol.swift */; };
-		BA05496A1B4C155000A6FA8B /* HBCache.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = BA0549691B4C155000A6FA8B /* HBCache.xcdatamodel */; };
 		BA05496C1B4C160B00A6FA8B /* iPadstart.xml in Resources */ = {isa = PBXBuildFile; fileRef = BA05496B1B4C160B00A6FA8B /* iPadstart.xml */; };
-		BA05496D1B4C180A00A6FA8B /* HBCache.xcdatamodel in Resources */ = {isa = PBXBuildFile; fileRef = BA0549691B4C155000A6FA8B /* HBCache.xcdatamodel */; };
+		BA054A0F1B555D1E00A6FA8B /* DocumentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA054A0E1B555D1E00A6FA8B /* DocumentManager.swift */; };
+		BA054A111B555D3000A6FA8B /* libz.1.2.5.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BA054A101B555D3000A6FA8B /* libz.1.2.5.dylib */; };
+		BA054A211B555DD400A6FA8B /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BA054A131B555DD400A6FA8B /* Info.plist */; };
+		BA054A221B555DD400A6FA8B /* Main.m in Sources */ = {isa = PBXBuildFile; fileRef = BA054A151B555DD400A6FA8B /* Main.m */; };
+		BA054A231B555DD400A6FA8B /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = BA054A181B555DD400A6FA8B /* ioapi.c */; };
+		BA054A241B555DD400A6FA8B /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = BA054A1A1B555DD400A6FA8B /* mztools.c */; };
+		BA054A251B555DD400A6FA8B /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = BA054A1C1B555DD400A6FA8B /* unzip.c */; };
+		BA054A261B555DD400A6FA8B /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = BA054A1E1B555DD400A6FA8B /* zip.c */; };
 		BA27E2A71B3C8D6100A0DF58 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = BA27E2A61B3C8D6100A0DF58 /* LICENSE */; };
 		BA7F0A741B25D463007DD94E /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BA7F0A731B25D463007DD94E /* libsqlite3.dylib */; };
 		BA7F0A761B25E5D2007DD94E /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA7F0A751B25E5D2007DD94E /* AVFoundation.framework */; };
@@ -49,9 +54,23 @@
 		BA05495D1B4C151900A6FA8B /* HttpServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpServer.swift; sourceTree = "<group>"; };
 		BA05495E1B4C151900A6FA8B /* Socket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Socket.swift; sourceTree = "<group>"; };
 		BA0549651B4C152F00A6FA8B /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
-		BA0549671B4C154000A6FA8B /* CustomURLProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomURLProtocol.swift; sourceTree = "<group>"; };
-		BA0549691B4C155000A6FA8B /* HBCache.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = HBCache.xcdatamodel; sourceTree = "<group>"; };
 		BA05496B1B4C160B00A6FA8B /* iPadstart.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = iPadstart.xml; sourceTree = "<group>"; };
+		BA054A0D1B555D1100A6FA8B /* Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Header.h; sourceTree = "<group>"; };
+		BA054A0E1B555D1E00A6FA8B /* DocumentManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentManager.swift; sourceTree = "<group>"; };
+		BA054A101B555D3000A6FA8B /* libz.1.2.5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.1.2.5.dylib; path = usr/lib/libz.1.2.5.dylib; sourceTree = SDKROOT; };
+		BA054A131B555DD400A6FA8B /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BA054A141B555DD400A6FA8B /* Main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Main.h; sourceTree = "<group>"; };
+		BA054A151B555DD400A6FA8B /* Main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Main.m; sourceTree = "<group>"; };
+		BA054A171B555DD400A6FA8B /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
+		BA054A181B555DD400A6FA8B /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
+		BA054A191B555DD400A6FA8B /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
+		BA054A1A1B555DD400A6FA8B /* mztools.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mztools.c; sourceTree = "<group>"; };
+		BA054A1B1B555DD400A6FA8B /* mztools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mztools.h; sourceTree = "<group>"; };
+		BA054A1C1B555DD400A6FA8B /* unzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unzip.c; sourceTree = "<group>"; };
+		BA054A1D1B555DD400A6FA8B /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
+		BA054A1E1B555DD400A6FA8B /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
+		BA054A1F1B555DD400A6FA8B /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
+		BA054A201B555DD400A6FA8B /* ZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZipArchive.h; sourceTree = "<group>"; };
 		BA27E2A61B3C8D6100A0DF58 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		BA7F0A731B25D463007DD94E /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		BA7F0A751B25E5D2007DD94E /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
@@ -69,6 +88,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BA054A111B555D3000A6FA8B /* libz.1.2.5.dylib in Frameworks */,
 				BA0549661B4C152F00A6FA8B /* CoreData.framework in Frameworks */,
 				BA7F0A761B25E5D2007DD94E /* AVFoundation.framework in Frameworks */,
 				BA7F0A741B25D463007DD94E /* libsqlite3.dylib in Frameworks */,
@@ -78,6 +98,34 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		BA054A121B555DD400A6FA8B /* ZipArchive */ = {
+			isa = PBXGroup;
+			children = (
+				BA054A131B555DD400A6FA8B /* Info.plist */,
+				BA054A141B555DD400A6FA8B /* Main.h */,
+				BA054A151B555DD400A6FA8B /* Main.m */,
+				BA054A161B555DD400A6FA8B /* minizip */,
+				BA054A201B555DD400A6FA8B /* ZipArchive.h */,
+			);
+			path = ZipArchive;
+			sourceTree = "<group>";
+		};
+		BA054A161B555DD400A6FA8B /* minizip */ = {
+			isa = PBXGroup;
+			children = (
+				BA054A171B555DD400A6FA8B /* crypt.h */,
+				BA054A181B555DD400A6FA8B /* ioapi.c */,
+				BA054A191B555DD400A6FA8B /* ioapi.h */,
+				BA054A1A1B555DD400A6FA8B /* mztools.c */,
+				BA054A1B1B555DD400A6FA8B /* mztools.h */,
+				BA054A1C1B555DD400A6FA8B /* unzip.c */,
+				BA054A1D1B555DD400A6FA8B /* unzip.h */,
+				BA054A1E1B555DD400A6FA8B /* zip.c */,
+				BA054A1F1B555DD400A6FA8B /* zip.h */,
+			);
+			path = minizip;
+			sourceTree = "<group>";
+		};
 		BA27E2991B3C8CE000A0DF58 /* Swifter */ = {
 			isa = PBXGroup;
 			children = (
@@ -89,15 +137,17 @@
 				BA05495E1B4C151900A6FA8B /* Socket.swift */,
 				BA27E2A61B3C8D6100A0DF58 /* LICENSE */,
 			);
-			name = Swifter;
+			path = Swifter;
 			sourceTree = "<group>";
 		};
 		BA88B61F1B2233C9009EF1C3 = {
 			isa = PBXGroup;
 			children = (
+				BA054A101B555D3000A6FA8B /* libz.1.2.5.dylib */,
 				BA0549651B4C152F00A6FA8B /* CoreData.framework */,
 				BA7F0A751B25E5D2007DD94E /* AVFoundation.framework */,
 				BA7F0A731B25D463007DD94E /* libsqlite3.dylib */,
+				BA054A121B555DD400A6FA8B /* ZipArchive */,
 				BA27E2991B3C8CE000A0DF58 /* Swifter */,
 				BA88B62A1B2233C9009EF1C3 /* Snap */,
 				BA88B6291B2233C9009EF1C3 /* Products */,
@@ -115,11 +165,11 @@
 		BA88B62A1B2233C9009EF1C3 /* Snap */ = {
 			isa = PBXGroup;
 			children = (
+				BA054A0D1B555D1100A6FA8B /* Header.h */,
 				BA05496B1B4C160B00A6FA8B /* iPadstart.xml */,
-				BA0549691B4C155000A6FA8B /* HBCache.xcdatamodel */,
-				BA0549671B4C154000A6FA8B /* CustomURLProtocol.swift */,
 				BA88B62D1B2233C9009EF1C3 /* AppDelegate.swift */,
 				BA88B62F1B2233C9009EF1C3 /* ViewController.swift */,
+				BA054A0E1B555D1E00A6FA8B /* DocumentManager.swift */,
 				BA88B6591B223990009EF1C3 /* Main.storyboard */,
 				BA88B6341B2233C9009EF1C3 /* Images.xcassets */,
 				BA88B6361B2233C9009EF1C3 /* LaunchScreen.xib */,
@@ -201,7 +251,7 @@
 				BA88B6351B2233C9009EF1C3 /* Images.xcassets in Resources */,
 				BA27E2A71B3C8D6100A0DF58 /* LICENSE in Resources */,
 				BA88B65B1B223990009EF1C3 /* Main.storyboard in Resources */,
-				BA05496D1B4C180A00A6FA8B /* HBCache.xcdatamodel in Resources */,
+				BA054A211B555DD400A6FA8B /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -213,15 +263,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				BA0549641B4C151900A6FA8B /* Socket.swift in Sources */,
+				BA054A231B555DD400A6FA8B /* ioapi.c in Sources */,
 				BA0549621B4C151900A6FA8B /* HttpResponse.swift in Sources */,
+				BA054A221B555DD400A6FA8B /* Main.m in Sources */,
+				BA054A241B555DD400A6FA8B /* mztools.c in Sources */,
 				BA0549601B4C151900A6FA8B /* HttpParser.swift in Sources */,
-				BA05496A1B4C155000A6FA8B /* HBCache.xcdatamodel in Sources */,
+				BA054A251B555DD400A6FA8B /* unzip.c in Sources */,
+				BA054A0F1B555D1E00A6FA8B /* DocumentManager.swift in Sources */,
+				BA054A261B555DD400A6FA8B /* zip.c in Sources */,
 				BA0549611B4C151900A6FA8B /* HttpRequest.swift in Sources */,
 				BA0549631B4C151900A6FA8B /* HttpServer.swift in Sources */,
 				BA88B6301B2233C9009EF1C3 /* ViewController.swift in Sources */,
 				BA88B62E1B2233C9009EF1C3 /* AppDelegate.swift in Sources */,
 				BA05495F1B4C151900A6FA8B /* HttpHandlers.swift in Sources */,
-				BA0549681B4C154000A6FA8B /* CustomURLProtocol.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -340,7 +394,9 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "BirdBrainTech.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = Snap;
-				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = Snap/Header.h;
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "$(SWIFT_MODULE_NAME)-Swift.h";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -360,7 +416,9 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "BirdBrainTech.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = Snap;
-				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = Snap/Header.h;
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "$(SWIFT_MODULE_NAME)-Swift.h";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

@@ -109,12 +109,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                 getUpdate()
             }
             
-            let noConnectionAlert = UIAlertController(title: "Connected", message: "The app is currently connecting to the snap website. If would like to use the app as a server, simply open the iPad starter project or a project built from it on a computer and use this IP address: " + getWiFiAddress()!, preferredStyle: UIAlertControllerStyle.Alert)
-            noConnectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
-            self.presentViewController(noConnectionAlert, animated: true, completion: nil)
+            let connectionAlert = UIAlertController(title: "Connected", message: "The app is currently connecting to the snap website. If would like to use the app as a server, simply open the iPad starter project or a project built from it on a computer and use this IP address: " + getWiFiAddress()!, preferredStyle: UIAlertControllerStyle.Alert)
+            connectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
+            self.presentViewController(connectionAlert, animated: true, completion: nil)
             
             let url = NSURL(string: "http://snap.berkeley.edu/snapsource/snap.html#open:http://localhost:22179/project.xml")
-            //let url = NSURL(string: "http://tinyurl.com/bjctapia")
             let requestPage = NSURLRequest(URL: url!)
             
             

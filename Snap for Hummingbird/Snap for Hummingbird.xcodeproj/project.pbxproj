@@ -14,9 +14,6 @@
 		BA05493D1B4AED0000A6FA8B /* HttpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA0549371B4AED0000A6FA8B /* HttpServer.swift */; };
 		BA05493E1B4AED0000A6FA8B /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA0549381B4AED0000A6FA8B /* Socket.swift */; };
 		BA0549401B4AF2EA00A6FA8B /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA05493F1B4AF2EA00A6FA8B /* CoreData.framework */; };
-		BA0549451B4AFED700A6FA8B /* CustomURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA0549441B4AFED700A6FA8B /* CustomURLProtocol.swift */; };
-		BA0549551B4B0DB900A6FA8B /* HBCache.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = BA0549541B4B0DB900A6FA8B /* HBCache.xcdatamodel */; };
-		BA0549561B4B15CD00A6FA8B /* HBCache.xcdatamodel in Resources */ = {isa = PBXBuildFile; fileRef = BA0549541B4B0DB900A6FA8B /* HBCache.xcdatamodel */; };
 		BA0549581B4B180700A6FA8B /* iPadstart.xml in Resources */ = {isa = PBXBuildFile; fileRef = BA0549571B4B180700A6FA8B /* iPadstart.xml */; };
 		BA0549EC1B54064F00A6FA8B /* libz.1.2.5.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BA0549EB1B54064F00A6FA8B /* libz.1.2.5.dylib */; };
 		BA054A011B541E9500A6FA8B /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BA0549F31B541E9500A6FA8B /* Info.plist */; };
@@ -63,8 +60,6 @@
 		BA0549371B4AED0000A6FA8B /* HttpServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpServer.swift; sourceTree = "<group>"; };
 		BA0549381B4AED0000A6FA8B /* Socket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Socket.swift; sourceTree = "<group>"; };
 		BA05493F1B4AF2EA00A6FA8B /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
-		BA0549441B4AFED700A6FA8B /* CustomURLProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomURLProtocol.swift; sourceTree = "<group>"; };
-		BA0549541B4B0DB900A6FA8B /* HBCache.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = HBCache.xcdatamodel; sourceTree = "<group>"; };
 		BA0549571B4B180700A6FA8B /* iPadstart.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = iPadstart.xml; path = ../Swifter/iPadstart.xml; sourceTree = "<group>"; };
 		BA0549EB1B54064F00A6FA8B /* libz.1.2.5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.1.2.5.dylib; path = usr/lib/libz.1.2.5.dylib; sourceTree = SDKROOT; };
 		BA0549F11B541D4F00A6FA8B /* Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Header.h; sourceTree = "<group>"; };
@@ -185,7 +180,6 @@
 			children = (
 				BA0549F11B541D4F00A6FA8B /* Header.h */,
 				BA0549571B4B180700A6FA8B /* iPadstart.xml */,
-				BA0549541B4B0DB900A6FA8B /* HBCache.xcdatamodel */,
 				BA27E2BF1B3C960000A0DF58 /* BluetoothDiscovery.swift */,
 				BA27E2C01B3C960000A0DF58 /* BluetoothService.swift */,
 				BA27E2C11B3C960000A0DF58 /* HummingbirdServices.swift */,
@@ -193,7 +187,6 @@
 				BA88B62D1B2233C9009EF1C3 /* AppDelegate.swift */,
 				BA88B62F1B2233C9009EF1C3 /* ViewController.swift */,
 				BA88B6581B223990009EF1C3 /* ConnectionViewController.swift */,
-				BA0549441B4AFED700A6FA8B /* CustomURLProtocol.swift */,
 				BA054A091B54354200A6FA8B /* DocumentManager.swift */,
 				BA88B6591B223990009EF1C3 /* Main.storyboard */,
 				BA88B6341B2233C9009EF1C3 /* Images.xcassets */,
@@ -278,7 +271,6 @@
 				BA27E2C81B3CA18800A0DF58 /* LICENSE in Resources */,
 				BA88B65B1B223990009EF1C3 /* Main.storyboard in Resources */,
 				BA054A011B541E9500A6FA8B /* Info.plist in Resources */,
-				BA0549561B4B15CD00A6FA8B /* HBCache.xcdatamodel in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -296,7 +288,6 @@
 				BA054A0A1B54354200A6FA8B /* DocumentManager.swift in Sources */,
 				BA05493A1B4AED0000A6FA8B /* HttpParser.swift in Sources */,
 				BA88B6301B2233C9009EF1C3 /* ViewController.swift in Sources */,
-				BA0549451B4AFED700A6FA8B /* CustomURLProtocol.swift in Sources */,
 				BA88B62E1B2233C9009EF1C3 /* AppDelegate.swift in Sources */,
 				BA88B65A1B223990009EF1C3 /* ConnectionViewController.swift in Sources */,
 				BA05493E1B4AED0000A6FA8B /* Socket.swift in Sources */,
@@ -306,7 +297,6 @@
 				BA05493C1B4AED0000A6FA8B /* HttpResponse.swift in Sources */,
 				BA054A041B541E9500A6FA8B /* mztools.c in Sources */,
 				BA054A051B541E9500A6FA8B /* unzip.c in Sources */,
-				BA0549551B4B0DB900A6FA8B /* HBCache.xcdatamodel in Sources */,
 				BA054A021B541E9500A6FA8B /* Main.m in Sources */,
 				BA0549391B4AED0000A6FA8B /* HttpHandlers.swift in Sources */,
 				BA27E2C51B3C960000A0DF58 /* HummingbirdServices.swift in Sources */,
