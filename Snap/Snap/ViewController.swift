@@ -28,11 +28,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     var currentLocation:CLLocationCoordinate2D = CLLocationCoordinate2D()
     var x: Double = 0, y: Double = 0, z: Double = 0
     @IBOutlet weak var mainWebView: UIWebView!
-    var webView: UIWebView?
+    var webView: WKWebView?
     
     override func loadView() {
         super.loadView()
-        self.webView = UIWebView()
+        self.webView = WKWebView()
         self.view = self.webView
     }
     override func prefersStatusBarHidden() -> Bool {

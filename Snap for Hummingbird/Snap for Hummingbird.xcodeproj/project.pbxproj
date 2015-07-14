@@ -18,6 +18,15 @@
 		BA0549551B4B0DB900A6FA8B /* HBCache.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = BA0549541B4B0DB900A6FA8B /* HBCache.xcdatamodel */; };
 		BA0549561B4B15CD00A6FA8B /* HBCache.xcdatamodel in Resources */ = {isa = PBXBuildFile; fileRef = BA0549541B4B0DB900A6FA8B /* HBCache.xcdatamodel */; };
 		BA0549581B4B180700A6FA8B /* iPadstart.xml in Resources */ = {isa = PBXBuildFile; fileRef = BA0549571B4B180700A6FA8B /* iPadstart.xml */; };
+		BA0549EC1B54064F00A6FA8B /* libz.1.2.5.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BA0549EB1B54064F00A6FA8B /* libz.1.2.5.dylib */; };
+		BA054A011B541E9500A6FA8B /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BA0549F31B541E9500A6FA8B /* Info.plist */; };
+		BA054A021B541E9500A6FA8B /* Main.m in Sources */ = {isa = PBXBuildFile; fileRef = BA0549F51B541E9500A6FA8B /* Main.m */; };
+		BA054A031B541E9500A6FA8B /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = BA0549F81B541E9500A6FA8B /* ioapi.c */; };
+		BA054A041B541E9500A6FA8B /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = BA0549FA1B541E9500A6FA8B /* mztools.c */; };
+		BA054A051B541E9500A6FA8B /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = BA0549FC1B541E9500A6FA8B /* unzip.c */; };
+		BA054A061B541E9500A6FA8B /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = BA0549FE1B541E9500A6FA8B /* zip.c */; };
+		BA054A081B541EA200A6FA8B /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = BA054A071B541EA200A6FA8B /* LICENSE.txt */; };
+		BA054A0A1B54354200A6FA8B /* DocumentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA054A091B54354200A6FA8B /* DocumentManager.swift */; };
 		BA27E2C31B3C960000A0DF58 /* BluetoothDiscovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA27E2BF1B3C960000A0DF58 /* BluetoothDiscovery.swift */; };
 		BA27E2C41B3C960000A0DF58 /* BluetoothService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA27E2C01B3C960000A0DF58 /* BluetoothService.swift */; };
 		BA27E2C51B3C960000A0DF58 /* HummingbirdServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA27E2C11B3C960000A0DF58 /* HummingbirdServices.swift */; };
@@ -57,6 +66,23 @@
 		BA0549441B4AFED700A6FA8B /* CustomURLProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomURLProtocol.swift; sourceTree = "<group>"; };
 		BA0549541B4B0DB900A6FA8B /* HBCache.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = HBCache.xcdatamodel; sourceTree = "<group>"; };
 		BA0549571B4B180700A6FA8B /* iPadstart.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = iPadstart.xml; path = ../Swifter/iPadstart.xml; sourceTree = "<group>"; };
+		BA0549EB1B54064F00A6FA8B /* libz.1.2.5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.1.2.5.dylib; path = usr/lib/libz.1.2.5.dylib; sourceTree = SDKROOT; };
+		BA0549F11B541D4F00A6FA8B /* Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Header.h; sourceTree = "<group>"; };
+		BA0549F31B541E9500A6FA8B /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BA0549F41B541E9500A6FA8B /* Main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Main.h; sourceTree = "<group>"; };
+		BA0549F51B541E9500A6FA8B /* Main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Main.m; sourceTree = "<group>"; };
+		BA0549F71B541E9500A6FA8B /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
+		BA0549F81B541E9500A6FA8B /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
+		BA0549F91B541E9500A6FA8B /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
+		BA0549FA1B541E9500A6FA8B /* mztools.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mztools.c; sourceTree = "<group>"; };
+		BA0549FB1B541E9500A6FA8B /* mztools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mztools.h; sourceTree = "<group>"; };
+		BA0549FC1B541E9500A6FA8B /* unzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unzip.c; sourceTree = "<group>"; };
+		BA0549FD1B541E9500A6FA8B /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
+		BA0549FE1B541E9500A6FA8B /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
+		BA0549FF1B541E9500A6FA8B /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
+		BA054A001B541E9500A6FA8B /* ZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZipArchive.h; sourceTree = "<group>"; };
+		BA054A071B541EA200A6FA8B /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+		BA054A091B54354200A6FA8B /* DocumentManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentManager.swift; sourceTree = "<group>"; };
 		BA27E2BF1B3C960000A0DF58 /* BluetoothDiscovery.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetoothDiscovery.swift; sourceTree = "<group>"; };
 		BA27E2C01B3C960000A0DF58 /* BluetoothService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetoothService.swift; sourceTree = "<group>"; };
 		BA27E2C11B3C960000A0DF58 /* HummingbirdServices.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HummingbirdServices.swift; sourceTree = "<group>"; };
@@ -79,6 +105,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BA0549EC1B54064F00A6FA8B /* libz.1.2.5.dylib in Frameworks */,
 				BA0549401B4AF2EA00A6FA8B /* CoreData.framework in Frameworks */,
 				BA7F0A761B25E5D2007DD94E /* AVFoundation.framework in Frameworks */,
 				BA7F0A741B25D463007DD94E /* libsqlite3.dylib in Frameworks */,
@@ -88,6 +115,35 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		BA0549F21B541E9500A6FA8B /* ZipArchive */ = {
+			isa = PBXGroup;
+			children = (
+				BA054A071B541EA200A6FA8B /* LICENSE.txt */,
+				BA0549F31B541E9500A6FA8B /* Info.plist */,
+				BA0549F41B541E9500A6FA8B /* Main.h */,
+				BA0549F51B541E9500A6FA8B /* Main.m */,
+				BA0549F61B541E9500A6FA8B /* minizip */,
+				BA054A001B541E9500A6FA8B /* ZipArchive.h */,
+			);
+			path = ZipArchive;
+			sourceTree = "<group>";
+		};
+		BA0549F61B541E9500A6FA8B /* minizip */ = {
+			isa = PBXGroup;
+			children = (
+				BA0549F71B541E9500A6FA8B /* crypt.h */,
+				BA0549F81B541E9500A6FA8B /* ioapi.c */,
+				BA0549F91B541E9500A6FA8B /* ioapi.h */,
+				BA0549FA1B541E9500A6FA8B /* mztools.c */,
+				BA0549FB1B541E9500A6FA8B /* mztools.h */,
+				BA0549FC1B541E9500A6FA8B /* unzip.c */,
+				BA0549FD1B541E9500A6FA8B /* unzip.h */,
+				BA0549FE1B541E9500A6FA8B /* zip.c */,
+				BA0549FF1B541E9500A6FA8B /* zip.h */,
+			);
+			path = minizip;
+			sourceTree = "<group>";
+		};
 		BA7F0A541B25D0D9007DD94E /* Swifter */ = {
 			isa = PBXGroup;
 			children = (
@@ -105,9 +161,11 @@
 		BA88B61F1B2233C9009EF1C3 = {
 			isa = PBXGroup;
 			children = (
+				BA0549EB1B54064F00A6FA8B /* libz.1.2.5.dylib */,
 				BA05493F1B4AF2EA00A6FA8B /* CoreData.framework */,
 				BA7F0A751B25E5D2007DD94E /* AVFoundation.framework */,
 				BA7F0A731B25D463007DD94E /* libsqlite3.dylib */,
+				BA0549F21B541E9500A6FA8B /* ZipArchive */,
 				BA7F0A541B25D0D9007DD94E /* Swifter */,
 				BA88B62A1B2233C9009EF1C3 /* Snap for Hummingbird */,
 				BA88B6291B2233C9009EF1C3 /* Products */,
@@ -125,6 +183,7 @@
 		BA88B62A1B2233C9009EF1C3 /* Snap for Hummingbird */ = {
 			isa = PBXGroup;
 			children = (
+				BA0549F11B541D4F00A6FA8B /* Header.h */,
 				BA0549571B4B180700A6FA8B /* iPadstart.xml */,
 				BA0549541B4B0DB900A6FA8B /* HBCache.xcdatamodel */,
 				BA27E2BF1B3C960000A0DF58 /* BluetoothDiscovery.swift */,
@@ -135,6 +194,7 @@
 				BA88B62F1B2233C9009EF1C3 /* ViewController.swift */,
 				BA88B6581B223990009EF1C3 /* ConnectionViewController.swift */,
 				BA0549441B4AFED700A6FA8B /* CustomURLProtocol.swift */,
+				BA054A091B54354200A6FA8B /* DocumentManager.swift */,
 				BA88B6591B223990009EF1C3 /* Main.storyboard */,
 				BA88B6341B2233C9009EF1C3 /* Images.xcassets */,
 				BA88B6361B2233C9009EF1C3 /* LaunchScreen.xib */,
@@ -214,8 +274,10 @@
 				BA88B6381B2233C9009EF1C3 /* LaunchScreen.xib in Resources */,
 				BA0549581B4B180700A6FA8B /* iPadstart.xml in Resources */,
 				BA88B6351B2233C9009EF1C3 /* Images.xcassets in Resources */,
+				BA054A081B541EA200A6FA8B /* LICENSE.txt in Resources */,
 				BA27E2C81B3CA18800A0DF58 /* LICENSE in Resources */,
 				BA88B65B1B223990009EF1C3 /* Main.storyboard in Resources */,
+				BA054A011B541E9500A6FA8B /* Info.plist in Resources */,
 				BA0549561B4B15CD00A6FA8B /* HBCache.xcdatamodel in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -228,18 +290,24 @@
 			buildActionMask = 2147483647;
 			files = (
 				BA27E2C41B3C960000A0DF58 /* BluetoothService.swift in Sources */,
+				BA054A031B541E9500A6FA8B /* ioapi.c in Sources */,
 				BA05493B1B4AED0000A6FA8B /* HttpRequest.swift in Sources */,
 				BA05493D1B4AED0000A6FA8B /* HttpServer.swift in Sources */,
+				BA054A0A1B54354200A6FA8B /* DocumentManager.swift in Sources */,
 				BA05493A1B4AED0000A6FA8B /* HttpParser.swift in Sources */,
 				BA88B6301B2233C9009EF1C3 /* ViewController.swift in Sources */,
 				BA0549451B4AFED700A6FA8B /* CustomURLProtocol.swift in Sources */,
 				BA88B62E1B2233C9009EF1C3 /* AppDelegate.swift in Sources */,
 				BA88B65A1B223990009EF1C3 /* ConnectionViewController.swift in Sources */,
 				BA05493E1B4AED0000A6FA8B /* Socket.swift in Sources */,
+				BA054A061B541E9500A6FA8B /* zip.c in Sources */,
 				BA27E2C31B3C960000A0DF58 /* BluetoothDiscovery.swift in Sources */,
 				BA27E2C61B3C960000A0DF58 /* Utility.swift in Sources */,
 				BA05493C1B4AED0000A6FA8B /* HttpResponse.swift in Sources */,
+				BA054A041B541E9500A6FA8B /* mztools.c in Sources */,
+				BA054A051B541E9500A6FA8B /* unzip.c in Sources */,
 				BA0549551B4B0DB900A6FA8B /* HBCache.xcdatamodel in Sources */,
+				BA054A021B541E9500A6FA8B /* Main.m in Sources */,
 				BA0549391B4AED0000A6FA8B /* HttpHandlers.swift in Sources */,
 				BA27E2C51B3C960000A0DF58 /* HummingbirdServices.swift in Sources */,
 			);
@@ -362,7 +430,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "BirdBrainTech.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Snap for Hummingbird/Header.h";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -386,7 +455,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "BirdBrainTech.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Snap for Hummingbird/Header.h";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

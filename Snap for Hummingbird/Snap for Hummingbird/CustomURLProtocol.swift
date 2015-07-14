@@ -11,8 +11,8 @@ class CustomURLProtocol: NSURLProtocol {
     var response: NSURLResponse!
     
     override class func canInitWithRequest(request: NSURLRequest) -> Bool {
-        print("Request #\(requestCount++): URL = ")
-        println(request.URL!.absoluteString)
+    //    print("Request #\(requestCount++): URL = ")
+    //    println(request.URL!.absoluteString)
         if NSURLProtocol.propertyForKey("MyURLProtocolHandledKey", inRequest: request) != nil {
             return false
         }
@@ -21,10 +21,10 @@ class CustomURLProtocol: NSURLProtocol {
         let urlToIgnore: NSString = NSString(string: "http://localhost:22179/project.xml")
         
         if url == urlToIgnore {
-            println("local")
+   //         println("local")
             return false
         }
-        println("Not equal")
+    //    println("Not equal")
         return true
     }
     
@@ -42,7 +42,7 @@ class CustomURLProtocol: NSURLProtocol {
         let possibleCachedResponse = self.cachedResponseForCurrentRequest()
         if let cachedResponse = possibleCachedResponse {
             if(!isConnectedToInternet()){
-                println("Serving response from cache")
+       //         println("Serving response from cache")
             
                 // 2
                 let data = cachedResponse.valueForKey("data") as! NSData!
@@ -58,7 +58,7 @@ class CustomURLProtocol: NSURLProtocol {
                 self.client!.URLProtocolDidFinishLoading(self)
             }
             else{
-                println("Serving response from NSURLConnection")
+         //       println("Serving response from NSURLConnection")
                 
                 var newRequest = self.request.mutableCopy() as! NSMutableURLRequest
                 NSURLProtocol.setProperty(true, forKey: "MyURLProtocolHandledKey", inRequest: newRequest)
@@ -66,7 +66,7 @@ class CustomURLProtocol: NSURLProtocol {
             }
         } else {
             // 5
-            println("Serving response from NSURLConnection")
+        //    println("Serving response from NSURLConnection")
             
             var newRequest = self.request.mutableCopy() as! NSMutableURLRequest
             NSURLProtocol.setProperty(true, forKey: "MyURLProtocolHandledKey", inRequest: newRequest)
@@ -103,7 +103,7 @@ class CustomURLProtocol: NSURLProtocol {
     }
     
     func saveCachedResponse () {
-        println("Saving cached response")
+   //     println("Saving cached response")
         
         // 1
         let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
@@ -122,7 +122,7 @@ class CustomURLProtocol: NSURLProtocol {
         var error: NSError?
         let success = context.save(&error)
         if !success {
-            println("Could not cache the response")
+   //         println("Could not cache the response")
         }
     }
     

@@ -15,6 +15,8 @@ import WebKit
 
 class ViewController: UIViewController, CLLocationManagerDelegate {
 
+    
+    let responseTime = 0.001
     var hbServe: HummingbirdServices!
     let server: HttpServer = HttpServer()
     var wasShaken: Bool = false
@@ -29,12 +31,12 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     var currentLocation:CLLocationCoordinate2D = CLLocationCoordinate2D()
     var x: Double = 0, y: Double = 0, z: Double = 0
     @IBOutlet weak var mainWebView: UIWebView!
-    //var webView: WKWebView?
-    var webView: UIWebView?
+    var webView: WKWebView?
+    //var webView: UIWebView?
     override func loadView() {
         super.loadView()
-        //self.webView = WKWebView()
-        self.webView = UIWebView()
+        self.webView = WKWebView()
+        //self.webView = UIWebView()
         self.view = self.webView
     }
     
@@ -101,22 +103,30 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     }
     
     override func viewDidAppear(animated: Bool) {
+        webView?.contentMode = UIViewContentMode.ScaleAspectFit
         if(isConnectedToInternet()){
+            if(shouldUpdate()){
+                getUpdate()
+            }
+            
+            let noConnectionAlert = UIAlertController(title: "Connected", message: "The app is currently connecting to the snap website. If would like to use the app as a server, simply open the iPad starter project or a project built from it on a computer and use this IP address: " + getWiFiAddress()!, preferredStyle: UIAlertControllerStyle.Alert)
+            noConnectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
+            self.presentViewController(noConnectionAlert, animated: true, completion: nil)
+            
             let url = NSURL(string: "http://snap.berkeley.edu/snapsource/snap.html#open:http://localhost:22179/project.xml")
+            //let url = NSURL(string: "http://tinyurl.com/bjctapia")
             let requestPage = NSURLRequest(URL: url!)
             
-            webView?.contentMode = UIViewContentMode.ScaleAspectFit
+            
             
             webView?.loadRequest(requestPage)
         }
         else{
-            let noConnectionAlert = UIAlertController(title: "Cannot Connect", message: "This app required an internet connection to work. There is currently no connection avaliable. A cached version of the web page will be opened if avaliable.", preferredStyle: UIAlertControllerStyle.Alert)
+            let noConnectionAlert = UIAlertController(title: "Cannot Connect", message: "This app required an internet connection to work. There is currently no connection avaliable. A local version of the web page will be opened but cloud storage will be avaliable.", preferredStyle: UIAlertControllerStyle.Alert)
             noConnectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
             self.presentViewController(noConnectionAlert, animated: true, completion: nil)
-            let url = NSURL(string: "http://snap.berkeley.edu/snapsource/snap.html#open:http://localhost:22179/project.xml")
+            let url = NSURL(string: "http://localhost:22179/snap/snap.html#open:http://localhost:22179/project.xml")
             let requestPage = NSURLRequest(URL: url!)
-            
-            webView?.contentMode = UIViewContentMode.ScaleAspectFit
             
             webView?.loadRequest(requestPage)
         }
@@ -164,6 +174,42 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         return ssid as String
     }
     //end ssid
+    //get ip
+    // Return IP address of WiFi interface (en0) as a String, or `nil`
+    func getWiFiAddress() -> String? {
+        var address : String?
+        
+        // Get list of all interfaces on the local machine:
+        var ifaddr : UnsafeMutablePointer<ifaddrs> = nil
+        if getifaddrs(&ifaddr) == 0 {
+            
+            // For each interface ...
+            for (var ptr = ifaddr; ptr != nil; ptr = ptr.memory.ifa_next) {
+                let interface = ptr.memory
+                
+                // Check for IPv4 or IPv6 interface:
+                let addrFamily = interface.ifa_addr.memory.sa_family
+                if addrFamily == UInt8(AF_INET) || addrFamily == UInt8(AF_INET6) {
+                    
+                    // Check interface name:
+                    if let name = String.fromCString(interface.ifa_name) where name == "en0" {
+                        
+                        // Convert interface address to a human readable string:
+                        var addr = interface.ifa_addr.memory
+                        var hostname = [CChar](count: Int(NI_MAXHOST), repeatedValue: 0)
+                        getnameinfo(&addr, socklen_t(interface.ifa_addr.memory.sa_len),
+                            &hostname, socklen_t(hostname.count),
+                            nil, socklen_t(0), NI_NUMERICHOST)
+                        address = String.fromCString(hostname)
+                    }
+                }
+            }
+            freeifaddrs(ifaddr)
+        }
+        
+        return address
+    }
+    //end ip
     
     //start orientation
     func getOrientation() -> String{
@@ -192,6 +238,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             let port = UInt8(Int(captured[0].toInt()!))
             let temp = Int(round((captured[1] as NSString).floatValue))
             var intensity: UInt8
+            
+            if (port > 4 || port < 1){
+                return .OK(.RAW("Invalid Port (should be between 1 and 4 inclusively)"))
+            }
+            
             if (temp < 0){
                 intensity = 0
             }
@@ -202,6 +253,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                 intensity = UInt8(temp)
             }
             self.hbServe.setLED(port, intensity: intensity)
+            NSThread.sleepForTimeInterval(self.responseTime);
             return .OK(.RAW("LED set"))
         }
         server["/hummingbird/out/triled/(.+)/(.+)/(.+)/(.+)"] = { request in
@@ -209,6 +261,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             let port: UInt8 = UInt8(Int(captured[0].toInt()!))
             var temp = Int(round((captured[1] as NSString).floatValue))
             var rValue: UInt8
+            
+            if (port > 2 || port < 1){
+                return .OK(.RAW("Invalid Port (should be between 1 and 2 inclusively)"))
+            }
+            
             if (temp < 0){
                 rValue = 0
             }
@@ -241,6 +298,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                 bValue = UInt8(temp)
             }
             self.hbServe.setTriLED(port, r: rValue, g: gValue, b: bValue)
+            NSThread.sleepForTimeInterval(self.responseTime);
             return .OK(.RAW("Tri-LED set"))
         }
         server["/hummingbird/out/vibration/(.+)/(.+)"] = { request in
@@ -248,6 +306,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             let port: UInt8 = UInt8(Int(captured[0].toInt()!))
             let temp = Int(round((captured[1] as NSString).floatValue))
             var intensity: UInt8
+            
+            if (port > 2 || port < 1){
+                return .OK(.RAW("Invalid Port (should be between 1 and 2 inclusively)"))
+            }
+            
             if (temp < 0){
                 intensity = 0
             }
@@ -259,11 +322,16 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             }
             
             self.hbServe.setVibration(port, intensity: intensity)
+            NSThread.sleepForTimeInterval(self.responseTime);
             return .OK(.RAW("Vibration set"))
         }
         server["/hummingbird/out/servo/(.+)/(.+)"] = { request in
             let captured = request.capturedUrlGroups
             let port: UInt8 = UInt8(Int(captured[0].toInt()!))
+            
+            if (port > 4 || port < 1){
+                return .OK(.RAW("Invalid Port (should be between 1 and 4 inclusively)"))
+            }
             
             let temp = Int(round((captured[1] as NSString).floatValue))
             var angle: UInt8
@@ -278,6 +346,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             }
             
             self.hbServe.setServo(port, angle: angle)
+            NSThread.sleepForTimeInterval(self.responseTime);
             return .OK(.RAW("Servo set"))
         }
         server["/hummingbird/out/motor/(.+)/(.+)"] = { request in
@@ -285,6 +354,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             let port: UInt8 = UInt8(Int(captured[0].toInt()!))
             let temp = Int(round((captured[1] as NSString).floatValue))
             var intensity: Int
+            
+            if (port > 2 || port < 1){
+                return .OK(.RAW("Invalid Port (should be between 1 and 2 inclusively)"))
+            }
+            
             if (temp < -100){
                 intensity = -100
             }
@@ -295,6 +369,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                 intensity = temp
             }
             self.hbServe.setMotor(port, speed: intensity)
+            NSThread.sleepForTimeInterval(self.responseTime);
             return .OK(.RAW("Motor set"))
         }
         server["/hummingbird/in/sensors"] = { request in
@@ -305,6 +380,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         server["/hummingbird/in/sensor/(.+)"] = { request in
             let captured = request.capturedUrlGroups
             let port = UInt8(Int(captured[0].toInt()!))
+            
+            if (port > 4 || port < 1){
+                return .OK(.RAW("Invalid Port (should be between 1 and 4 inclusively)"))
+            }
+            
             let sensorData = rawto100scale(self.hbServe.getSensorDataFromPoll(port))
             let response: String = String(sensorData)
             return .OK(.RAW(response))
@@ -312,6 +392,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         server["/hummingbird/in/distance/(.+)"] = { request in
             let captured = request.capturedUrlGroups
             let port = UInt8(Int(captured[0].toInt()!))
+            
+            if (port > 4 || port < 1){
+                return .OK(.RAW("Invalid Port (should be between 1 and 4 inclusively)"))
+            }
+            
             let sensorData = rawToDistance(self.hbServe.getSensorDataFromPoll(port))
             let response: String = String(sensorData)
             return .OK(.RAW(response))
@@ -319,6 +404,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         server["/hummingbird/in/sound/(.+)"] = { request in
             let captured = request.capturedUrlGroups
             let port = UInt8(Int(captured[0].toInt()!))
+            
+            if (port > 4 || port < 1){
+                return .OK(.RAW("Invalid Port (should be between 1 and 4 inclusively)"))
+            }
+            
             let sensorData = rawToSound(self.hbServe.getSensorDataFromPoll(port))
             let response: String = String(sensorData)
             return .OK(.RAW(response))
@@ -326,6 +416,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         server["/hummingbird/in/temperature/(.+)"] = { request in
             let captured = request.capturedUrlGroups
             let port = UInt8(Int(captured[0].toInt()!))
+            
+            if (port > 4 || port < 1){
+                return .OK(.RAW("Invalid Port (should be between 1 and 4 inclusively)"))
+            }
+            
             let sensorData = rawToTemp(self.hbServe.getSensorDataFromPoll(port))
             let response: String = String(sensorData)
             return .OK(.RAW(response))
@@ -373,6 +468,25 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             let rawText = String(contentsOfFile: path!, encoding: NSUTF8StringEncoding, error: nil)
             
             return .OK(.RAW(rawText!))
+        }
+        server["/snap/(.+)"] = {request in
+            let captured = request.capturedUrlGroups
+            let file = String(captured[0])
+            let splited = file.componentsSeparatedByString(".")
+            if (count(splited) < 2){
+                return .OK(.RAW(""))
+            }
+            let path = getSnapPath().stringByAppendingPathComponent(file)
+            let rawText = String(contentsOfFile: path, encoding: NSUTF8StringEncoding, error: nil)
+            if (rawText == nil){
+                return .OK(.RAW(""))
+            }
+            if(splited[1] == "html"){
+                return .OK(.HTML(rawText!))
+            }
+            else{
+                return .OK(.RAW(rawText!))
+            }
         }
     }
     func changedStatus(notification: NSNotification){
