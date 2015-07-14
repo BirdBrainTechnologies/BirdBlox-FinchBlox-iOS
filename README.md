@@ -6,6 +6,6 @@ It contains a "Snap!" app that allows a Hummingbird with a BLE module to be prog
 Along with the Hummingbird support, this repo also contains a "Snap!" app that does not require a Hummingbird. This is simply to make programming in "Snap!" easier to do while on a mobile device.
 
 Current Snap Features: 
---* Offline Snap that loads when no internet is avaliable. Checks for updates weekly. 
---* Access iOS sensors 
---* iPad can be used as a server (to access sensor data or Hummingbird data) that a computer can connect to.
+⋅⋅* Offline Snap that loads when no internet is avaliable. Checks for updates weekly. 
+⋅⋅* Access iOS sensors 
+⋅⋅* iPad can be used as a server (to access sensor data or Hummingbird data) that a computer can connect to.
