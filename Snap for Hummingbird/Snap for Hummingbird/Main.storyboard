@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Dbz-IG-z7a">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--Root View Controller-->
@@ -56,52 +57,28 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <webView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ByI-9c-OhF">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <variation key="heightClass=compact" fixedFrame="YES">
-                                    <rect key="frame" x="0.0" y="0.0" width="600" height="400"/>
-                                </variation>
-                                <variation key="heightClass=regular" fixedFrame="YES">
-                                    <rect key="frame" x="0.0" y="0.0" width="600" height="800"/>
-                                </variation>
-                                <variation key="widthClass=compact" fixedFrame="YES">
-                                    <rect key="frame" x="0.0" y="0.0" width="400" height="600"/>
-                                </variation>
-                                <variation key="widthClass=regular" fixedFrame="YES">
-                                    <rect key="frame" x="0.0" y="0.0" width="800" height="600"/>
-                                </variation>
-                                <variation key="heightClass=compact-widthClass=compact" fixedFrame="YES">
-                                    <rect key="frame" x="0.0" y="0.0" width="400" height="400"/>
-                                </variation>
-                                <variation key="heightClass=compact-widthClass=regular" fixedFrame="YES">
-                                    <rect key="frame" x="0.0" y="0.0" width="800" height="400"/>
-                                </variation>
-                                <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
-                                    <rect key="frame" x="0.0" y="0.0" width="400" height="800"/>
-                                </variation>
-                                <variation key="heightClass=regular-widthClass=regular" fixedFrame="YES">
-                                    <rect key="frame" x="0.0" y="0.0" width="800" height="800"/>
-                                </variation>
-                            </webView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="infoDark" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="B5L-wk-faa">
+                                <rect key="frame" x="562" y="570" width="22" height="22"/>
+                                <connections>
+                                    <action selector="test:" destination="3KV-dW-vIo" eventType="touchUpInside" id="HTp-M7-dzf"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <constraints>
-                            <constraint firstItem="ByI-9c-OhF" firstAttribute="top" secondItem="aHO-Gj-xs9" secondAttribute="top" id="0ql-h3-DFI"/>
-                            <constraint firstAttribute="trailing" secondItem="ByI-9c-OhF" secondAttribute="trailing" id="3It-AZ-lBI"/>
-                            <constraint firstItem="ByI-9c-OhF" firstAttribute="bottom" secondItem="e3y-9i-1He" secondAttribute="top" id="6At-3S-dpY"/>
-                            <constraint firstItem="ByI-9c-OhF" firstAttribute="leading" secondItem="aHO-Gj-xs9" secondAttribute="leading" id="DBy-7l-401"/>
+                            <constraint firstItem="e3y-9i-1He" firstAttribute="top" secondItem="B5L-wk-faa" secondAttribute="bottom" constant="8" symbolic="YES" id="2VI-0m-Ni4"/>
+                            <constraint firstItem="B5L-wk-faa" firstAttribute="trailing" secondItem="aHO-Gj-xs9" secondAttribute="trailingMargin" id="A2H-2n-cvM"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="wep-Hx-6F3"/>
                     <nil key="simulatedTopBarMetrics"/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
-                        <outlet property="mainWebView" destination="ByI-9c-OhF" id="aZY-6g-th9"/>
+                        <outlet property="testButton" destination="B5L-wk-faa" id="Pwf-3g-dV1"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fek-uX-61b" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-616.5" y="989.25"/>
+            <point key="canvasLocation" x="-617" y="989"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="ne0-jd-OzX">

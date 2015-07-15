@@ -14,7 +14,6 @@ import CoreMotion
 import WebKit
 
 class ViewController: UIViewController, CLLocationManagerDelegate {
-
     
     let responseTime = 0.001
     var hbServe: HummingbirdServices!
@@ -30,16 +29,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     var currentPressure: Float = 0 //kPa
     var currentLocation:CLLocationCoordinate2D = CLLocationCoordinate2D()
     var x: Double = 0, y: Double = 0, z: Double = 0
-    @IBOutlet weak var mainWebView: UIWebView!
-    var webView: WKWebView?
-    //var webView: UIWebView?
-    override func loadView() {
-        super.loadView()
-        self.webView = WKWebView()
-        //self.webView = UIWebView()
-        self.view = self.webView
-    }
+    var mainWebView : WKWebView!
     
+    
+    @IBOutlet weak var testButton: UIButton!
     override func prefersStatusBarHidden() -> Bool {
         return true
     }
@@ -62,6 +55,13 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         let needsConnection = (flags & UInt32(kSCNetworkFlagsConnectionRequired)) != 0
         
         return isReachable && !needsConnection
+    }
+    
+    override func loadView() {
+        super.loadView()
+        mainWebView = WKWebView(frame: self.view.bounds)
+        self.view.addSubview(mainWebView)
+        //self.view.bringSubviewToFront(testButton)
     }
     
     override func viewDidLoad() {
@@ -100,25 +100,25 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             })
 
         }
-    }
     
-    override func viewDidAppear(animated: Bool) {
-        webView?.contentMode = UIViewContentMode.ScaleAspectFit
+        mainWebView?.contentMode = UIViewContentMode.ScaleAspectFit
         if(isConnectedToInternet()){
             if(shouldUpdate()){
                 getUpdate()
             }
-            
-            let connectionAlert = UIAlertController(title: "Connected", message: "The app is currently connecting to the snap website. If would like to use the app as a server, simply open the iPad starter project or a project built from it on a computer and use this IP address: " + getWiFiAddress()!, preferredStyle: UIAlertControllerStyle.Alert)
-            connectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
-            self.presentViewController(connectionAlert, animated: true, completion: nil)
-            
+            if let ip = getWiFiAddress(){
+                let connectionAlert = UIAlertController(title: "Connected", message: "The app is currently connecting to the snap website. If would like to use the app as a server, simply open the iPad starter project or a project built from it on a computer and use this IP address: " + getWiFiAddress()!, preferredStyle: UIAlertControllerStyle.Alert)
+                connectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
+                self.presentViewController(connectionAlert, animated: true, completion: nil)
+            }
+            else{
+                let connectionAlert = UIAlertController(title: "Connected", message: "The app is currently connecting to the snap website. If would like to use the app as a server, you need to be connected to wifi. Either you are not connected to wifi or have some connection connection issues.", preferredStyle: UIAlertControllerStyle.Alert)
+                connectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
+                self.presentViewController(connectionAlert, animated: true, completion: nil)
+            }
             let url = NSURL(string: "http://snap.berkeley.edu/snapsource/snap.html#open:http://localhost:22179/project.xml")
             let requestPage = NSURLRequest(URL: url!)
-            
-            
-            
-            webView?.loadRequest(requestPage)
+            mainWebView?.loadRequest(requestPage)
         }
         else{
             let noConnectionAlert = UIAlertController(title: "Cannot Connect", message: "This app required an internet connection to work. There is currently no connection avaliable. A local version of the web page will be opened but cloud storage will be avaliable.", preferredStyle: UIAlertControllerStyle.Alert)
@@ -127,8 +127,13 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             let url = NSURL(string: "http://localhost:22179/snap/snap.html#open:http://localhost:22179/project.xml")
             let requestPage = NSURLRequest(URL: url!)
             
-            webView?.loadRequest(requestPage)
+            mainWebView?.loadRequest(requestPage)
         }
+
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
     }
     
     //for shake
@@ -468,25 +473,14 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             
             return .OK(.RAW(rawText!))
         }
-        server["/snap/(.+)"] = {request in
-            let captured = request.capturedUrlGroups
-            let file = String(captured[0])
-            let splited = file.componentsSeparatedByString(".")
-            if (count(splited) < 2){
-                return .OK(.RAW(""))
-            }
-            let path = getSnapPath().stringByAppendingPathComponent(file)
-            let rawText = String(contentsOfFile: path, encoding: NSUTF8StringEncoding, error: nil)
-            if (rawText == nil){
-                return .OK(.RAW(""))
-            }
-            if(splited[1] == "html"){
-                return .OK(.HTML(rawText!))
-            }
-            else{
-                return .OK(.RAW(rawText!))
-            }
-        }
+        server["/snap/(.+)"] = HttpHandlers.directoryBrowser(getSnapPath())
+        server["/snap/Backgrounds/(.+)"] = HttpHandlers.directoryBrowser(getSnapPath().stringByAppendingPathComponent("Backgrounds"))
+        server["/snap/Costumes/(.+)"] = HttpHandlers.directoryBrowser(getSnapPath().stringByAppendingPathComponent("Costumes"))
+        server["/snap/Sounds/(.+)"] = HttpHandlers.directoryBrowser(getSnapPath().stringByAppendingPathComponent("Sounds"))
+        server["/snap/Examples/(.+)"] = HttpHandlers.directoryBrowser(getSnapPath().stringByAppendingPathComponent("Examples"))
+        server["/snap/help/(.+)"] = HttpHandlers.directoryBrowser(getSnapPath().stringByAppendingPathComponent("help"))
+        server["/snap/libraries/(.+)"] = HttpHandlers.directoryBrowser(getSnapPath().stringByAppendingPathComponent("libraries"))
+        
     }
     func changedStatus(notification: NSNotification){
         let userinfo = notification.userInfo as! [String: Bool]
@@ -508,6 +502,18 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    func sendKeyPress(c: String){
+        if(count(c) > 1){
+            return
+        }
+        let javascript : String = "var keyEvent = document.createEvent('KeyboardEvent'); event.initKeyboardEvent(\"keypress\", true, true, window, false, false, false, false, 0, \""+c+"\".charCodeAt(0));document.dispatchEvent(keyEvent);"
+        mainWebView?.evaluateJavaScript(javascript, completionHandler: nil)
+        println("event sent?")
+    }
+    @IBAction func test(sender: UIButton) {
+        sendKeyPress(" ")
     }
 
 
