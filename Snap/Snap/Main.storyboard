@@ -15,43 +15,10 @@
                     <view key="view" contentMode="scaleToFill" id="aHO-Gj-xs9">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <webView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ByI-9c-OhF">
-                                <rect key="frame" x="0.0" y="20" width="600" height="580"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <variation key="heightClass=regular" fixedFrame="YES">
-                                    <rect key="frame" x="0.0" y="0.0" width="600" height="800"/>
-                                </variation>
-                                <variation key="widthClass=compact" fixedFrame="YES">
-                                    <rect key="frame" x="0.0" y="0.0" width="400" height="600"/>
-                                </variation>
-                                <variation key="widthClass=regular" fixedFrame="YES">
-                                    <rect key="frame" x="0.0" y="0.0" width="800" height="600"/>
-                                </variation>
-                                <variation key="heightClass=compact-widthClass=compact" fixedFrame="YES">
-                                    <rect key="frame" x="0.0" y="0.0" width="400" height="400"/>
-                                </variation>
-                                <variation key="heightClass=compact-widthClass=regular" fixedFrame="YES">
-                                    <rect key="frame" x="0.0" y="0.0" width="800" height="400"/>
-                                </variation>
-                                <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
-                                    <rect key="frame" x="0.0" y="0.0" width="400" height="800"/>
-                                </variation>
-                            </webView>
-                        </subviews>
-                        <constraints>
-                            <constraint firstItem="ByI-9c-OhF" firstAttribute="top" secondItem="aHO-Gj-xs9" secondAttribute="top" constant="20" id="0ql-h3-DFI"/>
-                            <constraint firstAttribute="trailing" secondItem="ByI-9c-OhF" secondAttribute="trailing" id="3It-AZ-lBI"/>
-                            <constraint firstItem="ByI-9c-OhF" firstAttribute="bottom" secondItem="e3y-9i-1He" secondAttribute="top" id="6At-3S-dpY"/>
-                            <constraint firstItem="ByI-9c-OhF" firstAttribute="leading" secondItem="aHO-Gj-xs9" secondAttribute="leading" id="DBy-7l-401"/>
-                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="wep-Hx-6F3"/>
                     <nil key="simulatedTopBarMetrics"/>
                     <nil key="simulatedBottomBarMetrics"/>
-                    <connections>
-                        <outlet property="mainWebView" destination="ByI-9c-OhF" id="aZY-6g-th9"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fek-uX-61b" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

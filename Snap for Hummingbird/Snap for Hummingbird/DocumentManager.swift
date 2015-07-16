@@ -27,7 +27,6 @@ public func getUpdate(){
             let newLog: NSData = NSKeyedArchiver.archivedDataWithRootObject(dict)
             fileManager.createFileAtPath(lastUpdatePath, contents: newLog, attributes: nil)
         }
-        fileManager.removeItemAtPath(getSnapPath().stringByAppendingPathComponent("Examples"), error: nil)
         let cloudJS = String(contentsOfFile: getSnapPath().stringByAppendingPathComponent("cloud.js"), encoding: NSUTF8StringEncoding, error: nil)
         let localCloudJS = cloudJS?.stringByReplacingOccurrencesOfString("https://snap.apps.miosoft.com/SnapCloud", withString: "https://snap.apps.miosoft.com/SnapCloudLocal", options: NSStringCompareOptions.LiteralSearch, range: nil)
         localCloudJS?.writeToFile(getSnapPath().stringByAppendingPathComponent("cloud.js"), atomically: true, encoding: NSUTF8StringEncoding, error: nil)

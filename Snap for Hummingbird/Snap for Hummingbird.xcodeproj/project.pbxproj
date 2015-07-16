@@ -24,6 +24,9 @@
 		BA054A061B541E9500A6FA8B /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = BA0549FE1B541E9500A6FA8B /* zip.c */; };
 		BA054A081B541EA200A6FA8B /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = BA054A071B541EA200A6FA8B /* LICENSE.txt */; };
 		BA054A0A1B54354200A6FA8B /* DocumentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA054A091B54354200A6FA8B /* DocumentManager.swift */; };
+		BA054A2E1B57FC4400A6FA8B /* Sounds.html in Resources */ = {isa = PBXBuildFile; fileRef = BA054A2D1B57FC4400A6FA8B /* Sounds.html */; };
+		BA054A311B57FF0500A6FA8B /* Examples.html in Resources */ = {isa = PBXBuildFile; fileRef = BA054A2F1B57FF0500A6FA8B /* Examples.html */; };
+		BA054A321B57FF0500A6FA8B /* Costumes.html in Resources */ = {isa = PBXBuildFile; fileRef = BA054A301B57FF0500A6FA8B /* Costumes.html */; };
 		BA27E2C31B3C960000A0DF58 /* BluetoothDiscovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA27E2BF1B3C960000A0DF58 /* BluetoothDiscovery.swift */; };
 		BA27E2C41B3C960000A0DF58 /* BluetoothService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA27E2C01B3C960000A0DF58 /* BluetoothService.swift */; };
 		BA27E2C51B3C960000A0DF58 /* HummingbirdServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA27E2C11B3C960000A0DF58 /* HummingbirdServices.swift */; };
@@ -78,6 +81,9 @@
 		BA054A001B541E9500A6FA8B /* ZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZipArchive.h; sourceTree = "<group>"; };
 		BA054A071B541EA200A6FA8B /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		BA054A091B54354200A6FA8B /* DocumentManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentManager.swift; sourceTree = "<group>"; };
+		BA054A2D1B57FC4400A6FA8B /* Sounds.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = Sounds.html; sourceTree = "<group>"; };
+		BA054A2F1B57FF0500A6FA8B /* Examples.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = Examples.html; sourceTree = "<group>"; };
+		BA054A301B57FF0500A6FA8B /* Costumes.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = Costumes.html; sourceTree = "<group>"; };
 		BA27E2BF1B3C960000A0DF58 /* BluetoothDiscovery.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetoothDiscovery.swift; sourceTree = "<group>"; };
 		BA27E2C01B3C960000A0DF58 /* BluetoothService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetoothService.swift; sourceTree = "<group>"; };
 		BA27E2C11B3C960000A0DF58 /* HummingbirdServices.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HummingbirdServices.swift; sourceTree = "<group>"; };
@@ -178,8 +184,11 @@
 		BA88B62A1B2233C9009EF1C3 /* Snap for Hummingbird */ = {
 			isa = PBXGroup;
 			children = (
+				BA054A2F1B57FF0500A6FA8B /* Examples.html */,
+				BA054A301B57FF0500A6FA8B /* Costumes.html */,
 				BA0549F11B541D4F00A6FA8B /* Header.h */,
 				BA0549571B4B180700A6FA8B /* iPadstart.xml */,
+				BA054A2D1B57FC4400A6FA8B /* Sounds.html */,
 				BA27E2BF1B3C960000A0DF58 /* BluetoothDiscovery.swift */,
 				BA27E2C01B3C960000A0DF58 /* BluetoothService.swift */,
 				BA27E2C11B3C960000A0DF58 /* HummingbirdServices.swift */,
@@ -266,11 +275,14 @@
 			files = (
 				BA88B6381B2233C9009EF1C3 /* LaunchScreen.xib in Resources */,
 				BA0549581B4B180700A6FA8B /* iPadstart.xml in Resources */,
+				BA054A2E1B57FC4400A6FA8B /* Sounds.html in Resources */,
 				BA88B6351B2233C9009EF1C3 /* Images.xcassets in Resources */,
 				BA054A081B541EA200A6FA8B /* LICENSE.txt in Resources */,
+				BA054A311B57FF0500A6FA8B /* Examples.html in Resources */,
 				BA27E2C81B3CA18800A0DF58 /* LICENSE in Resources */,
 				BA88B65B1B223990009EF1C3 /* Main.storyboard in Resources */,
 				BA054A011B541E9500A6FA8B /* Info.plist in Resources */,
+				BA054A321B57FF0500A6FA8B /* Costumes.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

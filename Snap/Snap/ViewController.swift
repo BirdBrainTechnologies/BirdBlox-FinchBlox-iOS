@@ -27,7 +27,6 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     var currentPressure: Float = 0 //kPa
     var currentLocation:CLLocationCoordinate2D = CLLocationCoordinate2D()
     var x: Double = 0, y: Double = 0, z: Double = 0
-    @IBOutlet weak var mainWebView: UIWebView!
     var webView: WKWebView?
     
     override func loadView() {
@@ -91,35 +90,41 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                     self.z = data!.acceleration.z
                 })
             })
-
         }
-    }
-    
-    override func viewDidAppear(animated: Bool) {
         webView?.contentMode = UIViewContentMode.ScaleAspectFit
         if(isConnectedToInternet()){
             if(shouldUpdate()){
                 getUpdate()
             }
-            let url = NSURL(string: "http://snap.berkeley.edu/snapsource/snap.html#open:http://localhost:22180/project.xml")
+            if let ip = getWiFiAddress(){
+                let connectionAlert = UIAlertController(title: "Connected", message: "The app is currently connecting to the snap website. If would like to use the app as a server, simply open the iPad starter project or a project built from it on a computer and use this IP address: " + getWiFiAddress()!, preferredStyle: UIAlertControllerStyle.Alert)
+                connectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
+                self.presentViewController(connectionAlert, animated: true, completion: nil)
+            }
+            else{
+                let connectionAlert = UIAlertController(title: "Connected", message: "The app is currently connecting to the snap website. If would like to use the app as a server, you need to be connected to wifi. Either you are not connected to wifi or have some connection connection issues.", preferredStyle: UIAlertControllerStyle.Alert)
+                connectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
+                self.presentViewController(connectionAlert, animated: true, completion: nil)
+            }
+            let url = NSURL(string: "http://snap.berkeley.edu/snapsource/snap.html#cloud:Username=BirdBrainTech&ProjectName=HummingbirdStartiPad")
+            //let url = NSURL(string: "http://snap.berkeley.edu/snapsource/snap.html")
             let requestPage = NSURLRequest(URL: url!)
-            let connectionAlert = UIAlertController(title: "Connected", message: "The app is currently connecting to the snap website. If would like to use the app as a server, simply open the iPad starter project or a project built from it on a computer and use this IP address: " + getWiFiAddress()!, preferredStyle: UIAlertControllerStyle.Alert)
-            connectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
-            self.presentViewController(connectionAlert, animated: true, completion: nil)
             webView?.loadRequest(requestPage)
         }
         else{
             let noConnectionAlert = UIAlertController(title: "Cannot Connect", message: "This app required an internet connection to work. There is currently no connection avaliable. A local version of the web page will be opened but cloud storage will be avaliable.", preferredStyle: UIAlertControllerStyle.Alert)
             noConnectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
             self.presentViewController(noConnectionAlert, animated: true, completion: nil)
-
             let url = NSURL(string: "http://localhost:22180/snap/snap.html#open:http://localhost:22180/project.xml")
             let requestPage = NSURLRequest(URL: url!)
             
-            
-            
             webView?.loadRequest(requestPage)
         }
+
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
     }
     
     //for shake
