@@ -239,14 +239,14 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     func prepareServer(){
         server["/hummingbird/out/led/(.+)/(.+)"] = { request in
             let captured = request.capturedUrlGroups
-            let port = UInt8(Int(captured[0].toInt()!))
             let temp = Int(round((captured[1] as NSString).floatValue))
             var intensity: UInt8
             
-            if (port > 4 || port < 1){
+            let portInt = Int(captured[0].toInt()!)
+            if (portInt > 4 || portInt < 1){
                 return .OK(.RAW("Invalid Port (should be between 1 and 4 inclusively)"))
             }
-            
+            let port = UInt8(portInt)
             if (temp < 0){
                 intensity = 0
             }
@@ -262,13 +262,14 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         }
         server["/hummingbird/out/triled/(.+)/(.+)/(.+)/(.+)"] = { request in
             let captured = request.capturedUrlGroups
-            let port: UInt8 = UInt8(Int(captured[0].toInt()!))
             var temp = Int(round((captured[1] as NSString).floatValue))
             var rValue: UInt8
             
-            if (port > 2 || port < 1){
-                return .OK(.RAW("Invalid Port (should be between 1 and 2 inclusively)"))
+            let portInt = Int(captured[0].toInt()!)
+            if (portInt > 2 || portInt < 1){
+                return .OK(.RAW("Invalid Port (should be between 1 and 4 inclusively)"))
             }
+            let port = UInt8(portInt)
             
             if (temp < 0){
                 rValue = 0
@@ -307,13 +308,14 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         }
         server["/hummingbird/out/vibration/(.+)/(.+)"] = { request in
             let captured = request.capturedUrlGroups
-            let port: UInt8 = UInt8(Int(captured[0].toInt()!))
             let temp = Int(round((captured[1] as NSString).floatValue))
             var intensity: UInt8
             
-            if (port > 2 || port < 1){
-                return .OK(.RAW("Invalid Port (should be between 1 and 2 inclusively)"))
+            let portInt = Int(captured[0].toInt()!)
+            if (portInt > 2 || portInt < 1){
+                return .OK(.RAW("Invalid Port (should be between 1 and 4 inclusively)"))
             }
+            let port = UInt8(portInt)
             
             if (temp < 0){
                 intensity = 0
@@ -331,11 +333,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         }
         server["/hummingbird/out/servo/(.+)/(.+)"] = { request in
             let captured = request.capturedUrlGroups
-            let port: UInt8 = UInt8(Int(captured[0].toInt()!))
-            
-            if (port > 4 || port < 1){
+            let portInt = Int(captured[0].toInt()!)
+            if (portInt > 4 || portInt < 1){
                 return .OK(.RAW("Invalid Port (should be between 1 and 4 inclusively)"))
             }
+            let port = UInt8(portInt)
             
             let temp = Int(round((captured[1] as NSString).floatValue))
             var angle: UInt8
@@ -355,13 +357,14 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         }
         server["/hummingbird/out/motor/(.+)/(.+)"] = { request in
             let captured = request.capturedUrlGroups
-            let port: UInt8 = UInt8(Int(captured[0].toInt()!))
             let temp = Int(round((captured[1] as NSString).floatValue))
             var intensity: Int
             
-            if (port > 2 || port < 1){
-                return .OK(.RAW("Invalid Port (should be between 1 and 2 inclusively)"))
+            let portInt = Int(captured[0].toInt()!)
+            if (portInt > 2 || portInt < 1){
+                return .OK(.RAW("Invalid Port (should be between 1 and 4 inclusively)"))
             }
+            let port = UInt8(portInt)
             
             if (temp < -100){
                 intensity = -100
@@ -383,11 +386,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         }
         server["/hummingbird/in/sensor/(.+)"] = { request in
             let captured = request.capturedUrlGroups
-            let port = UInt8(Int(captured[0].toInt()!))
-            
-            if (port > 4 || port < 1){
+            let portInt = Int(captured[0].toInt()!)
+            if (portInt > 4 || portInt < 1){
                 return .OK(.RAW("Invalid Port (should be between 1 and 4 inclusively)"))
             }
+            let port = UInt8(portInt)
             
             let sensorData = rawto100scale(self.hbServe.getSensorDataFromPoll(port))
             let response: String = String(sensorData)
@@ -395,11 +398,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         }
         server["/hummingbird/in/distance/(.+)"] = { request in
             let captured = request.capturedUrlGroups
-            let port = UInt8(Int(captured[0].toInt()!))
-            
-            if (port > 4 || port < 1){
+            let portInt = Int(captured[0].toInt()!)
+            if (portInt > 4 || portInt < 1){
                 return .OK(.RAW("Invalid Port (should be between 1 and 4 inclusively)"))
             }
+            let port = UInt8(portInt)
             
             let sensorData = rawToDistance(self.hbServe.getSensorDataFromPoll(port))
             let response: String = String(sensorData)
@@ -407,11 +410,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         }
         server["/hummingbird/in/sound/(.+)"] = { request in
             let captured = request.capturedUrlGroups
-            let port = UInt8(Int(captured[0].toInt()!))
-            
-            if (port > 4 || port < 1){
+            let portInt = Int(captured[0].toInt()!)
+            if (portInt > 4 || portInt < 1){
                 return .OK(.RAW("Invalid Port (should be between 1 and 4 inclusively)"))
             }
+            let port = UInt8(portInt)
             
             let sensorData = rawToSound(self.hbServe.getSensorDataFromPoll(port))
             let response: String = String(sensorData)
@@ -419,11 +422,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         }
         server["/hummingbird/in/temperature/(.+)"] = { request in
             let captured = request.capturedUrlGroups
-            let port = UInt8(Int(captured[0].toInt()!))
-            
-            if (port > 4 || port < 1){
+            let portInt = Int(captured[0].toInt()!)
+            if (portInt > 4 || portInt < 1){
                 return .OK(.RAW("Invalid Port (should be between 1 and 4 inclusively)"))
             }
+            let port = UInt8(portInt)
             
             let sensorData = rawToTemp(self.hbServe.getSensorDataFromPoll(port))
             let response: String = String(sensorData)
