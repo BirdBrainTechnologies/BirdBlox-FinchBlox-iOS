@@ -27,12 +27,12 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     var currentPressure: Float = 0 //kPa
     var currentLocation:CLLocationCoordinate2D = CLLocationCoordinate2D()
     var x: Double = 0, y: Double = 0, z: Double = 0
-    var webView: WKWebView?
+    var mainWebView: WKWebView!
     
     override func loadView() {
         super.loadView()
-        self.webView = WKWebView()
-        self.view = self.webView
+        mainWebView = WKWebView(frame: self.view.bounds)
+        self.view.addSubview(mainWebView)
     }
     override func prefersStatusBarHidden() -> Bool {
         return true
@@ -60,9 +60,13 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
         prepareServer()
         server.start(listenPort: 22180)
-
+        
         self.locationManager.requestAlwaysAuthorization()
         self.locationManager.requestWhenInUseAuthorization()
         if (CLLocationManager.locationServicesEnabled()){
@@ -91,7 +95,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                 })
             })
         }
-        webView?.contentMode = UIViewContentMode.ScaleAspectFit
+
+        mainWebView?.contentMode = UIViewContentMode.ScaleAspectFit
         if(isConnectedToInternet()){
             if(shouldUpdate()){
                 getUpdate()
@@ -106,25 +111,21 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                 connectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
                 self.presentViewController(connectionAlert, animated: true, completion: nil)
             }
-            let url = NSURL(string: "http://snap.berkeley.edu/snapsource/snap.html#cloud:Username=BirdBrainTech&ProjectName=HummingbirdStartiPad")
+            let url = NSURL(string: "http://localhost:22180/snap/snap.html#open:http://localhost:22180/project.xml")
             //let url = NSURL(string: "http://snap.berkeley.edu/snapsource/snap.html")
             let requestPage = NSURLRequest(URL: url!)
-            webView?.loadRequest(requestPage)
+            mainWebView?.loadRequest(requestPage)
         }
         else{
-            let noConnectionAlert = UIAlertController(title: "Cannot Connect", message: "This app required an internet connection to work. There is currently no connection avaliable. A local version of the web page will be opened but cloud storage will be avaliable.", preferredStyle: UIAlertControllerStyle.Alert)
+            let noConnectionAlert = UIAlertController(title: "Cannot Connect", message: "This app required an internet connection for certain features to work. There is currently no connection avaliable. If this is your first time opening the app, it will NOT load. You need to open the app while you have internet at least once so that the snap source code can be downloaded", preferredStyle: UIAlertControllerStyle.Alert)
             noConnectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
             self.presentViewController(noConnectionAlert, animated: true, completion: nil)
             let url = NSURL(string: "http://localhost:22180/snap/snap.html#open:http://localhost:22180/project.xml")
             let requestPage = NSURLRequest(URL: url!)
             
-            webView?.loadRequest(requestPage)
+            mainWebView?.loadRequest(requestPage)
         }
 
-    }
-    
-    override func viewDidAppear(animated: Bool) {
-        super.viewDidAppear(animated)
     }
     
     //for shake
@@ -225,7 +226,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     //end orientation
 
     func prepareServer(){
-                server["/speak/(.+)"] = { request in
+        server["/speak/(.+)"] = { request in
             let captured = request.capturedUrlGroups
             let words = String(captured[0])
             let utterance = AVSpeechUtterance(string: words)
@@ -269,25 +270,14 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             
             return .OK(.RAW(rawText!))
         }
-        server["/snap/(.+)"] = {request in
-            let captured = request.capturedUrlGroups
-            let file = String(captured[0])
-            let splited = file.componentsSeparatedByString(".")
-            if (count(splited) < 2){
-                return .OK(.RAW(""))
-            }
-            let path = getSnapPath().stringByAppendingPathComponent(file)
-            let rawText = String(contentsOfFile: path, encoding: NSUTF8StringEncoding, error: nil)
-            if (rawText == nil){
-                return .OK(.RAW(""))
-            }
-            if(splited[1] == "html"){
-                return .OK(.HTML(rawText!))
-            }
-            else{
-                return .OK(.RAW(rawText!))
-            }
-        }
+        server["/snap/(.+)"] = HttpHandlers.directoryBrowser(getSnapPath())
+        server["/snap/Backgrounds/(.+)"] = HttpHandlers.directoryBrowser(getSnapPath().stringByAppendingPathComponent("Backgrounds"))
+        server["/snap/Costumes/(.+)"] = HttpHandlers.directoryBrowser(getSnapPath().stringByAppendingPathComponent("Costumes"))
+        server["/snap/Sounds/(.+)"] = HttpHandlers.directoryBrowser(getSnapPath().stringByAppendingPathComponent("Sounds"))
+        server["/snap/Sounds"] = HttpHandlers.directoryBrowser(getSnapPath().stringByAppendingPathComponent("Sounds"))
+        server["/snap/Examples/(.+)"] = HttpHandlers.directoryBrowser(getSnapPath().stringByAppendingPathComponent("Examples"))
+        server["/snap/help/(.+)"] = HttpHandlers.directoryBrowser(getSnapPath().stringByAppendingPathComponent("help"))
+        server["/snap/libraries/(.+)"] = HttpHandlers.directoryBrowser(getSnapPath().stringByAppendingPathComponent("libraries"))
     }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

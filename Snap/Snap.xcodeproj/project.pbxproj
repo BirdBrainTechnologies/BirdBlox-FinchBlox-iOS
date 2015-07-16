@@ -23,6 +23,9 @@
 		BA054A241B555DD400A6FA8B /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = BA054A1A1B555DD400A6FA8B /* mztools.c */; };
 		BA054A251B555DD400A6FA8B /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = BA054A1C1B555DD400A6FA8B /* unzip.c */; };
 		BA054A261B555DD400A6FA8B /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = BA054A1E1B555DD400A6FA8B /* zip.c */; };
+		BA054A351B581E9D00A6FA8B /* Examples.html in Resources */ = {isa = PBXBuildFile; fileRef = BA054A331B581E9D00A6FA8B /* Examples.html */; };
+		BA054A361B581E9D00A6FA8B /* Costumes.html in Resources */ = {isa = PBXBuildFile; fileRef = BA054A341B581E9D00A6FA8B /* Costumes.html */; };
+		BA054A381B581EA400A6FA8B /* Sounds.html in Resources */ = {isa = PBXBuildFile; fileRef = BA054A371B581EA400A6FA8B /* Sounds.html */; };
 		BA27E2A71B3C8D6100A0DF58 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = BA27E2A61B3C8D6100A0DF58 /* LICENSE */; };
 		BA7F0A741B25D463007DD94E /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BA7F0A731B25D463007DD94E /* libsqlite3.dylib */; };
 		BA7F0A761B25E5D2007DD94E /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA7F0A751B25E5D2007DD94E /* AVFoundation.framework */; };
@@ -71,6 +74,9 @@
 		BA054A1E1B555DD400A6FA8B /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
 		BA054A1F1B555DD400A6FA8B /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
 		BA054A201B555DD400A6FA8B /* ZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZipArchive.h; sourceTree = "<group>"; };
+		BA054A331B581E9D00A6FA8B /* Examples.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = Examples.html; sourceTree = "<group>"; };
+		BA054A341B581E9D00A6FA8B /* Costumes.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = Costumes.html; sourceTree = "<group>"; };
+		BA054A371B581EA400A6FA8B /* Sounds.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = Sounds.html; sourceTree = "<group>"; };
 		BA27E2A61B3C8D6100A0DF58 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		BA7F0A731B25D463007DD94E /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		BA7F0A751B25E5D2007DD94E /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
@@ -165,6 +171,9 @@
 		BA88B62A1B2233C9009EF1C3 /* Snap */ = {
 			isa = PBXGroup;
 			children = (
+				BA054A331B581E9D00A6FA8B /* Examples.html */,
+				BA054A341B581E9D00A6FA8B /* Costumes.html */,
+				BA054A371B581EA400A6FA8B /* Sounds.html */,
 				BA054A0D1B555D1100A6FA8B /* Header.h */,
 				BA05496B1B4C160B00A6FA8B /* iPadstart.xml */,
 				BA88B62D1B2233C9009EF1C3 /* AppDelegate.swift */,
@@ -247,7 +256,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				BA88B6381B2233C9009EF1C3 /* LaunchScreen.xib in Resources */,
+				BA054A381B581EA400A6FA8B /* Sounds.html in Resources */,
+				BA054A351B581E9D00A6FA8B /* Examples.html in Resources */,
 				BA05496C1B4C160B00A6FA8B /* iPadstart.xml in Resources */,
+				BA054A361B581E9D00A6FA8B /* Costumes.html in Resources */,
 				BA88B6351B2233C9009EF1C3 /* Images.xcassets in Resources */,
 				BA27E2A71B3C8D6100A0DF58 /* LICENSE in Resources */,
 				BA88B65B1B223990009EF1C3 /* Main.storyboard in Resources */,
