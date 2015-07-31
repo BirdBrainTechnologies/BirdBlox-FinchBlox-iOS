@@ -63,8 +63,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                 mailComposer.mailComposeDelegate = self
                 mailComposer.title = "My Snap Project"
                 let mineType: String = "text/xml"
-                mailComposer.addAttachmentData(text, mimeType: mineType, fileName: "project.xml")
-                self.presentViewController(mailComposer, animated: true, completion: nil)
+                if(response.MIMEType?.pathComponents[1] == "xml"){
+                    mailComposer.addAttachmentData(text, mimeType: mineType, fileName: "project.xml")
+                    self.presentViewController(mailComposer, animated: true, completion: nil)
+                }
                 return
             }
         }
@@ -79,7 +81,6 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         super.loadView()
         mainWebView = WKWebView(frame: self.view.bounds)
         mainWebView.UIDelegate = self
-        //self.view.bringSubviewToFront(testButton)
     }
     
     override func viewDidLoad() {
@@ -149,8 +150,6 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             self.view.addSubview(mainWebView)
             mainWebView?.loadRequest(requestPage)
         }
-
-
     }
     
     override func viewDidAppear(animated: Bool) {

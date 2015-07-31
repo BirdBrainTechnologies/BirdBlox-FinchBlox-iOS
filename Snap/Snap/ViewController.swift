@@ -48,8 +48,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                 mailComposer.mailComposeDelegate = self
                 mailComposer.title = "My Snap Project"
                 let mineType: String = "text/xml"
-                mailComposer.addAttachmentData(text, mimeType: mineType, fileName: "project.xml")
-                self.presentViewController(mailComposer, animated: true, completion: nil)
+                if(response.MIMEType?.pathComponents[1] == "xml"){
+                    mailComposer.addAttachmentData(text, mimeType: mineType, fileName: "project.xml")
+                    self.presentViewController(mailComposer, animated: true, completion: nil)
+                }
                 return
             }
         }
