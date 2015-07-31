@@ -12,8 +12,9 @@ import CoreLocation
 import SystemConfiguration.CaptiveNetwork
 import CoreMotion
 import WebKit
+import MessageUI
 
-class ViewController: UIViewController, CLLocationManagerDelegate {
+class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate, MFMailComposeViewControllerDelegate {
 
     let server: HttpServer = HttpServer()
     var wasShaken: Bool = false
@@ -32,11 +33,34 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     override func loadView() {
         super.loadView()
         mainWebView = WKWebView(frame: self.view.bounds)
-        self.view.addSubview(mainWebView)
+        mainWebView.UIDelegate = self
+        
     }
     override func prefersStatusBarHidden() -> Bool {
         return true
     }
+    
+    func webView(webView: WKWebView, createWebViewWithConfiguration configuration: WKWebViewConfiguration, forNavigationAction navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
+        if(navigationAction.targetFrame == nil){
+            NSURLConnection.sendAsynchronousRequest(navigationAction.request, queue: NSOperationQueue.mainQueue()) {
+                response, text, error in
+                var mailComposer = MFMailComposeViewController()
+                mailComposer.mailComposeDelegate = self
+                mailComposer.title = "My Snap Project"
+                let mineType: String = "text/xml"
+                mailComposer.addAttachmentData(text, mimeType: mineType, fileName: "project.xml")
+                self.presentViewController(mailComposer, animated: true, completion: nil)
+                return
+            }
+        }
+        return nil
+    }
+    
+    func mailComposeController(controller: MFMailComposeViewController!, didFinishWithResult result: MFMailComposeResult, error: NSError!) {
+        self.dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    
     
     func isConnectedToInternet() -> Bool{
         var zeroAddress = sockaddr_in(sin_len: 0, sin_family: 0, sin_port: 0, sin_addr: in_addr(s_addr: 0), sin_zero: (0, 0, 0, 0, 0, 0, 0, 0))
@@ -100,20 +124,22 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         if(isConnectedToInternet()){
             if(shouldUpdate()){
                 getUpdate()
+                
             }
             if let ip = getWiFiAddress(){
-                let connectionAlert = UIAlertController(title: "Connected", message: "The app is currently connecting to the snap website. If would like to use the app as a server, simply open the iPad starter project or a project built from it on a computer and use this IP address: " + getWiFiAddress()!, preferredStyle: UIAlertControllerStyle.Alert)
+                let connectionAlert = UIAlertController(title: "Connected", message: "The app is currently connecting to a local version of Snap!. If would like to use the app as a server, simply open the iPad starter project or a project built from it on a computer and use this IP address: " + getWiFiAddress()!, preferredStyle: UIAlertControllerStyle.Alert)
                 connectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
                 self.presentViewController(connectionAlert, animated: true, completion: nil)
             }
             else{
-                let connectionAlert = UIAlertController(title: "Connected", message: "The app is currently connecting to the snap website. If would like to use the app as a server, you need to be connected to wifi. Either you are not connected to wifi or have some connection connection issues.", preferredStyle: UIAlertControllerStyle.Alert)
+                let connectionAlert = UIAlertController(title: "Connected", message: "The app is currently connecting to a local version of Snap!. If would like to use the app as a server, you need to be connected to wifi. Either you are not connected to wifi or have some connection connection issues.", preferredStyle: UIAlertControllerStyle.Alert)
                 connectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
                 self.presentViewController(connectionAlert, animated: true, completion: nil)
             }
             let url = NSURL(string: "http://localhost:22180/snap/snap.html#open:http://localhost:22180/project.xml")
             //let url = NSURL(string: "http://snap.berkeley.edu/snapsource/snap.html")
             let requestPage = NSURLRequest(URL: url!)
+            self.view.addSubview(mainWebView)
             mainWebView?.loadRequest(requestPage)
         }
         else{
@@ -122,7 +148,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             self.presentViewController(noConnectionAlert, animated: true, completion: nil)
             let url = NSURL(string: "http://localhost:22180/snap/snap.html#open:http://localhost:22180/project.xml")
             let requestPage = NSURLRequest(URL: url!)
-            
+            self.view.addSubview(mainWebView)
             mainWebView?.loadRequest(requestPage)
         }
 
@@ -265,8 +291,14 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             return .OK(.RAW(self.getOrientation()))
         }
         server["/project.xml"] = {request in
-            let path = NSBundle.mainBundle().pathForResource("iPadstart", ofType: "xml")
-            let rawText = String(contentsOfFile: path!, encoding: NSUTF8StringEncoding, error: nil)
+            let urlFromXMl = (UIApplication.sharedApplication().delegate as! AppDelegate).getFileUrl()
+            var path: String
+            if let tempURL = urlFromXMl{
+                path = tempURL.path!
+            } else {
+                path = NSBundle.mainBundle().pathForResource("iPadstart", ofType: "xml")!
+            }
+            let rawText = String(contentsOfFile: path, encoding: NSUTF8StringEncoding, error: nil)
             
             return .OK(.RAW(rawText!))
         }

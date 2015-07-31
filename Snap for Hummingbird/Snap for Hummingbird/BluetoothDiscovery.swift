@@ -17,6 +17,7 @@ class BluetoothDiscovery: NSObject, CBCentralManagerDelegate {
     private var discoveredDevices = [String: CBPeripheral]()
     private var hasConnectedOnce = false
     private var lastConnectedID: NSUUID = NSUUID(UUIDString: "00000000-0000-0000-0000-000000000000")!
+    private var counter: Int = 1;
     
     override init(){
         super.init();
@@ -26,6 +27,7 @@ class BluetoothDiscovery: NSObject, CBCentralManagerDelegate {
     }
     
     func startScan(){
+        counter = 1;
         if let central = centralManager{
             discoveredDevices = [String: CBPeripheral]()
             dbg_print("looking for devices with a service of UUID: " + BLEServiceUUID.UUIDString)
@@ -61,8 +63,8 @@ class BluetoothDiscovery: NSObject, CBCentralManagerDelegate {
             else{
                 nameString = peripheral.name!
             }
-            let localname = nameString as String
-                
+            let localname = String(counter) + String(". ") + (nameString as String)
+            counter++
             dbg_print("Found a device: " + localname)
             
             if(hasConnectedOnce){
@@ -138,7 +140,7 @@ class BluetoothDiscovery: NSObject, CBCentralManagerDelegate {
         case CBCentralManagerState.Unsupported:
             break
         }
-
+        
     }
     
     func connectToPeripheral(peripheral: CBPeripheral){

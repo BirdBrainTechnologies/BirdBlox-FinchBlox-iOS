@@ -32,8 +32,8 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
     
     func startDiscoveringServices(){
         dbg_print("discovering services for: " + peripheralBLE!.description)
-        //self.peripheralBLE?.discoverServices([BLEServiceUUID])
-        peripheralBLE?.discoverServices(nil)
+        self.peripheralBLE?.discoverServices([BLEServiceUUID])
+        //peripheralBLE?.discoverServices(nil)
         dbg_print("done discovering")
     }
     

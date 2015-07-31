@@ -2,7 +2,6 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Dbz-IG-z7a">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--Root View Controller-->
@@ -57,24 +56,22 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="infoDark" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="B5L-wk-faa">
-                                <rect key="frame" x="562" y="570" width="22" height="22"/>
-                                <connections>
-                                    <action selector="test:" destination="3KV-dW-vIo" eventType="touchUpInside" id="HTp-M7-dzf"/>
-                                </connections>
-                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Snap! is currently loading. This could take few seconds." lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="b82-yK-4UU">
+                                <rect key="frame" x="87" y="289" width="427" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
+                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
-                            <constraint firstItem="e3y-9i-1He" firstAttribute="top" secondItem="B5L-wk-faa" secondAttribute="bottom" constant="8" symbolic="YES" id="2VI-0m-Ni4"/>
-                            <constraint firstItem="B5L-wk-faa" firstAttribute="trailing" secondItem="aHO-Gj-xs9" secondAttribute="trailingMargin" id="A2H-2n-cvM"/>
+                            <constraint firstItem="b82-yK-4UU" firstAttribute="top" secondItem="S6R-Nj-BXS" secondAttribute="bottom" constant="269" id="TfA-oQ-e3l"/>
+                            <constraint firstItem="b82-yK-4UU" firstAttribute="centerX" secondItem="aHO-Gj-xs9" secondAttribute="centerX" id="WFX-LL-RNW"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="wep-Hx-6F3"/>
                     <nil key="simulatedTopBarMetrics"/>
                     <nil key="simulatedBottomBarMetrics"/>
-                    <connections>
-                        <outlet property="testButton" destination="B5L-wk-faa" id="Pwf-3g-dV1"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fek-uX-61b" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

@@ -15,6 +15,19 @@
                     <view key="view" contentMode="scaleToFill" id="aHO-Gj-xs9">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Snap! is currently loading. This could take few seconds." lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="teO-VR-IRj">
+                                <rect key="frame" x="87" y="289" width="427" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstItem="teO-VR-IRj" firstAttribute="centerX" secondItem="aHO-Gj-xs9" secondAttribute="centerX" id="IXn-Jl-uvO"/>
+                            <constraint firstItem="teO-VR-IRj" firstAttribute="top" secondItem="S6R-Nj-BXS" secondAttribute="bottom" constant="269" id="Zwf-Iu-u6U"/>
+                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="wep-Hx-6F3"/>
                     <nil key="simulatedTopBarMetrics"/>
