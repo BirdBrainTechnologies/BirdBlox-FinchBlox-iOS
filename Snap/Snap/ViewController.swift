@@ -34,7 +34,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         super.loadView()
         mainWebView = WKWebView(frame: self.view.bounds)
         mainWebView.UIDelegate = self
-        
+        mainWebView.contentMode = UIViewContentMode.ScaleAspectFit
     }
     override func prefersStatusBarHidden() -> Bool {
         return true
@@ -86,8 +86,20 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardDidShow:", name: UIKeyboardDidShowNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardDidHide:", name: UIKeyboardDidHideNotification, object: nil)
+    }
+    var scrollingTimer = NSTimer()
+    func keyboardDidShow(notification:NSNotification){
+        scrollingTimer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: Selector("scrollToTop"), userInfo: nil, repeats: true)
+    }
+    func keyboardDidHide(notification:NSNotification){
+        scrollingTimer.invalidate()
     }
     
+    func scrollToTop(){
+        mainWebView.scrollView.contentOffset = CGPointMake(0, 0)
+    }
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         prepareServer()

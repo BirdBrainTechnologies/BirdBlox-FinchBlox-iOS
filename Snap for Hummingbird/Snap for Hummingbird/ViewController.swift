@@ -85,6 +85,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardDidShow:", name: UIKeyboardDidShowNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardDidHide:", name: UIKeyboardDidHideNotification, object: nil)
+        
         prepareServer()
         server.start(listenPort: 22179)
         navigationController!.setNavigationBarHidden(true, animated:true)
@@ -152,6 +155,17 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         }
     }
     
+    var scrollingTimer = NSTimer()
+    func keyboardDidShow(notification:NSNotification){
+        scrollingTimer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: Selector("scrollToTop"), userInfo: nil, repeats: true)
+    }
+    func keyboardDidHide(notification:NSNotification){
+        scrollingTimer.invalidate()
+    }
+    
+    func scrollToTop(){
+        mainWebView.scrollView.contentOffset = CGPointMake(0, 0)
+    }
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
     }
