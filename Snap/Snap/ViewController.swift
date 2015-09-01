@@ -202,9 +202,12 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         var ssid:NSString = "null"
         let ifs:NSArray = CNCopySupportedInterfaces().takeUnretainedValue() as NSArray
         for ifName: NSString in ifs as! [NSString]{
-            let info: NSDictionary = CNCopyCurrentNetworkInfo(ifName).takeUnretainedValue()
-            if (info["SSID"] != nil){
-                ssid = info["SSID"] as! NSString
+            let copied = CNCopyCurrentNetworkInfo(ifName)
+            if (copied != nil){
+                let info: NSDictionary = copied.takeUnretainedValue()
+                if (info["SSID"] != nil){
+                    ssid = info["SSID"] as! NSString
+                }
             }
         }
         return ssid as String
