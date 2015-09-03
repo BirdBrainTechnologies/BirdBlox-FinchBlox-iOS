@@ -16,6 +16,7 @@ import MessageUI
 
 class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate, MFMailComposeViewControllerDelegate {
 
+    @IBOutlet weak var importButton: UIButton!
     let server: HttpServer = HttpServer()
     var wasShaken: Bool = false
     var shakenTimer: NSTimer = NSTimer()
@@ -29,6 +30,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
     var currentLocation:CLLocationCoordinate2D = CLLocationCoordinate2D()
     var x: Double = 0, y: Double = 0, z: Double = 0
     var mainWebView: WKWebView!
+    var importedXMLText: String?
     
     override func loadView() {
         super.loadView()
@@ -49,6 +51,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                 mailComposer.title = "My Snap Project"
                 let mineType: String = "text/xml"
                 if(response.MIMEType?.pathComponents[1] == "xml"){
+                    UIPasteboard.generalPasteboard().string = NSString(data: text, encoding: NSUTF8StringEncoding) as String?
                     mailComposer.addAttachmentData(text, mimeType: mineType, fileName: "project.xml")
                     self.presentViewController(mailComposer, animated: true, completion: nil)
                 }
@@ -133,7 +136,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                 })
             })
         }
-
+        
         mainWebView?.contentMode = UIViewContentMode.ScaleAspectFit
         if(isConnectedToInternet()){
             if(shouldUpdate()){
@@ -165,7 +168,26 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             self.view.addSubview(mainWebView)
             mainWebView?.loadRequest(requestPage)
         }
-
+        self.view.bringSubviewToFront(importButton)
+    }
+    @IBAction func importPressed(sender: UIButton) {
+        var xmlField: UITextField?
+        func didPasteFile(alert: UIAlertAction!){
+            importedXMLText = xmlField?.text
+            let url = NSURL(string: "http://localhost:22180/snap/snap.html#open:http://localhost:22180/project.xml")
+            let requestPage = NSURLRequest(URL: url!)
+            mainWebView?.loadRequest(requestPage)
+        }
+        func addTextFieldConfigHandler(textField: UITextField!){
+            textField.placeholder = "Paste your XML project text here!"
+            xmlField = textField
+        }
+        let importPrompt = UIAlertController(title: "File Import", message: "Paste your xml project file to import it.", preferredStyle: UIAlertControllerStyle.Alert)
+        importPrompt.addTextFieldWithConfigurationHandler(addTextFieldConfigHandler)
+        importPrompt.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Default, handler: nil))
+        importPrompt.addAction(UIAlertAction(title: "Import", style: UIAlertActionStyle.Default, handler: didPasteFile))
+        presentViewController(importPrompt, animated: true, completion: nil)
+        
     }
     
     //for shake
@@ -308,6 +330,13 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             return .OK(.RAW(self.getOrientation()))
         }
         server["/project.xml"] = {request in
+            
+            if let importText = self.importedXMLText{
+                self.importedXMLText = nil
+                return .OK(.RAW(importText))
+                
+            }
+            
             let urlFromXMl = (UIApplication.sharedApplication().delegate as! AppDelegate).getFileUrl()
             var path: String
             if let tempURL = urlFromXMl{

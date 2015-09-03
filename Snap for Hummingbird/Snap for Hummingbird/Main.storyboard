@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Dbz-IG-z7a">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--Root View Controller-->
@@ -62,16 +63,31 @@
                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ca4-nZ-wbp">
+                                <rect key="frame" x="547" y="565" width="37" height="27"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                <state key="normal" title="Import">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="importPressed:" destination="3KV-dW-vIo" eventType="touchUpInside" id="PcU-pt-rzG"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
+                            <constraint firstItem="Ca4-nZ-wbp" firstAttribute="trailing" secondItem="aHO-Gj-xs9" secondAttribute="trailingMargin" id="BgD-fi-b16"/>
                             <constraint firstItem="b82-yK-4UU" firstAttribute="top" secondItem="S6R-Nj-BXS" secondAttribute="bottom" constant="269" id="TfA-oQ-e3l"/>
                             <constraint firstItem="b82-yK-4UU" firstAttribute="centerX" secondItem="aHO-Gj-xs9" secondAttribute="centerX" id="WFX-LL-RNW"/>
+                            <constraint firstItem="e3y-9i-1He" firstAttribute="top" secondItem="Ca4-nZ-wbp" secondAttribute="bottom" constant="8" id="hYY-Ls-10d"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="wep-Hx-6F3"/>
                     <nil key="simulatedTopBarMetrics"/>
                     <nil key="simulatedBottomBarMetrics"/>
+                    <connections>
+                        <outlet property="importButton" destination="Ca4-nZ-wbp" id="FIo-11-WA6"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fek-uX-61b" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
