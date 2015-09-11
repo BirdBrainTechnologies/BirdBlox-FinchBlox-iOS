@@ -23,22 +23,52 @@
                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Hv2-p2-JS0">
-                                <rect key="frame" x="547" y="565" width="37" height="27"/>
+                            <button opaque="NO" alpha="0.74999999999999978" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Hv2-p2-JS0">
+                                <rect key="frame" x="545" y="565" width="50" height="27"/>
+                                <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="50" id="lVm-DJ-mGc"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                 <state key="normal" title="Import">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="10"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
                                     <action selector="importPressed:" destination="3KV-dW-vIo" eventType="touchUpInside" id="cBo-Sc-Ddq"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" alpha="0.74999999999999978" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZCa-JY-CRH">
+                                <rect key="frame" x="545" y="530" width="50" height="27"/>
+                                <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="50" id="wqW-49-he5"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                <state key="normal" title="Record">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="10"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="recordPressed:" destination="3KV-dW-vIo" eventType="touchUpInside" id="TSc-7Q-Aty"/>
                                 </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="teO-VR-IRj" firstAttribute="centerX" secondItem="aHO-Gj-xs9" secondAttribute="centerX" id="IXn-Jl-uvO"/>
-                            <constraint firstItem="Hv2-p2-JS0" firstAttribute="trailing" secondItem="aHO-Gj-xs9" secondAttribute="trailingMargin" id="NCB-r4-fxT"/>
+                            <constraint firstItem="Hv2-p2-JS0" firstAttribute="trailing" secondItem="aHO-Gj-xs9" secondAttribute="trailingMargin" constant="11" id="NCB-r4-fxT"/>
                             <constraint firstItem="teO-VR-IRj" firstAttribute="top" secondItem="S6R-Nj-BXS" secondAttribute="bottom" constant="269" id="Zwf-Iu-u6U"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="ZCa-JY-CRH" secondAttribute="trailing" constant="-11" id="i5l-xA-El3"/>
+                            <constraint firstItem="Hv2-p2-JS0" firstAttribute="top" secondItem="ZCa-JY-CRH" secondAttribute="bottom" constant="8" id="oTP-9V-l3e"/>
                             <constraint firstItem="e3y-9i-1He" firstAttribute="top" secondItem="Hv2-p2-JS0" secondAttribute="bottom" constant="8" id="onh-5Y-CzE"/>
                         </constraints>
                     </view>
@@ -47,6 +77,7 @@
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="importButton" destination="Hv2-p2-JS0" id="LSv-B2-wf1"/>
+                        <outlet property="recordButton" destination="ZCa-JY-CRH" id="5oL-fk-D7D"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fek-uX-61b" userLabel="First Responder" sceneMemberID="firstResponder"/>

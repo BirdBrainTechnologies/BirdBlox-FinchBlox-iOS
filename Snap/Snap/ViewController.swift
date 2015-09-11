@@ -14,9 +14,10 @@ import CoreMotion
 import WebKit
 import MessageUI
 
-class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate, MFMailComposeViewControllerDelegate {
+class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate, MFMailComposeViewControllerDelegate, AVAudioRecorderDelegate {
 
     @IBOutlet weak var importButton: UIButton!
+    @IBOutlet weak var recordButton: UIButton!
     let server: HttpServer = HttpServer()
     var wasShaken: Bool = false
     var shakenTimer: NSTimer = NSTimer()
@@ -31,6 +32,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
     var x: Double = 0, y: Double = 0, z: Double = 0
     var mainWebView: WKWebView!
     var importedXMLText: String?
+    var recorder: AVAudioRecorder?
     
     override func loadView() {
         super.loadView()
@@ -53,7 +55,13 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                 if(response.MIMEType?.pathComponents[1] == "xml"){
                     UIPasteboard.generalPasteboard().string = NSString(data: text, encoding: NSUTF8StringEncoding) as String?
                     mailComposer.addAttachmentData(text, mimeType: mineType, fileName: "project.xml")
-                    self.presentViewController(mailComposer, animated: true, completion: nil)
+                    let prompt = UIAlertController(title: "Copied to clipboard", message: "The contents of your project file has been copied to your clipboard. Would you like to email the XML file?", preferredStyle: UIAlertControllerStyle.Alert)
+                    prompt.addAction(UIAlertAction(title: "No", style: UIAlertActionStyle.Default, handler: nil))
+                    func sendEmail(action: UIAlertAction!){
+                        self.presentViewController(mailComposer, animated: true, completion: nil)
+                    }
+                    prompt.addAction(UIAlertAction(title: "Yes", style: UIAlertActionStyle.Default, handler: sendEmail))
+                    self.presentViewController(prompt, animated: true, completion: nil)
                 }
                 return
             }
@@ -144,12 +152,12 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                 
             }
             if let ip = getWiFiAddress(){
-                let connectionAlert = UIAlertController(title: "Connected", message: "The app is currently connecting to a local version of Snap!. If would like to use the app as a server, simply open the iPad starter project or a project built from it on a computer and use this IP address: " + getWiFiAddress()!, preferredStyle: UIAlertControllerStyle.Alert)
+                let connectionAlert = UIAlertController(title: "Connected", message: "The app is currently connecting to a local version of Snap!. If you would like to use the app as a server, simply open the iPad starter project or a project built from it on a computer and use this IP address: " + getWiFiAddress()!, preferredStyle: UIAlertControllerStyle.Alert)
                 connectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
                 self.presentViewController(connectionAlert, animated: true, completion: nil)
             }
             else{
-                let connectionAlert = UIAlertController(title: "Connected", message: "The app is currently connecting to a local version of Snap!. If would like to use the app as a server, you need to be connected to wifi. Either you are not connected to wifi or have some connection connection issues.", preferredStyle: UIAlertControllerStyle.Alert)
+                let connectionAlert = UIAlertController(title: "Connected", message: "The app is currently connecting to a local version of Snap!. If you would like to use the app as a server, you need to be connected to wifi. Either you are not connected to wifi or have some connection connection issues.", preferredStyle: UIAlertControllerStyle.Alert)
                 connectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
                 self.presentViewController(connectionAlert, animated: true, completion: nil)
             }
@@ -169,6 +177,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             mainWebView?.loadRequest(requestPage)
         }
         self.view.bringSubviewToFront(importButton)
+        self.view.bringSubviewToFront(recordButton)
     }
     @IBAction func importPressed(sender: UIButton) {
         var xmlField: UITextField?
@@ -189,7 +198,84 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         presentViewController(importPrompt, animated: true, completion: nil)
         
     }
-    
+    @IBAction func recordPressed(sender: UIButton) {
+        let firstPrompt = UIAlertController(title: "Record Audio", message: "Click the record button to start recording or cancel to close this window.", preferredStyle: UIAlertControllerStyle.Alert)
+        
+        let recordingPrompt = UIAlertController(title: "Recording Audio", message: "Audio being recorded, click stop to stop recording", preferredStyle: UIAlertControllerStyle.Alert)
+        
+        let recordedPrompt = UIAlertController(title: "Save Audio", message: "Audio has been recorded, type in a name for your file and then click save to save it or cancel to delete it", preferredStyle: UIAlertControllerStyle.Alert)
+        
+        let savedPrompt = UIAlertController(title: "Saved!", message: "Your audio file has been saved, to access it, click the file icon in the upper left hand corner and from the dropdown menu select sounds. Another dropdown menu should appear with a list of sound files including yours. Select your file to import it into the project.", preferredStyle: UIAlertControllerStyle.Alert)
+        var fileNameField: UITextField?
+        var recordSettings = [
+            AVFormatIDKey : kAudioFormatMPEG4AAC,
+            AVSampleRateKey : 44100.0,
+            AVNumberOfChannelsKey : 2,
+            AVEncoderBitRateKey: 320000,
+            AVEncoderAudioQualityKey : AVAudioQuality.High.rawValue
+        ]
+        let soundFolderURL = getSnapPath().stringByAppendingPathComponent("Sounds")
+        let soundFileURL = soundFolderURL.stringByAppendingPathComponent("tempAudio.m4a")
+        let realURL = NSURL(fileURLWithPath: soundFileURL)
+        var error: NSError?
+        
+        let audioSession = AVAudioSession.sharedInstance()
+        audioSession.setCategory(AVAudioSessionCategoryPlayAndRecord, error: &error)
+        
+        self.recorder = AVAudioRecorder(URL: realURL, settings: recordSettings as [NSObject : AnyObject], error: &error)
+        if let e = error {
+            NSLog(e.localizedDescription)
+            return
+        }
+        else{
+            recorder?.delegate = self
+            recorder?.prepareToRecord()
+            recorder?.meteringEnabled = true
+        }
+        func addTextFieldConfigHandler(textField: UITextField!){
+            textField.placeholder = "Enter a name for your audio file"
+            fileNameField = textField
+        }
+        func didStartRecording(alert: UIAlertAction!){
+            recorder?.record()
+            presentViewController(recordingPrompt, animated: true, completion: nil)
+        }
+        func didStopRecording(alert: UIAlertAction!){
+            recorder?.stop()
+            presentViewController(recordedPrompt, animated: true, completion: nil)
+        }
+        func cancelRecording(alert: UIAlertAction!){
+            recorder?.stop()
+            NSFileManager.defaultManager().removeItemAtPath(soundFileURL, error: &error)
+        }
+        func saveRecording(alert: UIAlertAction!){
+            var filename = fileNameField?.text
+            if let name = filename{
+                if(count(filename!) <= 0){
+                    filename = "untitled"
+                }
+            }
+            filename = filename?.stringByAppendingString(".m4a")
+            let newPath = soundFolderURL.stringByAppendingPathComponent(filename!)
+            NSFileManager.defaultManager().moveItemAtPath(soundFileURL, toPath: newPath, error: nil)
+            presentViewController(savedPrompt, animated: true, completion: nil)
+        }
+        
+        recordingPrompt.addAction(UIAlertAction(title: "Stop", style: UIAlertActionStyle.Default, handler: didStopRecording))
+        recordingPrompt.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Default, handler: cancelRecording))
+        
+        recordedPrompt.addTextFieldWithConfigurationHandler(addTextFieldConfigHandler)
+        recordedPrompt.addAction(UIAlertAction(title: "Save", style: UIAlertActionStyle.Default, handler: saveRecording))
+        recordedPrompt.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Default, handler: cancelRecording))
+        
+        firstPrompt.addAction(UIAlertAction(title: "Record", style: UIAlertActionStyle.Default, handler: didStartRecording))
+        firstPrompt.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Default, handler: cancelRecording))
+        
+        savedPrompt.addAction(UIAlertAction(title: "Done", style: UIAlertActionStyle.Default, handler: nil))
+        
+        
+        presentViewController(firstPrompt, animated: true, completion: nil)
+    }
     //for shake
     override func canBecomeFirstResponder() -> Bool {
         return true

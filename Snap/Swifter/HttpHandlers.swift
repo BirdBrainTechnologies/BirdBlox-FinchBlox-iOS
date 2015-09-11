@@ -41,7 +41,7 @@ class HttpHandlers {
                         }
                     } else {
                         if let fileBody = NSData(contentsOfFile: filePath) {
-                            if(pathFromUrl.pathExtension == "wav" || pathFromUrl.pathExtension == "mp3"){
+                            if(pathFromUrl.pathExtension == "wav" || pathFromUrl.pathExtension == "mp3" || pathFromUrl.pathExtension == "m4a"){
                                 if pathFromUrl.pathExtension == "mp3"{
                                     if lastPlayedMp3 == ""{
                                         lastPlayedMp3 = pathFromUrl

@@ -22,9 +22,15 @@ public func getUpdate(){
     let zippedData = NSData(contentsOfURL: snapURL!)!
     zippedData.writeToFile(zipPath, atomically: true)
     Main.unzipFileAtPath(zipPath, toDestination: unzipPath)
+    
     let cloudJS = String(contentsOfFile: getSnapPath().stringByAppendingPathComponent("cloud.js"), encoding: NSUTF8StringEncoding, error: nil)
     var localCloudJS = cloudJS?.stringByReplacingOccurrencesOfString("https://snap.apps.miosoft.com/SnapCloud", withString: "https://snap.apps.miosoft.com/SnapCloudLocal", options: NSStringCompareOptions.LiteralSearch, range: nil)
     localCloudJS?.writeToFile(getSnapPath().stringByAppendingPathComponent("cloud.js"), atomically: true, encoding: NSUTF8StringEncoding, error: nil)
+    
+    let snapHTML = String(contentsOfFile: getSnapPath().stringByAppendingPathComponent("snap.html"), encoding: NSUTF8StringEncoding, error: nil)
+    var tweakedSnapHTML = snapHTML?.stringByReplacingOccurrencesOfString("setInterval(loop, 1)", withString: "setInterval(loop, 1)", options: NSStringCompareOptions.LiteralSearch, range: nil)
+    tweakedSnapHTML?.writeToFile(getSnapPath().stringByAppendingPathComponent("snap.html"), atomically: true, encoding: NSUTF8StringEncoding, error: nil)
+    
 }
 
 public func getSnapPath() -> String {
@@ -35,7 +41,22 @@ public func shouldUpdate() -> Bool{
     if !compareHistory(){
         return true
     } else {
+        cleanAudio()
         return false
+    }
+}
+
+public func cleanAudio() {
+    let soundsPath = getSnapPath().stringByAppendingPathComponent("Sounds")
+    let soundsEnumerator = fileManager.enumeratorAtPath(soundsPath)
+    var pathList: Array<String> = []
+    while let element = soundsEnumerator?.nextObject() as? String {
+        if element.hasSuffix("m4a"){
+            pathList.append(soundsPath.stringByAppendingPathComponent(element))
+        }
+    }
+    for path in pathList{
+        fileManager.removeItemAtPath(path, error: nil)
     }
 }
 

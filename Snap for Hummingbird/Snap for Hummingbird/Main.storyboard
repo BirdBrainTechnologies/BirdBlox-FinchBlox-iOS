@@ -24,7 +24,7 @@
                                         <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="tR5-Np-osU">
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
@@ -63,30 +63,61 @@
                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ca4-nZ-wbp">
-                                <rect key="frame" x="547" y="565" width="37" height="27"/>
+                            <button opaque="NO" alpha="0.75" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CzZ-jR-Neu">
+                                <rect key="frame" x="545" y="565" width="50" height="27"/>
+                                <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="50" id="zAz-gD-m7z"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                 <state key="normal" title="Import">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="10"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
-                                    <action selector="importPressed:" destination="3KV-dW-vIo" eventType="touchUpInside" id="PcU-pt-rzG"/>
+                                    <action selector="importPressed:" destination="3KV-dW-vIo" eventType="touchUpInside" id="lO7-vj-uH3"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" alpha="0.75" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="41j-ng-iTb">
+                                <rect key="frame" x="545" y="530" width="50" height="27"/>
+                                <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="50" id="SNO-Wh-L54"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                <state key="normal" title="Record">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="10"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="recordPressed:" destination="3KV-dW-vIo" eventType="touchUpInside" id="ITU-rX-3ap"/>
                                 </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
-                            <constraint firstItem="Ca4-nZ-wbp" firstAttribute="trailing" secondItem="aHO-Gj-xs9" secondAttribute="trailingMargin" id="BgD-fi-b16"/>
+                            <constraint firstItem="CzZ-jR-Neu" firstAttribute="top" secondItem="41j-ng-iTb" secondAttribute="bottom" constant="8" id="7PO-HP-2c1"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="CzZ-jR-Neu" secondAttribute="trailing" constant="-11" id="Hyx-2I-htO"/>
                             <constraint firstItem="b82-yK-4UU" firstAttribute="top" secondItem="S6R-Nj-BXS" secondAttribute="bottom" constant="269" id="TfA-oQ-e3l"/>
                             <constraint firstItem="b82-yK-4UU" firstAttribute="centerX" secondItem="aHO-Gj-xs9" secondAttribute="centerX" id="WFX-LL-RNW"/>
-                            <constraint firstItem="e3y-9i-1He" firstAttribute="top" secondItem="Ca4-nZ-wbp" secondAttribute="bottom" constant="8" id="hYY-Ls-10d"/>
+                            <constraint firstItem="e3y-9i-1He" firstAttribute="top" secondItem="CzZ-jR-Neu" secondAttribute="bottom" constant="8" id="dKG-y6-ctF"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="41j-ng-iTb" secondAttribute="trailing" constant="-11" id="ou6-hX-cUL"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="wep-Hx-6F3"/>
                     <nil key="simulatedTopBarMetrics"/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
-                        <outlet property="importButton" destination="Ca4-nZ-wbp" id="FIo-11-WA6"/>
+                        <outlet property="importButton" destination="CzZ-jR-Neu" id="diN-z2-7dd"/>
+                        <outlet property="recordButton" destination="41j-ng-iTb" id="u6r-5w-lr1"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fek-uX-61b" userLabel="First Responder" sceneMemberID="firstResponder"/>
