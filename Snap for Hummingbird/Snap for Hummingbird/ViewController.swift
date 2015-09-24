@@ -16,6 +16,8 @@ import MessageUI
 
 class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate, MFMailComposeViewControllerDelegate, AVAudioRecorderDelegate {
     
+    @IBOutlet weak var renameButton: UIButton!
+    @IBOutlet weak var connectedIndicator: UILabel!
     @IBOutlet weak var importButton: UIButton!
     @IBOutlet weak var recordButton: UIButton!
     let responseTime = 0.001
@@ -167,6 +169,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         }
         self.view.bringSubviewToFront(importButton)
         self.view.bringSubviewToFront(recordButton)
+        self.view.bringSubviewToFront(connectedIndicator)
+        self.view.bringSubviewToFront(renameButton)
     }
     
     var scrollingTimer = NSTimer()
@@ -183,6 +187,27 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
     }
+    
+    @IBAction func renamePressed(sender: UIButton) {
+            let alertController = UIAlertController(title: "Set Name", message: "Enter a name for your Hummingbird (up to 18 characters)", preferredStyle: UIAlertControllerStyle.Alert)
+            let okayAction = UIAlertAction(title: "Okay", style: UIAlertActionStyle.Default){
+                (action) -> Void in
+                if let textField: AnyObject = alertController.textFields?.first{
+                    if let name = (textField as! UITextField).text{
+                            self.hbServe.setName(name)
+                    }
+                }
+            }
+            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: nil)
+            alertController.addTextFieldWithConfigurationHandler{
+                (txtName) -> Void in
+                txtName.placeholder = "<Enter a new name>"
+            }
+            alertController.addAction(okayAction)
+            alertController.addAction(cancelAction)
+            self.presentViewController(alertController, animated: true, completion: nil)
+    }
+    
     @IBAction func importPressed(sender: UIButton) {
         var xmlField: UITextField?
         func didPasteFile(alert: UIAlertAction!){
@@ -658,10 +683,16 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                 hbServe.stopPolling()
                 NSThread.sleepForTimeInterval(0.1)
                 hbServe.beginPolling()
+                dispatch_async(dispatch_get_main_queue()){
+                self.connectedIndicator.textColor = UIColor.greenColor()
+                }
+
             }
             else{
                 NSLog("device disconnected")
-
+                dispatch_async(dispatch_get_main_queue()){
+                    self.connectedIndicator.textColor = UIColor.redColor()
+                }
             }
         }
     }

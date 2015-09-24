@@ -101,23 +101,54 @@
                                     <action selector="recordPressed:" destination="3KV-dW-vIo" eventType="touchUpInside" id="ITU-rX-3ap"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="●" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EAj-mY-nBT">
+                                <rect key="frame" x="515" y="537" width="29" height="55"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="46"/>
+                                <color key="textColor" red="0.0" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" alpha="0.75" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FCe-f2-ArS">
+                                <rect key="frame" x="545" y="495" width="50" height="27"/>
+                                <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="50" id="Qex-ko-7eJ"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                <state key="normal" title="Rename">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="10"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="renamePressed:" destination="3KV-dW-vIo" eventType="touchUpInside" id="Oai-ik-Xg5"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="CzZ-jR-Neu" firstAttribute="top" secondItem="41j-ng-iTb" secondAttribute="bottom" constant="8" id="7PO-HP-2c1"/>
+                            <constraint firstItem="e3y-9i-1He" firstAttribute="top" secondItem="EAj-mY-nBT" secondAttribute="bottom" constant="8" id="DyC-7e-kyw"/>
                             <constraint firstAttribute="trailingMargin" secondItem="CzZ-jR-Neu" secondAttribute="trailing" constant="-11" id="Hyx-2I-htO"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="EAj-mY-nBT" secondAttribute="trailing" constant="40" id="Rvt-Iy-gMY"/>
                             <constraint firstItem="b82-yK-4UU" firstAttribute="top" secondItem="S6R-Nj-BXS" secondAttribute="bottom" constant="269" id="TfA-oQ-e3l"/>
                             <constraint firstItem="b82-yK-4UU" firstAttribute="centerX" secondItem="aHO-Gj-xs9" secondAttribute="centerX" id="WFX-LL-RNW"/>
                             <constraint firstItem="e3y-9i-1He" firstAttribute="top" secondItem="CzZ-jR-Neu" secondAttribute="bottom" constant="8" id="dKG-y6-ctF"/>
                             <constraint firstAttribute="trailingMargin" secondItem="41j-ng-iTb" secondAttribute="trailing" constant="-11" id="ou6-hX-cUL"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="FCe-f2-ArS" secondAttribute="trailing" constant="-11" id="rBi-Fp-ddB"/>
+                            <constraint firstItem="41j-ng-iTb" firstAttribute="top" secondItem="FCe-f2-ArS" secondAttribute="bottom" constant="8" id="t2Z-Fm-rNb"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="wep-Hx-6F3"/>
                     <nil key="simulatedTopBarMetrics"/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
+                        <outlet property="connectedIndicator" destination="EAj-mY-nBT" id="FTu-bc-6fD"/>
                         <outlet property="importButton" destination="CzZ-jR-Neu" id="diN-z2-7dd"/>
                         <outlet property="recordButton" destination="41j-ng-iTb" id="u6r-5w-lr1"/>
+                        <outlet property="renameButton" destination="FCe-f2-ArS" id="MZ7-cd-Okf"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fek-uX-61b" userLabel="First Responder" sceneMemberID="firstResponder"/>

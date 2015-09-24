@@ -191,10 +191,8 @@ class MainViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         spinner.center = CGPointMake(139.5,125.5)
         spinner.startAnimating()
         alertController2.view.addSubview(spinner)
-        print("presenting wait")
         self.presentedViewController?.dismissViewControllerAnimated(true, completion: nil)
         self.presentViewController(alertController2, animated: true, completion: nil)
-        print("presented wait")
         self.hbServe.setName(name)
     }
     
