@@ -30,10 +30,11 @@ class ConnectionViewController: UITableViewController{
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         refreshTimer.invalidate()
+        let array = Array(self.items.values.lazy)
         let cell = sender as! UITableViewCell
         let index = self.tableView.indexPathForCell(cell)
         let i = index!.row
-        let item = self.items.values.array[i]
+        let item = array[i]
         hbServe.connectToDevice(item)
         let mainView = segue.destinationViewController as! ViewController
         mainView.hbServe = hbServe
@@ -58,9 +59,9 @@ class ConnectionViewController: UITableViewController{
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell: UITableViewCell = (tableView.dequeueReusableCellWithIdentifier("cellIdentifier", forIndexPath: indexPath) as! UITableViewCell)
-        
-        cell.textLabel?.text = items.keys.array[indexPath.row]
+        let keys = Array(items.keys.lazy)
+        let cell: UITableViewCell = (tableView.dequeueReusableCellWithIdentifier("cellIdentifier", forIndexPath: indexPath) )
+        cell.textLabel?.text = keys[indexPath.row]
         cell.updateConstraintsIfNeeded()
         return cell
     }

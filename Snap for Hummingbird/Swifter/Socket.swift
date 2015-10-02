@@ -18,7 +18,7 @@ struct Socket {
         return NSError(domain: "SOCKET", code: Int(errorCode), userInfo: nil)
     }
     
-    static func tcpForListen(port: in_port_t = 8080, error:NSErrorPointer = nil) -> CInt? {
+    static func tcpForListen(port: in_port_t = 8080, error: NSErrorPointer = nil) -> CInt? {
         let s = socket(AF_INET, SOCK_STREAM, 0)
         if ( s == -1 ) {
             if error != nil { error.memory = lastErr("socket(...) failed.") }
@@ -51,19 +51,19 @@ struct Socket {
     
     static func writeUTF8(socket: CInt, string: String, error: NSErrorPointer = nil) -> Bool {
         if let nsdata = string.dataUsingEncoding(NSUTF8StringEncoding) {
-            writeData(socket, data: nsdata, error: error)
+            return writeData(socket, data: nsdata, error: error)
         }
         return true
     }
     
     static func writeASCII(socket: CInt, string: String, error: NSErrorPointer = nil) -> Bool {
         if let nsdata = string.dataUsingEncoding(NSASCIIStringEncoding) {
-            writeData(socket, data: nsdata, error: error)
+            return writeData(socket, data: nsdata, error: error)
         }
         return true
     }
     
-    static func writeData(socket: CInt, data: NSData, error:NSErrorPointer = nil) -> Bool {
+    static func writeData(socket: CInt, data: NSData, error: NSErrorPointer = nil) -> Bool {
         var sent = 0
         let unsafePointer = UnsafePointer<UInt8>(data.bytes)
         while ( sent < data.length ) {
@@ -102,5 +102,19 @@ struct Socket {
     static func release(socket: CInt) {
         shutdown(socket, SHUT_RDWR)
         close(socket)
+    }
+    
+    static func peername(socket: CInt, error: NSErrorPointer = nil) -> String? {
+        var addr = sockaddr(), len: socklen_t = socklen_t(sizeof(sockaddr))
+        if getpeername(socket, &addr, &len) != 0 {
+            if error != nil { error.memory = lastErr("getpeername(...) failed.") }
+            return nil
+        }
+        var hostBuffer = [CChar](count: Int(NI_MAXHOST), repeatedValue: 0)
+        if getnameinfo(&addr, len, &hostBuffer, socklen_t(hostBuffer.count), nil, 0, NI_NUMERICHOST) != 0 {
+            if error != nil { error.memory = lastErr("getnameinfo(...) failed.") }
+            return nil
+        }
+        return String.fromCString(hostBuffer)
     }
 }

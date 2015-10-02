@@ -50,7 +50,7 @@ class BluetoothDiscovery: NSObject, CBCentralManagerDelegate {
         }
     }
     
-    func centralManager(central: CBCentralManager, didDiscoverPeripheral peripheral: CBPeripheral, advertisementData: [NSObject : AnyObject], RSSI: NSNumber) {
+    func centralManager(central: CBCentralManager, didDiscoverPeripheral peripheral: CBPeripheral, advertisementData: [String : AnyObject], RSSI: NSNumber) {
         if((peripheral.name == nil) || (peripheral.name == "")){
             return
         }

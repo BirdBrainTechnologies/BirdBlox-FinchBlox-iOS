@@ -111,7 +111,7 @@ public class HummingbirdServices: NSObject{
         if(leds[realPort] == intensity){
             return;
         }
-        let command: NSData = getLEDCommand(port, intensity)
+        let command: NSData = getLEDCommand(port, intensity: intensity)
         leds[realPort] = intensity
         self.sendByteArray(command)
     }
@@ -121,7 +121,7 @@ public class HummingbirdServices: NSObject{
         if(trileds[realPort] == [r,g,b]){
             return;
         }
-        let command: NSData = getTriLEDCommand(port, r, g, b)
+        let command: NSData = getTriLEDCommand(port, redVal: r, greenVal: g, blueVal: b)
         trileds[realPort] = [r,g,b]
         self.sendByteArray(command)
     }
@@ -131,7 +131,7 @@ public class HummingbirdServices: NSObject{
         if(motors[realPort] == speed){
             return
         }
-        let command: NSData = getMotorCommand(port, speed)
+        let command: NSData = getMotorCommand(port, speed: speed)
         motors[realPort] = speed
         self.sendByteArray(command)
     }
@@ -141,7 +141,7 @@ public class HummingbirdServices: NSObject{
         if(vibrations[realPort] == intensity){
             return
         }
-        let command: NSData = getVibrationCommand(port, intensity)
+        let command: NSData = getVibrationCommand(port, intensity: intensity)
         vibrations[realPort] = intensity
         self.sendByteArray(command)
     }
@@ -151,7 +151,7 @@ public class HummingbirdServices: NSObject{
         if(servos[realPort] == angle){
             return
         }
-        let command: NSData = getServoCommand(port, angle)
+        let command: NSData = getServoCommand(port, angle: angle)
         servos[realPort] = angle
         self.sendByteArray(command)
     }
@@ -205,7 +205,7 @@ public class HummingbirdServices: NSObject{
     
     public func setName(name: String){
         var adjustedName: String = name
-        if (count(name)>18){
+        if (name.characters.count > 18){
             adjustedName = (name as NSString).substringToIndex(18)
         }
         let command1: NSData = StringToCommand("+++")//command mode

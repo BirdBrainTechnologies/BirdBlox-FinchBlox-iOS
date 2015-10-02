@@ -7,15 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BA0549391B4AED0000A6FA8B /* HttpHandlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA0549331B4AED0000A6FA8B /* HttpHandlers.swift */; };
-		BA05493A1B4AED0000A6FA8B /* HttpParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA0549341B4AED0000A6FA8B /* HttpParser.swift */; };
-		BA05493B1B4AED0000A6FA8B /* HttpRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA0549351B4AED0000A6FA8B /* HttpRequest.swift */; };
-		BA05493C1B4AED0000A6FA8B /* HttpResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA0549361B4AED0000A6FA8B /* HttpResponse.swift */; };
-		BA05493D1B4AED0000A6FA8B /* HttpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA0549371B4AED0000A6FA8B /* HttpServer.swift */; };
-		BA05493E1B4AED0000A6FA8B /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA0549381B4AED0000A6FA8B /* Socket.swift */; };
 		BA0549401B4AF2EA00A6FA8B /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA05493F1B4AF2EA00A6FA8B /* CoreData.framework */; };
 		BA0549581B4B180700A6FA8B /* iPadstart.xml in Resources */ = {isa = PBXBuildFile; fileRef = BA0549571B4B180700A6FA8B /* iPadstart.xml */; };
-		BA0549EC1B54064F00A6FA8B /* libz.1.2.5.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BA0549EB1B54064F00A6FA8B /* libz.1.2.5.dylib */; };
 		BA054A011B541E9500A6FA8B /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BA0549F31B541E9500A6FA8B /* Info.plist */; };
 		BA054A021B541E9500A6FA8B /* Main.m in Sources */ = {isa = PBXBuildFile; fileRef = BA0549F51B541E9500A6FA8B /* Main.m */; };
 		BA054A031B541E9500A6FA8B /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = BA0549F81B541E9500A6FA8B /* ioapi.c */; };
@@ -29,7 +22,6 @@
 		BA27E2C51B3C960000A0DF58 /* HummingbirdServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA27E2C11B3C960000A0DF58 /* HummingbirdServices.swift */; };
 		BA27E2C61B3C960000A0DF58 /* Utility.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA27E2C21B3C960000A0DF58 /* Utility.swift */; };
 		BA27E2C81B3CA18800A0DF58 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = BA27E2C71B3CA18800A0DF58 /* LICENSE */; };
-		BA7F0A741B25D463007DD94E /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BA7F0A731B25D463007DD94E /* libsqlite3.dylib */; };
 		BA7F0A761B25E5D2007DD94E /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA7F0A751B25E5D2007DD94E /* AVFoundation.framework */; };
 		BA88B62E1B2233C9009EF1C3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA88B62D1B2233C9009EF1C3 /* AppDelegate.swift */; };
 		BA88B6301B2233C9009EF1C3 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA88B62F1B2233C9009EF1C3 /* ViewController.swift */; };
@@ -37,6 +29,14 @@
 		BA88B6381B2233C9009EF1C3 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = BA88B6361B2233C9009EF1C3 /* LaunchScreen.xib */; };
 		BA88B65A1B223990009EF1C3 /* ConnectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA88B6581B223990009EF1C3 /* ConnectionViewController.swift */; };
 		BA88B65B1B223990009EF1C3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BA88B6591B223990009EF1C3 /* Main.storyboard */; };
+		BA95C01A1BBEE1DC003AEC1A /* HttpHandlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA95C0191BBEE1DC003AEC1A /* HttpHandlers.swift */; settings = {ASSET_TAGS = (); }; };
+		BA95C0201BBEE2CE003AEC1A /* HttpParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA95C01B1BBEE2CE003AEC1A /* HttpParser.swift */; settings = {ASSET_TAGS = (); }; };
+		BA95C0211BBEE2CE003AEC1A /* HttpRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA95C01C1BBEE2CE003AEC1A /* HttpRequest.swift */; settings = {ASSET_TAGS = (); }; };
+		BA95C0221BBEE2CE003AEC1A /* HttpResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA95C01D1BBEE2CE003AEC1A /* HttpResponse.swift */; settings = {ASSET_TAGS = (); }; };
+		BA95C0231BBEE2CE003AEC1A /* HttpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA95C01E1BBEE2CE003AEC1A /* HttpServer.swift */; settings = {ASSET_TAGS = (); }; };
+		BA95C0241BBEE2CE003AEC1A /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA95C01F1BBEE2CE003AEC1A /* Socket.swift */; settings = {ASSET_TAGS = (); }; };
+		BA95C0261BBEF609003AEC1A /* libz.1.2.5.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = BA95C0251BBEF609003AEC1A /* libz.1.2.5.tbd */; };
+		BA95C0281BBEF61A003AEC1A /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = BA95C0271BBEF61A003AEC1A /* libsqlite3.tbd */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -53,15 +53,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		BA0549331B4AED0000A6FA8B /* HttpHandlers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpHandlers.swift; sourceTree = "<group>"; };
-		BA0549341B4AED0000A6FA8B /* HttpParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpParser.swift; sourceTree = "<group>"; };
-		BA0549351B4AED0000A6FA8B /* HttpRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpRequest.swift; sourceTree = "<group>"; };
-		BA0549361B4AED0000A6FA8B /* HttpResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpResponse.swift; sourceTree = "<group>"; };
-		BA0549371B4AED0000A6FA8B /* HttpServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpServer.swift; sourceTree = "<group>"; };
-		BA0549381B4AED0000A6FA8B /* Socket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Socket.swift; sourceTree = "<group>"; };
 		BA05493F1B4AF2EA00A6FA8B /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		BA0549571B4B180700A6FA8B /* iPadstart.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = iPadstart.xml; path = ../Swifter/iPadstart.xml; sourceTree = "<group>"; };
-		BA0549EB1B54064F00A6FA8B /* libz.1.2.5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.1.2.5.dylib; path = usr/lib/libz.1.2.5.dylib; sourceTree = SDKROOT; };
 		BA0549F11B541D4F00A6FA8B /* Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Header.h; sourceTree = "<group>"; };
 		BA0549F31B541E9500A6FA8B /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BA0549F41B541E9500A6FA8B /* Main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Main.h; sourceTree = "<group>"; };
@@ -83,7 +76,6 @@
 		BA27E2C11B3C960000A0DF58 /* HummingbirdServices.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HummingbirdServices.swift; sourceTree = "<group>"; };
 		BA27E2C21B3C960000A0DF58 /* Utility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utility.swift; sourceTree = "<group>"; };
 		BA27E2C71B3CA18800A0DF58 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
-		BA7F0A731B25D463007DD94E /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		BA7F0A751B25E5D2007DD94E /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		BA88B6281B2233C9009EF1C3 /* Snap for Hummingbird.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Snap for Hummingbird.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA88B62C1B2233C9009EF1C3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -93,6 +85,14 @@
 		BA88B6371B2233C9009EF1C3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		BA88B6581B223990009EF1C3 /* ConnectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionViewController.swift; sourceTree = "<group>"; };
 		BA88B6591B223990009EF1C3 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		BA95C0191BBEE1DC003AEC1A /* HttpHandlers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpHandlers.swift; sourceTree = "<group>"; };
+		BA95C01B1BBEE2CE003AEC1A /* HttpParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpParser.swift; sourceTree = "<group>"; };
+		BA95C01C1BBEE2CE003AEC1A /* HttpRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpRequest.swift; sourceTree = "<group>"; };
+		BA95C01D1BBEE2CE003AEC1A /* HttpResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpResponse.swift; sourceTree = "<group>"; };
+		BA95C01E1BBEE2CE003AEC1A /* HttpServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpServer.swift; sourceTree = "<group>"; };
+		BA95C01F1BBEE2CE003AEC1A /* Socket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Socket.swift; sourceTree = "<group>"; };
+		BA95C0251BBEF609003AEC1A /* libz.1.2.5.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.1.2.5.tbd; path = usr/lib/libz.1.2.5.tbd; sourceTree = SDKROOT; };
+		BA95C0271BBEF61A003AEC1A /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,10 +100,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BA0549EC1B54064F00A6FA8B /* libz.1.2.5.dylib in Frameworks */,
+				BA95C0281BBEF61A003AEC1A /* libsqlite3.tbd in Frameworks */,
+				BA95C0261BBEF609003AEC1A /* libz.1.2.5.tbd in Frameworks */,
 				BA0549401B4AF2EA00A6FA8B /* CoreData.framework in Frameworks */,
 				BA7F0A761B25E5D2007DD94E /* AVFoundation.framework in Frameworks */,
-				BA7F0A741B25D463007DD94E /* libsqlite3.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -142,12 +142,12 @@
 		BA7F0A541B25D0D9007DD94E /* Swifter */ = {
 			isa = PBXGroup;
 			children = (
-				BA0549331B4AED0000A6FA8B /* HttpHandlers.swift */,
-				BA0549341B4AED0000A6FA8B /* HttpParser.swift */,
-				BA0549351B4AED0000A6FA8B /* HttpRequest.swift */,
-				BA0549361B4AED0000A6FA8B /* HttpResponse.swift */,
-				BA0549371B4AED0000A6FA8B /* HttpServer.swift */,
-				BA0549381B4AED0000A6FA8B /* Socket.swift */,
+				BA95C0191BBEE1DC003AEC1A /* HttpHandlers.swift */,
+				BA95C01B1BBEE2CE003AEC1A /* HttpParser.swift */,
+				BA95C01C1BBEE2CE003AEC1A /* HttpRequest.swift */,
+				BA95C01D1BBEE2CE003AEC1A /* HttpResponse.swift */,
+				BA95C01E1BBEE2CE003AEC1A /* HttpServer.swift */,
+				BA95C01F1BBEE2CE003AEC1A /* Socket.swift */,
 				BA27E2C71B3CA18800A0DF58 /* LICENSE */,
 			);
 			path = Swifter;
@@ -156,10 +156,10 @@
 		BA88B61F1B2233C9009EF1C3 = {
 			isa = PBXGroup;
 			children = (
-				BA0549EB1B54064F00A6FA8B /* libz.1.2.5.dylib */,
+				BA95C0271BBEF61A003AEC1A /* libsqlite3.tbd */,
+				BA95C0251BBEF609003AEC1A /* libz.1.2.5.tbd */,
 				BA05493F1B4AF2EA00A6FA8B /* CoreData.framework */,
 				BA7F0A751B25E5D2007DD94E /* AVFoundation.framework */,
-				BA7F0A731B25D463007DD94E /* libsqlite3.dylib */,
 				BA0549F21B541E9500A6FA8B /* ZipArchive */,
 				BA7F0A541B25D0D9007DD94E /* Swifter */,
 				BA88B62A1B2233C9009EF1C3 /* Snap for Hummingbird */,
@@ -283,22 +283,22 @@
 			files = (
 				BA27E2C41B3C960000A0DF58 /* BluetoothService.swift in Sources */,
 				BA054A031B541E9500A6FA8B /* ioapi.c in Sources */,
-				BA05493B1B4AED0000A6FA8B /* HttpRequest.swift in Sources */,
-				BA05493D1B4AED0000A6FA8B /* HttpServer.swift in Sources */,
+				BA95C0231BBEE2CE003AEC1A /* HttpServer.swift in Sources */,
+				BA95C0221BBEE2CE003AEC1A /* HttpResponse.swift in Sources */,
+				BA95C0201BBEE2CE003AEC1A /* HttpParser.swift in Sources */,
 				BA054A0A1B54354200A6FA8B /* DocumentManager.swift in Sources */,
-				BA05493A1B4AED0000A6FA8B /* HttpParser.swift in Sources */,
+				BA95C01A1BBEE1DC003AEC1A /* HttpHandlers.swift in Sources */,
 				BA88B6301B2233C9009EF1C3 /* ViewController.swift in Sources */,
 				BA88B62E1B2233C9009EF1C3 /* AppDelegate.swift in Sources */,
+				BA95C0241BBEE2CE003AEC1A /* Socket.swift in Sources */,
 				BA88B65A1B223990009EF1C3 /* ConnectionViewController.swift in Sources */,
-				BA05493E1B4AED0000A6FA8B /* Socket.swift in Sources */,
 				BA054A061B541E9500A6FA8B /* zip.c in Sources */,
 				BA27E2C31B3C960000A0DF58 /* BluetoothDiscovery.swift in Sources */,
 				BA27E2C61B3C960000A0DF58 /* Utility.swift in Sources */,
-				BA05493C1B4AED0000A6FA8B /* HttpResponse.swift in Sources */,
 				BA054A041B541E9500A6FA8B /* mztools.c in Sources */,
 				BA054A051B541E9500A6FA8B /* unzip.c in Sources */,
 				BA054A021B541E9500A6FA8B /* Main.m in Sources */,
-				BA0549391B4AED0000A6FA8B /* HttpHandlers.swift in Sources */,
+				BA95C0211BBEE2CE003AEC1A /* HttpRequest.swift in Sources */,
 				BA27E2C51B3C960000A0DF58 /* HummingbirdServices.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -407,6 +407,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -432,6 +433,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
