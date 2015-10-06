@@ -9,6 +9,7 @@
 import UIKit
 import AVFoundation
 import CoreLocation
+import SystemConfiguration
 import SystemConfiguration.CaptiveNetwork
 import CoreMotion
 import WebKit
@@ -48,13 +49,13 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         if(navigationAction.targetFrame == nil){
             NSURLConnection.sendAsynchronousRequest(navigationAction.request, queue: NSOperationQueue.mainQueue()) {
                 response, text, error in
-                var mailComposer = MFMailComposeViewController()
+                let mailComposer = MFMailComposeViewController()
                 mailComposer.mailComposeDelegate = self
                 mailComposer.title = "My Snap Project"
                 let mineType: String = "text/xml"
-                if(response.MIMEType?.pathComponents[1] == "xml"){
-                    UIPasteboard.generalPasteboard().string = NSString(data: text, encoding: NSUTF8StringEncoding) as String?
-                    mailComposer.addAttachmentData(text, mimeType: mineType, fileName: "project.xml")
+                
+                if(response!.MIMEType == mineType) {
+                    mailComposer.addAttachmentData(text!, mimeType: mineType, fileName: "project.xml")
                     let prompt = UIAlertController(title: "Copied to clipboard", message: "The contents of your project file has been copied to your clipboard. Would you like to email the XML file?", preferredStyle: UIAlertControllerStyle.Alert)
                     prompt.addAction(UIAlertAction(title: "No", style: UIAlertActionStyle.Default, handler: nil))
                     func sendEmail(action: UIAlertAction!){
@@ -62,6 +63,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                     }
                     prompt.addAction(UIAlertAction(title: "Yes", style: UIAlertActionStyle.Default, handler: sendEmail))
                     self.presentViewController(prompt, animated: true, completion: nil)
+                    
                 }
                 return
             }
@@ -69,28 +71,28 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         return nil
     }
     
-    func mailComposeController(controller: MFMailComposeViewController!, didFinishWithResult result: MFMailComposeResult, error: NSError!) {
+    func mailComposeController(controller: MFMailComposeViewController, didFinishWithResult result: MFMailComposeResult, error: NSError?) {
         self.dismissViewControllerAnimated(true, completion: nil)
     }
     
     
     
     func isConnectedToInternet() -> Bool{
-        var zeroAddress = sockaddr_in(sin_len: 0, sin_family: 0, sin_port: 0, sin_addr: in_addr(s_addr: 0), sin_zero: (0, 0, 0, 0, 0, 0, 0, 0))
+        var zeroAddress = sockaddr_in()
         zeroAddress.sin_len = UInt8(sizeofValue(zeroAddress))
         zeroAddress.sin_family = sa_family_t(AF_INET)
         
         let defaultRouteReachability = withUnsafePointer(&zeroAddress) {
-            SCNetworkReachabilityCreateWithAddress(nil, UnsafePointer($0)).takeRetainedValue()
+            SCNetworkReachabilityCreateWithAddress(nil, UnsafePointer($0))
         }
         
-        var flags: SCNetworkReachabilityFlags = 0
-        if SCNetworkReachabilityGetFlags(defaultRouteReachability, &flags) == 0 {
+        var flags: SCNetworkReachabilityFlags = SCNetworkReachabilityFlags()
+        if !SCNetworkReachabilityGetFlags(defaultRouteReachability!, &flags) {
             return false
         }
         
-        let isReachable = (flags & UInt32(kSCNetworkFlagsReachable)) != 0
-        let needsConnection = (flags & UInt32(kSCNetworkFlagsConnectionRequired)) != 0
+        let isReachable = (flags.rawValue & UInt32(kSCNetworkFlagsReachable)) != 0
+        let needsConnection = (flags.rawValue & UInt32(kSCNetworkFlagsConnectionRequired)) != 0
         
         return isReachable && !needsConnection
     }
@@ -114,7 +116,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         prepareServer()
-        server.start(listenPort: 22180)
+        server.start(22180)
         
         self.locationManager.requestAlwaysAuthorization()
         self.locationManager.requestWhenInUseAuthorization()
@@ -152,7 +154,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                 
             }
             if let ip = getWiFiAddress(){
-                let connectionAlert = UIAlertController(title: "Connected", message: "The app is currently connecting to a local version of Snap!. If you would like to use the app as a server, simply open the iPad starter project or a project built from it on a computer and use this IP address: " + getWiFiAddress()!, preferredStyle: UIAlertControllerStyle.Alert)
+                let connectionAlert = UIAlertController(title: "Connected", message: "The app is currently connecting to a local version of Snap!. If you would like to use the app as a server, simply open the iPad starter project or a project built from it on a computer and use this IP address: " + ip, preferredStyle: UIAlertControllerStyle.Alert)
                 connectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
                 self.presentViewController(connectionAlert, animated: true, completion: nil)
             }
@@ -207,30 +209,27 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         
         let savedPrompt = UIAlertController(title: "Saved!", message: "Your audio file has been saved, to access it, click the file icon in the upper left hand corner and from the dropdown menu select sounds. Another dropdown menu should appear with a list of sound files including yours. Select your file to import it into the project.", preferredStyle: UIAlertControllerStyle.Alert)
         var fileNameField: UITextField?
-        var recordSettings = [
-            AVFormatIDKey : kAudioFormatMPEG4AAC,
+        let recordSettings: [String : AnyObject] = [
+            AVFormatIDKey : Int(kAudioFormatMPEG4AAC),
             AVSampleRateKey : 44100.0,
             AVNumberOfChannelsKey : 2,
             AVEncoderBitRateKey: 320000,
             AVEncoderAudioQualityKey : AVAudioQuality.High.rawValue
         ]
-        let soundFolderURL = getSnapPath().stringByAppendingPathComponent("Sounds")
-        let soundFileURL = soundFolderURL.stringByAppendingPathComponent("tempAudio.m4a")
-        let realURL = NSURL(fileURLWithPath: soundFileURL)
+        let soundFolderURL = getSnapPath().URLByAppendingPathComponent("Sounds")
+        let soundFileURL = soundFolderURL.URLByAppendingPathComponent("tempAudio.m4a")
+        let realURL = NSURL(fileURLWithPath: soundFileURL.path!)
         var error: NSError?
         
         let audioSession = AVAudioSession.sharedInstance()
-        audioSession.setCategory(AVAudioSessionCategoryPlayAndRecord, error: &error)
-        
-        self.recorder = AVAudioRecorder(URL: realURL, settings: recordSettings as [NSObject : AnyObject], error: &error)
-        if let e = error {
-            NSLog(e.localizedDescription)
-            return
-        }
-        else{
+        do{
+            try audioSession.setCategory(AVAudioSessionCategoryPlayAndRecord)
+            try self.recorder = AVAudioRecorder(URL: realURL, settings: recordSettings)
             recorder?.delegate = self
             recorder?.prepareToRecord()
             recorder?.meteringEnabled = true
+        } catch {
+            print("Error: Failed to set up recorder\n")
         }
         func addTextFieldConfigHandler(textField: UITextField!){
             textField.placeholder = "Enter a name for your audio file"
@@ -246,21 +245,28 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         }
         func cancelRecording(alert: UIAlertAction!){
             recorder?.stop()
-            NSFileManager.defaultManager().removeItemAtPath(soundFileURL, error: &error)
+            do{
+                try NSFileManager.defaultManager().removeItemAtPath(soundFileURL.path!)
+            } catch{
+                print("Error: Couldn't delete temp audio file\n")
+            }
         }
         func saveRecording(alert: UIAlertAction!){
             var filename = fileNameField?.text
             if let name = filename{
-                if(count(filename!) <= 0){
+                if(name.characters.count <= 0){
                     filename = "untitled"
                 }
             }
-            filename = filename?.stringByAppendingString(".m4a")
-            let newPath = soundFolderURL.stringByAppendingPathComponent(filename!)
-            NSFileManager.defaultManager().moveItemAtPath(soundFileURL, toPath: newPath, error: nil)
+            filename = filename!.stringByAppendingString(".m4a")
+            let newPath = soundFolderURL.URLByAppendingPathComponent(filename!)
+            do{
+                try NSFileManager.defaultManager().moveItemAtPath(soundFileURL.path!, toPath: newPath.path!)
+            } catch{
+                print("Error: Failed to save audio file\n")
+            }
             presentViewController(savedPrompt, animated: true, completion: nil)
         }
-        
         recordingPrompt.addAction(UIAlertAction(title: "Stop", style: UIAlertActionStyle.Default, handler: didStopRecording))
         recordingPrompt.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Default, handler: cancelRecording))
         
@@ -300,7 +306,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
     }
     //end shake
     //location
-    func locationManager(manager: CLLocationManager!, didUpdateLocations locations: [AnyObject]!) {
+    func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         currentLocation = manager.location!.coordinate
     }
     //end location
@@ -308,13 +314,14 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
     //get ssid
     func getSSIDInfo() -> String{
         var ssid:NSString = "null"
-        let ifs:NSArray = CNCopySupportedInterfaces().takeUnretainedValue() as NSArray
-        for ifName: NSString in ifs as! [NSString]{
-            let copied = CNCopyCurrentNetworkInfo(ifName)
-            if (copied != nil){
-                let info: NSDictionary = copied.takeUnretainedValue()
-                if (info["SSID"] != nil){
-                    ssid = info["SSID"] as! NSString
+        if let ifs:NSArray = CNCopySupportedInterfaces(){
+            for i in 0..<CFArrayGetCount(ifs){
+                let ifName: UnsafePointer<Void> = CFArrayGetValueAtIndex(ifs, i)
+                let rec = unsafeBitCast(ifName, AnyObject.self)
+                let unsafeIfData = CNCopyCurrentNetworkInfo("\(rec)")
+                if unsafeIfData != nil {
+                    let ifData = unsafeIfData! as Dictionary!
+                    ssid = ifData["SSID"] as! NSString
                 }
             }
         }
@@ -416,11 +423,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             return .OK(.RAW(self.getOrientation()))
         }
         server["/project.xml"] = {request in
-            
             if let importText = self.importedXMLText{
                 self.importedXMLText = nil
                 return .OK(.RAW(importText))
-                
             }
             
             let urlFromXMl = (UIApplication.sharedApplication().delegate as! AppDelegate).getFileUrl()
@@ -430,18 +435,23 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             } else {
                 path = NSBundle.mainBundle().pathForResource("iPadstart", ofType: "xml")!
             }
-            let rawText = String(contentsOfFile: path, encoding: NSUTF8StringEncoding, error: nil)
-            
-            return .OK(.RAW(rawText!))
+            do{
+                let rawText = try String(contentsOfFile: path, encoding: NSUTF8StringEncoding)
+                return .OK(.RAW(rawText))
+            } catch {
+                print("Error: Couldn't get contents of XML file\n")
+                let rawText = ""
+                return .OK(.RAW(rawText))
+            }
         }
-        server["/snap/(.+)"] = HttpHandlers.directoryBrowser(getSnapPath())
-        server["/snap/Backgrounds/(.+)"] = HttpHandlers.directoryBrowser(getSnapPath().stringByAppendingPathComponent("Backgrounds"))
-        server["/snap/Costumes/(.+)"] = HttpHandlers.directoryBrowser(getSnapPath().stringByAppendingPathComponent("Costumes"))
-        server["/snap/Sounds/(.+)"] = HttpHandlers.directoryBrowser(getSnapPath().stringByAppendingPathComponent("Sounds"))
-        server["/snap/Sounds"] = HttpHandlers.directoryBrowser(getSnapPath().stringByAppendingPathComponent("Sounds"))
-        server["/snap/Examples/(.+)"] = HttpHandlers.directoryBrowser(getSnapPath().stringByAppendingPathComponent("Examples"))
-        server["/snap/help/(.+)"] = HttpHandlers.directoryBrowser(getSnapPath().stringByAppendingPathComponent("help"))
-        server["/snap/libraries/(.+)"] = HttpHandlers.directoryBrowser(getSnapPath().stringByAppendingPathComponent("libraries"))
+        server["/snap/(.+)"] = HttpHandlers.directoryBrowser(getSnapPath().path!)
+        server["/snap/Backgrounds/(.+)"] = HttpHandlers.directoryBrowser(getSnapPath().URLByAppendingPathComponent("Backgrounds").path!)
+        server["/snap/Costumes/(.+)"] = HttpHandlers.directoryBrowser(getSnapPath().URLByAppendingPathComponent("Costumes").path!)
+        server["/snap/Sounds/(.+)"] = HttpHandlers.directoryBrowser(getSnapPath().URLByAppendingPathComponent("Sounds").path!)
+        server["/snap/Sounds"] = HttpHandlers.directoryBrowser(getSnapPath().URLByAppendingPathComponent("Sounds").path!)
+        server["/snap/Examples/(.+)"] = HttpHandlers.directoryBrowser(getSnapPath().URLByAppendingPathComponent("Examples").path!)
+        server["/snap/help/(.+)"] = HttpHandlers.directoryBrowser(getSnapPath().URLByAppendingPathComponent("help").path!)
+        server["/snap/libraries/(.+)"] = HttpHandlers.directoryBrowser(getSnapPath().URLByAppendingPathComponent("libraries").path!)
     }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

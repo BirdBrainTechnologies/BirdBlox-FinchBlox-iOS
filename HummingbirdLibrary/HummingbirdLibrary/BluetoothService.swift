@@ -76,7 +76,7 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
             for service in services {
                 if(service.UUID == BLEServiceUUID){
                     dbg_print("discovering characteristics")
-                    peripheral.discoverCharacteristics(neededUUIDs, forService: service as! CBService)
+                    peripheral.discoverCharacteristics(neededUUIDs, forService: service )
                 }
             }
         }
@@ -95,16 +95,16 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
         var wasRXSet = false
         if let characteristics = service.characteristics{
             for characteristic in characteristics {
-                let CBchar = characteristic as! CBCharacteristic
+                let CBchar = characteristic 
                 dbg_print("Found characteristic of uuid" + CBchar.UUID.UUIDString)
                 if(characteristic.UUID == BLEServiceUUIDTX){
-                    self.txCharacteristic = (characteristic as! CBCharacteristic)
-                    peripheral.setNotifyValue(true, forCharacteristic: characteristic as! CBCharacteristic)
+                    self.txCharacteristic = (characteristic )
+                    peripheral.setNotifyValue(true, forCharacteristic: characteristic )
                     wasTXSet = true
                 }
                 else if(characteristic.UUID == BLEServiceUUIDRX){
-                    self.rxCharacteristic = (characteristic as! CBCharacteristic)
-                    peripheral.setNotifyValue(true, forCharacteristic: characteristic as! CBCharacteristic)
+                    self.rxCharacteristic = (characteristic )
+                    peripheral.setNotifyValue(true, forCharacteristic: characteristic )
                     wasRXSet = true
                 }
                 if(wasTXSet && wasRXSet){

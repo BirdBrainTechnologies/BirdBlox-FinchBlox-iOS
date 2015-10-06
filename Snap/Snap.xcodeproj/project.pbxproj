@@ -7,30 +7,32 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BA05495F1B4C151900A6FA8B /* HttpHandlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA0549591B4C151900A6FA8B /* HttpHandlers.swift */; };
-		BA0549601B4C151900A6FA8B /* HttpParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA05495A1B4C151900A6FA8B /* HttpParser.swift */; };
-		BA0549611B4C151900A6FA8B /* HttpRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA05495B1B4C151900A6FA8B /* HttpRequest.swift */; };
-		BA0549621B4C151900A6FA8B /* HttpResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA05495C1B4C151900A6FA8B /* HttpResponse.swift */; };
-		BA0549631B4C151900A6FA8B /* HttpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA05495D1B4C151900A6FA8B /* HttpServer.swift */; };
-		BA0549641B4C151900A6FA8B /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA05495E1B4C151900A6FA8B /* Socket.swift */; };
 		BA0549661B4C152F00A6FA8B /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA0549651B4C152F00A6FA8B /* CoreData.framework */; };
 		BA05496C1B4C160B00A6FA8B /* iPadstart.xml in Resources */ = {isa = PBXBuildFile; fileRef = BA05496B1B4C160B00A6FA8B /* iPadstart.xml */; };
 		BA054A0F1B555D1E00A6FA8B /* DocumentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA054A0E1B555D1E00A6FA8B /* DocumentManager.swift */; };
-		BA054A111B555D3000A6FA8B /* libz.1.2.5.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BA054A101B555D3000A6FA8B /* libz.1.2.5.dylib */; };
-		BA054A211B555DD400A6FA8B /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BA054A131B555DD400A6FA8B /* Info.plist */; };
-		BA054A221B555DD400A6FA8B /* Main.m in Sources */ = {isa = PBXBuildFile; fileRef = BA054A151B555DD400A6FA8B /* Main.m */; };
-		BA054A231B555DD400A6FA8B /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = BA054A181B555DD400A6FA8B /* ioapi.c */; };
-		BA054A241B555DD400A6FA8B /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = BA054A1A1B555DD400A6FA8B /* mztools.c */; };
-		BA054A251B555DD400A6FA8B /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = BA054A1C1B555DD400A6FA8B /* unzip.c */; };
-		BA054A261B555DD400A6FA8B /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = BA054A1E1B555DD400A6FA8B /* zip.c */; };
-		BA27E2A71B3C8D6100A0DF58 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = BA27E2A61B3C8D6100A0DF58 /* LICENSE */; };
-		BA7F0A741B25D463007DD94E /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BA7F0A731B25D463007DD94E /* libsqlite3.dylib */; };
 		BA7F0A761B25E5D2007DD94E /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA7F0A751B25E5D2007DD94E /* AVFoundation.framework */; };
 		BA88B62E1B2233C9009EF1C3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA88B62D1B2233C9009EF1C3 /* AppDelegate.swift */; };
 		BA88B6301B2233C9009EF1C3 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA88B62F1B2233C9009EF1C3 /* ViewController.swift */; };
 		BA88B6351B2233C9009EF1C3 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BA88B6341B2233C9009EF1C3 /* Images.xcassets */; };
 		BA88B6381B2233C9009EF1C3 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = BA88B6361B2233C9009EF1C3 /* LaunchScreen.xib */; };
 		BA88B65B1B223990009EF1C3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BA88B6591B223990009EF1C3 /* Main.storyboard */; };
+		BAC00A411BC41B25004F5CA6 /* libz.1.2.5.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = BAC00A401BC41B25004F5CA6 /* libz.1.2.5.tbd */; };
+		BAC00A431BC41B33004F5CA6 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = BAC00A421BC41B33004F5CA6 /* libsqlite3.tbd */; };
+		BAC00A701BC41BD0004F5CA6 /* HttpHandlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC00A581BC41BD0004F5CA6 /* HttpHandlers.swift */; settings = {ASSET_TAGS = (); }; };
+		BAC00A711BC41BD0004F5CA6 /* HttpParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC00A591BC41BD0004F5CA6 /* HttpParser.swift */; settings = {ASSET_TAGS = (); }; };
+		BAC00A721BC41BD0004F5CA6 /* HttpRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC00A5A1BC41BD0004F5CA6 /* HttpRequest.swift */; settings = {ASSET_TAGS = (); }; };
+		BAC00A731BC41BD0004F5CA6 /* HttpResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC00A5B1BC41BD0004F5CA6 /* HttpResponse.swift */; settings = {ASSET_TAGS = (); }; };
+		BAC00A741BC41BD0004F5CA6 /* HttpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC00A5C1BC41BD0004F5CA6 /* HttpServer.swift */; settings = {ASSET_TAGS = (); }; };
+		BAC00A751BC41BD0004F5CA6 /* iPadstart.xml in Resources */ = {isa = PBXBuildFile; fileRef = BAC00A5D1BC41BD0004F5CA6 /* iPadstart.xml */; settings = {ASSET_TAGS = (); }; };
+		BAC00A761BC41BD0004F5CA6 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = BAC00A5E1BC41BD0004F5CA6 /* LICENSE */; settings = {ASSET_TAGS = (); }; };
+		BAC00A771BC41BD0004F5CA6 /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC00A5F1BC41BD0004F5CA6 /* Socket.swift */; settings = {ASSET_TAGS = (); }; };
+		BAC00A781BC41BD0004F5CA6 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BAC00A611BC41BD0004F5CA6 /* Info.plist */; settings = {ASSET_TAGS = (); }; };
+		BAC00A791BC41BD0004F5CA6 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = BAC00A621BC41BD0004F5CA6 /* LICENSE.txt */; settings = {ASSET_TAGS = (); }; };
+		BAC00A7A1BC41BD0004F5CA6 /* Main.m in Sources */ = {isa = PBXBuildFile; fileRef = BAC00A641BC41BD0004F5CA6 /* Main.m */; settings = {ASSET_TAGS = (); }; };
+		BAC00A7B1BC41BD0004F5CA6 /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = BAC00A671BC41BD0004F5CA6 /* ioapi.c */; settings = {ASSET_TAGS = (); }; };
+		BAC00A7C1BC41BD0004F5CA6 /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = BAC00A691BC41BD0004F5CA6 /* mztools.c */; settings = {ASSET_TAGS = (); }; };
+		BAC00A7D1BC41BD0004F5CA6 /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = BAC00A6B1BC41BD0004F5CA6 /* unzip.c */; settings = {ASSET_TAGS = (); }; };
+		BAC00A7E1BC41BD0004F5CA6 /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = BAC00A6D1BC41BD0004F5CA6 /* zip.c */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -47,32 +49,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		BA0549591B4C151900A6FA8B /* HttpHandlers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpHandlers.swift; sourceTree = "<group>"; };
-		BA05495A1B4C151900A6FA8B /* HttpParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpParser.swift; sourceTree = "<group>"; };
-		BA05495B1B4C151900A6FA8B /* HttpRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpRequest.swift; sourceTree = "<group>"; };
-		BA05495C1B4C151900A6FA8B /* HttpResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpResponse.swift; sourceTree = "<group>"; };
-		BA05495D1B4C151900A6FA8B /* HttpServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpServer.swift; sourceTree = "<group>"; };
-		BA05495E1B4C151900A6FA8B /* Socket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Socket.swift; sourceTree = "<group>"; };
 		BA0549651B4C152F00A6FA8B /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		BA05496B1B4C160B00A6FA8B /* iPadstart.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = iPadstart.xml; sourceTree = "<group>"; };
 		BA054A0D1B555D1100A6FA8B /* Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Header.h; sourceTree = "<group>"; };
 		BA054A0E1B555D1E00A6FA8B /* DocumentManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentManager.swift; sourceTree = "<group>"; };
-		BA054A101B555D3000A6FA8B /* libz.1.2.5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.1.2.5.dylib; path = usr/lib/libz.1.2.5.dylib; sourceTree = SDKROOT; };
-		BA054A131B555DD400A6FA8B /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		BA054A141B555DD400A6FA8B /* Main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Main.h; sourceTree = "<group>"; };
-		BA054A151B555DD400A6FA8B /* Main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Main.m; sourceTree = "<group>"; };
-		BA054A171B555DD400A6FA8B /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
-		BA054A181B555DD400A6FA8B /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
-		BA054A191B555DD400A6FA8B /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
-		BA054A1A1B555DD400A6FA8B /* mztools.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mztools.c; sourceTree = "<group>"; };
-		BA054A1B1B555DD400A6FA8B /* mztools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mztools.h; sourceTree = "<group>"; };
-		BA054A1C1B555DD400A6FA8B /* unzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unzip.c; sourceTree = "<group>"; };
-		BA054A1D1B555DD400A6FA8B /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
-		BA054A1E1B555DD400A6FA8B /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
-		BA054A1F1B555DD400A6FA8B /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
-		BA054A201B555DD400A6FA8B /* ZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZipArchive.h; sourceTree = "<group>"; };
-		BA27E2A61B3C8D6100A0DF58 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
-		BA7F0A731B25D463007DD94E /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		BA7F0A751B25E5D2007DD94E /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		BA88B6281B2233C9009EF1C3 /* Snap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Snap.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA88B62C1B2233C9009EF1C3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -81,6 +61,30 @@
 		BA88B6341B2233C9009EF1C3 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		BA88B6371B2233C9009EF1C3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		BA88B6591B223990009EF1C3 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		BAC00A401BC41B25004F5CA6 /* libz.1.2.5.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.1.2.5.tbd; path = usr/lib/libz.1.2.5.tbd; sourceTree = SDKROOT; };
+		BAC00A421BC41B33004F5CA6 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		BAC00A581BC41BD0004F5CA6 /* HttpHandlers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpHandlers.swift; sourceTree = "<group>"; };
+		BAC00A591BC41BD0004F5CA6 /* HttpParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpParser.swift; sourceTree = "<group>"; };
+		BAC00A5A1BC41BD0004F5CA6 /* HttpRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpRequest.swift; sourceTree = "<group>"; };
+		BAC00A5B1BC41BD0004F5CA6 /* HttpResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpResponse.swift; sourceTree = "<group>"; };
+		BAC00A5C1BC41BD0004F5CA6 /* HttpServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpServer.swift; sourceTree = "<group>"; };
+		BAC00A5D1BC41BD0004F5CA6 /* iPadstart.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = iPadstart.xml; sourceTree = "<group>"; };
+		BAC00A5E1BC41BD0004F5CA6 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		BAC00A5F1BC41BD0004F5CA6 /* Socket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Socket.swift; sourceTree = "<group>"; };
+		BAC00A611BC41BD0004F5CA6 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BAC00A621BC41BD0004F5CA6 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+		BAC00A631BC41BD0004F5CA6 /* Main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Main.h; sourceTree = "<group>"; };
+		BAC00A641BC41BD0004F5CA6 /* Main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Main.m; sourceTree = "<group>"; };
+		BAC00A661BC41BD0004F5CA6 /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
+		BAC00A671BC41BD0004F5CA6 /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
+		BAC00A681BC41BD0004F5CA6 /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
+		BAC00A691BC41BD0004F5CA6 /* mztools.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mztools.c; sourceTree = "<group>"; };
+		BAC00A6A1BC41BD0004F5CA6 /* mztools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mztools.h; sourceTree = "<group>"; };
+		BAC00A6B1BC41BD0004F5CA6 /* unzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unzip.c; sourceTree = "<group>"; };
+		BAC00A6C1BC41BD0004F5CA6 /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
+		BAC00A6D1BC41BD0004F5CA6 /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
+		BAC00A6E1BC41BD0004F5CA6 /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
+		BAC00A6F1BC41BD0004F5CA6 /* ZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZipArchive.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,67 +92,25 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BA054A111B555D3000A6FA8B /* libz.1.2.5.dylib in Frameworks */,
+				BAC00A431BC41B33004F5CA6 /* libsqlite3.tbd in Frameworks */,
+				BAC00A411BC41B25004F5CA6 /* libz.1.2.5.tbd in Frameworks */,
 				BA0549661B4C152F00A6FA8B /* CoreData.framework in Frameworks */,
 				BA7F0A761B25E5D2007DD94E /* AVFoundation.framework in Frameworks */,
-				BA7F0A741B25D463007DD94E /* libsqlite3.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		BA054A121B555DD400A6FA8B /* ZipArchive */ = {
-			isa = PBXGroup;
-			children = (
-				BA054A131B555DD400A6FA8B /* Info.plist */,
-				BA054A141B555DD400A6FA8B /* Main.h */,
-				BA054A151B555DD400A6FA8B /* Main.m */,
-				BA054A161B555DD400A6FA8B /* minizip */,
-				BA054A201B555DD400A6FA8B /* ZipArchive.h */,
-			);
-			path = ZipArchive;
-			sourceTree = "<group>";
-		};
-		BA054A161B555DD400A6FA8B /* minizip */ = {
-			isa = PBXGroup;
-			children = (
-				BA054A171B555DD400A6FA8B /* crypt.h */,
-				BA054A181B555DD400A6FA8B /* ioapi.c */,
-				BA054A191B555DD400A6FA8B /* ioapi.h */,
-				BA054A1A1B555DD400A6FA8B /* mztools.c */,
-				BA054A1B1B555DD400A6FA8B /* mztools.h */,
-				BA054A1C1B555DD400A6FA8B /* unzip.c */,
-				BA054A1D1B555DD400A6FA8B /* unzip.h */,
-				BA054A1E1B555DD400A6FA8B /* zip.c */,
-				BA054A1F1B555DD400A6FA8B /* zip.h */,
-			);
-			path = minizip;
-			sourceTree = "<group>";
-		};
-		BA27E2991B3C8CE000A0DF58 /* Swifter */ = {
-			isa = PBXGroup;
-			children = (
-				BA0549591B4C151900A6FA8B /* HttpHandlers.swift */,
-				BA05495A1B4C151900A6FA8B /* HttpParser.swift */,
-				BA05495B1B4C151900A6FA8B /* HttpRequest.swift */,
-				BA05495C1B4C151900A6FA8B /* HttpResponse.swift */,
-				BA05495D1B4C151900A6FA8B /* HttpServer.swift */,
-				BA05495E1B4C151900A6FA8B /* Socket.swift */,
-				BA27E2A61B3C8D6100A0DF58 /* LICENSE */,
-			);
-			path = Swifter;
-			sourceTree = "<group>";
-		};
 		BA88B61F1B2233C9009EF1C3 = {
 			isa = PBXGroup;
 			children = (
-				BA054A101B555D3000A6FA8B /* libz.1.2.5.dylib */,
+				BAC00A421BC41B33004F5CA6 /* libsqlite3.tbd */,
+				BAC00A401BC41B25004F5CA6 /* libz.1.2.5.tbd */,
+				BAC00A601BC41BD0004F5CA6 /* ZipArchive */,
+				BAC00A561BC41BD0004F5CA6 /* Swifter */,
 				BA0549651B4C152F00A6FA8B /* CoreData.framework */,
 				BA7F0A751B25E5D2007DD94E /* AVFoundation.framework */,
-				BA7F0A731B25D463007DD94E /* libsqlite3.dylib */,
-				BA054A121B555DD400A6FA8B /* ZipArchive */,
-				BA27E2991B3C8CE000A0DF58 /* Swifter */,
 				BA88B62A1B2233C9009EF1C3 /* Snap */,
 				BA88B6291B2233C9009EF1C3 /* Products */,
 			);
@@ -184,6 +146,58 @@
 				BA88B62C1B2233C9009EF1C3 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		BAC00A561BC41BD0004F5CA6 /* Swifter */ = {
+			isa = PBXGroup;
+			children = (
+				BAC00A571BC41BD0004F5CA6 /* ActiveRecord */,
+				BAC00A581BC41BD0004F5CA6 /* HttpHandlers.swift */,
+				BAC00A591BC41BD0004F5CA6 /* HttpParser.swift */,
+				BAC00A5A1BC41BD0004F5CA6 /* HttpRequest.swift */,
+				BAC00A5B1BC41BD0004F5CA6 /* HttpResponse.swift */,
+				BAC00A5C1BC41BD0004F5CA6 /* HttpServer.swift */,
+				BAC00A5D1BC41BD0004F5CA6 /* iPadstart.xml */,
+				BAC00A5E1BC41BD0004F5CA6 /* LICENSE */,
+				BAC00A5F1BC41BD0004F5CA6 /* Socket.swift */,
+			);
+			path = Swifter;
+			sourceTree = "<group>";
+		};
+		BAC00A571BC41BD0004F5CA6 /* ActiveRecord */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ActiveRecord;
+			sourceTree = "<group>";
+		};
+		BAC00A601BC41BD0004F5CA6 /* ZipArchive */ = {
+			isa = PBXGroup;
+			children = (
+				BAC00A611BC41BD0004F5CA6 /* Info.plist */,
+				BAC00A621BC41BD0004F5CA6 /* LICENSE.txt */,
+				BAC00A631BC41BD0004F5CA6 /* Main.h */,
+				BAC00A641BC41BD0004F5CA6 /* Main.m */,
+				BAC00A651BC41BD0004F5CA6 /* minizip */,
+				BAC00A6F1BC41BD0004F5CA6 /* ZipArchive.h */,
+			);
+			path = ZipArchive;
+			sourceTree = "<group>";
+		};
+		BAC00A651BC41BD0004F5CA6 /* minizip */ = {
+			isa = PBXGroup;
+			children = (
+				BAC00A661BC41BD0004F5CA6 /* crypt.h */,
+				BAC00A671BC41BD0004F5CA6 /* ioapi.c */,
+				BAC00A681BC41BD0004F5CA6 /* ioapi.h */,
+				BAC00A691BC41BD0004F5CA6 /* mztools.c */,
+				BAC00A6A1BC41BD0004F5CA6 /* mztools.h */,
+				BAC00A6B1BC41BD0004F5CA6 /* unzip.c */,
+				BAC00A6C1BC41BD0004F5CA6 /* unzip.h */,
+				BAC00A6D1BC41BD0004F5CA6 /* zip.c */,
+				BAC00A6E1BC41BD0004F5CA6 /* zip.h */,
+			);
+			path = minizip;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -246,12 +260,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BAC00A761BC41BD0004F5CA6 /* LICENSE in Resources */,
 				BA88B6381B2233C9009EF1C3 /* LaunchScreen.xib in Resources */,
 				BA05496C1B4C160B00A6FA8B /* iPadstart.xml in Resources */,
 				BA88B6351B2233C9009EF1C3 /* Images.xcassets in Resources */,
-				BA27E2A71B3C8D6100A0DF58 /* LICENSE in Resources */,
+				BAC00A791BC41BD0004F5CA6 /* LICENSE.txt in Resources */,
 				BA88B65B1B223990009EF1C3 /* Main.storyboard in Resources */,
-				BA054A211B555DD400A6FA8B /* Info.plist in Resources */,
+				BAC00A751BC41BD0004F5CA6 /* iPadstart.xml in Resources */,
+				BAC00A781BC41BD0004F5CA6 /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -262,20 +278,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BA0549641B4C151900A6FA8B /* Socket.swift in Sources */,
-				BA054A231B555DD400A6FA8B /* ioapi.c in Sources */,
-				BA0549621B4C151900A6FA8B /* HttpResponse.swift in Sources */,
-				BA054A221B555DD400A6FA8B /* Main.m in Sources */,
-				BA054A241B555DD400A6FA8B /* mztools.c in Sources */,
-				BA0549601B4C151900A6FA8B /* HttpParser.swift in Sources */,
-				BA054A251B555DD400A6FA8B /* unzip.c in Sources */,
+				BAC00A7A1BC41BD0004F5CA6 /* Main.m in Sources */,
 				BA054A0F1B555D1E00A6FA8B /* DocumentManager.swift in Sources */,
-				BA054A261B555DD400A6FA8B /* zip.c in Sources */,
-				BA0549611B4C151900A6FA8B /* HttpRequest.swift in Sources */,
-				BA0549631B4C151900A6FA8B /* HttpServer.swift in Sources */,
+				BAC00A7C1BC41BD0004F5CA6 /* mztools.c in Sources */,
 				BA88B6301B2233C9009EF1C3 /* ViewController.swift in Sources */,
+				BAC00A7D1BC41BD0004F5CA6 /* unzip.c in Sources */,
+				BAC00A741BC41BD0004F5CA6 /* HttpServer.swift in Sources */,
+				BAC00A701BC41BD0004F5CA6 /* HttpHandlers.swift in Sources */,
+				BAC00A711BC41BD0004F5CA6 /* HttpParser.swift in Sources */,
+				BAC00A771BC41BD0004F5CA6 /* Socket.swift in Sources */,
 				BA88B62E1B2233C9009EF1C3 /* AppDelegate.swift in Sources */,
-				BA05495F1B4C151900A6FA8B /* HttpHandlers.swift in Sources */,
+				BAC00A7B1BC41BD0004F5CA6 /* ioapi.c in Sources */,
+				BAC00A7E1BC41BD0004F5CA6 /* zip.c in Sources */,
+				BAC00A731BC41BD0004F5CA6 /* HttpResponse.swift in Sources */,
+				BAC00A721BC41BD0004F5CA6 /* HttpRequest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

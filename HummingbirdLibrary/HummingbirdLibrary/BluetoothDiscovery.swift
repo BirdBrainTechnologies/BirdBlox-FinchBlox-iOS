@@ -62,7 +62,7 @@ class BluetoothDiscovery: NSObject, CBCentralManagerDelegate {
     /**
         :Additional Info: After a device has been discovered, we will add it to our list of discovered devices unless we have connected to it before. In that case we simply reconnect to it.
     */
-    func centralManager(central: CBCentralManager, didDiscoverPeripheral peripheral: CBPeripheral, advertisementData: [NSObject : AnyObject], RSSI: NSNumber) {
+    func centralManager(central: CBCentralManager, didDiscoverPeripheral peripheral: CBPeripheral, advertisementData: [String : AnyObject], RSSI: NSNumber) {
         if((peripheral.name == nil) || (peripheral.name == "")){
             return
         }

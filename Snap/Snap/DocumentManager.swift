@@ -1,6 +1,6 @@
 //
 //  DocumentManager.swift
-//  Snap for Hummingbird
+//  Snap
 //
 //  Created by birdbrain on 7/13/15.
 //  Copyright (c) 2015 Birdbrain Technologies LLC. All rights reserved.
@@ -9,32 +9,34 @@
 import Foundation
 
 
-let documentsPath: String = NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.DocumentDirectory, NSSearchPathDomainMask.UserDomainMask, true)[0] as! String
-//let snapURL = NSURL(string: "http://snap.berkeley.edu/snapsource/snap.zip")
+let documentsPath: NSURL! = NSURL(string: NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.DocumentDirectory, NSSearchPathDomainMask.UserDomainMask, true)[0])
+
 let snapURL = NSURL(string: "https://github.com/jmoenig/Snap--Build-Your-Own-Blocks/archive/master.zip")
 let logURL = NSURL(string: "https://raw.githubusercontent.com/jmoenig/Snap--Build-Your-Own-Blocks/master/history.txt")
-let zipPath = documentsPath.stringByAppendingPathComponent("temp.zip")
-let unzipPath = documentsPath.stringByAppendingPathComponent("snap")
+let zipPath = documentsPath.URLByAppendingPathComponent("temp.zip")
+let unzipPath = documentsPath.URLByAppendingPathComponent("snap")
 let fileManager = NSFileManager.defaultManager()
 let updateKey = "LastUpdatedSnap"
 
 public func getUpdate(){
     let zippedData = NSData(contentsOfURL: snapURL!)!
-    zippedData.writeToFile(zipPath, atomically: true)
-    Main.unzipFileAtPath(zipPath, toDestination: unzipPath)
-    
-    let cloudJS = String(contentsOfFile: getSnapPath().stringByAppendingPathComponent("cloud.js"), encoding: NSUTF8StringEncoding, error: nil)
-    var localCloudJS = cloudJS?.stringByReplacingOccurrencesOfString("https://snap.apps.miosoft.com/SnapCloud", withString: "https://snap.apps.miosoft.com/SnapCloudLocal", options: NSStringCompareOptions.LiteralSearch, range: nil)
-    localCloudJS?.writeToFile(getSnapPath().stringByAppendingPathComponent("cloud.js"), atomically: true, encoding: NSUTF8StringEncoding, error: nil)
-    
-    let snapHTML = String(contentsOfFile: getSnapPath().stringByAppendingPathComponent("snap.html"), encoding: NSUTF8StringEncoding, error: nil)
-    var tweakedSnapHTML = snapHTML?.stringByReplacingOccurrencesOfString("setInterval(loop, 1)", withString: "setInterval(loop, 1)", options: NSStringCompareOptions.LiteralSearch, range: nil)
-    tweakedSnapHTML?.writeToFile(getSnapPath().stringByAppendingPathComponent("snap.html"), atomically: true, encoding: NSUTF8StringEncoding, error: nil)
-
+    zippedData.writeToFile(zipPath.path!, atomically: true)
+    Main.unzipFileAtPath(zipPath.path!, toDestination: unzipPath.path!)
+    do{
+        let cloudJS = try String(contentsOfFile: getSnapPath().URLByAppendingPathComponent("cloud.js").path!, encoding: NSUTF8StringEncoding)
+        let localCloudJS = cloudJS.stringByReplacingOccurrencesOfString("https://snap.apps.miosoft.com/SnapCloud", withString: "https://snap.apps.miosoft.com/SnapCloudLocal", options: NSStringCompareOptions.LiteralSearch, range: nil)
+        try localCloudJS.writeToFile(getSnapPath().URLByAppendingPathComponent("cloud.js").path!, atomically: true, encoding: NSUTF8StringEncoding)
+        let snapHTML = try String(contentsOfFile: getSnapPath().URLByAppendingPathComponent("snap.html").path!, encoding: NSUTF8StringEncoding)
+        let tweakedSnapHTML = snapHTML.stringByReplacingOccurrencesOfString("setInterval(loop, 1)", withString: "setInterval(loop, 1)", options: NSStringCompareOptions.LiteralSearch, range: nil)
+        try tweakedSnapHTML.writeToFile(getSnapPath().URLByAppendingPathComponent("snap.html").path!, atomically: true, encoding: NSUTF8StringEncoding)
+    }
+    catch{
+        print("Error: Cannot update. Some error has occured downloading update\n");
+    }
 }
 
-public func getSnapPath() -> String {
-    return unzipPath.stringByAppendingPathComponent("Snap--Build-Your-Own-Blocks-master")
+public func getSnapPath() -> NSURL {
+    return unzipPath.URLByAppendingPathComponent("Snap--Build-Your-Own-Blocks-master")
 }
 
 public func shouldUpdate() -> Bool{
@@ -47,27 +49,31 @@ public func shouldUpdate() -> Bool{
 }
 
 public func cleanAudio() {
-    let soundsPath = getSnapPath().stringByAppendingPathComponent("Sounds")
-    let soundsEnumerator = fileManager.enumeratorAtPath(soundsPath)
+    let soundsPath = getSnapPath().URLByAppendingPathComponent("Sounds")
+    let soundsEnumerator = fileManager.enumeratorAtPath(soundsPath.path!)
     var pathList: Array<String> = []
     while let element = soundsEnumerator?.nextObject() as? String {
         if element.hasSuffix("m4a"){
-            pathList.append(soundsPath.stringByAppendingPathComponent(element))
+            pathList.append(soundsPath.URLByAppendingPathComponent(element).path!)
         }
     }
     for path in pathList{
-        fileManager.removeItemAtPath(path, error: nil)
+        do{
+            try fileManager.removeItemAtPath(path)
+        } catch {
+            print("Error: Could not delete some audio file\n")
+        }
     }
 }
 
 private func compareHistory() -> Bool{
     let newHistory = NSData(contentsOfURL: logURL!)
-    let oldHistoryPath = getSnapPath().stringByAppendingPathComponent("history.txt")
-    if(!fileManager.fileExistsAtPath(oldHistoryPath)){
+    let oldHistoryPath = getSnapPath().URLByAppendingPathComponent("history.txt")
+    if(!fileManager.fileExistsAtPath(oldHistoryPath.path!)){
         NSLog("nothing at old history path")
         return false
     }
-    let oldHistory = NSData(contentsOfFile: oldHistoryPath)
+    let oldHistory = NSData(contentsOfFile: oldHistoryPath.path!)
     
     if(oldHistory?.length == newHistory?.length){
         NSLog("Files are identical")
@@ -80,6 +86,6 @@ private func compareHistory() -> Bool{
     }
 }
 
-public func getDocPath() -> NSString{
+public func getDocPath() -> NSURL{
     return documentsPath
 }
