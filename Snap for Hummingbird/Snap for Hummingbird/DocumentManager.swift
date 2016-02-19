@@ -18,6 +18,9 @@ let unzipPath = documentsPath.URLByAppendingPathComponent("snap")
 let fileManager = NSFileManager.defaultManager()
 let updateKey = "LastUpdatedSnap"
 
+let soundsFilePath = getSnapPath().URLByAppendingPathComponent("Sounds/SOUNDS").path!
+let soundsFileBakPath = getSnapPath().URLByAppendingPathComponent("Sounds/SOUNDS.bak").path!
+
 public func getUpdate(){
     let zippedData = NSData(contentsOfURL: snapURL!)!
     zippedData.writeToFile(zipPath.path!, atomically: true)
@@ -56,6 +59,14 @@ public func cleanAudio() {
     let soundsPath = getSnapPath().URLByAppendingPathComponent("Sounds")
     let soundsEnumerator = fileManager.enumeratorAtPath(soundsPath.path!)
     var pathList: Array<String> = []
+    if (fileManager.fileExistsAtPath(soundsFileBakPath)) {
+        do {
+            let soundsBakFile = try String(contentsOfFile: soundsFileBakPath, encoding: NSUTF8StringEncoding)
+            try soundsBakFile.writeToFile(soundsFilePath, atomically: true, encoding: NSUTF8StringEncoding)
+        } catch {
+            print("Error: Could not delete some audio file\n")
+        }
+    }
     while let element = soundsEnumerator?.nextObject() as? String {
         if element.hasSuffix("m4a"){
             pathList.append(soundsPath.URLByAppendingPathComponent(element).path!)
@@ -67,6 +78,20 @@ public func cleanAudio() {
         } catch {
             print("Error: Could not delete some audio file\n")
         }
+    }
+}
+
+public func addToSoundsFile(filename: String) {
+    do {
+        if (!fileManager.fileExistsAtPath(soundsFileBakPath)) {
+            let soundsBakFile = try String(contentsOfFile: soundsFilePath, encoding: NSUTF8StringEncoding)
+            try soundsBakFile.writeToFile(soundsFileBakPath, atomically: true, encoding: NSUTF8StringEncoding)
+        }
+        var soundsFile = try String(contentsOfFile: soundsFilePath, encoding: NSUTF8StringEncoding)
+        soundsFile = soundsFile.stringByAppendingString(filename + "\t" + filename.characters.split{$0 == "."}.map(String.init)[0] + "\n")
+        try soundsFile.writeToFile(soundsFilePath, atomically: true, encoding: NSUTF8StringEncoding)
+    } catch {
+        print ("Failed to add new sound\n")
     }
 }
 

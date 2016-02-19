@@ -299,6 +299,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             let newPath = soundFolderURL.URLByAppendingPathComponent(filename!)
             do{
                 try NSFileManager.defaultManager().moveItemAtPath(soundFileURL.path!, toPath: newPath.path!)
+                addToSoundsFile(filename!)
             } catch{
                 print("Error: Failed to save audio file\n")
             }
