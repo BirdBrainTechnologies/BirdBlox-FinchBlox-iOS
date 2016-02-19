@@ -54,13 +54,14 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             //if (navigationAction.request.URL?.absoluteString.hasPrefix("data:") == true) {
                 NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) {
                         response, text, error in
-                    print("MineType: ", response!.MIMEType)
-                    print("Response: ", response!)
+                    //print("MineType: ", response!.MIMEType)
+                    //print("Response: ", response!)
                     let mailComposer = MFMailComposeViewController()
                     mailComposer.mailComposeDelegate = self
                     mailComposer.title = "My Snap Project"
                     let mineType: String = "text/xml"
                     if(error == nil && response!.MIMEType == mineType) {
+                        UIPasteboard.generalPasteboard().string = NSString(data: text!, encoding: NSUTF8StringEncoding) as String?
                         mailComposer.addAttachmentData(text!, mimeType: mineType, fileName: "project.xml")
                         let prompt = UIAlertController(title: "Copied to clipboard", message: "The contents of your project file has been copied to your clipboard. Would you like to email the XML file?", preferredStyle: UIAlertControllerStyle.Alert)
                         prompt.addAction(UIAlertAction(title: "No", style: UIAlertActionStyle.Default, handler: nil))

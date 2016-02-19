@@ -18,20 +18,20 @@
 		BA88B65B1B223990009EF1C3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BA88B6591B223990009EF1C3 /* Main.storyboard */; };
 		BAC00A411BC41B25004F5CA6 /* libz.1.2.5.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = BAC00A401BC41B25004F5CA6 /* libz.1.2.5.tbd */; };
 		BAC00A431BC41B33004F5CA6 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = BAC00A421BC41B33004F5CA6 /* libsqlite3.tbd */; };
-		BAC00A701BC41BD0004F5CA6 /* HttpHandlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC00A581BC41BD0004F5CA6 /* HttpHandlers.swift */; settings = {ASSET_TAGS = (); }; };
-		BAC00A711BC41BD0004F5CA6 /* HttpParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC00A591BC41BD0004F5CA6 /* HttpParser.swift */; settings = {ASSET_TAGS = (); }; };
-		BAC00A721BC41BD0004F5CA6 /* HttpRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC00A5A1BC41BD0004F5CA6 /* HttpRequest.swift */; settings = {ASSET_TAGS = (); }; };
-		BAC00A731BC41BD0004F5CA6 /* HttpResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC00A5B1BC41BD0004F5CA6 /* HttpResponse.swift */; settings = {ASSET_TAGS = (); }; };
-		BAC00A741BC41BD0004F5CA6 /* HttpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC00A5C1BC41BD0004F5CA6 /* HttpServer.swift */; settings = {ASSET_TAGS = (); }; };
-		BAC00A761BC41BD0004F5CA6 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = BAC00A5E1BC41BD0004F5CA6 /* LICENSE */; settings = {ASSET_TAGS = (); }; };
-		BAC00A771BC41BD0004F5CA6 /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC00A5F1BC41BD0004F5CA6 /* Socket.swift */; settings = {ASSET_TAGS = (); }; };
-		BAC00A781BC41BD0004F5CA6 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BAC00A611BC41BD0004F5CA6 /* Info.plist */; settings = {ASSET_TAGS = (); }; };
-		BAC00A791BC41BD0004F5CA6 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = BAC00A621BC41BD0004F5CA6 /* LICENSE.txt */; settings = {ASSET_TAGS = (); }; };
-		BAC00A7A1BC41BD0004F5CA6 /* Main.m in Sources */ = {isa = PBXBuildFile; fileRef = BAC00A641BC41BD0004F5CA6 /* Main.m */; settings = {ASSET_TAGS = (); }; };
-		BAC00A7B1BC41BD0004F5CA6 /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = BAC00A671BC41BD0004F5CA6 /* ioapi.c */; settings = {ASSET_TAGS = (); }; };
-		BAC00A7C1BC41BD0004F5CA6 /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = BAC00A691BC41BD0004F5CA6 /* mztools.c */; settings = {ASSET_TAGS = (); }; };
-		BAC00A7D1BC41BD0004F5CA6 /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = BAC00A6B1BC41BD0004F5CA6 /* unzip.c */; settings = {ASSET_TAGS = (); }; };
-		BAC00A7E1BC41BD0004F5CA6 /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = BAC00A6D1BC41BD0004F5CA6 /* zip.c */; settings = {ASSET_TAGS = (); }; };
+		BAC00A701BC41BD0004F5CA6 /* HttpHandlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC00A581BC41BD0004F5CA6 /* HttpHandlers.swift */; };
+		BAC00A711BC41BD0004F5CA6 /* HttpParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC00A591BC41BD0004F5CA6 /* HttpParser.swift */; };
+		BAC00A721BC41BD0004F5CA6 /* HttpRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC00A5A1BC41BD0004F5CA6 /* HttpRequest.swift */; };
+		BAC00A731BC41BD0004F5CA6 /* HttpResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC00A5B1BC41BD0004F5CA6 /* HttpResponse.swift */; };
+		BAC00A741BC41BD0004F5CA6 /* HttpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC00A5C1BC41BD0004F5CA6 /* HttpServer.swift */; };
+		BAC00A761BC41BD0004F5CA6 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = BAC00A5E1BC41BD0004F5CA6 /* LICENSE */; };
+		BAC00A771BC41BD0004F5CA6 /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC00A5F1BC41BD0004F5CA6 /* Socket.swift */; };
+		BAC00A781BC41BD0004F5CA6 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BAC00A611BC41BD0004F5CA6 /* Info.plist */; };
+		BAC00A791BC41BD0004F5CA6 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = BAC00A621BC41BD0004F5CA6 /* LICENSE.txt */; };
+		BAC00A7A1BC41BD0004F5CA6 /* Main.m in Sources */ = {isa = PBXBuildFile; fileRef = BAC00A641BC41BD0004F5CA6 /* Main.m */; };
+		BAC00A7B1BC41BD0004F5CA6 /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = BAC00A671BC41BD0004F5CA6 /* ioapi.c */; };
+		BAC00A7C1BC41BD0004F5CA6 /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = BAC00A691BC41BD0004F5CA6 /* mztools.c */; };
+		BAC00A7D1BC41BD0004F5CA6 /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = BAC00A6B1BC41BD0004F5CA6 /* unzip.c */; };
+		BAC00A7E1BC41BD0004F5CA6 /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = BAC00A6D1BC41BD0004F5CA6 /* zip.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */

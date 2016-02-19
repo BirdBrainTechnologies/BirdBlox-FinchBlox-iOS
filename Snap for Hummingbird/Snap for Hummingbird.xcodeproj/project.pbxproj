@@ -29,12 +29,12 @@
 		BA88B6381B2233C9009EF1C3 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = BA88B6361B2233C9009EF1C3 /* LaunchScreen.xib */; };
 		BA88B65A1B223990009EF1C3 /* ConnectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA88B6581B223990009EF1C3 /* ConnectionViewController.swift */; };
 		BA88B65B1B223990009EF1C3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BA88B6591B223990009EF1C3 /* Main.storyboard */; };
-		BA95C01A1BBEE1DC003AEC1A /* HttpHandlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA95C0191BBEE1DC003AEC1A /* HttpHandlers.swift */; settings = {ASSET_TAGS = (); }; };
-		BA95C0201BBEE2CE003AEC1A /* HttpParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA95C01B1BBEE2CE003AEC1A /* HttpParser.swift */; settings = {ASSET_TAGS = (); }; };
-		BA95C0211BBEE2CE003AEC1A /* HttpRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA95C01C1BBEE2CE003AEC1A /* HttpRequest.swift */; settings = {ASSET_TAGS = (); }; };
-		BA95C0221BBEE2CE003AEC1A /* HttpResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA95C01D1BBEE2CE003AEC1A /* HttpResponse.swift */; settings = {ASSET_TAGS = (); }; };
-		BA95C0231BBEE2CE003AEC1A /* HttpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA95C01E1BBEE2CE003AEC1A /* HttpServer.swift */; settings = {ASSET_TAGS = (); }; };
-		BA95C0241BBEE2CE003AEC1A /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA95C01F1BBEE2CE003AEC1A /* Socket.swift */; settings = {ASSET_TAGS = (); }; };
+		BA95C01A1BBEE1DC003AEC1A /* HttpHandlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA95C0191BBEE1DC003AEC1A /* HttpHandlers.swift */; };
+		BA95C0201BBEE2CE003AEC1A /* HttpParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA95C01B1BBEE2CE003AEC1A /* HttpParser.swift */; };
+		BA95C0211BBEE2CE003AEC1A /* HttpRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA95C01C1BBEE2CE003AEC1A /* HttpRequest.swift */; };
+		BA95C0221BBEE2CE003AEC1A /* HttpResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA95C01D1BBEE2CE003AEC1A /* HttpResponse.swift */; };
+		BA95C0231BBEE2CE003AEC1A /* HttpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA95C01E1BBEE2CE003AEC1A /* HttpServer.swift */; };
+		BA95C0241BBEE2CE003AEC1A /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA95C01F1BBEE2CE003AEC1A /* Socket.swift */; };
 		BA95C0261BBEF609003AEC1A /* libz.1.2.5.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = BA95C0251BBEF609003AEC1A /* libz.1.2.5.tbd */; };
 		BA95C0281BBEF61A003AEC1A /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = BA95C0271BBEF61A003AEC1A /* libsqlite3.tbd */; };
 /* End PBXBuildFile section */

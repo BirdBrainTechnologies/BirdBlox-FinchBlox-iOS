@@ -11,6 +11,7 @@ import Foundation
 
 let documentsPath: NSURL! = NSURL(string: NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.DocumentDirectory, NSSearchPathDomainMask.UserDomainMask, true)[0])
 
+let latestCommitURL = NSURL(string: "https://raw.githubusercontent.com/BirdBrainTechnologies/Hummingbird-iOS-Support/master/latest_safe_commit.txt")
 let snapURL = NSURL(string: "https://github.com/jmoenig/Snap--Build-Your-Own-Blocks/archive/master.zip")
 let logURL = NSURL(string: "https://raw.githubusercontent.com/jmoenig/Snap--Build-Your-Own-Blocks/master/history.txt")
 let zipPath = documentsPath.URLByAppendingPathComponent("temp.zip")
@@ -21,9 +22,22 @@ let updateKey = "LastUpdatedSnap"
 let soundsFilePath = getSnapPath().URLByAppendingPathComponent("Sounds/SOUNDS").path!
 let soundsFileBakPath = getSnapPath().URLByAppendingPathComponent("Sounds/SOUNDS.bak").path!
 
+let isAdmin = true
+
+private func getCommitURL() -> NSURL {
+    let commitNumNString = NSString(data: NSData(contentsOfURL: latestCommitURL!)!, encoding: NSUTF8StringEncoding)
+    let commitNumString = commitNumNString!.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()) as String
+    let url_str = "https://github.com/jmoenig/Snap--Build-Your-Own-Blocks/archive/" + commitNumString + ".zip"
+    return NSURL(string: url_str)!
+}
 
 public func getUpdate(){
-    let zippedData = NSData(contentsOfURL: snapURL!)!
+    var zippedData = NSData()
+    if isAdmin {
+        zippedData = NSData(contentsOfURL: snapURL!)!
+    } else {
+        zippedData = NSData(contentsOfURL: getCommitURL())!
+    }
     zippedData.writeToFile(zipPath.path!, atomically: true)
     Main.unzipFileAtPath(zipPath.path!, toDestination: unzipPath.path!)
     do{
@@ -37,6 +51,13 @@ public func getUpdate(){
         var dataSaveGuiJS = guiJS.stringByReplacingOccurrencesOfString("this.saveXMLAs(str, name, newWindow);", withString: "window.open(dataPrefix + encodeURIComponent(str));", options: NSStringCompareOptions.LiteralSearch, range: nil)
         dataSaveGuiJS = dataSaveGuiJS.stringByReplacingOccurrencesOfString("'data:text/' + plain ? 'plain,' : 'xml,'", withString: "'data:text/xml,'", options: NSStringCompareOptions.LiteralSearch, range: nil)
         try dataSaveGuiJS.writeToFile(getSnapPath().URLByAppendingPathComponent("gui.js").path!, atomically: true, encoding: NSUTF8StringEncoding)
+        if(!isAdmin){
+            let currentCommit = NSString(data: NSData(contentsOfURL: latestCommitURL!)!, encoding: NSUTF8StringEncoding) as! String
+            try currentCommit.writeToFile(getSnapPath().URLByAppendingPathComponent("commit.txt").path!, atomically: true, encoding: NSUTF8StringEncoding)
+        } else {
+            try "Latest".writeToFile(getSnapPath().URLByAppendingPathComponent("commit.txt").path!, atomically: true, encoding: NSUTF8StringEncoding)
+        }
+        
     }
     catch{
         print("Error: Cannot update. Some error has occured downloading update\n");
@@ -48,7 +69,23 @@ public func getSnapPath() -> NSURL {
 }
 
 public func shouldUpdate() -> Bool{
-    if !compareHistory(){
+    if !isAdmin {
+        let newSafeCommit = NSString(data: NSData(contentsOfURL: latestCommitURL!)!, encoding: NSUTF8StringEncoding) as! String
+        let oldSafeCommitPath = getSnapPath().URLByAppendingPathComponent("commit.txt")
+        if(!fileManager.fileExistsAtPath(oldSafeCommitPath.path!)){
+            NSLog("nothing at old commit path")
+            return true
+        }
+        let oldSafeCommit = NSString(data: NSData(contentsOfFile: oldSafeCommitPath.path!)!, encoding: NSUTF8StringEncoding) as! String
+        if(oldSafeCommit == newSafeCommit){
+            NSLog("Commit files are identical")
+            return false
+        } else {
+            NSLog("Commit files differ")
+            return true
+        }
+        
+    } else if !compareHistory(){
         return true
     } else {
         cleanAudio()
@@ -107,12 +144,12 @@ private func compareHistory() -> Bool{
     let oldHistory = NSData(contentsOfFile: oldHistoryPath.path!)
     
     if(oldHistory?.length == newHistory?.length){
-        NSLog("Files are identical")
+        NSLog("History files are identical")
         return true
     } else {
         NSLog(String(stringInterpolationSegment: oldHistory?.length))
         NSLog(String(stringInterpolationSegment: newHistory?.length))
-        NSLog("files differ")
+        NSLog("History files differ")
         return false
     }
 }
