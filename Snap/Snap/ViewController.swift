@@ -46,27 +46,37 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
     }
     
     func webView(webView: WKWebView, createWebViewWithConfiguration configuration: WKWebViewConfiguration, forNavigationAction navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
-        if(navigationAction.targetFrame == nil){
-            NSURLConnection.sendAsynchronousRequest(navigationAction.request, queue: NSOperationQueue.mainQueue()) {
-                response, text, error in
-                let mailComposer = MFMailComposeViewController()
-                mailComposer.mailComposeDelegate = self
-                mailComposer.title = "My Snap Project"
-                let mineType: String = "text/xml"
-                
-                if(response!.MIMEType == mineType) {
-                    mailComposer.addAttachmentData(text!, mimeType: mineType, fileName: "project.xml")
-                    let prompt = UIAlertController(title: "Copied to clipboard", message: "The contents of your project file has been copied to your clipboard. Would you like to email the XML file?", preferredStyle: UIAlertControllerStyle.Alert)
-                    prompt.addAction(UIAlertAction(title: "No", style: UIAlertActionStyle.Default, handler: nil))
-                    func sendEmail(action: UIAlertAction!){
-                        self.presentViewController(mailComposer, animated: true, completion: nil)
-                    }
-                    prompt.addAction(UIAlertAction(title: "Yes", style: UIAlertActionStyle.Default, handler: sendEmail))
-                    self.presentViewController(prompt, animated: true, completion: nil)
+        if(navigationAction.targetFrame == nil) {
+            var request: NSMutableURLRequest = navigationAction.request.mutableCopy() as! NSMutableURLRequest
+            var url_str = navigationAction.request.URL!.absoluteString
+            
+            //print("Got NavigationAction Request of: ", url_str);
+            //if (navigationAction.request.URL?.absoluteString.hasPrefix("data:") == true) {
+                NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) {
+                        response, text, error in
+                    print("MineType: ", response!.MIMEType)
+                    print("Response: ", response!)
+                    let mailComposer = MFMailComposeViewController()
+                    mailComposer.mailComposeDelegate = self
+                    mailComposer.title = "My Snap Project"
+                    let mineType: String = "text/xml"
+                    if(error == nil && response!.MIMEType == mineType) {
+                        mailComposer.addAttachmentData(text!, mimeType: mineType, fileName: "project.xml")
+                        let prompt = UIAlertController(title: "Copied to clipboard", message: "The contents of your project file has been copied to your clipboard. Would you like to email the XML file?", preferredStyle: UIAlertControllerStyle.Alert)
+                        prompt.addAction(UIAlertAction(title: "No", style: UIAlertActionStyle.Default, handler: nil))
+                        func sendEmail(action: UIAlertAction!){
+                            self.presentViewController(mailComposer, animated: true, completion: nil)
+                        }
+                        prompt.addAction(UIAlertAction(title: "Yes", style: UIAlertActionStyle.Default, handler: sendEmail))
+                        self.presentViewController(prompt, animated: true, completion: nil)
                     
+                    }
+                    else {
+                        print("Error: ", error)
+                    }
+                    return
                 }
-                return
-            }
+            //}
         }
         return nil
     }

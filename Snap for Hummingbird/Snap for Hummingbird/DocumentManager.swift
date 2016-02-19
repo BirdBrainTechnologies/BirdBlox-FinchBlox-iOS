@@ -23,12 +23,16 @@ public func getUpdate(){
     zippedData.writeToFile(zipPath.path!, atomically: true)
     Main.unzipFileAtPath(zipPath.path!, toDestination: unzipPath.path!)
     do{
-    let cloudJS = try String(contentsOfFile: getSnapPath().URLByAppendingPathComponent("cloud.js").path!, encoding: NSUTF8StringEncoding)
-    let localCloudJS = cloudJS.stringByReplacingOccurrencesOfString("https://snap.apps.miosoft.com/SnapCloud", withString: "https://snap.apps.miosoft.com/SnapCloudLocal", options: NSStringCompareOptions.LiteralSearch, range: nil)
-    try localCloudJS.writeToFile(getSnapPath().URLByAppendingPathComponent("cloud.js").path!, atomically: true, encoding: NSUTF8StringEncoding)
-    let snapHTML = try String(contentsOfFile: getSnapPath().URLByAppendingPathComponent("snap.html").path!, encoding: NSUTF8StringEncoding)
-    let tweakedSnapHTML = snapHTML.stringByReplacingOccurrencesOfString("setInterval(loop, 1)", withString: "setInterval(loop, 1)", options: NSStringCompareOptions.LiteralSearch, range: nil)
-    try tweakedSnapHTML.writeToFile(getSnapPath().URLByAppendingPathComponent("snap.html").path!, atomically: true, encoding: NSUTF8StringEncoding)
+        let cloudJS = try String(contentsOfFile: getSnapPath().URLByAppendingPathComponent("cloud.js").path!, encoding: NSUTF8StringEncoding)
+        let localCloudJS = cloudJS.stringByReplacingOccurrencesOfString("https://snap.apps.miosoft.com/SnapCloud", withString: "https://snap.apps.miosoft.com/SnapCloudLocal", options: NSStringCompareOptions.LiteralSearch, range: nil)
+        try localCloudJS.writeToFile(getSnapPath().URLByAppendingPathComponent("cloud.js").path!, atomically: true, encoding: NSUTF8StringEncoding)
+        let snapHTML = try String(contentsOfFile: getSnapPath().URLByAppendingPathComponent("snap.html").path!, encoding: NSUTF8StringEncoding)
+        let tweakedSnapHTML = snapHTML.stringByReplacingOccurrencesOfString("setInterval(loop, 1)", withString: "setInterval(loop, 1)", options: NSStringCompareOptions.LiteralSearch, range: nil)
+        try tweakedSnapHTML.writeToFile(getSnapPath().URLByAppendingPathComponent("snap.html").path!, atomically: true, encoding: NSUTF8StringEncoding)
+        let guiJS = try String(contentsOfFile: getSnapPath().URLByAppendingPathComponent("gui.js").path!, encoding: NSUTF8StringEncoding)
+        var dataSaveGuiJS = guiJS.stringByReplacingOccurrencesOfString("this.saveXMLAs(str, name, newWindow);", withString: "window.open(dataPrefix + encodeURIComponent(str));", options: NSStringCompareOptions.LiteralSearch, range: nil)
+        dataSaveGuiJS = dataSaveGuiJS.stringByReplacingOccurrencesOfString("'data:text/' + plain ? 'plain,' : 'xml,'", withString: "'data:text/xml,'", options: NSStringCompareOptions.LiteralSearch, range: nil)
+        try dataSaveGuiJS.writeToFile(getSnapPath().URLByAppendingPathComponent("gui.js").path!, atomically: true, encoding: NSUTF8StringEncoding)
     }
     catch{
         print("Error: Cannot update. Some error has occured downloading update\n");

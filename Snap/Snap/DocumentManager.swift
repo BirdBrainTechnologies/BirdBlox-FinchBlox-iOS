@@ -29,6 +29,10 @@ public func getUpdate(){
         let snapHTML = try String(contentsOfFile: getSnapPath().URLByAppendingPathComponent("snap.html").path!, encoding: NSUTF8StringEncoding)
         let tweakedSnapHTML = snapHTML.stringByReplacingOccurrencesOfString("setInterval(loop, 1)", withString: "setInterval(loop, 1)", options: NSStringCompareOptions.LiteralSearch, range: nil)
         try tweakedSnapHTML.writeToFile(getSnapPath().URLByAppendingPathComponent("snap.html").path!, atomically: true, encoding: NSUTF8StringEncoding)
+        let guiJS = try String(contentsOfFile: getSnapPath().URLByAppendingPathComponent("gui.js").path!, encoding: NSUTF8StringEncoding)
+        var dataSaveGuiJS = guiJS.stringByReplacingOccurrencesOfString("this.saveXMLAs(str, name, newWindow);", withString: "window.open(dataPrefix + encodeURIComponent(str));", options: NSStringCompareOptions.LiteralSearch, range: nil)
+        dataSaveGuiJS = dataSaveGuiJS.stringByReplacingOccurrencesOfString("'data:text/' + plain ? 'plain,' : 'xml,'", withString: "'data:text/xml,'", options: NSStringCompareOptions.LiteralSearch, range: nil)
+        try dataSaveGuiJS.writeToFile(getSnapPath().URLByAppendingPathComponent("gui.js").path!, atomically: true, encoding: NSUTF8StringEncoding)
     }
     catch{
         print("Error: Cannot update. Some error has occured downloading update\n");

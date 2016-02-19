@@ -23,7 +23,6 @@
 		BAC00A721BC41BD0004F5CA6 /* HttpRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC00A5A1BC41BD0004F5CA6 /* HttpRequest.swift */; settings = {ASSET_TAGS = (); }; };
 		BAC00A731BC41BD0004F5CA6 /* HttpResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC00A5B1BC41BD0004F5CA6 /* HttpResponse.swift */; settings = {ASSET_TAGS = (); }; };
 		BAC00A741BC41BD0004F5CA6 /* HttpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC00A5C1BC41BD0004F5CA6 /* HttpServer.swift */; settings = {ASSET_TAGS = (); }; };
-		BAC00A751BC41BD0004F5CA6 /* iPadstart.xml in Resources */ = {isa = PBXBuildFile; fileRef = BAC00A5D1BC41BD0004F5CA6 /* iPadstart.xml */; settings = {ASSET_TAGS = (); }; };
 		BAC00A761BC41BD0004F5CA6 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = BAC00A5E1BC41BD0004F5CA6 /* LICENSE */; settings = {ASSET_TAGS = (); }; };
 		BAC00A771BC41BD0004F5CA6 /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC00A5F1BC41BD0004F5CA6 /* Socket.swift */; settings = {ASSET_TAGS = (); }; };
 		BAC00A781BC41BD0004F5CA6 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BAC00A611BC41BD0004F5CA6 /* Info.plist */; settings = {ASSET_TAGS = (); }; };
@@ -68,7 +67,6 @@
 		BAC00A5A1BC41BD0004F5CA6 /* HttpRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpRequest.swift; sourceTree = "<group>"; };
 		BAC00A5B1BC41BD0004F5CA6 /* HttpResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpResponse.swift; sourceTree = "<group>"; };
 		BAC00A5C1BC41BD0004F5CA6 /* HttpServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpServer.swift; sourceTree = "<group>"; };
-		BAC00A5D1BC41BD0004F5CA6 /* iPadstart.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = iPadstart.xml; sourceTree = "<group>"; };
 		BAC00A5E1BC41BD0004F5CA6 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		BAC00A5F1BC41BD0004F5CA6 /* Socket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Socket.swift; sourceTree = "<group>"; };
 		BAC00A611BC41BD0004F5CA6 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -157,7 +155,6 @@
 				BAC00A5A1BC41BD0004F5CA6 /* HttpRequest.swift */,
 				BAC00A5B1BC41BD0004F5CA6 /* HttpResponse.swift */,
 				BAC00A5C1BC41BD0004F5CA6 /* HttpServer.swift */,
-				BAC00A5D1BC41BD0004F5CA6 /* iPadstart.xml */,
 				BAC00A5E1BC41BD0004F5CA6 /* LICENSE */,
 				BAC00A5F1BC41BD0004F5CA6 /* Socket.swift */,
 			);
@@ -266,7 +263,6 @@
 				BA88B6351B2233C9009EF1C3 /* Images.xcassets in Resources */,
 				BAC00A791BC41BD0004F5CA6 /* LICENSE.txt in Resources */,
 				BA88B65B1B223990009EF1C3 /* Main.storyboard in Resources */,
-				BAC00A751BC41BD0004F5CA6 /* iPadstart.xml in Resources */,
 				BAC00A781BC41BD0004F5CA6 /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
