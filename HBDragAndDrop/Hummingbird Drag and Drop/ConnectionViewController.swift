@@ -12,7 +12,6 @@ import CoreBluetooth
 
 class ConnectionViewController: UITableViewController {
     
-    var hbServe = HummingbirdServices();
     let sharedBluetoothDiscovery = BluetoothDiscovery.getBLEDiscovery()
     var items = [String: CBPeripheral]()
     var refreshTimer: NSTimer = NSTimer()
@@ -21,13 +20,13 @@ class ConnectionViewController: UITableViewController {
         super.viewDidLoad()
         self.items = sharedBluetoothDiscovery.getDiscovered()
         title = "BLE Devices"
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Refresh, target: self, action: "restart")
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Refresh, target: self, action: #selector(ConnectionViewController.restart))
         navigationController!.setNavigationBarHidden(false, animated:true)
         self.tableView.allowsSelection = false
         self.tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cellIdentifier")
         self.tableView.rowHeight = UITableViewAutomaticDimension
         self.tableView.allowsSelection = true
-        refreshTimer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: Selector("refresh"), userInfo: nil, repeats: true)
+        refreshTimer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: #selector(ConnectionViewController.refresh), userInfo: nil, repeats: true)
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -38,8 +37,10 @@ class ConnectionViewController: UITableViewController {
         let index = self.tableView.indexPathForCell(cell)
         let i = index!.row
         let item = array[i]
+        let hbServe = HummingbirdServices()
         sharedBluetoothDiscovery.connectToPeripheral(item, name: name)
         let mainView = segue.destinationViewController as! ViewController
+        hbServe.attachToDevice(name)
         mainView.hbServes[name] = hbServe
     }
     

@@ -29,7 +29,7 @@ public class HummingbirdServices: NSObject{
     
     public override init(){
         super.init()
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("connectionChanged:"), name: BLEServiceChangedStatusNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(HummingbirdServices.connectionChanged(_:)), name: BLEServiceChangedStatusNotification, object: nil)
     }
     
     deinit{
@@ -50,7 +50,7 @@ public class HummingbirdServices: NSObject{
     func startTimerSend(){
         self.allowSend = false
         if (timerDelaySend == nil){
-            timerDelaySend = NSTimer.scheduledTimerWithTimeInterval(sendInterval, target: self, selector: Selector("timerElapsedSend"), userInfo: nil, repeats: false)
+            timerDelaySend = NSTimer.scheduledTimerWithTimeInterval(sendInterval, target: self, selector: #selector(HummingbirdServices.timerElapsedSend), userInfo: nil, repeats: false)
         }
     }
  

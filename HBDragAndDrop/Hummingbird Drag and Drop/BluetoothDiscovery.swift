@@ -9,7 +9,7 @@
 import Foundation
 import CoreBluetooth
 
-let sharedBluetoothDiscovery = BluetoothDiscovery()
+private let sharedBluetoothDiscovery = BluetoothDiscovery()
 
 class BluetoothDiscovery: NSObject, CBCentralManagerDelegate {
     private var centralManager: CBCentralManager?
@@ -69,10 +69,10 @@ class BluetoothDiscovery: NSObject, CBCentralManagerDelegate {
             }
             var localname = String(nameString)
             if Array(nameCount.keys.lazy).contains(nameString as String) {
-                nameCount[nameString as String]?.advancedBy(1)
-                localname = localname + String(nameCount[nameString as String])
+                nameCount[nameString as String]! += UInt(1)
+                localname = localname + String(nameCount[nameString as String]!)
             } else {
-                nameCount[nameString as String]? = 1
+                nameCount[nameString as String] = 1
             }
             dbg_print("Found a device: " + localname)
         
@@ -129,6 +129,7 @@ class BluetoothDiscovery: NSObject, CBCentralManagerDelegate {
         centralManager!.cancelPeripheralConnection(peripheral)
         connectNames[peripheral] = name
         centralManager!.connectPeripheral(peripheral, options: [CBConnectPeripheralOptionNotifyOnDisconnectionKey: NSNumber(bool:true)])
+        discoveredDevices.removeValueForKey(name)
     }
     
     func disconnectFromPeripheral(peripheral: CBPeripheral){

@@ -126,6 +126,7 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
         }
     }
     var lastMessageSent:NSData = NSData()
+    var lastNameSent: String = ""
     
     func peripheral(peripheral: CBPeripheral, didUpdateValueForCharacteristic characteristic: CBCharacteristic, error: NSError?) {
         if(characteristic.UUID != BLEServiceUUIDRX){
@@ -134,8 +135,8 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
         if(characteristic.value!.length % 5 != 0){
             return
         }
-        let dataString = NSString(format: "rx value: %@", characteristic.value!)
-        dbg_print(dataString)
+        //let dataString = NSString(format: "rx value: %@", characteristic.value!)
+        //dbg_print(dataString)
         if let index = getIndex(peripheral) {
             var temp: [UInt8] = [0,0,0,0]
             characteristic.value!.getBytes(&temp,length: 4)
@@ -150,25 +151,26 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
             objc_sync_enter(devices[index].peripheral)
             devices[index].data = NSData(bytes: oldData, length: 4)
             objc_sync_exit(devices[index].peripheral)
-            dbg_print(NSString(format: "stored data: %@", devices[index].data))
+            //dbg_print(NSString(format: "stored data: %@", devices[index].data))
         }
     }
     
     
     func setTX(name: String, message : NSData){
-        //dbg_print("setTX called")
+        dbg_print(NSString(format: "setTX called on %@", name))
         if let index = getIndex(name) {
             if (devices[index].tx == nil){
                 dbg_print("tx is not avaliable")
                 return
             }
-            if(message.isEqualToData (lastMessageSent) && !(message.isEqualToData(getPollSensorsCommand()))){
+            if(message.isEqualToData (lastMessageSent) && name == lastNameSent && !(message.isEqualToData(getPollSensorsCommand()))){
                 dbg_print("ignoring repeat message")
                 return
             }
             dbg_print(NSString(format: "sending message %@", message))
             devices[index].peripheral.writeValue(message, forCharacteristic: devices[index].tx!, type: CBCharacteristicWriteType.WithResponse)
             lastMessageSent = message
+            lastNameSent = name
             dbg_print("sent message")
         }
     }

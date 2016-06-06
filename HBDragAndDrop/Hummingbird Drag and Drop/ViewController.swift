@@ -117,13 +117,13 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardDidShow:", name: UIKeyboardDidShowNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardDidHide:", name: UIKeyboardDidHideNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ViewController.keyboardDidShow(_:)), name: UIKeyboardDidShowNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ViewController.keyboardDidHide(_:)), name: UIKeyboardDidHideNotification, object: nil)
         
         prepareServer()
         server.start(22179)
         navigationController!.setNavigationBarHidden(true, animated:true)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("changedStatus:"), name: BluetoothStatusChangedNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ViewController.changedStatus(_:)), name: BluetoothStatusChangedNotification, object: nil)
         
         self.locationManager.requestAlwaysAuthorization()
         self.locationManager.requestWhenInUseAuthorization()
@@ -163,12 +163,12 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                 
             }
             if let ip = getWiFiAddress(){
-                let connectionAlert = UIAlertController(title: "Connected", message: "The app is currently connecting to a local version of Snap!. If would like to use the app as a server, simply open the iPad starter project or a project built from it on a computer and use this IP address: " + ip, preferredStyle: UIAlertControllerStyle.Alert)
+                let connectionAlert = UIAlertController(title: "Connected", message: "The app is currently connecting to a local version of [PROGRAM]. If would like to use the app as a server use this IP address: " + ip + "with port: 22179", preferredStyle: UIAlertControllerStyle.Alert)
                 connectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
                 self.presentViewController(connectionAlert, animated: true, completion: nil)
             }
             else{
-                let connectionAlert = UIAlertController(title: "Connected", message: "The app is currently connecting to a local version of Snap!. If would like to use the app as a server, you need to be connected to wifi. Either you are not connected to wifi or have some connection connection issues.", preferredStyle: UIAlertControllerStyle.Alert)
+                let connectionAlert = UIAlertController(title: "Connected", message: "The app is currently connecting to a local version of [PROGRAM]. If would like to use the app as a server, you need to be connected to wifi. Either you are not connected to wifi or have some connection connection issues.", preferredStyle: UIAlertControllerStyle.Alert)
                 connectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
                 self.presentViewController(connectionAlert, animated: true, completion: nil)
             }
@@ -178,7 +178,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             self.view.addSubview(mainWebView)
         }
         else{
-            let noConnectionAlert = UIAlertController(title: "Cannot Connect", message: "This app required an internet connection for certain features to work. There is currently no connection avaliable. If this is your first time opening the app, it will NOT load. You need to open the app while you have internet at least once so that the snap source code can be downloaded", preferredStyle: UIAlertControllerStyle.Alert)
+            let noConnectionAlert = UIAlertController(title: "Cannot Connect", message: "This app required an internet connection for certain features to work. There is currently no connection avaliable. If this is your first time opening the app, it will NOT load. You need to open the app while you have internet at least once so that the source code can be downloaded", preferredStyle: UIAlertControllerStyle.Alert)
             noConnectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
             self.presentViewController(noConnectionAlert, animated: true, completion: nil)
             let requestPage = NSURLRequest(URL: url!)
@@ -195,7 +195,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
     func keyboardDidShow(notification:NSNotification){
         //TypingText.hidden = false
         
-        scrollingTimer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: Selector("scrollToTop"), userInfo: nil, repeats: true)
+        scrollingTimer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: #selector(ViewController.scrollToTop), userInfo: nil, repeats: true)
     }
     func keyboardDidHide(notification:NSNotification){
         //TypingText.hidden = true
@@ -338,7 +338,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
     override func motionEnded(motion: UIEventSubtype, withEvent event: UIEvent?) {
         if (motion == UIEventSubtype.MotionShake){
             wasShaken = true
-            shakenTimer = NSTimer.scheduledTimerWithTimeInterval(NSTimeInterval(5), target: self, selector: "expireShake", userInfo: nil, repeats: false)
+            shakenTimer = NSTimer.scheduledTimerWithTimeInterval(NSTimeInterval(5), target: self, selector: #selector(ViewController.expireShake), userInfo: nil, repeats: false)
         }
     }
     func expireShake(){
@@ -387,7 +387,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         if getifaddrs(&ifaddr) == 0 {
             
             // For each interface ...
-            for (var ptr = ifaddr; ptr != nil; ptr = ptr.memory.ifa_next) {
+            var ptr = ifaddr
+            while(ptr != nil) {
                 let interface = ptr.memory
                 
                 // Check for IPv4 or IPv6 interface:
@@ -406,6 +407,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                         address = String.fromCString(hostname)
                     }
                 }
+            ptr = ptr.memory.ifa_next
             }
             freeifaddrs(ifaddr)
         }
@@ -648,7 +650,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             let response = (self.hbServes[name] != nil) ? 1 : 0
             return .OK(.RAW(String(response)))
         }
-        server["/hummingbird/rename/(.+)/(.+)"] = { request in
+        server["/hummingbird/(.+)/rename/(.+)"] = { request in
             let nameFrom = request.capturedUrlGroups[0]
             let nameTo = request.capturedUrlGroups[1]
             let hbServe = self.hbServes[nameFrom]!
@@ -657,11 +659,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             self.hbServes[nameTo] = hbServe
             return .OK(.RAW("Renamed"))
         }
-        server["/hummingbird/names/"] = { request in
+        server["/hummingbird/names"] = { request in
             let names = Array(self.hbServes.keys.lazy).joinWithSeparator("\n")
             return .OK(.RAW(names))
         }
-        server["/hummingbird/disconnect/(.+)"] = { request in
+        server["/hummingbird/(.+)/disconnect"] = { request in
             let name = request.capturedUrlGroups[0]
             self.hbServes[name]!.disconnectFromDevice()
             return .OK(.RAW("Disconnected"))
@@ -671,7 +673,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             let strings = Array(dict.keys.lazy)
             return .OK(.RAW(strings.joinWithSeparator("\n")))
         }
-        server["/hummingbird/connect/(.+)"] = { request in
+        server["/hummingbird/(.+)/connect"] = { request in
             let name = request.capturedUrlGroups[0]
             let peripheral = self.sharedBluetoothDiscovery.getDiscovered()[name]!
             let hbServe = HummingbirdServices()

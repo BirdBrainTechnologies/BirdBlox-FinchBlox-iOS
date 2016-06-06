@@ -63,7 +63,7 @@ class HttpParser {
                 return nil
             }
             body.append(UnicodeScalar(c))
-            counter++;
+            counter += 1;
         }
         return body
     }

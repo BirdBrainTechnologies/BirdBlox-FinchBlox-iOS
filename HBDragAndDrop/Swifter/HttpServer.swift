@@ -86,7 +86,7 @@ public class HttpServer
         var capturedGroups = [String]()
         if let result = expression.firstMatchInString(value, options: matchingOptions, range: HttpServer.asciiRange(value)) {
             let nsValue: NSString = value
-            for var i = 1 ; i < result.numberOfRanges ; ++i {
+            for i in 1  ..< result.numberOfRanges  {
                 if let group = nsValue.substringWithRange(result.rangeAtIndex(i)).stringByRemovingPercentEncoding {
                     capturedGroups.append(group)
                 }
