@@ -22,7 +22,7 @@ let updateKey = "LastUpdatedSnap"
 let soundsFilePath = getSnapPath().URLByAppendingPathComponent("Sounds/SOUNDS").path!
 let soundsFileBakPath = getSnapPath().URLByAppendingPathComponent("Sounds/SOUNDS.bak").path!
 
-let isAdmin = true
+let isAdmin = false
 
 private func getCommitURL() -> NSURL {
     let commitNumNString = NSString(data: NSData(contentsOfURL: latestCommitURL!)!, encoding: NSUTF8StringEncoding)
@@ -32,15 +32,40 @@ private func getCommitURL() -> NSURL {
 }
 
 public func getUpdate(){
+    var toMove = ""
     var zippedData = NSData()
     if isAdmin {
         zippedData = NSData(contentsOfURL: snapURL!)!
     } else {
+        let commitNumNString = NSString(data: NSData(contentsOfURL: latestCommitURL!)!, encoding: NSUTF8StringEncoding)
+        let commitNumString = commitNumNString!.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()) as String
+        toMove = unzipPath.URLByAppendingPathComponent("Snap--Build-Your-Own-Blocks-".stringByAppendingString(commitNumString)).absoluteString
         zippedData = NSData(contentsOfURL: getCommitURL())!
     }
     zippedData.writeToFile(zipPath.path!, atomically: true)
     Main.unzipFileAtPath(zipPath.path!, toDestination: unzipPath.path!)
+    if (toMove != ""){
+        do {
+            try fileManager.removeItemAtPath(getSnapPath().absoluteString.stringByAppendingString("/"))
+        }
+        catch {
+            //print ("didn't need to delete")
+        }
+        do {
+            //try fileManager.createDirectoryAtPath(getSnapPath().absoluteString, withIntermediateDirectories: false, attributes: nil)
+            try fileManager.moveItemAtPath(toMove, toPath: getSnapPath().absoluteString)
+        }
+        catch _ as NSError {
+            //print("Error moving directory: \(error)")
+        }
+    }
     do{
+        //DEBUG
+        //let files = fileManager.enumeratorAtPath(documentsPath.absoluteString)
+        //while let file = files?.nextObject() {
+        //    print(file)
+        //}
+        //DEBUG
         let cloudJS = try String(contentsOfFile: getSnapPath().URLByAppendingPathComponent("cloud.js").path!, encoding: NSUTF8StringEncoding)
         let localCloudJS = cloudJS.stringByReplacingOccurrencesOfString("https://snap.apps.miosoft.com/SnapCloud", withString: "https://snap.apps.miosoft.com/SnapCloudLocal", options: NSStringCompareOptions.LiteralSearch, range: nil)
         try localCloudJS.writeToFile(getSnapPath().URLByAppendingPathComponent("cloud.js").path!, atomically: true, encoding: NSUTF8StringEncoding)
@@ -55,12 +80,12 @@ public func getUpdate(){
             let currentCommit = NSString(data: NSData(contentsOfURL: latestCommitURL!)!, encoding: NSUTF8StringEncoding) as! String
             try currentCommit.writeToFile(getSnapPath().URLByAppendingPathComponent("commit.txt").path!, atomically: true, encoding: NSUTF8StringEncoding)
         } else {
-            try "Latest".writeToFile(getSnapPath().URLByAppendingPathComponent("commit.txt").path!, atomically: true, encoding: NSUTF8StringEncoding)
+            try "master".writeToFile(getSnapPath().URLByAppendingPathComponent("commit.txt").path!, atomically: true, encoding: NSUTF8StringEncoding)
         }
         
     }
     catch{
-        print("Error: Cannot update. Some error has occured downloading update\n");
+        //print("Error: Cannot update. Some error has occured downloading update\n");
     }
 }
 

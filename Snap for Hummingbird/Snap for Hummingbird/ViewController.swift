@@ -65,14 +65,21 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         return isReachable && !needsConnection
     }
     func webView(webView: WKWebView, createWebViewWithConfiguration configuration: WKWebViewConfiguration, forNavigationAction navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
-        if(navigationAction.targetFrame == nil){
-            NSURLConnection.sendAsynchronousRequest(navigationAction.request, queue: NSOperationQueue.mainQueue()) {
+        if(navigationAction.targetFrame == nil) {
+            var request: NSMutableURLRequest = navigationAction.request.mutableCopy() as! NSMutableURLRequest
+            var url_str = navigationAction.request.URL!.absoluteString
+            
+            //print("Got NavigationAction Request of: ", url_str);
+            //if (navigationAction.request.URL?.absoluteString.hasPrefix("data:") == true) {
+            NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) {
                 response, text, error in
+                //print("MineType: ", response!.MIMEType)
+                //print("Response: ", response!)
                 let mailComposer = MFMailComposeViewController()
                 mailComposer.mailComposeDelegate = self
                 mailComposer.title = "My Snap Project"
                 let mineType: String = "text/xml"
-                if(response!.MIMEType == mineType) {
+                if(error == nil && response!.MIMEType == mineType) {
                     UIPasteboard.generalPasteboard().string = NSString(data: text!, encoding: NSUTF8StringEncoding) as String?
                     mailComposer.addAttachmentData(text!, mimeType: mineType, fileName: "project.xml")
                     let prompt = UIAlertController(title: "Copied to clipboard", message: "The contents of your project file has been copied to your clipboard. Would you like to email the XML file?", preferredStyle: UIAlertControllerStyle.Alert)
@@ -82,10 +89,14 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                     }
                     prompt.addAction(UIAlertAction(title: "Yes", style: UIAlertActionStyle.Default, handler: sendEmail))
                     self.presentViewController(prompt, animated: true, completion: nil)
-
+                    
+                }
+                else {
+                    print("Error: ", error)
                 }
                 return
             }
+            //}
         }
         return nil
     }
@@ -305,7 +316,6 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             }
             presentViewController(savedPrompt, animated: true, completion: nil)
         }
-        
         recordingPrompt.addAction(UIAlertAction(title: "Stop", style: UIAlertActionStyle.Default, handler: didStopRecording))
         recordingPrompt.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Default, handler: cancelRecording))
         
