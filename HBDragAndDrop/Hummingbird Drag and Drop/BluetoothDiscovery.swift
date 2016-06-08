@@ -15,9 +15,12 @@ class BluetoothDiscovery: NSObject, CBCentralManagerDelegate {
     private var centralManager: CBCentralManager?
     
     private var connectNames = [CBPeripheral: String]()
+    private var allNames = [CBPeripheral: String]()
     private var nameCount = [String: UInt]()
     private var discoveredDevices = [String: CBPeripheral]()
     private var isScanning = false
+    private var discoverTimer: NSTimer = NSTimer()
+    
     
     var serviceBLE: BluetoothService = BluetoothService()
     
@@ -37,10 +40,13 @@ class BluetoothDiscovery: NSObject, CBCentralManagerDelegate {
                 discoveredDevices = [String: CBPeripheral]()
                 dbg_print("looking for devices with a service of UUID: " + BLEServiceUUID.UUIDString)
                 central.scanForPeripheralsWithServices([BLEServiceUUID], options: nil)
+                isScanning = true
+                discoverTimer = NSTimer.scheduledTimerWithTimeInterval(NSTimeInterval(60), target: self, selector: #selector(BluetoothDiscovery.stopScan), userInfo: nil, repeats: false)
                 //central.scanForPeripheralsWithServices(nil, options: nil)
             }
         }
     }
+    
     func stopScan() {
         if isScanning {
             if let central = centralManager{
@@ -60,28 +66,34 @@ class BluetoothDiscovery: NSObject, CBCentralManagerDelegate {
         if((peripheral.name == nil) || (peripheral.name == "")){
             return
         }
-            var nameString: NSString = NSString()
+        var nameString: NSString = NSString()
+        var localName: String
+        if let oldname = allNames[peripheral] {
+            localName = oldname
+        } else {
             if let ns: AnyObject = advertisementData[CBAdvertisementDataLocalNameKey] as? NSString{
                 nameString = ns as! NSString
             }
             else{
                 nameString = peripheral.name!
             }
-            var localname = String(nameString)
+            localName = String(nameString)
             if Array(nameCount.keys.lazy).contains(nameString as String) {
                 nameCount[nameString as String]! += UInt(1)
-                localname = localname + String(nameCount[nameString as String]!)
+                localName = localName + String(nameCount[nameString as String]!)
             } else {
                 nameCount[nameString as String] = 1
             }
-            dbg_print("Found a device: " + localname)
+            allNames[peripheral] = localName
+        }
+            dbg_print("Found a device: " + localName)
         
             if(Array(connectNames.keys.lazy).contains(peripheral)){
-                connectToPeripheral(peripheral, name: localname)
+                connectToPeripheral(peripheral, name: localName)
                 return
             }
             if(!discoveredDevices.values.contains(peripheral)){
-                discoveredDevices[localname] = peripheral
+                discoveredDevices[localName] = peripheral
             }
     }
     

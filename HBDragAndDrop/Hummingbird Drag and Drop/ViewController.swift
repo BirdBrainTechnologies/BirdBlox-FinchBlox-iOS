@@ -163,7 +163,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                 
             }
             if let ip = getWiFiAddress(){
-                let connectionAlert = UIAlertController(title: "Connected", message: "The app is currently connecting to a local version of [PROGRAM]. If would like to use the app as a server use this IP address: " + ip + "with port: 22179", preferredStyle: UIAlertControllerStyle.Alert)
+                let connectionAlert = UIAlertController(title: "Connected", message: "The app is currently connecting to a local version of [PROGRAM]. If would like to use the app as a server use this IP address: " + ip + " with port: 22179", preferredStyle: UIAlertControllerStyle.Alert)
                 connectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
                 self.presentViewController(connectionAlert, animated: true, completion: nil)
             }
@@ -666,9 +666,13 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         server["/hummingbird/(.+)/disconnect"] = { request in
             let name = request.capturedUrlGroups[0]
             self.hbServes[name]!.disconnectFromDevice()
+            if (self.hbServes.keys.contains(name)) {
+                self.hbServes.removeValueForKey(name)
+            }
             return .OK(.RAW("Disconnected"))
         }
         server["/hummingbird/discover"] = { request in
+            self.sharedBluetoothDiscovery.startScan()
             let dict = self.sharedBluetoothDiscovery.getDiscovered()
             let strings = Array(dict.keys.lazy)
             return .OK(.RAW(strings.joinWithSeparator("\n")))
@@ -677,9 +681,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             let name = request.capturedUrlGroups[0]
             let peripheral = self.sharedBluetoothDiscovery.getDiscovered()[name]!
             let hbServe = HummingbirdServices()
-            self.sharedBluetoothDiscovery.connectToPeripheral(peripheral, name: name)
-            hbServe.attachToDevice(name)
             self.hbServes[name] = hbServe
+            self.hbServes[name]!.attachToDevice(name)
+            self.sharedBluetoothDiscovery.connectToPeripheral(peripheral, name: name)
             return .OK(.RAW("Connected!"))
         }
         server["/speak/(.+)"] = { request in
@@ -814,7 +818,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                 NSLog("device disconnected")
                 dispatch_async(dispatch_get_main_queue()){
                     self.connectedIndicator.textColor = UIColor.redColor()
-                    self.hbServes.removeValueForKey(name)
+                    if (self.hbServes.keys.contains(name)) {
+                        self.hbServes.removeValueForKey(name)
+                    }
+                    
                 }
             }
         }
