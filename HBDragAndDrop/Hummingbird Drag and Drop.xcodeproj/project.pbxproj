@@ -235,6 +235,11 @@
 					BA88B6271B2233C9009EF1C3 = {
 						CreatedOnToolsVersion = 6.3.2;
 						DevelopmentTeam = N6XC9HC8PB;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 0;
+							};
+						};
 					};
 				};
 			};

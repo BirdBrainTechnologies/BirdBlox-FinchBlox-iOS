@@ -23,12 +23,14 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
     @IBOutlet weak var importButton: UIButton!
     @IBOutlet weak var recordButton: UIButton!
     var last_dialog_response: String?
+    var is_dialog_open = false
     let responseTime = 0.001
     var hbServes = [String:HummingbirdServices]()
     //var hbServe: HummingbirdServices!
     let server: HttpServer = HttpServer()
     var wasShaken: Bool = false
     var shakenTimer: NSTimer = NSTimer()
+    var pingTimer: NSTimer = NSTimer()
     let locationManager = CLLocationManager()
     let altimeter = CMAltimeter()
     let motionManager = CMMotionManager()
@@ -107,7 +109,22 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
     func mailComposeController(controller: MFMailComposeViewController, didFinishWithResult result: MFMailComposeResult, error: NSError?) {
         self.dismissViewControllerAnimated(true, completion: nil)
     }
-
+    
+    func checkServer() {
+        print("Pinging")
+        let url = NSURL(string: "http://localhost:22179/ping")
+        let task = NSURLSession.sharedSession().dataTaskWithURL(url!) {(data, response, error) in
+            if ((error) != nil){
+                print("Ping failed")
+                self.server.stop()
+                self.prepareServer()
+                self.server.start(22179)
+                return
+            }
+        }
+        task.resume()
+    }
+    
     override func loadView() {
         super.loadView()
         TypingText.hidden = true
@@ -117,13 +134,16 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ViewController.keyboardDidShow(_:)), name: UIKeyboardDidShowNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ViewController.keyboardDidHide(_:)), name: UIKeyboardDidHideNotification, object: nil)
+//        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ViewController.keyboardDidShow(_:)), name: UIKeyboardDidShowNotification, object: nil)
+//        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ViewController.keyboardDidHide(_:)), name: UIKeyboardDidHideNotification, object: nil)
         
         prepareServer()
         server.start(22179)
         navigationController!.setNavigationBarHidden(true, animated:true)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ViewController.changedStatus(_:)), name: BluetoothStatusChangedNotification, object: nil)
+        
+        pingTimer = NSTimer.scheduledTimerWithTimeInterval(NSTimeInterval(5), target: self, selector: #selector(ViewController.checkServer), userInfo: nil, repeats: true)
+        checkServer()
         
         self.locationManager.requestAlwaysAuthorization()
         self.locationManager.requestWhenInUseAuthorization()
@@ -154,7 +174,6 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             })
 
         }
-    
         mainWebView.contentMode = UIViewContentMode.ScaleAspectFit
         let url = NSURL(string: "http://localhost:22179/DragAndDrop/HummingbirdDragAndDrop.html")
         if(isConnectedToInternet()){
@@ -191,21 +210,21 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         //self.view.bringSubviewToFront(renameButton)
         //self.view.bringSubviewToFront(TypingText)
     }
-    var scrollingTimer = NSTimer()
-    func keyboardDidShow(notification:NSNotification){
-        //TypingText.hidden = false
-        
-        scrollingTimer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: #selector(ViewController.scrollToTop), userInfo: nil, repeats: true)
-    }
-    func keyboardDidHide(notification:NSNotification){
-        //TypingText.hidden = true
-        //TypingText.text=""
-        scrollingTimer.invalidate()
-    }
+    //var scrollingTimer = NSTimer()
+    //func keyboardDidShow(notification:NSNotification){
+    //    //TypingText.hidden = false
+    //
+    //    scrollingTimer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: #selector(ViewController.scrollToTop), userInfo: nil, repeats: true)
+    //}
+    //func keyboardDidHide(notification:NSNotification){
+    //    //TypingText.hidden = true
+    //    //TypingText.text=""
+    //    scrollingTimer.invalidate()
+    //}
     
-    func scrollToTop(){
-        mainWebView.scrollView.contentOffset = CGPointMake(0, 0)
-    }
+    //func scrollToTop(){
+    //    mainWebView.scrollView.contentOffset = CGPointMake(0, 0)
+    //}
     /*
     @IBAction func renamePressed(sender: UIButton) {
             let alertController = UIAlertController(title: "Set Name", message: "Enter a name for your Hummingbird (up to 18 characters)", preferredStyle: UIAlertControllerStyle.Alert)
@@ -463,6 +482,23 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             NSThread.sleepForTimeInterval(self.responseTime);
             return .OK(.RAW("LED set"))
         }
+        server["/hummingbird/(.+)/out/stop"] = { request in
+            let captured = request.capturedUrlGroups
+            
+            let name = String(captured[0])
+            self.hbServes[name]!.setLED(1, intensity: 0)
+            self.hbServes[name]!.setLED(2, intensity: 0)
+            self.hbServes[name]!.setLED(3, intensity: 0)
+            self.hbServes[name]!.setLED(4, intensity: 0)
+            self.hbServes[name]!.setTriLED(1, r: 0, g: 0, b: 0)
+            self.hbServes[name]!.setTriLED(2, r: 0, g: 0, b: 0)
+            self.hbServes[name]!.setMotor(1, speed: 0)
+            self.hbServes[name]!.setMotor(2, speed: 0)
+            self.hbServes[name]!.setVibration(1, intensity: 0)
+            self.hbServes[name]!.setVibration(2, intensity: 0)
+            NSThread.sleepForTimeInterval(self.responseTime);
+            return .OK(.RAW("Turned off outputs"))
+        }
         server["/hummingbird/(.+)/out/triled/(.+)/(.+)/(.+)/(.+)"] = { request in
             let captured = request.capturedUrlGroups
             
@@ -485,7 +521,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             else{
                 rValue = UInt8(temp)
             }
-            temp = Int(round((captured[2] as NSString).floatValue))
+            temp = Int(round((captured[3] as NSString).floatValue))
             var gValue: UInt8
             if (temp < 0){
                 gValue = 0
@@ -496,7 +532,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             else{
                 gValue = UInt8(temp)
             }
-            temp = Int(round((captured[3] as NSString).floatValue))
+            temp = Int(round((captured[4] as NSString).floatValue))
             var bValue: UInt8
             if (temp < 0){
                 bValue = 0
@@ -724,11 +760,12 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         server["/iPad/orientation"] = {request in
             return .OK(.RAW(self.getOrientation()))
         }
-        server["/iPad/dialog/(.+)/(.+)"] = {request in
+        server["/iPad/dialog/(.+)/(.+)/(.+)"] = {request in
             self.last_dialog_response = nil
             let captured = request.capturedUrlGroups
             let title = String(captured[0])
             let question = String(captured[1])
+            let answerHolder = String(captured[2])
             let alertController = UIAlertController(title: title, message: question, preferredStyle: UIAlertControllerStyle.Alert)
             let okayAction = UIAlertAction(title: "Okay", style: UIAlertActionStyle.Default){
                 (action) -> Void in
@@ -740,22 +777,23 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             }
             let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel){
                 (action) -> Void in
-                    self.last_dialog_response = ""
+                    self.last_dialog_response = "!~<!--CANCELLED-->~!"
             }
             alertController.addTextFieldWithConfigurationHandler{
                 (txtName) -> Void in
-                txtName.placeholder = "<Response>"
+                txtName.placeholder = answerHolder
             }
             alertController.addAction(okayAction)
             alertController.addAction(cancelAction)
             dispatch_async(dispatch_get_main_queue()){
                 self.presentViewController(alertController, animated: true, completion: nil)
+                
             }
             return .OK(.RAW("Dialog Presented"))
         }
         server["/iPad/dialog_response"] = {request in
             if let response = self.last_dialog_response {
-                if (response == "") {
+                if (response == "!~<!--CANCELLED-->~!") {
                     return .OK(.RAW("Cancelled"))
                 } else {
                     return .OK(.RAW("\'" + response + "\'"))
@@ -765,6 +803,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                 return .OK(.RAW("No Response"))
             }
             
+        }
+        server["/ping"] = {request in
+            return .OK(.RAW("pong"))
         }
         /*server["/project.xml"] = {request in
             if let importText = self.importedXMLText{

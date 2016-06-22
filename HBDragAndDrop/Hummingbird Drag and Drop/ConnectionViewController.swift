@@ -15,12 +15,14 @@ class ConnectionViewController: UITableViewController {
     let sharedBluetoothDiscovery = BluetoothDiscovery.getBLEDiscovery()
     var items = [String: CBPeripheral]()
     var refreshTimer: NSTimer = NSTimer()
+    var skipping = false
     
     override func viewDidLoad(){
         super.viewDidLoad()
         self.items = sharedBluetoothDiscovery.getDiscovered()
         title = "BLE Devices"
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Refresh, target: self, action: #selector(ConnectionViewController.restart))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FastForward, target: self, action: #selector(ConnectionViewController.skip))
         navigationController!.setNavigationBarHidden(false, animated:true)
         self.tableView.allowsSelection = false
         self.tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cellIdentifier")
@@ -31,6 +33,7 @@ class ConnectionViewController: UITableViewController {
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         refreshTimer.invalidate()
+        if (skipping == false) {
         let array = Array(self.items.values.lazy)
         let cell = sender as! UITableViewCell
         let name = (cell.textLabel?.text)!
@@ -42,16 +45,20 @@ class ConnectionViewController: UITableViewController {
         let mainView = segue.destinationViewController as! ViewController
         hbServe.attachToDevice(name)
         mainView.hbServes[name] = hbServe
+        }
     }
     
     func refresh(){
         items = sharedBluetoothDiscovery.getDiscovered()
         self.tableView.reloadData()
     }
+    func skip() {
+        skipping = true
+        performSegueWithIdentifier("ShowMainSegue", sender: self)
+    }
     func restart(){
         sharedBluetoothDiscovery.restartScan()
         refresh()
-        
     }
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
