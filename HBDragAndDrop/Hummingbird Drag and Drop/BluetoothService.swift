@@ -16,6 +16,9 @@ let BLEServiceChangedStatusNotification = "kBLEServiceChangedStatusNotification"
 
 class BluetoothService: NSObject, CBPeripheralDelegate{
     
+    internal var commandsSend = 0
+    var resetTimer: NSTimer = NSTimer()
+    
     typealias BLEDevice = (peripheral: CBPeripheral, tx: CBCharacteristic?, rx: CBCharacteristic?, data: NSData, name: String)
     var devices: [BLEDevice] = [BLEDevice]()
     
@@ -36,23 +39,37 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
         return i
     }
     
+    func getTimerInfo() {
+        //NSLog("Timer Fired!")
+        NSLog("Commands sent in the last second: " + String(commandsSend))
+        commandsSend = 0;
+        //resetTimer = NSTimer.scheduledTimerWithTimeInterval(NSTimeInterval(1), target: self, selector: #selector(BluetoothService.getTimerInfo), userInfo: nil, repeats: false)
+    }
+    
     func addPeripheral(peripheral: CBPeripheral, name: String) {
         peripheral.delegate = self
         let device: BLEDevice = (peripheral, nil, nil, NSData(bytes: [0,0,0,0,0] as [UInt8],length: 5), name)
         devices.append(device)
+        dispatch_async(dispatch_get_main_queue()) {
+            self.resetTimer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: #selector(BluetoothService.getTimerInfo), userInfo: nil, repeats: true)
+            NSLog("Started Timer")
+            }
         startDiscoveringServices(name)
+        
     }
     func removePeripheralbyName(name: String) {
         if let i = getIndex(name) {
             devices[i].peripheral.delegate = nil
             devices.removeAtIndex(i)
+            self.sendBTServiceNotification(false, name: name)
         }
     }
     
     func removePeripheral(peripheral: CBPeripheral) {
         if let i = getIndex(peripheral) {
             devices[i].peripheral.delegate = nil
-            devices.removeAtIndex(i)
+            let device = devices.removeAtIndex(i)
+            self.sendBTServiceNotification(false, name: device.name)
         }
     }
     
@@ -64,14 +81,15 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
     
     func reset(name: String){
         if let index = getIndex(name) {
-            devices.removeAtIndex(index)
+            let device = devices.removeAtIndex(index)
+            self.sendBTServiceNotification(false, name: device.name)
         }
-        self.sendBTServiceNotification(false)
+        
     }
     
     func resetAll(){
         devices.removeAll()
-        self.sendBTServiceNotification(false)
+        self.sendBTServiceNotification(false, name: "~!!!!!!!!!!~")
     }
     
     func peripheral(peripheral: CBPeripheral, didDiscoverServices error: NSError?) {
@@ -116,7 +134,8 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
                     }
                     if(wasTXSet && wasRXSet){
                         dbg_print("tx and rx characteristics were set")
-                        self.sendBTServiceNotification(true)
+                        self.sendBTServiceNotification(true, name: devices[index].name)
+                        return
                     }
                 }
             }
@@ -157,21 +176,27 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
     
     
     func setTX(name: String, message : NSData){
-        dbg_print(NSString(format: "setTX called on %@", name))
+        //dbg_print(NSString(format: "setTX called on %@", name))
+        if resetTimer.valid == false {
+            resetTimer = NSTimer.scheduledTimerWithTimeInterval(NSTimeInterval(1), target: self, selector: #selector(BluetoothService.getTimerInfo), userInfo: nil, repeats: false)
+            NSLog("Kicking Timer")
+
+        }
         if let index = getIndex(name) {
             if (devices[index].tx == nil){
                 dbg_print("tx is not avaliable")
                 return
             }
             if(message.isEqualToData (lastMessageSent) && name == lastNameSent && !(message.isEqualToData(getPollSensorsCommand()))){
-                dbg_print("ignoring repeat message")
+                //dbg_print("ignoring repeat message")
                 return
             }
-            dbg_print(NSString(format: "sending message %@", message))
+            //dbg_print(NSString(format: "sending message %@", message))
             devices[index].peripheral.writeValue(message, forCharacteristic: devices[index].tx!, type: CBCharacteristicWriteType.WithResponse)
             lastMessageSent = message
             lastNameSent = name
-            dbg_print("sent message")
+            commandsSend += 1
+            //dbg_print("sent message")
         }
     }
     
@@ -185,9 +210,9 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
         return ret
     }
     
-    func sendBTServiceNotification(isConnected: Bool){
-        let connectionDetails = ["isConnected" : isConnected]
-        NSNotificationCenter.defaultCenter().postNotificationName(BLEServiceChangedStatusNotification, object: self, userInfo: connectionDetails)
+    func sendBTServiceNotification(isConnected: Bool, name: String){
+        let connectionDetails = ["isConnected" : isConnected, "name" : name]
+        NSNotificationCenter.defaultCenter().postNotificationName(BLEServiceChangedStatusNotification, object: self, userInfo: connectionDetails as [NSObject : AnyObject])
     }
     
     

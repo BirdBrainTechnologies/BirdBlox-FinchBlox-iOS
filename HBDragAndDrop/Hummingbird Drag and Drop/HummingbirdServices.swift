@@ -23,12 +23,15 @@ public class HummingbirdServices: NSObject{
     
     var timerDelaySend: NSTimer?
     var allowSend = true
-    let sendInterval = 0.01
+    let sendInterval = 0.06
     let readInterval = 0.2
     let sharedBluetoothDiscovery = BluetoothDiscovery.getBLEDiscovery()
+    let sendQueue = NSOperationQueue()
+    
     
     public override init(){
         super.init()
+        sendQueue.maxConcurrentOperationCount = 1
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(HummingbirdServices.connectionChanged(_:)), name: BLEServiceChangedStatusNotification, object: nil)
     }
     
@@ -69,16 +72,18 @@ public class HummingbirdServices: NSObject{
     }
     
     //functions for communicating with device.
-    let sendQueue = NSOperationQueue()
-    let sendQueue2 = NSOperationQueue()
+    
     //Intensity is on a scale of 0-100
     //Speed is on a scale of -100-100
     //Angle is on a scale of 0-180
     public func sendByteArray(toSend: NSData){
             let serviceBLE = sharedBluetoothDiscovery.serviceBLE
+        if (sendQueue.operationCount > 15) {
+            sendQueue.cancelAllOperations()
+        }
             sendQueue.addOperationWithBlock{
                 if(!self.allowSend){
-                    NSThread.sleepForTimeInterval(self.sendInterval/2)
+                    NSThread.sleepForTimeInterval(self.sendInterval)
                 }
                 serviceBLE.setTX(self.name, message: toSend)
                 self.startTimerSend()
@@ -229,8 +234,8 @@ public class HummingbirdServices: NSObject{
     }
     
     func connectionChanged(notification: NSNotification){
-        let userinfo = notification.userInfo as! [String: Bool]
-        if let isConnected: Bool = userinfo["isConnected"]{
+        let userinfo = notification.userInfo! as [NSObject : AnyObject]
+        if let isConnected: Bool = userinfo["isConnected"] as? Bool{
             let connectionDetails = ["isConnected" : isConnected, "name": self.name]
             NSNotificationCenter.defaultCenter().postNotificationName(BluetoothStatusChangedNotification, object: self, userInfo: connectionDetails as [NSObject : AnyObject])
         }

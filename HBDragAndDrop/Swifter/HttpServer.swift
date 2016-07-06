@@ -57,6 +57,7 @@ public class HttpServer
                             if let (expression, handler) = self.findHandler(request.url) {
                                 let capturedUrlsGroups = self.captureExpressionGroups(expression, value: request.url)
                                 let updatedRequest = HttpRequest(url: request.url, urlParams: request.urlParams, method: request.method, headers: request.headers, body: request.body, capturedUrlGroups: capturedUrlsGroups, address: socketAddress)
+                                
                                 HttpServer.respond(socket, response: handler(updatedRequest), keepAlive: keepAlive)
                             } else {
                                 HttpServer.respond(socket, response: HttpResponse.NotFound, keepAlive: keepAlive)

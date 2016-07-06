@@ -452,6 +452,12 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         }
         return "In between"
     }
+    
+    func handleBadRequest(name: String) {
+        NSLog("Attempted to send command to invalid device: " + name)
+        NSLog("Devices found in disovery" + self.sharedBluetoothDiscovery.getDiscovered().keys.joinWithSeparator(", "))
+        self.sharedBluetoothDiscovery.startScan()
+    }
     //end orientation
     deinit{
         NSNotificationCenter.defaultCenter().removeObserver(self, name: BluetoothStatusChangedNotification, object: nil)
@@ -461,6 +467,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             let captured = request.capturedUrlGroups
             
             let name = String(captured[0])
+            if(self.hbServes.keys.contains(name) == false) {
+                self.handleBadRequest(name) 
+                return .OK(.RAW("Not connected!"))
+            }
             let portInt = Int(captured[1])
             let temp = Int(round((captured[2] as NSString).floatValue))
             var intensity: UInt8
@@ -486,6 +496,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             let captured = request.capturedUrlGroups
             
             let name = String(captured[0])
+            if(self.hbServes.keys.contains(name) == false) {
+                self.handleBadRequest(name)
+                return .OK(.RAW("Not connected!"))
+            }
             self.hbServes[name]!.setLED(1, intensity: 0)
             self.hbServes[name]!.setLED(2, intensity: 0)
             self.hbServes[name]!.setLED(3, intensity: 0)
@@ -503,6 +517,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             let captured = request.capturedUrlGroups
             
             let name = String(captured[0])
+            if(self.hbServes.keys.contains(name) == false) {
+                self.handleBadRequest(name)
+                return .OK(.RAW("Not connected!"))
+            }
             let portInt = Int(captured[1])
             var temp = Int(round((captured[2] as NSString).floatValue))
             var rValue: UInt8
@@ -550,6 +568,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         server["/hummingbird/(.+)/out/vibration/(.+)/(.+)"] = { request in
             let captured = request.capturedUrlGroups
             let name = String(captured[0])
+            if(self.hbServes.keys.contains(name) == false) {
+                self.handleBadRequest(name)
+                return .OK(.RAW("Not connected!"))
+            }
             let portInt = Int(captured[1])
             let temp = Int(round((captured[2] as NSString).floatValue))
             var intensity: UInt8
@@ -577,6 +599,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         server["/hummingbird/(.+)/out/servo/(.+)/(.+)"] = { request in
             let captured = request.capturedUrlGroups
             let name = String(captured[0])
+            if(self.hbServes.keys.contains(name) == false) {
+                self.handleBadRequest(name)
+                return .OK(.RAW("Not connected!"))
+            }
             let portInt = Int(captured[1])
             let temp = Int(round((captured[2] as NSString).floatValue))
             if (portInt > 4 || portInt < 1){
@@ -601,6 +627,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         server["/hummingbird/(.+)/out/motor/(.+)/(.+)"] = { request in
             let captured = request.capturedUrlGroups
             let name = String(captured[0])
+            if(self.hbServes.keys.contains(name) == false) {
+                self.handleBadRequest(name)
+                return .OK(.RAW("Not connected!"))
+            }
             let portInt = Int(captured[1])
             let temp = Int(round((captured[2] as NSString).floatValue))
             var intensity: Int
@@ -625,6 +655,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         }
         server["/hummingbird/(.+)/in/sensors"] = { request in
             let name = String(request.capturedUrlGroups[0])
+            if(self.hbServes.keys.contains(name) == false) {
+                self.handleBadRequest(name)
+                return .OK(.RAW("Not connected!"))
+            }
             var sensorData = self.hbServes[name]!.getAllSensorDataFromPoll()
             let response: String = "" + String(rawto100scale(sensorData[0])) + " " + String(rawto100scale(sensorData[1])) + " " + String(rawto100scale(sensorData[2])) + " " + String(rawto100scale(sensorData[3]))
             return .OK(.RAW(response))
@@ -632,6 +666,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         server["/hummingbird/(.+)/in/sensor/(.+)"] = { request in
             let captured = request.capturedUrlGroups
             let name = String(captured[0])
+            if(self.hbServes.keys.contains(name) == false) {
+                self.handleBadRequest(name)
+                return .OK(.RAW("Not connected!"))
+            }
             let portInt = Int(captured[1])
             if (portInt > 4 || portInt < 1){
                 return .OK(.RAW("Invalid Port (should be between 1 and 4 inclusively)"))
@@ -645,6 +683,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         server["/hummingbird/(.+)/in/distance/(.+)"] = { request in
             let captured = request.capturedUrlGroups
             let name = String(captured[0])
+            if(self.hbServes.keys.contains(name) == false) {
+                self.handleBadRequest(name)
+                return .OK(.RAW("Not connected!"))
+            }
             let portInt = Int(captured[1])
             if (portInt > 4 || portInt < 1){
                 return .OK(.RAW("Invalid Port (should be between 1 and 4 inclusively)"))
@@ -658,6 +700,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         server["/hummingbird/(.+)/in/sound/(.+)"] = { request in
             let captured = request.capturedUrlGroups
             let name = String(captured[0])
+            if(self.hbServes.keys.contains(name) == false) {
+                self.handleBadRequest(name)
+                return .OK(.RAW("Not connected!"))
+            }
             let portInt = Int(captured[1])
             if (portInt > 4 || portInt < 1){
                 return .OK(.RAW("Invalid Port (should be between 1 and 4 inclusively)"))
@@ -671,6 +717,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         server["/hummingbird/(.+)/in/temperature/(.+)"] = { request in
             let captured = request.capturedUrlGroups
             let name = String(captured[0])
+            if(self.hbServes.keys.contains(name) == false) {
+                self.handleBadRequest(name)
+                return .OK(.RAW("Not connected!"))
+            }
             let portInt = Int(captured[1])
             if (portInt > 4 || portInt < 1){
                 return .OK(.RAW("Invalid Port (should be between 1 and 4 inclusively)"))
@@ -688,6 +738,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         }
         server["/hummingbird/(.+)/rename/(.+)"] = { request in
             let nameFrom = request.capturedUrlGroups[0]
+            if(self.hbServes.keys.contains(nameFrom) == false) {
+                self.handleBadRequest(nameFrom)
+                return .OK(.RAW("Not connected!"))
+            }
             let nameTo = request.capturedUrlGroups[1]
             let hbServe = self.hbServes[nameFrom]!
             self.hbServes.removeValueForKey(nameFrom)
@@ -701,6 +755,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         }
         server["/hummingbird/(.+)/disconnect"] = { request in
             let name = request.capturedUrlGroups[0]
+            if(self.hbServes.keys.contains(name) == false) {
+                self.handleBadRequest(name)
+                return .OK(.RAW("Not connected!"))
+            }
             self.hbServes[name]!.disconnectFromDevice()
             if (self.hbServes.keys.contains(name)) {
                 self.hbServes.removeValueForKey(name)
@@ -709,6 +767,13 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         }
         server["/hummingbird/discover"] = { request in
             self.sharedBluetoothDiscovery.startScan()
+            let dict = self.sharedBluetoothDiscovery.getDiscovered()
+            let strings = Array(dict.keys.lazy)
+            return .OK(.RAW(strings.joinWithSeparator("\n")))
+        }
+        server["/hummingbird/ForceDiscover"] = { request in
+            print("CALLED FORCE!")
+            self.sharedBluetoothDiscovery.restartScan()
             let dict = self.sharedBluetoothDiscovery.getDiscovered()
             let strings = Array(dict.keys.lazy)
             return .OK(.RAW(strings.joinWithSeparator("\n")))
@@ -841,30 +906,40 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
     }
     func changedStatus(notification: NSNotification){
         let userinfo = notification.userInfo as! [String: AnyObject]
+        NSLog("View controller got notification")
         if let name: String = userinfo["name"] as? String {
+            NSLog("Got name " + name)
             if let isConnected: Bool = userinfo["isConnected"] as? Bool{
+                NSLog("Got connection status")
                 if isConnected{
                     NSLog("device connected")
+                    if(hbServes[name] == nil) {
+                        let hbServe = HummingbirdServices()
+                        self.hbServes[name] = hbServe
+                        self.hbServes[name]!.attachToDevice(name)
+                    }
                     hbServes[name]!.turnOffLightsMotor()
                     NSThread.sleepForTimeInterval(0.1)
                     hbServes[name]!.stopPolling()
                     NSThread.sleepForTimeInterval(0.1)
                     hbServes[name]!.beginPolling()
                     dispatch_async(dispatch_get_main_queue()){
-                    self.connectedIndicator.textColor = UIColor.greenColor()
+                        self.connectedIndicator.textColor = UIColor.greenColor()
+                    }
+                }
+                else{
+                    NSLog("device disconnected")
+                    dispatch_async(dispatch_get_main_queue()){
+                        self.connectedIndicator.textColor = UIColor.redColor()
+                        if (self.hbServes.keys.contains(name)) {
+                            self.hbServes.removeValueForKey(name)
+                        }
+                        self.sharedBluetoothDiscovery.restartScan()
+                        
                     }
                 }
             }
-            else{
-                NSLog("device disconnected")
-                dispatch_async(dispatch_get_main_queue()){
-                    self.connectedIndicator.textColor = UIColor.redColor()
-                    if (self.hbServes.keys.contains(name)) {
-                        self.hbServes.removeValueForKey(name)
-                    }
-                    
-                }
-            }
+            
         }
     }
     override func didReceiveMemoryWarning() {

@@ -38,23 +38,30 @@ class BluetoothDiscovery: NSObject, CBCentralManagerDelegate {
         if !isScanning {
             if let central = centralManager{
                 discoveredDevices = [String: CBPeripheral]()
-                dbg_print("looking for devices with a service of UUID: " + BLEServiceUUID.UUIDString)
+                NSLog("looking for devices with a service of UUID: " + BLEServiceUUID.UUIDString)
                 central.scanForPeripheralsWithServices([BLEServiceUUID], options: nil)
                 isScanning = true
-                discoverTimer = NSTimer.scheduledTimerWithTimeInterval(NSTimeInterval(60), target: self, selector: #selector(BluetoothDiscovery.stopScan), userInfo: nil, repeats: false)
+                discoverTimer = NSTimer.scheduledTimerWithTimeInterval(NSTimeInterval(30), target: self, selector: #selector(BluetoothDiscovery.stopScan), userInfo: nil, repeats: false)
                 //central.scanForPeripheralsWithServices(nil, options: nil)
+            } else {
+                NSLog("Failed to acquire central manager")
             }
         }
     }
     
     func stopScan() {
         if isScanning {
+            NSLog("Stopping scan")
             if let central = centralManager{
                 central.stopScan()
                 isScanning = false
+                discoverTimer.invalidate()
             }
+        } else {
+            NSLog("Can't stop scanning because not currently scanning")
         }
     }
+    
     func restartScan(){
         stopScan()
         startScan()
@@ -87,13 +94,13 @@ class BluetoothDiscovery: NSObject, CBCentralManagerDelegate {
             allNames[peripheral] = localName
         }
             dbg_print("Found a device: " + localName)
-        
-            if(Array(connectNames.keys.lazy).contains(peripheral)){
-                connectToPeripheral(peripheral, name: localName)
-                return
-            }
             if(!discoveredDevices.values.contains(peripheral)){
                 discoveredDevices[localName] = peripheral
+            }
+            if(Array(connectNames.keys.lazy).contains(peripheral)){
+                NSLog("Attempting to reconnect to old device!")
+                connectToPeripheral(peripheral, name: localName)
+                return
             }
     }
     
@@ -106,6 +113,10 @@ class BluetoothDiscovery: NSObject, CBCentralManagerDelegate {
     func centralManager(central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: NSError?) {
         self.serviceBLE.removePeripheral(peripheral)
         self.startScan()
+    }
+    func centralManager(central: CBCentralManager, didFailToConnectPeripheral peripheral: CBPeripheral, error: NSError?) {
+        dbg_print("Failed to connect to a peripheral!!!")
+        self.restartScan()
     }
     
     func centralManagerDidUpdateState(central: CBCentralManager) {
@@ -140,6 +151,7 @@ class BluetoothDiscovery: NSObject, CBCentralManagerDelegate {
     func connectToPeripheral(peripheral: CBPeripheral, name: String){
         centralManager!.cancelPeripheralConnection(peripheral)
         connectNames[peripheral] = name
+        NSLog("Calling connect to peripheral on " + name)
         centralManager!.connectPeripheral(peripheral, options: [CBConnectPeripheralOptionNotifyOnDisconnectionKey: NSNumber(bool:true)])
         discoveredDevices.removeValueForKey(name)
     }
