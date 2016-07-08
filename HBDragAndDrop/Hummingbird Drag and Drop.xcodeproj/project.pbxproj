@@ -36,6 +36,7 @@
 		BA95C0241BBEE2CE003AEC1A /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA95C01F1BBEE2CE003AEC1A /* Socket.swift */; };
 		BA95C0261BBEF609003AEC1A /* libz.1.2.5.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = BA95C0251BBEF609003AEC1A /* libz.1.2.5.tbd */; };
 		BA95C0281BBEF61A003AEC1A /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = BA95C0271BBEF61A003AEC1A /* libsqlite3.tbd */; };
+		BADF9BB71D2FF77900ABC410 /* HTMLParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = BADF9BB61D2FF77900ABC410 /* HTMLParser.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -91,6 +92,7 @@
 		BA95C01F1BBEE2CE003AEC1A /* Socket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Socket.swift; sourceTree = "<group>"; };
 		BA95C0251BBEF609003AEC1A /* libz.1.2.5.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.1.2.5.tbd; path = usr/lib/libz.1.2.5.tbd; sourceTree = SDKROOT; };
 		BA95C0271BBEF61A003AEC1A /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		BADF9BB61D2FF77900ABC410 /* HTMLParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTMLParser.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -185,6 +187,7 @@
 				BA88B62F1B2233C9009EF1C3 /* ViewController.swift */,
 				BA88B6581B223990009EF1C3 /* ConnectionViewController.swift */,
 				BA054A091B54354200A6FA8B /* DocumentManager.swift */,
+				BADF9BB61D2FF77900ABC410 /* HTMLParser.swift */,
 				BA88B6591B223990009EF1C3 /* Main.storyboard */,
 				BA88B6341B2233C9009EF1C3 /* Images.xcassets */,
 				BA88B6361B2233C9009EF1C3 /* LaunchScreen.xib */,
@@ -291,6 +294,7 @@
 				BA95C01A1BBEE1DC003AEC1A /* HttpHandlers.swift in Sources */,
 				BA88B6301B2233C9009EF1C3 /* ViewController.swift in Sources */,
 				BA88B62E1B2233C9009EF1C3 /* AppDelegate.swift in Sources */,
+				BADF9BB71D2FF77900ABC410 /* HTMLParser.swift in Sources */,
 				BA95C0241BBEE2CE003AEC1A /* Socket.swift in Sources */,
 				BA88B65A1B223990009EF1C3 /* ConnectionViewController.swift in Sources */,
 				BA054A061B541E9500A6FA8B /* zip.c in Sources */,

@@ -41,7 +41,7 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
     
     func getTimerInfo() {
         //NSLog("Timer Fired!")
-        NSLog("Commands sent in the last second: " + String(commandsSend))
+        //NSLog("Commands sent in the last second: " + String(commandsSend))
         commandsSend = 0;
         //resetTimer = NSTimer.scheduledTimerWithTimeInterval(NSTimeInterval(1), target: self, selector: #selector(BluetoothService.getTimerInfo), userInfo: nil, repeats: false)
     }

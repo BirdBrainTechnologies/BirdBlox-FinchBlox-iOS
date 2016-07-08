@@ -50,6 +50,40 @@ private func compareHistory() -> Bool{
     }
 }
 
+public func saveStringToFile(string: NSString, fileName: String) -> Bool{
+    let path = getSavePath().URLByAppendingPathComponent(fileName + ".xml").path!
+    do {
+        try string.writeToFile(path, atomically: true, encoding: NSUTF8StringEncoding)
+        return true
+    }
+    catch {
+        return false
+    }
+}
+
+public func getSavedFileNames() -> [String]{
+    do {
+        let paths = try fileManager.contentsOfDirectoryAtPath(getSavePath().path!)
+        return paths
+    } catch {
+        return []
+    }
+}
+
+public func getSavePath() -> NSURL{
+    return getDocPath().URLByAppendingPathComponent("SavedFiles")
+}
+
+public func getSavedFileByName(name: String) -> NSString {
+    do {
+    let file: NSString = try NSString(contentsOfFile: getSavePath().URLByAppendingPathComponent(name + ".xml").path!, encoding: NSUTF8StringEncoding)
+        return file
+    } catch {
+        return "File not found"
+    }
+    
+}
+
 public func getDocPath() -> NSURL{
     return documentsPath
 }

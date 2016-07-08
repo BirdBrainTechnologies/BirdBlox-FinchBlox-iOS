@@ -15,7 +15,7 @@ import CoreMotion
 import WebKit
 import MessageUI
 
-class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate, MFMailComposeViewControllerDelegate, AVAudioRecorderDelegate {
+class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate, MFMailComposeViewControllerDelegate, AVAudioRecorderDelegate, WKNavigationDelegate {
     
     @IBOutlet weak var TypingText: UITextField!
     @IBOutlet weak var renameButton: UIButton!
@@ -45,6 +45,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
     var recorder: AVAudioRecorder?
     let sharedBluetoothDiscovery = BluetoothDiscovery.getBLEDiscovery()
     
+    var currentFileName: String?
+    
     override func prefersStatusBarHidden() -> Bool {
         return true
     }
@@ -68,44 +70,69 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         
         return isReachable && !needsConnection
     }
+    
+    func webView(webView: WKWebView, didFinishNavigation navigation: WKNavigation!) {
+        NSLog(navigation.description)
+        if let url = webView.URL {
+            if (url.absoluteString.hasPrefix("blob")) {
+                NSLog("Got blob")
+                webView.evaluateJavaScript("document.getElementsByTagName('pre')[0].innerHTML", completionHandler: {(html: AnyObject?, error: NSError?) in
+                    let decodedString = (html as! String).stringByDecodingHTMLEntities as NSString
+                    print(decodedString)
+                    webView.goBack()
+                    if let filename = self.currentFileName {
+                        saveStringToFile(decodedString, fileName: filename)
+                        return
+                    }
+                    let alertController = UIAlertController(title: "Save", message: "Enter a name for your file", preferredStyle: UIAlertControllerStyle.Alert)
+                    let okayAction = UIAlertAction(title: "Okay", style: UIAlertActionStyle.Default){
+                            (action) -> Void in
+                        if let textField: AnyObject = alertController.textFields?.first{
+                            if let response = (textField as! UITextField).text{
+                                self.currentFileName = response.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()) + ".xml"
+                                saveStringToFile(decodedString, fileName: self.currentFileName!)
+                            }
+                        }
+                    }
+                    let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: nil)
+                    alertController.addTextFieldWithConfigurationHandler{
+                        (txtName) -> Void in
+                        txtName.placeholder = "<Filename>"
+                    }
+                    alertController.addAction(okayAction)
+                    alertController.addAction(cancelAction)
+                    dispatch_async(dispatch_get_main_queue()){
+                        self.presentViewController(alertController, animated: true, completion: nil)
+                        
+                    }
+                })
+                
+            }
+        }
+    }
+    func webView(webView: WKWebView, decidePolicyForNavigationAction navigationAction: WKNavigationAction, decisionHandler: (WKNavigationActionPolicy) -> Void) {
+        decisionHandler(WKNavigationActionPolicy.Allow)
+    }
     /*
     func webView(webView: WKWebView, createWebViewWithConfiguration configuration: WKWebViewConfiguration, forNavigationAction navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
         if(navigationAction.targetFrame == nil) {
-            var request: NSMutableURLRequest = navigationAction.request.mutableCopy() as! NSMutableURLRequest
-            var url_str = navigationAction.request.URL!.absoluteString
+            let request: NSMutableURLRequest = navigationAction.request.mutableCopy() as! NSMutableURLRequest
+            let url_str = navigationAction.request.URL!.absoluteString
             
-            //print("Got NavigationAction Request of: ", url_str);
+            print("Got NavigationAction Request of: ", url_str);
             //if (navigationAction.request.URL?.absoluteString.hasPrefix("data:") == true) {
             NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) {
                 response, text, error in
+                print("Text: ", text)
+                print("Error: ", error)
                 //print("MineType: ", response!.MIMEType)
                 //print("Response: ", response!)
-                let mailComposer = MFMailComposeViewController()
-                mailComposer.mailComposeDelegate = self
-                mailComposer.title = "My Snap Project"
-                let mineType: String = "text/xml"
-                if(error == nil && response!.MIMEType == mineType) {
-                    UIPasteboard.generalPasteboard().string = NSString(data: text!, encoding: NSUTF8StringEncoding) as String?
-                    mailComposer.addAttachmentData(text!, mimeType: mineType, fileName: "project.xml")
-                    let prompt = UIAlertController(title: "Copied to clipboard", message: "The contents of your project file has been copied to your clipboard. Would you like to email the XML file?", preferredStyle: UIAlertControllerStyle.Alert)
-                    prompt.addAction(UIAlertAction(title: "No", style: UIAlertActionStyle.Default, handler: nil))
-                    func sendEmail(action: UIAlertAction!){
-                        self.presentViewController(mailComposer, animated: true, completion: nil)
-                    }
-                    prompt.addAction(UIAlertAction(title: "Yes", style: UIAlertActionStyle.Default, handler: sendEmail))
-                    self.presentViewController(prompt, animated: true, completion: nil)
-                    
-                }
-                else {
-                    print("Error: ", error)
-                }
                 return
             }
-            //}
         }
         return nil
     }
-    */
+*/
     func mailComposeController(controller: MFMailComposeViewController, didFinishWithResult result: MFMailComposeResult, error: NSError?) {
         self.dismissViewControllerAnimated(true, completion: nil)
     }
@@ -130,6 +157,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         TypingText.hidden = true
         mainWebView = WKWebView(frame: self.view.frame)
         mainWebView.UIDelegate = self
+        mainWebView.navigationDelegate = self
     }
     
     override func viewDidLoad() {
@@ -182,12 +210,12 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                 
             }
             if let ip = getWiFiAddress(){
-                let connectionAlert = UIAlertController(title: "Connected", message: "The app is currently connecting to a local version of [PROGRAM]. If would like to use the app as a server use this IP address: " + ip + " with port: 22179", preferredStyle: UIAlertControllerStyle.Alert)
+                let connectionAlert = UIAlertController(title: "Connected", message: "The app is currently connecting to a local version of BirdBlox. If would like to use the app as a server use this IP address: " + ip + " with port: 22179", preferredStyle: UIAlertControllerStyle.Alert)
                 connectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
                 self.presentViewController(connectionAlert, animated: true, completion: nil)
             }
             else{
-                let connectionAlert = UIAlertController(title: "Connected", message: "The app is currently connecting to a local version of [PROGRAM]. If would like to use the app as a server, you need to be connected to wifi. Either you are not connected to wifi or have some connection connection issues.", preferredStyle: UIAlertControllerStyle.Alert)
+                let connectionAlert = UIAlertController(title: "Connected", message: "The app is currently connecting to a local version of BirdBlox. If would like to use the app as a server, you need to be connected to wifi. Either you are not connected to wifi or have some connection connection issues.", preferredStyle: UIAlertControllerStyle.Alert)
                 connectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
                 self.presentViewController(connectionAlert, animated: true, completion: nil)
             }
