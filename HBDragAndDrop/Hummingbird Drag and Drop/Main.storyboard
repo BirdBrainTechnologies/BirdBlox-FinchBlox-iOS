@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9532" systemVersion="14F1605" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Dbz-IG-z7a">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Dbz-IG-z7a">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
@@ -139,6 +139,9 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
+                            <view hidden="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="83B-K0-Pgv">
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
@@ -165,6 +168,7 @@
                         <outlet property="TypingText" destination="oih-Lg-mLk" id="LNM-kw-eSU"/>
                         <outlet property="connectedIndicator" destination="EAj-mY-nBT" id="FTu-bc-6fD"/>
                         <outlet property="importButton" destination="CzZ-jR-Neu" id="diN-z2-7dd"/>
+                        <outlet property="loadingView" destination="83B-K0-Pgv" id="IqQ-uH-a65"/>
                         <outlet property="recordButton" destination="41j-ng-iTb" id="u6r-5w-lr1"/>
                         <outlet property="renameButton" destination="FCe-f2-ArS" id="MZ7-cd-Okf"/>
                         <segue destination="EPw-GG-qUc" kind="show" identifier="ConnectSegue" id="fVr-61-jet"/>

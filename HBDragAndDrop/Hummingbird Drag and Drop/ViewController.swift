@@ -22,6 +22,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
     @IBOutlet weak var connectedIndicator: UILabel!
     @IBOutlet weak var importButton: UIButton!
     @IBOutlet weak var recordButton: UIButton!
+    @IBOutlet weak var loadingView: UIView!
     var last_dialog_response: String?
     var is_dialog_open = false
     let responseTime = 0.001
@@ -72,16 +73,24 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
     }
     
     func webView(webView: WKWebView, didFinishNavigation navigation: WKNavigation!) {
-        NSLog(navigation.description)
+        //NSLog(navigation.description)
+        loadingView.frame = webView.frame
+        let label = UILabel(frame: loadingView.frame)
+        label.textAlignment = NSTextAlignment.Center
+        label.text = "Saving, please wait!"
+        loadingView.addSubview(label)
+        loadingView.backgroundColor = UIColor.whiteColor()
         if let url = webView.URL {
             if (url.absoluteString.hasPrefix("blob")) {
                 NSLog("Got blob")
+                self.view.bringSubviewToFront(loadingView)
+                loadingView.hidden = false
                 webView.evaluateJavaScript("document.getElementsByTagName('pre')[0].innerHTML", completionHandler: {(html: AnyObject?, error: NSError?) in
-                    let decodedString = (html as! String).stringByDecodingHTMLEntities as NSString
-                    print(decodedString)
                     webView.goBack()
+                    let decodedString = (html as! String).stringByDecodingHTMLEntities as NSString
                     if let filename = self.currentFileName {
                         saveStringToFile(decodedString, fileName: filename)
+                        self.loadingView.hidden = true
                         return
                     }
                     let alertController = UIAlertController(title: "Save", message: "Enter a name for your file", preferredStyle: UIAlertControllerStyle.Alert)
@@ -89,12 +98,19 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                             (action) -> Void in
                         if let textField: AnyObject = alertController.textFields?.first{
                             if let response = (textField as! UITextField).text{
-                                self.currentFileName = response.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()) + ".xml"
+                                self.currentFileName = response.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
+                                NSLog("Saving string to file")
                                 saveStringToFile(decodedString, fileName: self.currentFileName!)
+                                self.loadingView.hidden = true
+                                return
                             }
                         }
                     }
-                    let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: nil)
+                    let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel) {
+                        (action) -> Void in
+                        self.loadingView.hidden = true
+                        return
+                    }
                     alertController.addTextFieldWithConfigurationHandler{
                         (txtName) -> Void in
                         txtName.placeholder = "<Filename>"
@@ -897,9 +913,32 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             }
             
         }
+        server["/files"] = {request in
+            let fileList = getSavedFileNames()
+            var files: String = "";
+            fileList.forEach({ (string) in
+                files.appendContentsOf(string)
+                files.appendContentsOf("\n")
+            })
+            return .OK(.RAW(files))
+        }
+        server["/load/(.+)"] = {request in
+            let filename = String(request.capturedUrlGroups[0])
+            let fileContent = getSavedFileByName(filename)
+            if (fileContent == "File not found") {
+                return .OK(.RAW("File Not Found"))
+            }
+            self.currentFileName = filename.stringByReplacingOccurrencesOfString(".xml", withString: "")
+            return .OK(.RAW(fileContent as (String)))
+        }
+        server["/new"] = {request in
+            self.currentFileName = nil
+            return .OK(.RAW("File name reset"))
+        }
         server["/ping"] = {request in
             return .OK(.RAW("pong"))
         }
+        
         /*server["/project.xml"] = {request in
             if let importText = self.importedXMLText{
                 self.importedXMLText = nil

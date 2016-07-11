@@ -47,7 +47,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.rootViewController = ViewController()
         return true
     }
-
     
     func getFileUrl() -> NSURL?{
         return fileURL

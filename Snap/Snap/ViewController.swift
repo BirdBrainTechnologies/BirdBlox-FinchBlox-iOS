@@ -38,6 +38,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
     override func loadView() {
         super.loadView()
         mainWebView = WKWebView(frame: self.view.bounds)
+        mainWebView.autoresizingMask = [UIViewAutoresizing.FlexibleWidth, UIViewAutoresizing.FlexibleHeight]
         mainWebView.UIDelegate = self
         mainWebView.contentMode = UIViewContentMode.ScaleAspectFit
     }

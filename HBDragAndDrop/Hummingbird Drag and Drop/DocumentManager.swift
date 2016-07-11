@@ -51,12 +51,27 @@ private func compareHistory() -> Bool{
 }
 
 public func saveStringToFile(string: NSString, fileName: String) -> Bool{
-    let path = getSavePath().URLByAppendingPathComponent(fileName + ".xml").path!
+    let fullFileName = fileName + ".xml"
+    let isDir: UnsafeMutablePointer<ObjCBool> = nil
+    if(!fileManager.fileExistsAtPath(getSavePath().path!, isDirectory: isDir)) {
+        do {
+        try fileManager.createDirectoryAtPath(getSavePath().path!, withIntermediateDirectories: false, attributes: nil)
+        }
+        catch {
+            NSLog("Failed to create save directory")
+        }
+    }
+    
+    let path = getSavePath().URLByAppendingPathComponent(fullFileName).path!
     do {
+        //fileManager.createFileAtPath(path, contents: nil, attributes: nil)
         try string.writeToFile(path, atomically: true, encoding: NSUTF8StringEncoding)
+        NSLog("Wrote " + (string as String) + " to file")
+        NSLog("return true")
         return true
     }
     catch {
+        NSLog("return false: \(error)")
         return false
     }
 }
@@ -74,9 +89,11 @@ public func getSavePath() -> NSURL{
     return getDocPath().URLByAppendingPathComponent("SavedFiles")
 }
 
-public func getSavedFileByName(name: String) -> NSString {
+public func getSavedFileByName(fileName: String) -> NSString {
     do {
-    let file: NSString = try NSString(contentsOfFile: getSavePath().URLByAppendingPathComponent(name + ".xml").path!, encoding: NSUTF8StringEncoding)
+        let fullFileName = fileName + ".xml"
+        let path = getSavePath().URLByAppendingPathComponent(fullFileName).path!
+        let file: NSString = try NSString(contentsOfFile: path, encoding: NSUTF8StringEncoding)
         return file
     } catch {
         return "File not found"
