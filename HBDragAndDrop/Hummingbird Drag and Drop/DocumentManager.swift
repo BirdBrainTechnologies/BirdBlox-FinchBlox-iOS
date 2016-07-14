@@ -79,7 +79,10 @@ public func saveStringToFile(string: NSString, fileName: String) -> Bool{
 public func getSavedFileNames() -> [String]{
     do {
         let paths = try fileManager.contentsOfDirectoryAtPath(getSavePath().path!)
-        return paths
+        let paths2 = paths.map({ (string) -> String in
+            return string.stringByReplacingOccurrencesOfString(".xml", withString: "")
+        })
+        return paths2
     } catch {
         return []
     }
@@ -98,7 +101,30 @@ public func getSavedFileByName(fileName: String) -> NSString {
     } catch {
         return "File not found"
     }
-    
+}
+
+public func deleteFile(fileName: String) -> Bool {
+    let fullFileName = fileName + ".xml"
+    let path = getSavePath().URLByAppendingPathComponent(fullFileName).path!
+    do {
+        try fileManager.removeItemAtPath(path)
+        return true
+    } catch {
+        return false
+    }
+}
+
+public func renameFile(startFileName: String, newFileName: String) -> Bool {
+    let startFullFileName = startFileName + ".xml"
+    let startPath = getSavePath().URLByAppendingPathComponent(startFullFileName).path!
+    let newFullFileName = newFileName + ".xml"
+    let newPath = getSavePath().URLByAppendingPathComponent(newFullFileName).path!
+    do {
+        try fileManager.moveItemAtPath(startPath, toPath: newPath)
+        return true
+    } catch {
+        return false
+    }
 }
 
 public func getDocPath() -> NSURL{

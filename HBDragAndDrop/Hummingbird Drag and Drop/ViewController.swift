@@ -24,7 +24,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
     @IBOutlet weak var recordButton: UIButton!
     @IBOutlet weak var loadingView: UIView!
     var last_dialog_response: String?
-    var is_dialog_open = false
+    var last_choice_response = 0
     let responseTime = 0.001
     var hbServes = [String:HummingbirdServices]()
     //var hbServe: HummingbirdServices!
@@ -73,7 +73,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
     }
     
     func webView(webView: WKWebView, didFinishNavigation navigation: WKNavigation!) {
-        //NSLog(navigation.description)
+        NSLog(navigation.description)
+        /*
         loadingView.frame = webView.frame
         let label = UILabel(frame: loadingView.frame)
         label.textAlignment = NSTextAlignment.Center
@@ -125,30 +126,87 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                 
             }
         }
+ */
     }
     func webView(webView: WKWebView, decidePolicyForNavigationAction navigationAction: WKNavigationAction, decisionHandler: (WKNavigationActionPolicy) -> Void) {
         decisionHandler(WKNavigationActionPolicy.Allow)
     }
-    /*
+    
     func webView(webView: WKWebView, createWebViewWithConfiguration configuration: WKWebViewConfiguration, forNavigationAction navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
         if(navigationAction.targetFrame == nil) {
             let request: NSMutableURLRequest = navigationAction.request.mutableCopy() as! NSMutableURLRequest
-            let url_str = navigationAction.request.URL!.absoluteString
+            //let url_str = navigationAction.request.URL!.absoluteString
             
-            print("Got NavigationAction Request of: ", url_str);
+            //print("Got NavigationAction Request of: ", url_str);
             //if (navigationAction.request.URL?.absoluteString.hasPrefix("data:") == true) {
             NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) {
                 response, text, error in
-                print("Text: ", text)
-                print("Error: ", error)
-                //print("MineType: ", response!.MIMEType)
-                //print("Response: ", response!)
+                
+                if (error == nil && response!.MIMEType == "text/xml") {
+                    let xml = NSString(data: text!, encoding: NSUTF8StringEncoding)!
+                    if let filename = self.currentFileName {
+                        saveStringToFile(xml, fileName: filename)
+                        return
+                    }
+                    let alertController = UIAlertController(title: "Save", message: "Enter a name for your file", preferredStyle: UIAlertControllerStyle.Alert)
+                    let okayAction = UIAlertAction(title: "Okay", style: UIAlertActionStyle.Default){
+                        (action) -> Void in
+                        if let textField: AnyObject = alertController.textFields?.first{
+                            if let response = (textField as! UITextField).text{
+                                self.currentFileName = response.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
+                                
+                                let allFiles = getSavedFileNames()
+                                //If we are about to overwrite a file
+                                if(allFiles.contains(self.currentFileName!)) {
+                                    NSLog("File exists, asking for confirmation")
+                                    let newAlertController = UIAlertController(title: "Save", message: "This filename is already in use, do you want to overwrite the existing file?", preferredStyle: UIAlertControllerStyle.Alert)
+                                    let yesAction = UIAlertAction(title: "Yes", style: UIAlertActionStyle.Default) {
+                                        (action) -> Void in
+                                        saveStringToFile(xml, fileName: self.currentFileName!)
+                                    }
+                                    let noAction = UIAlertAction(title: "No", style: UIAlertActionStyle.Default) {
+                                        (action) -> Void in
+                                        self.currentFileName = nil
+                                        self.presentViewController(alertController, animated: true, completion: nil)
+                                    }
+                                    newAlertController.addAction(yesAction)
+                                    newAlertController.addAction(noAction)
+                                    NSLog("Going to present confirmation dialog")
+                                    self.presentViewController(newAlertController, animated: true, completion: nil)
+                                } else {
+                                    NSLog("Saving string to file")
+                                    saveStringToFile(xml, fileName: self.currentFileName!)
+                                    return
+                                }
+                            }
+                        }
+                    }
+                    let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel) {
+                        (action) -> Void in
+                        return
+                    }
+                    alertController.addTextFieldWithConfigurationHandler{
+                        (textField) -> Void in
+                        textField.becomeFirstResponder()
+                        textField.placeholder = "<Filename>"
+                    }
+                    alertController.addAction(okayAction)
+                    alertController.addAction(cancelAction)
+                    
+                    dispatch_async(dispatch_get_main_queue()){
+                        NSLog("Start Present")
+                        //self.presentViewController(UIAlertController(title: "TEST", message: "abc", preferredStyle: UIAlertControllerStyle.Alert), animated: true) {
+                        self.presentViewController(alertController, animated: true) {
+                            NSLog("End Present")
+                        }
+                    }
+                }
                 return
             }
         }
         return nil
     }
-*/
+
     func mailComposeController(controller: MFMailComposeViewController, didFinishWithResult result: MFMailComposeResult, error: NSError?) {
         self.dismissViewControllerAnimated(true, completion: nil)
     }
@@ -869,6 +927,34 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         server["/iPad/orientation"] = {request in
             return .OK(.RAW(self.getOrientation()))
         }
+        server["/iPad/choice/(.+)/(.+)/(.+)/(.+)"] = { request in
+            self.last_choice_response = 0
+            let captured = request.capturedUrlGroups
+            let title = String(captured[0])
+            let question = String(captured[1])
+            let button1Text = String(captured[2])
+            let button2Text = String(captured[3])
+            let alertController = UIAlertController(title: title, message: question, preferredStyle: UIAlertControllerStyle.Alert)
+            let button1Action = UIAlertAction(title: button1Text, style: UIAlertActionStyle.Default){
+                (action) -> Void in
+                self.last_choice_response = 1
+            }
+            let button2Action = UIAlertAction(title: button2Text, style: UIAlertActionStyle.Default){
+                (action) -> Void in
+                self.last_choice_response = 2
+            }
+            alertController.addAction(button1Action)
+            alertController.addAction(button2Action)
+            dispatch_async(dispatch_get_main_queue()){
+                self.presentViewController(alertController, animated: true, completion: nil)
+                
+            }
+            return .OK(.RAW("Choice Dialog Presented"))
+
+        }
+        server["iPad/choice_response"] = {request in
+            return .OK(.RAW(String(self.last_choice_response)))
+        }
         server["/iPad/dialog/(.+)/(.+)/(.+)"] = {request in
             self.last_dialog_response = nil
             let captured = request.capturedUrlGroups
@@ -922,6 +1008,13 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             })
             return .OK(.RAW(files))
         }
+        server["/filename"] = {request in
+            if let filename = self.currentFileName {
+                return .OK(.RAW(filename))
+            } else {
+                return .OK(.RAW("File has no name."))
+            }
+        }
         server["/load/(.+)"] = {request in
             let filename = String(request.capturedUrlGroups[0])
             let fileContent = getSavedFileByName(filename)
@@ -930,6 +1023,31 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             }
             self.currentFileName = filename.stringByReplacingOccurrencesOfString(".xml", withString: "")
             return .OK(.RAW(fileContent as (String)))
+        }
+        server["/delete/(.+)"] = {request in
+            let filename = String(request.capturedUrlGroups[0])
+            let result = deleteFile(filename)
+            if (result == false) {
+                return .OK(.RAW("File Not Found"))
+            }
+            if (self.currentFileName == filename) {
+                self.currentFileName = nil
+            }
+            return .OK(.RAW("File Deleted"))
+        }
+        server["/rename/(.+)/(.+)"] = {request in
+            let captured = request.capturedUrlGroups
+            let filename = String(captured[0])
+            let newFilename = String(captured[1])
+            
+            let result = renameFile(filename, newFileName: newFilename)
+            if (result == false) {
+                return .OK(.RAW("File Not Found"))
+            }
+            if (self.currentFileName == filename) {
+                self.currentFileName = newFilename
+            }
+            return .OK(.RAW("File Renamed"))
         }
         server["/new"] = {request in
             self.currentFileName = nil
