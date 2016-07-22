@@ -974,72 +974,6 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             self.currentFileName = filename.stringByReplacingOccurrencesOfString(".xml", withString: "")
             return .OK(.RAW(fileContent as (String)))
         }
-        /*
-        server["/data/save/(.+)"] = {request in
-            let xml = (request.capturedUrlGroups[0] as NSString)
-            NSLog("Got save request")
-            if let filename = self.currentFileName  {
-                if(self.tempNew == false) {
-                    saveStringToFile(xml, fileName: filename)
-                    return .OK(.RAW("Saved for not first time"))
-                }
-            }
-            let alertController = UIAlertController(title: "Save", message: "Enter a name for your file", preferredStyle: UIAlertControllerStyle.Alert)
-            let okayAction = UIAlertAction(title: "Okay", style: UIAlertActionStyle.Default){
-                (action) -> Void in
-                if let textField: AnyObject = alertController.textFields?.first{
-                    if let response = (textField as! UITextField).text{
-                        self.currentFileName = response.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
-                        
-                        let allFiles = getSavedFileNames()
-                        //If we are about to overwrite a file
-                        if(allFiles.contains(self.currentFileName!)) {
-                            NSLog("File exists, asking for confirmation")
-                            let newAlertController = UIAlertController(title: "Save", message: "This filename is already in use, do you want to overwrite the existing file?", preferredStyle: UIAlertControllerStyle.Alert)
-                            let yesAction = UIAlertAction(title: "Yes", style: UIAlertActionStyle.Default) {
-                                (action) -> Void in
-                                saveStringToFile(xml, fileName: self.currentFileName!)
-                            }
-                            let noAction = UIAlertAction(title: "No", style: UIAlertActionStyle.Default) {
-                                (action) -> Void in
-                                self.currentFileName = nil
-                                self.presentViewController(alertController, animated: true, completion: nil)
-                            }
-                            newAlertController.addAction(yesAction)
-                            newAlertController.addAction(noAction)
-                            NSLog("Going to present confirmation dialog")
-                            self.presentViewController(newAlertController, animated: true, completion: nil)
-                        } else {
-                            NSLog("Saving string to file")
-                            saveStringToFile(xml, fileName: self.currentFileName!)
-                        }
-                    }
-                }
-            }
-            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel) {
-                (action) -> Void in
-                self.tempNew = false
-                return
-            }
-            alertController.addTextFieldWithConfigurationHandler{
-                (textField) -> Void in
-                textField.becomeFirstResponder()
-                textField.placeholder = "<Filename>"
-            }
-            alertController.addAction(okayAction)
-            alertController.addAction(cancelAction)
-            
-            dispatch_async(dispatch_get_main_queue()){
-                NSLog("Start Present")
-                //self.presentViewController(UIAlertController(title: "TEST", message: "abc", preferredStyle: UIAlertControllerStyle.Alert), animated: true) {
-                self.presentViewController(alertController, animated: true) {
-                    NSLog("End Present")
-                }
-            }
-            return .OK(.RAW("Presented Save Prompt"))
-
-        }
- */
         server["/data/save/(.+)"] = {request in
             NSLog("GOT SAVE")
             let filename = String(request.capturedUrlGroups[0])
@@ -1087,6 +1021,25 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             self.tempNew = true
             return .OK(.RAW("Filename temporarily cleared"))
         }
+        
+        server["/data/autosave"] = {request in
+            if let requestBody = request.body {
+                let xml: String = requestBody.stringByReplacingOccurrencesOfString("data=", withString: "")
+                autosave(xml)
+                return .OK(.RAW("Saved"))
+            } else {
+                return .OK(.RAW("darn"))
+            }
+        }
+        server["/data/loadAutosave"] = {request in
+            let fileContent = getSavedFileByName("autosaveFile")
+            if (fileContent == "File not found") {
+                return .OK(.RAW("File Not Found"))
+            }
+            self.currentFileName = "autosaveFile"
+            return .OK(.RAW(fileContent as (String)))
+        }
+        
         
         server["/server/ping"] = {request in
             return .OK(.RAW("pong"))

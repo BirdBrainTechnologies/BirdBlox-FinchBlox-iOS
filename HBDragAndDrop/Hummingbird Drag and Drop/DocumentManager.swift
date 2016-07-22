@@ -76,12 +76,23 @@ public func saveStringToFile(string: NSString, fileName: String) -> Bool{
     }
 }
 
+public func autosave(string: NSString) {
+    saveStringToFile(string, fileName: "autosaveFile")
+}
+
+public func getAutosave() -> NSString {
+    return getSavedFileByName("autosaveFile")
+}
+
 public func getSavedFileNames() -> [String]{
     do {
         let paths = try fileManager.contentsOfDirectoryAtPath(getSavePath().path!)
-        let paths2 = paths.map({ (string) -> String in
+        var paths2 = paths.map({ (string) -> String in
             return string.stringByReplacingOccurrencesOfString(".xml", withString: "")
         })
+        if let index = paths2.indexOf("autosaveFile") {
+            paths2.removeAtIndex(index)
+        }
         return paths2
     } catch {
         return []
