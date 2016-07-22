@@ -47,6 +47,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
     let sharedBluetoothDiscovery = BluetoothDiscovery.getBLEDiscovery()
     
     var currentFileName: String?
+    var tempNew = false
     
     override func prefersStatusBarHidden() -> Bool {
         return true
@@ -74,79 +75,27 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
     
     func webView(webView: WKWebView, didFinishNavigation navigation: WKNavigation!) {
         NSLog(navigation.description)
-        /*
-        loadingView.frame = webView.frame
-        let label = UILabel(frame: loadingView.frame)
-        label.textAlignment = NSTextAlignment.Center
-        label.text = "Saving, please wait!"
-        loadingView.addSubview(label)
-        loadingView.backgroundColor = UIColor.whiteColor()
-        if let url = webView.URL {
-            if (url.absoluteString.hasPrefix("blob")) {
-                NSLog("Got blob")
-                self.view.bringSubviewToFront(loadingView)
-                loadingView.hidden = false
-                webView.evaluateJavaScript("document.getElementsByTagName('pre')[0].innerHTML", completionHandler: {(html: AnyObject?, error: NSError?) in
-                    webView.goBack()
-                    let decodedString = (html as! String).stringByDecodingHTMLEntities as NSString
-                    if let filename = self.currentFileName {
-                        saveStringToFile(decodedString, fileName: filename)
-                        self.loadingView.hidden = true
-                        return
-                    }
-                    let alertController = UIAlertController(title: "Save", message: "Enter a name for your file", preferredStyle: UIAlertControllerStyle.Alert)
-                    let okayAction = UIAlertAction(title: "Okay", style: UIAlertActionStyle.Default){
-                            (action) -> Void in
-                        if let textField: AnyObject = alertController.textFields?.first{
-                            if let response = (textField as! UITextField).text{
-                                self.currentFileName = response.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
-                                NSLog("Saving string to file")
-                                saveStringToFile(decodedString, fileName: self.currentFileName!)
-                                self.loadingView.hidden = true
-                                return
-                            }
-                        }
-                    }
-                    let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel) {
-                        (action) -> Void in
-                        self.loadingView.hidden = true
-                        return
-                    }
-                    alertController.addTextFieldWithConfigurationHandler{
-                        (txtName) -> Void in
-                        txtName.placeholder = "<Filename>"
-                    }
-                    alertController.addAction(okayAction)
-                    alertController.addAction(cancelAction)
-                    dispatch_async(dispatch_get_main_queue()){
-                        self.presentViewController(alertController, animated: true, completion: nil)
-                        
-                    }
-                })
-                
-            }
-        }
- */
     }
     func webView(webView: WKWebView, decidePolicyForNavigationAction navigationAction: WKNavigationAction, decisionHandler: (WKNavigationActionPolicy) -> Void) {
         decisionHandler(WKNavigationActionPolicy.Allow)
     }
     
     func webView(webView: WKWebView, createWebViewWithConfiguration configuration: WKWebViewConfiguration, forNavigationAction navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
+        let url_str = navigationAction.request.URL!.absoluteString
+        print("Got NavigationAction Request of: ", url_str);
         if(navigationAction.targetFrame == nil) {
             let request: NSMutableURLRequest = navigationAction.request.mutableCopy() as! NSMutableURLRequest
-            //let url_str = navigationAction.request.URL!.absoluteString
-            
-            //print("Got NavigationAction Request of: ", url_str);
             //if (navigationAction.request.URL?.absoluteString.hasPrefix("data:") == true) {
             NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) {
                 response, text, error in
                 
                 if (error == nil && response!.MIMEType == "text/xml") {
                     let xml = NSString(data: text!, encoding: NSUTF8StringEncoding)!
-                    if let filename = self.currentFileName {
-                        saveStringToFile(xml, fileName: filename)
-                        return
+                    if let filename = self.currentFileName  {
+                        if(self.tempNew == false) {
+                            saveStringToFile(xml, fileName: filename)
+                            return
+                        }
                     }
                     let alertController = UIAlertController(title: "Save", message: "Enter a name for your file", preferredStyle: UIAlertControllerStyle.Alert)
                     let okayAction = UIAlertAction(title: "Okay", style: UIAlertActionStyle.Default){
@@ -183,6 +132,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                     }
                     let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel) {
                         (action) -> Void in
+                        self.tempNew = false
                         return
                     }
                     alertController.addTextFieldWithConfigurationHandler{
@@ -212,8 +162,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
     }
     
     func checkServer() {
-        print("Pinging")
-        let url = NSURL(string: "http://localhost:22179/ping")
+        //print("Pinging")
+        let url = NSURL(string: "http://localhost:22179/server/ping")
         let task = NSURLSession.sharedSession().dataTaskWithURL(url!) {(data, response, error) in
             if ((error) != nil){
                 print("Ping failed")
@@ -999,7 +949,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             }
             
         }
-        server["/files"] = {request in
+        server["/data/files"] = {request in
             let fileList = getSavedFileNames()
             var files: String = "";
             fileList.forEach({ (string) in
@@ -1008,14 +958,14 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             })
             return .OK(.RAW(files))
         }
-        server["/filename"] = {request in
+        server["/data/filename"] = {request in
             if let filename = self.currentFileName {
                 return .OK(.RAW(filename))
             } else {
                 return .OK(.RAW("File has no name."))
             }
         }
-        server["/load/(.+)"] = {request in
+        server["/data/load/(.+)"] = {request in
             let filename = String(request.capturedUrlGroups[0])
             let fileContent = getSavedFileByName(filename)
             if (fileContent == "File not found") {
@@ -1024,7 +974,87 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             self.currentFileName = filename.stringByReplacingOccurrencesOfString(".xml", withString: "")
             return .OK(.RAW(fileContent as (String)))
         }
-        server["/delete/(.+)"] = {request in
+        /*
+        server["/data/save/(.+)"] = {request in
+            let xml = (request.capturedUrlGroups[0] as NSString)
+            NSLog("Got save request")
+            if let filename = self.currentFileName  {
+                if(self.tempNew == false) {
+                    saveStringToFile(xml, fileName: filename)
+                    return .OK(.RAW("Saved for not first time"))
+                }
+            }
+            let alertController = UIAlertController(title: "Save", message: "Enter a name for your file", preferredStyle: UIAlertControllerStyle.Alert)
+            let okayAction = UIAlertAction(title: "Okay", style: UIAlertActionStyle.Default){
+                (action) -> Void in
+                if let textField: AnyObject = alertController.textFields?.first{
+                    if let response = (textField as! UITextField).text{
+                        self.currentFileName = response.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
+                        
+                        let allFiles = getSavedFileNames()
+                        //If we are about to overwrite a file
+                        if(allFiles.contains(self.currentFileName!)) {
+                            NSLog("File exists, asking for confirmation")
+                            let newAlertController = UIAlertController(title: "Save", message: "This filename is already in use, do you want to overwrite the existing file?", preferredStyle: UIAlertControllerStyle.Alert)
+                            let yesAction = UIAlertAction(title: "Yes", style: UIAlertActionStyle.Default) {
+                                (action) -> Void in
+                                saveStringToFile(xml, fileName: self.currentFileName!)
+                            }
+                            let noAction = UIAlertAction(title: "No", style: UIAlertActionStyle.Default) {
+                                (action) -> Void in
+                                self.currentFileName = nil
+                                self.presentViewController(alertController, animated: true, completion: nil)
+                            }
+                            newAlertController.addAction(yesAction)
+                            newAlertController.addAction(noAction)
+                            NSLog("Going to present confirmation dialog")
+                            self.presentViewController(newAlertController, animated: true, completion: nil)
+                        } else {
+                            NSLog("Saving string to file")
+                            saveStringToFile(xml, fileName: self.currentFileName!)
+                        }
+                    }
+                }
+            }
+            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel) {
+                (action) -> Void in
+                self.tempNew = false
+                return
+            }
+            alertController.addTextFieldWithConfigurationHandler{
+                (textField) -> Void in
+                textField.becomeFirstResponder()
+                textField.placeholder = "<Filename>"
+            }
+            alertController.addAction(okayAction)
+            alertController.addAction(cancelAction)
+            
+            dispatch_async(dispatch_get_main_queue()){
+                NSLog("Start Present")
+                //self.presentViewController(UIAlertController(title: "TEST", message: "abc", preferredStyle: UIAlertControllerStyle.Alert), animated: true) {
+                self.presentViewController(alertController, animated: true) {
+                    NSLog("End Present")
+                }
+            }
+            return .OK(.RAW("Presented Save Prompt"))
+
+        }
+ */
+        server["/data/save/(.+)"] = {request in
+            NSLog("GOT SAVE")
+            let filename = String(request.capturedUrlGroups[0])
+            if let requestBody = request.body {
+            let xml: String = requestBody.stringByReplacingOccurrencesOfString("data=", withString: "")
+            print(xml)
+            saveStringToFile(xml, fileName: filename)
+            self.currentFileName = filename
+            return .OK(.RAW("Saved"))
+            } else {
+                NSLog("Bodyless")
+                return .OK(.RAW("darn"))
+            }
+        }
+        server["/data/delete/(.+)"] = {request in
             let filename = String(request.capturedUrlGroups[0])
             let result = deleteFile(filename)
             if (result == false) {
@@ -1035,7 +1065,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             }
             return .OK(.RAW("File Deleted"))
         }
-        server["/rename/(.+)/(.+)"] = {request in
+        server["/data/rename/(.+)/(.+)"] = {request in
             let captured = request.capturedUrlGroups
             let filename = String(captured[0])
             let newFilename = String(captured[1])
@@ -1049,12 +1079,23 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             }
             return .OK(.RAW("File Renamed"))
         }
-        server["/new"] = {request in
+        server["/data/new"] = {request in
             self.currentFileName = nil
-            return .OK(.RAW("File name reset"))
+            return .OK(.RAW("Filename reset"))
         }
-        server["/ping"] = {request in
+        server["/data/saveAsNew"] = {request in
+            self.tempNew = true
+            return .OK(.RAW("Filename temporarily cleared"))
+        }
+        
+        server["/server/ping"] = {request in
             return .OK(.RAW("pong"))
+        }
+        server["/iPad/screenSize"] = {request in
+            let screenSize: CGRect = UIScreen.mainScreen().bounds
+            let width = String(screenSize.width)
+            let height = String(screenSize.height)
+            return .OK(.RAW(height + "\n" + width))
         }
         
         /*server["/project.xml"] = {request in
@@ -1079,6 +1120,27 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                 return .OK(.RAW(rawText))
             }
         }*/
+        server["/settings/get/(.+)"] = {request in
+            let key = request.capturedUrlGroups[0]
+            let value = getSetting(key)
+            if let nullCheckedValue = value {
+                return .OK(.RAW(nullCheckedValue))
+            } else {
+                return .OK(.RAW("Default"))
+            }
+        }
+        server["/settings/set/(.+)/(.+)"] = {request in
+            let captured = request.capturedUrlGroups
+            let key = captured[0]
+            let value = captured[1]
+            addSetting(key, value: value)
+            return .OK(.RAW("Setting saved"))
+        }
+        server["settings/delete/key/(.+)"] = {request in
+            let key = request.capturedUrlGroups[0]
+            removeSetting(key)
+            return .OK(.RAW("Setting Deleted"))
+        }
         server["/DragAndDrop/(.+)"] = HttpHandlers.directoryBrowser(getPath().path!)
         server["/DragAndDrop/Block/(.+)"] = HttpHandlers.directoryBrowser(getPath().URLByAppendingPathComponent("Block").path!)
         server["/DragAndDrop/BlockContainers/(.+)"] = HttpHandlers.directoryBrowser(getPath().URLByAppendingPathComponent("BlockContainers").path!)

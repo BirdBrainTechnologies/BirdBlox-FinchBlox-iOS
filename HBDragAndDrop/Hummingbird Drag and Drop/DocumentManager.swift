@@ -66,7 +66,7 @@ public func saveStringToFile(string: NSString, fileName: String) -> Bool{
     do {
         //fileManager.createFileAtPath(path, contents: nil, attributes: nil)
         try string.writeToFile(path, atomically: true, encoding: NSUTF8StringEncoding)
-        NSLog("Wrote " + (string as String) + " to file")
+        print("Wrote " + (string as String) + " to file")
         NSLog("return true")
         return true
     }
@@ -129,4 +129,41 @@ public func renameFile(startFileName: String, newFileName: String) -> Bool {
 
 public func getDocPath() -> NSURL{
     return documentsPath
+}
+
+public func getSettingsPath() -> NSURL {
+    return getDocPath().URLByAppendingPathComponent("Settings.plist")
+}
+
+private func getSettings() -> NSMutableDictionary {
+    var settings: NSMutableDictionary
+    if (!fileManager.fileExistsAtPath(getSettingsPath().path!)) {
+        settings = NSMutableDictionary()
+        settings.writeToFile(getSettingsPath().path!, atomically: true)
+    }
+    settings = NSMutableDictionary(contentsOfFile: getSettingsPath().path!)!
+    return settings
+}
+
+private func saveSettings(settings: NSMutableDictionary) {
+    settings.writeToFile(getSettingsPath().path!, atomically: true)
+}
+
+public func addSetting(key: String, value: String) {
+    let settings = getSettings()
+    settings.setValue(value, forKey: key)
+    saveSettings(settings)
+}
+
+public func getSetting(key: String) -> String? {
+    if let value = getSettings().valueForKey(key) {
+        return value as? String
+    }
+    return nil
+}
+
+public func removeSetting(key: String) {
+    let settings = getSettings()
+    settings.removeObjectForKey(key)
+    saveSettings(settings)
 }
