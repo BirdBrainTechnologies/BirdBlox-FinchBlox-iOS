@@ -59,6 +59,8 @@ public class HummingbirdServices: NSObject{
  
     public func disconnectFromDevice(){
         sharedBluetoothDiscovery.disconnectFromPeripheralbyName(self.name)
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: BLEServiceChangedStatusNotification, object: nil)
+
     }
     
     public func attachToDevice(name: String) {
@@ -69,6 +71,15 @@ public class HummingbirdServices: NSObject{
         leds = [0,0,0,0]
         trileds = [[0,0,0],[0,0,0]]
         lastKnowSensorPoll = [0,0,0,0]
+    }
+    
+    public func renameDevice(name: String) -> String? {
+        let oldName = self.name
+        if let newName = (sharedBluetoothDiscovery.renamePeripheralbyName(oldName, newName: name)) {
+            self.name = newName
+            return self.name
+        }
+        return nil
     }
     
     //functions for communicating with device.
@@ -217,7 +228,7 @@ public class HummingbirdServices: NSObject{
         self.sendByteArray(command2_2)
         NSThread.sleepForTimeInterval(0.2)
         self.sendByteArray(command3)
-        self.name = ""
+        self.name = name
         dbg_print("finished setting new name")
     }
     

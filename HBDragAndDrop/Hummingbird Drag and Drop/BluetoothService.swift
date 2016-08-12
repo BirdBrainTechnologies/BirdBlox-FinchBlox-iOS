@@ -73,6 +73,12 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
         }
     }
     
+    func renamePeripheral(peripheral: CBPeripheral, newName: String) {
+        if let i = getIndex(peripheral) {
+            devices[i].name = newName
+        }
+    }
+    
     func startDiscoveringServices(name: String){
         if let i = getIndex(name) {
             devices[i].peripheral.discoverServices([BLEServiceUUID])
@@ -134,6 +140,7 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
                     }
                     if(wasTXSet && wasRXSet){
                         dbg_print("tx and rx characteristics were set")
+                        dbg_print("Sending Notification with name: " + devices[index].name)
                         self.sendBTServiceNotification(true, name: devices[index].name)
                         return
                     }
@@ -208,6 +215,13 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
             objc_sync_exit(devices[index].peripheral)
         }
         return ret
+    }
+    
+    func getDeviceNames() -> [String] {
+        let names = devices.map { (peripheral: CBPeripheral, tx: CBCharacteristic?, rx: CBCharacteristic?, data: NSData, name: String) -> String in
+            return name
+        }
+        return names
     }
     
     func sendBTServiceNotification(isConnected: Bool, name: String){

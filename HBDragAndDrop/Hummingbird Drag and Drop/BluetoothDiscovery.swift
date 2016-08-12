@@ -106,16 +106,17 @@ class BluetoothDiscovery: NSObject, CBCentralManagerDelegate {
     
     func centralManager(central: CBCentralManager, didConnectPeripheral peripheral: CBPeripheral) {
         let name = connectNames[peripheral]!
-        dbg_print("connected to device: " + name)
+        NSLog("connected to device: " + name)
         self.serviceBLE.addPeripheral(peripheral, name: name)
         stopScan()
     }
     func centralManager(central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: NSError?) {
+        NSLog("Disconnected from a peripheral!!!")
         self.serviceBLE.removePeripheral(peripheral)
         self.startScan()
     }
     func centralManager(central: CBCentralManager, didFailToConnectPeripheral peripheral: CBPeripheral, error: NSError?) {
-        dbg_print("Failed to connect to a peripheral!!!")
+        NSLog("Failed to connect to a peripheral!!!")
         self.restartScan()
     }
     
@@ -156,21 +157,84 @@ class BluetoothDiscovery: NSObject, CBCentralManagerDelegate {
         discoveredDevices.removeValueForKey(name)
     }
     
-    func disconnectFromPeripheral(peripheral: CBPeripheral){
+    func disconnectFromPeripheral(peripheral: CBPeripheral) -> Bool {
         centralManager?.cancelPeripheralConnection(peripheral)
         connectNames.removeValueForKey(peripheral)
+        return true
     }
-    func disconnectFromPeripheralbyName(name: String) {
+    func disconnectFromPeripheralbyName(name: String) -> Bool {
         for (peripheral, pName) in connectNames {
             if pName == name {
                 disconnectFromPeripheral(peripheral)
-                return
+                return true
             }
         }
-
+        NSLog("Failed to disconnect because peripheral of name: " + name + " count not be found. Known names are: " + connectNames.values.joinWithSeparator(", "))
+        return false
+    }
+    func renamePeripheral(peripheral: CBPeripheral, newName: String) -> String{
+        var localName = String(newName)
+        if Array(nameCount.keys.lazy).contains(newName as String) {
+            nameCount[newName as String]! += UInt(1)
+            localName = localName + String(nameCount[newName as String]!)
+        } else {
+            nameCount[newName as String] = 1
+        }
+        let oldName = allNames[peripheral]
+        if connectNames[peripheral] != nil {
+            connectNames[peripheral] = localName
+        }
+        if allNames[peripheral] != nil {
+            allNames[peripheral] = localName
+        }
+        if let validOldName = oldName {
+            if discoveredDevices[validOldName] == peripheral {
+                discoveredDevices.removeValueForKey(validOldName)
+                discoveredDevices[localName] = peripheral
+            }
+        }
+        serviceBLE.renamePeripheral(peripheral, newName: localName)
+        return localName
     }
     
-    func getDiscovered() -> [String:CBPeripheral]{
+    func renamePeripheralbyName(oldName: String, newName: String) -> String?{
+        var peripheral: CBPeripheral?
+        for (periph, pName) in connectNames {
+            if pName == oldName {
+                peripheral = periph
+            }
+        }
+        if let validPeripheral = peripheral {
+            return renamePeripheral(validPeripheral, newName: newName)
+        }
+        return nil
+        
+    }
+    
+    func getDiscovered() -> [String:CBPeripheral] {
         return discoveredDevices
+    }
+    
+    func getConnected() -> [String] {
+        return Array(connectNames.values.lazy)
+    }
+    
+    func getServiceNames() -> [String] {
+        return serviceBLE.getDeviceNames()
+    }
+    func getAllNames() -> [String] {
+        return Array(allNames.values.lazy)
+    }
+    
+    func removeConnected(name: String) {
+        var peripheral: CBPeripheral?
+        for (periph, pName) in connectNames {
+            if pName == name {
+                peripheral = periph
+            }
+        }
+        if let validPeripheral = peripheral{
+            connectNames.removeValueForKey(validPeripheral)
+        }
     }
 }

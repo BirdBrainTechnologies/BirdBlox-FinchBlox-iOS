@@ -565,6 +565,23 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             NSThread.sleepForTimeInterval(self.responseTime);
             return .OK(.RAW("Turned off outputs"))
         }
+        
+        server["/hummingbird/out/stopAll"] = { request in
+        let names = Array(self.hbServes.keys.lazy)
+            for name in names {
+                self.hbServes[name]!.setLED(1, intensity: 0)
+                self.hbServes[name]!.setLED(2, intensity: 0)
+                self.hbServes[name]!.setLED(3, intensity: 0)
+                self.hbServes[name]!.setLED(4, intensity: 0)
+                self.hbServes[name]!.setTriLED(1, r: 0, g: 0, b: 0)
+                self.hbServes[name]!.setTriLED(2, r: 0, g: 0, b: 0)
+                self.hbServes[name]!.setMotor(1, speed: 0)
+                self.hbServes[name]!.setMotor(2, speed: 0)
+                self.hbServes[name]!.setVibration(1, intensity: 0)
+                self.hbServes[name]!.setVibration(2, intensity: 0)
+            }
+            return .OK(.RAW("Turned off all outputs for all Hummingbirds"))
+        }
         server["/hummingbird/(.+)/out/triled/(.+)/(.+)/(.+)/(.+)"] = { request in
             let captured = request.capturedUrlGroups
             
@@ -795,20 +812,37 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                 return .OK(.RAW("Not connected!"))
             }
             let nameTo = request.capturedUrlGroups[1]
-            let hbServe = self.hbServes[nameFrom]!
-            self.hbServes.removeValueForKey(nameFrom)
-            hbServe.setName(nameTo)
-            self.hbServes[nameTo] = hbServe
-            return .OK(.RAW("Renamed"))
+            if self.hbServes[nameFrom] != nil {
+                if let newName = self.hbServes[nameFrom]!.renameDevice(nameTo) {
+                    self.hbServes[newName] = self.hbServes.removeValueForKey(nameFrom)
+                    self.hbServes[newName]!.setName(newName)
+                    NSLog("number of items in HBSERVE: " + String(self.hbServes.count))
+                    return .OK(.RAW("Renamed"))
+                }
+            }
+            return .OK(.RAW("Name not found!"))
         }
         server["/hummingbird/names"] = { request in
             let names = Array(self.hbServes.keys.lazy).joinWithSeparator("\n")
+            return .OK(.RAW(names))
+        }
+        server["/hummingbird/connectedNames"] = {request in
+            let names = self.sharedBluetoothDiscovery.getConnected().joinWithSeparator("\n")
+            return .OK(.RAW(names))
+        }
+        server["/hummingbird/serviceNames"] = {request in
+            let names = self.sharedBluetoothDiscovery.getServiceNames().joinWithSeparator("\n")
+            return .OK(.RAW(names))
+        }
+        server["/hummingbird/ALLNames"] = {request in
+            let names = self.sharedBluetoothDiscovery.getAllNames().joinWithSeparator("\n")
             return .OK(.RAW(names))
         }
         server["/hummingbird/(.+)/disconnect"] = { request in
             let name = request.capturedUrlGroups[0]
             if(self.hbServes.keys.contains(name) == false) {
                 self.handleBadRequest(name)
+                self.sharedBluetoothDiscovery.removeConnected(name)
                 return .OK(.RAW("Not connected!"))
             }
             self.hbServes[name]!.disconnectFromDevice()
@@ -830,14 +864,30 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             let strings = Array(dict.keys.lazy)
             return .OK(.RAW(strings.joinWithSeparator("\n")))
         }
+        server["/hummingbird/totalStatus"] = { request in
+            let connectedCount = self.sharedBluetoothDiscovery.getConnected().count
+            let hbServeCount = self.hbServes.count
+            if (connectedCount == 0) {
+                return .OK(.RAW("2"))
+            }
+            if (connectedCount == hbServeCount) {
+                return .OK(.RAW("1"))
+            } else {
+                
+                return .OK(.RAW("0"))
+            }
+        }
         server["/hummingbird/(.+)/connect"] = { request in
             let name = request.capturedUrlGroups[0]
-            let peripheral = self.sharedBluetoothDiscovery.getDiscovered()[name]!
-            let hbServe = HummingbirdServices()
-            self.hbServes[name] = hbServe
-            self.hbServes[name]!.attachToDevice(name)
-            self.sharedBluetoothDiscovery.connectToPeripheral(peripheral, name: name)
-            return .OK(.RAW("Connected!"))
+            if let peripheral = self.sharedBluetoothDiscovery.getDiscovered()[name] {
+                let hbServe = HummingbirdServices()
+                self.hbServes[name] = hbServe
+                self.hbServes[name]!.attachToDevice(name)
+                self.sharedBluetoothDiscovery.connectToPeripheral(peripheral, name: name)
+                return .OK(.RAW("Connected!"))
+            } else {
+                return .OK(.RAW("Device not found"))
+            }
         }
         server["/speak/(.+)"] = { request in
             let captured = request.capturedUrlGroups
@@ -1106,7 +1156,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
     }
     func changedStatus(notification: NSNotification){
         let userinfo = notification.userInfo as! [String: AnyObject]
-        NSLog("View controller got notification")
+        NSLog("View controller got notification: " + notification.name)
         if let name: String = userinfo["name"] as? String {
             NSLog("Got name " + name)
             if let isConnected: Bool = userinfo["isConnected"] as? Bool{
