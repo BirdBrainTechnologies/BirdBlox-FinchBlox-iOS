@@ -103,6 +103,12 @@ public func getSavePath() -> NSURL{
     return getDocPath().URLByAppendingPathComponent("SavedFiles")
 }
 
+public func getSavedFileURL(filename: String) ->NSURL {
+    let fullFileName = filename + ".xml"
+    let path = getSavePath().URLByAppendingPathComponent(fullFileName)
+    return path
+}
+
 public func getSavedFileByName(fileName: String) -> NSString {
     do {
         let fullFileName = fileName + ".xml"

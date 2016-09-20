@@ -17,11 +17,6 @@ import MessageUI
 
 class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate, MFMailComposeViewControllerDelegate, AVAudioRecorderDelegate, WKNavigationDelegate {
     
-    @IBOutlet weak var TypingText: UITextField!
-    @IBOutlet weak var renameButton: UIButton!
-    @IBOutlet weak var connectedIndicator: UILabel!
-    @IBOutlet weak var importButton: UIButton!
-    @IBOutlet weak var recordButton: UIButton!
     @IBOutlet weak var loadingView: UIView!
     var last_dialog_response: String?
     var last_choice_response = 0
@@ -178,7 +173,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
     
     override func loadView() {
         super.loadView()
-        TypingText.hidden = true
+        //TypingText.hidden = true
         mainWebView = WKWebView(frame: self.view.frame)
         mainWebView.UIDelegate = self
         mainWebView.navigationDelegate = self
@@ -191,7 +186,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         
         prepareServer()
         server.start(22179)
-        navigationController!.setNavigationBarHidden(true, animated:true)
+        if let navCon = navigationController {
+            navCon.setNavigationBarHidden(true, animated:true)
+        }
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ViewController.changedStatus(_:)), name: BluetoothStatusChangedNotification, object: nil)
         
         pingTimer = NSTimer.scheduledTimerWithTimeInterval(NSTimeInterval(5), target: self, selector: #selector(ViewController.checkServer), userInfo: nil, repeats: true)
@@ -255,6 +252,27 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             let requestPage = NSURLRequest(URL: url!)
             mainWebView!.loadRequest(requestPage)
             self.view.addSubview(mainWebView)
+        }
+        let urlFromXMl = (UIApplication.sharedApplication().delegate as! AppDelegate).getFileUrl()
+        var path: String
+        if let tempURL = urlFromXMl{
+            path = tempURL.path!
+            do{
+                let rawText = try String(contentsOfFile: path, encoding: NSUTF8StringEncoding)
+                let filename = (path as NSString).lastPathComponent
+                saveStringToFile(rawText, fileName: filename)
+                
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0)){
+                    while(self.mainWebView.loading){
+                        sched_yield()
+                    };
+                    print("Calling JS")
+                    self.mainWebView.evaluateJavaScript("SaveManager.import( '"+filename+"' , '"+rawText+"')", completionHandler: nil)
+                    
+                }
+            } catch {
+                print("Error: Couldn't get contents of XML file\n")
+            }
         }
         //self.view.bringSubviewToFront(importButton)
         //self.view.bringSubviewToFront(recordButton)
@@ -1028,15 +1046,33 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             NSLog("GOT SAVE")
             let filename = String(request.capturedUrlGroups[0])
             if let requestBody = request.body {
-            let xml: String = requestBody.stringByReplacingOccurrencesOfString("data=", withString: "")
-            print(xml)
-            saveStringToFile(xml, fileName: filename)
-            self.currentFileName = filename
-            return .OK(.RAW("Saved"))
+                let xml: String = requestBody.stringByReplacingOccurrencesOfString("data=", withString: "")
+                //print(xml)
+                saveStringToFile(xml, fileName: filename)
+                self.currentFileName = filename
+                return .OK(.RAW("Saved"))
             } else {
                 NSLog("Bodyless")
                 return .OK(.RAW("darn"))
             }
+        }
+        server["/data/export/(.+)"] = {request in
+            let filename = String(request.capturedUrlGroups[0])
+            if let requestBody = request.body {
+                let xml: String = requestBody.stringByReplacingOccurrencesOfString("data=", withString: "")
+                saveStringToFile(xml, fileName: filename)
+                self.currentFileName = filename
+                let exportedPath = getSavedFileURL(filename)
+                let url = NSURL(fileURLWithPath: exportedPath.path!)
+                print(url.absoluteString)
+                let view = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+                view.popoverPresentationController?.sourceView = self.mainWebView
+                view.excludedActivityTypes = nil
+                dispatch_async(dispatch_get_main_queue()){
+                    self.presentViewController(view, animated: true, completion: nil)
+                }
+            }
+            return .OK(.RAW("Done"))
         }
         server["/data/delete/(.+)"] = {request in
             let filename = String(request.capturedUrlGroups[0])
@@ -1174,13 +1210,13 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                     NSThread.sleepForTimeInterval(0.1)
                     hbServes[name]!.beginPolling()
                     dispatch_async(dispatch_get_main_queue()){
-                        self.connectedIndicator.textColor = UIColor.greenColor()
+                        //self.connectedIndicator.textColor = UIColor.greenColor()
                     }
                 }
                 else{
                     NSLog("device disconnected")
                     dispatch_async(dispatch_get_main_queue()){
-                        self.connectedIndicator.textColor = UIColor.redColor()
+                        //self.connectedIndicator.textColor = UIColor.redColor()
                         if (self.hbServes.keys.contains(name)) {
                             self.hbServes.removeValueForKey(name)
                         }

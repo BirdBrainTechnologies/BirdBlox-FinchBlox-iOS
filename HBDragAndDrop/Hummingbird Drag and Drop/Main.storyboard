@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Dbz-IG-z7a">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Dbz-IG-z7a">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--Root View Controller-->
@@ -65,112 +64,21 @@
                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" alpha="0.75" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CzZ-jR-Neu">
-                                <rect key="frame" x="541" y="495" width="50" height="27"/>
-                                <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="50" id="zAz-gD-m7z"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                <state key="normal" title="Import">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                        <integer key="value" value="10"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
-                                <connections>
-                                    <action selector="importPressed:" destination="3KV-dW-vIo" eventType="touchUpInside" id="lO7-vj-uH3"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" alpha="0.75" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="41j-ng-iTb">
-                                <rect key="frame" x="541" y="530" width="50" height="27"/>
-                                <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="50" id="SNO-Wh-L54"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                <state key="normal" title="Record">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                        <integer key="value" value="10"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
-                                <connections>
-                                    <action selector="recordPressed:" destination="3KV-dW-vIo" eventType="touchUpInside" id="ITU-rX-3ap"/>
-                                </connections>
-                            </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="●" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EAj-mY-nBT">
-                                <rect key="frame" x="511" y="565" width="29" height="27"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="27" id="Ybt-dr-sOs"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="46"/>
-                                <color key="textColor" red="0.0" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <button opaque="NO" alpha="0.75" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FCe-f2-ArS">
-                                <rect key="frame" x="541" y="565" width="50" height="27"/>
-                                <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="50" id="Qex-ko-7eJ"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                <state key="normal" title="Rename">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                        <integer key="value" value="10"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
-                                <connections>
-                                    <action selector="renamePressed:" destination="3KV-dW-vIo" eventType="touchUpInside" id="Oai-ik-Xg5"/>
-                                </connections>
-                            </button>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="oih-Lg-mLk">
-                                <rect key="frame" x="175" y="20" width="251" height="30"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="251" id="g8d-3r-oS2"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
-                            </textField>
                             <view hidden="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="83B-K0-Pgv">
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </view>
                         </subviews>
                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
-                            <constraint firstItem="CzZ-jR-Neu" firstAttribute="top" secondItem="41j-ng-iTb" secondAttribute="bottom" constant="-62" id="7PO-HP-2c1"/>
-                            <constraint firstItem="oih-Lg-mLk" firstAttribute="top" secondItem="S6R-Nj-BXS" secondAttribute="bottom" id="8qn-tt-jR9"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="CzZ-jR-Neu" secondAttribute="trailing" constant="-11" id="Hyx-2I-htO"/>
-                            <constraint firstItem="e3y-9i-1He" firstAttribute="top" secondItem="EAj-mY-nBT" secondAttribute="bottom" constant="8" symbolic="YES" id="ObW-lc-bYA"/>
-                            <constraint firstItem="FCe-f2-ArS" firstAttribute="leading" secondItem="EAj-mY-nBT" secondAttribute="trailing" constant="1" id="SAF-BX-CGj"/>
                             <constraint firstItem="b82-yK-4UU" firstAttribute="top" secondItem="S6R-Nj-BXS" secondAttribute="bottom" constant="269" id="TfA-oQ-e3l"/>
                             <constraint firstItem="b82-yK-4UU" firstAttribute="centerX" secondItem="aHO-Gj-xs9" secondAttribute="centerX" id="WFX-LL-RNW"/>
-                            <constraint firstItem="e3y-9i-1He" firstAttribute="top" secondItem="CzZ-jR-Neu" secondAttribute="bottom" constant="78" id="dKG-y6-ctF"/>
-                            <constraint firstItem="FCe-f2-ArS" firstAttribute="top" secondItem="EAj-mY-nBT" secondAttribute="top" id="nlf-X6-kuW"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="41j-ng-iTb" secondAttribute="trailing" constant="-11" id="ou6-hX-cUL"/>
-                            <constraint firstItem="FCe-f2-ArS" firstAttribute="bottom" secondItem="EAj-mY-nBT" secondAttribute="bottom" id="qqF-J8-JX9"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="FCe-f2-ArS" secondAttribute="trailing" constant="-11" id="rBi-Fp-ddB"/>
-                            <constraint firstItem="41j-ng-iTb" firstAttribute="top" secondItem="FCe-f2-ArS" secondAttribute="bottom" constant="-62" id="t2Z-Fm-rNb"/>
-                            <constraint firstItem="oih-Lg-mLk" firstAttribute="centerX" secondItem="aHO-Gj-xs9" secondAttribute="centerX" id="tMv-G0-aLF"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="wep-Hx-6F3"/>
                     <nil key="simulatedTopBarMetrics"/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
-                        <outlet property="TypingText" destination="oih-Lg-mLk" id="LNM-kw-eSU"/>
-                        <outlet property="connectedIndicator" destination="EAj-mY-nBT" id="FTu-bc-6fD"/>
-                        <outlet property="importButton" destination="CzZ-jR-Neu" id="diN-z2-7dd"/>
                         <outlet property="loadingView" destination="83B-K0-Pgv" id="IqQ-uH-a65"/>
-                        <outlet property="recordButton" destination="41j-ng-iTb" id="u6r-5w-lr1"/>
-                        <outlet property="renameButton" destination="FCe-f2-ArS" id="MZ7-cd-Okf"/>
                         <segue destination="EPw-GG-qUc" kind="show" identifier="ConnectSegue" id="fVr-61-jet"/>
                     </connections>
                 </viewController>
