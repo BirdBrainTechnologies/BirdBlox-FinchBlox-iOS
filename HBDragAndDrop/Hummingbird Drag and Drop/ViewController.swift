@@ -1141,7 +1141,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         }
         server["/iPad/ip"] = {request in
             if (self.isConnectedToInternet()) {
-                if let ip = getWiFiAddress() {
+                if let ip = self.getWiFiAddress() {
                     return .OK(.RAW(ip))
                 }
             }
