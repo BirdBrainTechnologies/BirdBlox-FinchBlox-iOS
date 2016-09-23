@@ -228,8 +228,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         if(isConnectedToInternet()){
             if(shouldUpdate()){
                 getUpdate()
-                
             }
+            /*
             if let ip = getWiFiAddress(){
                 let connectionAlert = UIAlertController(title: "Connected", message: "The app is currently connecting to a local version of BirdBlox. If would like to use the app as a server use this IP address: " + ip + " with port: 22179", preferredStyle: UIAlertControllerStyle.Alert)
                 connectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
@@ -240,15 +240,18 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                 connectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
                 self.presentViewController(connectionAlert, animated: true, completion: nil)
             }
-            
+            */
             let requestPage = NSURLRequest(URL: url!)
             mainWebView!.loadRequest(requestPage)
             self.view.addSubview(mainWebView)
+ 
         }
         else{
             let noConnectionAlert = UIAlertController(title: "Cannot Connect", message: "This app required an internet connection for certain features to work. There is currently no connection avaliable. If this is your first time opening the app, it will NOT load. You need to open the app while you have internet at least once so that the source code can be downloaded", preferredStyle: UIAlertControllerStyle.Alert)
             noConnectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
-            self.presentViewController(noConnectionAlert, animated: true, completion: nil)
+            dispatch_async(dispatch_get_main_queue()){
+                self.presentViewController(noConnectionAlert, animated: true, completion: nil)
+            }
             let requestPage = NSURLRequest(URL: url!)
             mainWebView!.loadRequest(requestPage)
             self.view.addSubview(mainWebView)
@@ -320,7 +323,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         var xmlField: UITextField?
         func didPasteFile(alert: UIAlertAction!){
             importedXMLText = xmlField?.text
-            let url = NSURL(string: "http://localhost:22179/snap/snap.html#open:http://localhost:22179/project.xml")
+            let url = NSURL(string: "http://localhost:22179/snap/snap.html#open:http://localhost:22179/project.bbx")
             let requestPage = NSURLRequest(URL: url!)
             mainWebView?.loadRequest(requestPage)
         }
@@ -1039,7 +1042,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             if (fileContent == "File not found") {
                 return .OK(.RAW("File Not Found"))
             }
-            self.currentFileName = filename.stringByReplacingOccurrencesOfString(".xml", withString: "")
+            self.currentFileName = filename.stringByReplacingOccurrencesOfString(".bbx", withString: "")
             return .OK(.RAW(fileContent as (String)))
         }
         server["/data/save/(.+)"] = {request in
@@ -1136,8 +1139,16 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             let height = String(screenSize.height)
             return .OK(.RAW(height + "\n" + width))
         }
+        server["/iPad/ip"] = {request in
+            if (self.isConnectedToInternet()) {
+                if let ip = getWiFiAddress() {
+                    return .OK(.RAW(ip))
+                }
+            }
+            return .OK(.RAW("0.0.0.0"))
+        }
         
-        /*server["/project.xml"] = {request in
+        /*server["/project.bbx"] = {request in
             if let importText = self.importedXMLText{
                 self.importedXMLText = nil
                 return .OK(.RAW(importText))

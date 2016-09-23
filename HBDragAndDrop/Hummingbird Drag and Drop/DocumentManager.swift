@@ -51,7 +51,7 @@ private func compareHistory() -> Bool{
 }
 
 public func saveStringToFile(string: NSString, fileName: String) -> Bool{
-    let fullFileName = fileName + ".xml"
+    let fullFileName = fileName + ".bbx"
     let isDir: UnsafeMutablePointer<ObjCBool> = nil
     if(!fileManager.fileExistsAtPath(getSavePath().path!, isDirectory: isDir)) {
         do {
@@ -88,7 +88,7 @@ public func getSavedFileNames() -> [String]{
     do {
         let paths = try fileManager.contentsOfDirectoryAtPath(getSavePath().path!)
         var paths2 = paths.map({ (string) -> String in
-            return string.stringByReplacingOccurrencesOfString(".xml", withString: "")
+            return string.stringByReplacingOccurrencesOfString(".bbx", withString: "")
         })
         if let index = paths2.indexOf("autosaveFile") {
             paths2.removeAtIndex(index)
@@ -104,14 +104,14 @@ public func getSavePath() -> NSURL{
 }
 
 public func getSavedFileURL(filename: String) ->NSURL {
-    let fullFileName = filename + ".xml"
+    let fullFileName = filename + ".bbx"
     let path = getSavePath().URLByAppendingPathComponent(fullFileName)
     return path
 }
 
 public func getSavedFileByName(fileName: String) -> NSString {
     do {
-        let fullFileName = fileName + ".xml"
+        let fullFileName = fileName + ".bbx"
         let path = getSavePath().URLByAppendingPathComponent(fullFileName).path!
         let file: NSString = try NSString(contentsOfFile: path, encoding: NSUTF8StringEncoding)
         return file
@@ -121,7 +121,7 @@ public func getSavedFileByName(fileName: String) -> NSString {
 }
 
 public func deleteFile(fileName: String) -> Bool {
-    let fullFileName = fileName + ".xml"
+    let fullFileName = fileName + ".bbx"
     let path = getSavePath().URLByAppendingPathComponent(fullFileName).path!
     do {
         try fileManager.removeItemAtPath(path)
@@ -132,9 +132,9 @@ public func deleteFile(fileName: String) -> Bool {
 }
 
 public func renameFile(startFileName: String, newFileName: String) -> Bool {
-    let startFullFileName = startFileName + ".xml"
+    let startFullFileName = startFileName + ".bbx"
     let startPath = getSavePath().URLByAppendingPathComponent(startFullFileName).path!
-    let newFullFileName = newFileName + ".xml"
+    let newFullFileName = newFileName + ".bbx"
     let newPath = getSavePath().URLByAppendingPathComponent(newFullFileName).path!
     do {
         try fileManager.moveItemAtPath(startPath, toPath: newPath)

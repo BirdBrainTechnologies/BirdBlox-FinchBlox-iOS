@@ -76,7 +76,7 @@
 		BA27E2C21B3C960000A0DF58 /* Utility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utility.swift; sourceTree = "<group>"; };
 		BA27E2C71B3CA18800A0DF58 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		BA7F0A751B25E5D2007DD94E /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
-		BA88B6281B2233C9009EF1C3 /* Hummingbird Drag and Drop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Hummingbird Drag and Drop.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		BA88B6281B2233C9009EF1C3 /* BirdBlox.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BirdBlox.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA88B62C1B2233C9009EF1C3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BA88B62D1B2233C9009EF1C3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BA88B62F1B2233C9009EF1C3 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -170,7 +170,7 @@
 		BA88B6291B2233C9009EF1C3 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				BA88B6281B2233C9009EF1C3 /* Hummingbird Drag and Drop.app */,
+				BA88B6281B2233C9009EF1C3 /* BirdBlox.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -207,9 +207,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		BA88B6271B2233C9009EF1C3 /* Hummingbird Drag and Drop */ = {
+		BA88B6271B2233C9009EF1C3 /* BirdBlox */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = BA88B6471B2233C9009EF1C3 /* Build configuration list for PBXNativeTarget "Hummingbird Drag and Drop" */;
+			buildConfigurationList = BA88B6471B2233C9009EF1C3 /* Build configuration list for PBXNativeTarget "BirdBlox" */;
 			buildPhases = (
 				BA88B6241B2233C9009EF1C3 /* Sources */,
 				BA88B6251B2233C9009EF1C3 /* Frameworks */,
@@ -220,9 +220,9 @@
 			);
 			dependencies = (
 			);
-			name = "Hummingbird Drag and Drop";
+			name = BirdBlox;
 			productName = "Snap for Hummingbird";
-			productReference = BA88B6281B2233C9009EF1C3 /* Hummingbird Drag and Drop.app */;
+			productReference = BA88B6281B2233C9009EF1C3 /* BirdBlox.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -246,7 +246,7 @@
 					};
 				};
 			};
-			buildConfigurationList = BA88B6231B2233C9009EF1C3 /* Build configuration list for PBXProject "Hummingbird Drag and Drop" */;
+			buildConfigurationList = BA88B6231B2233C9009EF1C3 /* Build configuration list for PBXProject "BirdBlox" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -259,7 +259,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				BA88B6271B2233C9009EF1C3 /* Hummingbird Drag and Drop */,
+				BA88B6271B2233C9009EF1C3 /* BirdBlox */,
 			);
 		};
 /* End PBXProject section */
@@ -425,7 +425,7 @@
 					"$(PROJECT_DIR)",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.BirdBrainTech.HB-Drag-and-Drop";
-				PRODUCT_NAME = "Hummingbird Drag and Drop";
+				PRODUCT_NAME = BirdBlox;
 				SWIFT_INSTALL_OBJC_HEADER = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "Hummingbird Drag and Drop/Header.h";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -451,7 +451,7 @@
 					"$(PROJECT_DIR)",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.BirdBrainTech.HB-Drag-and-Drop";
-				PRODUCT_NAME = "Hummingbird Drag and Drop";
+				PRODUCT_NAME = BirdBlox;
 				SWIFT_INSTALL_OBJC_HEADER = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "Hummingbird Drag and Drop/Header.h";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -461,7 +461,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		BA88B6231B2233C9009EF1C3 /* Build configuration list for PBXProject "Hummingbird Drag and Drop" */ = {
+		BA88B6231B2233C9009EF1C3 /* Build configuration list for PBXProject "BirdBlox" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BA88B6451B2233C9009EF1C3 /* Debug */,
@@ -470,7 +470,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		BA88B6471B2233C9009EF1C3 /* Build configuration list for PBXNativeTarget "Hummingbird Drag and Drop" */ = {
+		BA88B6471B2233C9009EF1C3 /* Build configuration list for PBXNativeTarget "BirdBlox" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BA88B6481B2233C9009EF1C3 /* Debug */,

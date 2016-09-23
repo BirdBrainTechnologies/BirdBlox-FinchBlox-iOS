@@ -8,12 +8,12 @@
 	<array>
 		<dict>
 			<key>CFBundleTypeName</key>
-			<string>XML</string>
+			<string>BBX</string>
 			<key>LSHandlerRank</key>
 			<string>Owner</string>
 			<key>LSItemContentTypes</key>
 			<array>
-				<string>com.$(PRODUCT_BUNDLE_IDENTIFIER).xml</string>
+				<string>com.$(PRODUCT_BUNDLE_IDENTIFIER).bbx</string>
 			</array>
 		</dict>
 	</array>
@@ -36,7 +36,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>18</string>
+	<string>19</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -73,14 +73,14 @@
 		<dict>
 			<key>UTTypeConformsTo</key>
 			<array>
-				<string>public.xml</string>
+				<string>public.bbx</string>
 			</array>
 			<key>UTTypeIdentifier</key>
-			<string>com.$(PRODUCT_BUNDLE_IDENTIFIER).xml</string>
+			<string>com.$(PRODUCT_BUNDLE_IDENTIFIER).bbx</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.filename-extension</key>
-				<string>xml</string>
+				<string>bbx</string>
 			</dict>
 		</dict>
 	</array>
