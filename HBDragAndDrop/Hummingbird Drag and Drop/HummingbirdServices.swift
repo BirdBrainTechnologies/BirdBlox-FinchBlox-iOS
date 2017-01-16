@@ -11,32 +11,32 @@ import CoreBluetooth
 
 public let BluetoothStatusChangedNotification = "BluetoothStatusChangedForHummingbird"
 
-public class HummingbirdServices: NSObject{
-    private var vibrations: [UInt8] = [0,0]
-    private var motors: [Int] = [0,0]
-    private var servos: [UInt8] = [0,0,0,0]
-    private var leds: [UInt8] = [0,0,0,0]
-    private var trileds: [[UInt8]] = [[0,0,0],[0,0,0]]
-    private var lastKnowSensorPoll: [UInt8] = [0,0,0,0]
-    private var name: String = ""
+open class HummingbirdServices: NSObject{
+    fileprivate var vibrations: [UInt8] = [0,0]
+    fileprivate var motors: [Int] = [0,0]
+    fileprivate var servos: [UInt8] = [0,0,0,0]
+    fileprivate var leds: [UInt8] = [0,0,0,0]
+    fileprivate var trileds: [[UInt8]] = [[0,0,0],[0,0,0]]
+    fileprivate var lastKnowSensorPoll: [UInt8] = [0,0,0,0]
+    fileprivate var name: String = ""
     
     
-    var timerDelaySend: NSTimer?
+    var timerDelaySend: Timer?
     var allowSend = true
     let sendInterval = 0.06
     let readInterval = 0.2
     let sharedBluetoothDiscovery = BluetoothDiscovery.getBLEDiscovery()
-    let sendQueue = NSOperationQueue()
+    let sendQueue = OperationQueue()
     
     
     public override init(){
         super.init()
         sendQueue.maxConcurrentOperationCount = 1
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(HummingbirdServices.connectionChanged(_:)), name: BLEServiceChangedStatusNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(HummingbirdServices.connectionChanged(_:)), name: NSNotification.Name(rawValue: BLEServiceChangedStatusNotification), object: nil)
     }
     
     deinit{
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: BLEServiceChangedStatusNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: BLEServiceChangedStatusNotification), object: nil)
     }
     //functions for timer
     func timerElapsedSend(){
@@ -53,17 +53,17 @@ public class HummingbirdServices: NSObject{
     func startTimerSend(){
         self.allowSend = false
         if (timerDelaySend == nil){
-            timerDelaySend = NSTimer.scheduledTimerWithTimeInterval(sendInterval, target: self, selector: #selector(HummingbirdServices.timerElapsedSend), userInfo: nil, repeats: false)
+            timerDelaySend = Timer.scheduledTimer(timeInterval: sendInterval, target: self, selector: #selector(HummingbirdServices.timerElapsedSend), userInfo: nil, repeats: false)
         }
     }
  
-    public func disconnectFromDevice(){
+    open func disconnectFromDevice(){
         sharedBluetoothDiscovery.disconnectFromPeripheralbyName(self.name)
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: BLEServiceChangedStatusNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: BLEServiceChangedStatusNotification), object: nil)
 
     }
     
-    public func attachToDevice(name: String) {
+    open func attachToDevice(_ name: String) {
         self.name = name;
         vibrations = [0,0]
         motors = [0,0]
@@ -73,7 +73,7 @@ public class HummingbirdServices: NSObject{
         lastKnowSensorPoll = [0,0,0,0]
     }
     
-    public func renameDevice(name: String) -> String? {
+    open func renameDevice(_ name: String) -> String? {
         let oldName = self.name
         if let newName = (sharedBluetoothDiscovery.renamePeripheralbyName(oldName, newName: name)) {
             self.name = newName
@@ -87,168 +87,168 @@ public class HummingbirdServices: NSObject{
     //Intensity is on a scale of 0-100
     //Speed is on a scale of -100-100
     //Angle is on a scale of 0-180
-    public func sendByteArray(toSend: NSData){
+    open func sendByteArray(_ toSend: Data){
             let serviceBLE = sharedBluetoothDiscovery.serviceBLE
         if (sendQueue.operationCount > 15) {
             sendQueue.cancelAllOperations()
         }
-            sendQueue.addOperationWithBlock{
+            sendQueue.addOperation{
                 if(!self.allowSend){
-                    NSThread.sleepForTimeInterval(self.sendInterval)
+                    Thread.sleep(forTimeInterval: self.sendInterval)
                 }
                 serviceBLE.setTX(self.name, message: toSend)
                 self.startTimerSend()
             }
     }
     
-    public func recieveByteArray()-> NSData{
+    open func recieveByteArray()-> Data{
         let serviceBLE = sharedBluetoothDiscovery.serviceBLE
         let value = serviceBLE.getValues(self.name)
         dbg_print(NSString(format: "got data: %@", value))
-        if (value.length >= 4){
+        if (value.count >= 4){
             return value
         }
         else{
-            return NSData()
+            return Data()
         }
     }
     
-    public func setLED(port: UInt8, intensity: UInt8){
+    open func setLED(_ port: UInt8, intensity: UInt8){
         let realPort = Int(port-1)
         if(leds[realPort] == intensity){
             return;
         }
-        let command: NSData = getLEDCommand(port, intensity: intensity)
+        let command: Data = getLEDCommand(port, intensity: intensity)
         leds[realPort] = intensity
         self.sendByteArray(command)
     }
     
-    public func setTriLED(port: UInt8, r: UInt8, g: UInt8, b: UInt8){
+    open func setTriLED(_ port: UInt8, r: UInt8, g: UInt8, b: UInt8){
         let realPort = Int(port-1)
         if(trileds[realPort] == [r,g,b]){
             return;
         }
-        let command: NSData = getTriLEDCommand(port, redVal: r, greenVal: g, blueVal: b)
+        let command: Data = getTriLEDCommand(port, redVal: r, greenVal: g, blueVal: b)
         trileds[realPort] = [r,g,b]
         self.sendByteArray(command)
     }
     
-    public func setMotor(port: UInt8, speed: Int){
+    open func setMotor(_ port: UInt8, speed: Int){
         let realPort = Int(port-1)
         if(motors[realPort] == speed){
             return
         }
-        let command: NSData = getMotorCommand(port, speed: speed)
+        let command: Data = getMotorCommand(port, speed: speed)
         motors[realPort] = speed
         self.sendByteArray(command)
     }
     
-    public func setVibration(port: UInt8, intensity: UInt8){
+    open func setVibration(_ port: UInt8, intensity: UInt8){
         let realPort = Int(port-1)
         if(vibrations[realPort] == intensity){
             return
         }
-        let command: NSData = getVibrationCommand(port, intensity: intensity)
+        let command: Data = getVibrationCommand(port, intensity: intensity)
         vibrations[realPort] = intensity
         self.sendByteArray(command)
     }
     
-    public func setServo(port: UInt8, angle: UInt8){
+    open func setServo(_ port: UInt8, angle: UInt8){
         let realPort = Int(port-1)
         if(servos[realPort] == angle){
             return
         }
-        let command: NSData = getServoCommand(port, angle: angle)
+        let command: Data = getServoCommand(port, angle: angle)
         servos[realPort] = angle
         self.sendByteArray(command)
     }
     
-    public func resetHummingBird(){
-        self.sendByteArray(getResetCommand())
+    open func resetHummingBird(){
+        self.sendByteArray(getResetCommand() as Data)
     }
     
-    public func turnOffLightsMotor(){
-        self.sendByteArray(getTurnOffCommand())
+    open func turnOffLightsMotor(){
+        self.sendByteArray(getTurnOffCommand() as Data)
     }
     
-    public func getAllSensorData() ->[UInt8]{
-        self.sendByteArray(getPollSensorsCommand())
-        NSThread.sleepForTimeInterval(readInterval)
+    open func getAllSensorData() ->[UInt8]{
+        self.sendByteArray(getPollSensorsCommand() as Data)
+        Thread.sleep(forTimeInterval: readInterval)
         var values: [UInt8] = lastKnowSensorPoll
         let result = self.recieveByteArray()
-        if (result.length > 0){
-            result.getBytes(&values, range: NSMakeRange(0, 4))
+        if (result.count > 0){
+            (result as NSData).getBytes(&values, range: NSMakeRange(0, 4))
             lastKnowSensorPoll = values
         }
         return values
     }
     
-    public func getSensorData(port: UInt8) -> UInt8{
+    open func getSensorData(_ port: UInt8) -> UInt8{
         let realPort = port-1
         let sensorData: [UInt8] = getAllSensorData()
         return sensorData[Int(realPort)]
     }
     
-    public func beginPolling(){
-        sendByteArray(getPollStartCommand())
+    open func beginPolling(){
+        sendByteArray(getPollStartCommand() as Data)
     }
-    public func stopPolling(){
-        sendByteArray(getPollStopCommand())
+    open func stopPolling(){
+        sendByteArray(getPollStopCommand() as Data)
     }
-    public func getAllSensorDataFromPoll() ->[UInt8]{
+    open func getAllSensorDataFromPoll() ->[UInt8]{
         var values: [UInt8] = lastKnowSensorPoll
         let result = self.recieveByteArray()
-        if (result.length > 0){
-            result.getBytes(&values, range: NSMakeRange(0, 4))
+        if (result.count > 0){
+            (result as NSData).getBytes(&values, range: NSMakeRange(0, 4))
             lastKnowSensorPoll = values
         }
         return values
     }
-    public func getSensorDataFromPoll(port: UInt8) -> UInt8{
+    open func getSensorDataFromPoll(_ port: UInt8) -> UInt8{
         let realPort = port-1
         let sensorData: [UInt8] = getAllSensorDataFromPoll()
         return sensorData[Int(realPort)]
     }
     
-    public func setName(name: String){
+    open func setName(_ name: String){
         var adjustedName: String = name
         if (name.characters.count > 18){
-            adjustedName = (name as NSString).substringToIndex(18)
+            adjustedName = (name as NSString).substring(to: 18)
         }
-        let command1: NSData = StringToCommand("+++")//command mode
+        let command1: Data = StringToCommand("+++")//command mode
         let namePhrase: String = "AT+GAPDEVNAME="
-        let command2_1: NSData = StringToCommandNoEOL(namePhrase)//name command
-        let command2_2: NSData = StringToCommand(adjustedName) //set actual name
-        let command3: NSData = StringToCommand("ATZ")//reset
+        let command2_1: Data = StringToCommandNoEOL(namePhrase)//name command
+        let command2_2: Data = StringToCommand(adjustedName) //set actual name
+        let command3: Data = StringToCommand("ATZ")//reset
         
         self.sendByteArray(command1)
-        NSThread.sleepForTimeInterval(0.2)
+        Thread.sleep(forTimeInterval: 0.2)
         self.sendByteArray(command2_1)
-        NSThread.sleepForTimeInterval(0.2)
+        Thread.sleep(forTimeInterval: 0.2)
         self.sendByteArray(command2_2)
-        NSThread.sleepForTimeInterval(0.2)
+        Thread.sleep(forTimeInterval: 0.2)
         self.sendByteArray(command3)
         self.name = name
         dbg_print("finished setting new name")
     }
     
-    public func getName() -> String {
+    open func getName() -> String {
         return self.name
     }
     
-    public func factoryReset(){
-        let command1: NSData = StringToCommand("+++")//command mode
-        let command2: NSData = StringToCommand("AT+FACTORYRESET")
+    open func factoryReset(){
+        let command1: Data = StringToCommand("+++")//command mode
+        let command2: Data = StringToCommand("AT+FACTORYRESET")
         self.sendByteArray(command1)
-        NSThread.sleepForTimeInterval(0.2)
+        Thread.sleep(forTimeInterval: 0.2)
         self.sendByteArray(command2)
     }
     
-    func connectionChanged(notification: NSNotification){
-        let userinfo = notification.userInfo! as [NSObject : AnyObject]
+    func connectionChanged(_ notification: Notification){
+        let userinfo = notification.userInfo! as [AnyHashable: Any]
         if let isConnected: Bool = userinfo["isConnected"] as? Bool{
-            let connectionDetails = ["isConnected" : isConnected, "name": self.name]
-            NSNotificationCenter.defaultCenter().postNotificationName(BluetoothStatusChangedNotification, object: self, userInfo: connectionDetails as [NSObject : AnyObject])
+            let connectionDetails = ["isConnected" : isConnected, "name": self.name] as [String : Any]
+            NotificationCenter.default.post(name: Notification.Name(rawValue: BluetoothStatusChangedNotification), object: self, userInfo: connectionDetails as [AnyHashable: Any])
         }
     }
 

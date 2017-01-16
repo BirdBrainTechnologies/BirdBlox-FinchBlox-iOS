@@ -8,19 +8,19 @@ import Foundation
 
 public enum HttpResponseBody {
     
-    case JSON(AnyObject)
-    case XML(AnyObject)
-    case PLIST(AnyObject)
-    case HTML(String)
-    case RAW(String)
+    case json(AnyObject)
+    case xml(AnyObject)
+    case plist(AnyObject)
+    case html(String)
+    case raw(String)
     
     func data() -> String? {
         switch self {
-        case .JSON(let object):
-            if NSJSONSerialization.isValidJSONObject(object) {
+        case .json(let object):
+            if JSONSerialization.isValidJSONObject(object) {
                 do {
-                    let json = try NSJSONSerialization.dataWithJSONObject(object, options: NSJSONWritingOptions.PrettyPrinted)
-                    if let nsString = NSString(data: json, encoding: NSUTF8StringEncoding) {
+                    let json = try JSONSerialization.data(withJSONObject: object, options: JSONSerialization.WritingOptions.prettyPrinted)
+                    if let nsString = NSString(data: json, encoding: String.Encoding.utf8.rawValue) {
                         return nsString as String
                     }
                 } catch let serializationError as NSError {
@@ -28,14 +28,14 @@ public enum HttpResponseBody {
                 }
             }
             return "Invalid object to serialise."
-        case .XML(_):
+        case .xml(_):
             return "XML serialization not supported."
-        case .PLIST(let object):
-            let format = NSPropertyListFormat.XMLFormat_v1_0
-            if NSPropertyListSerialization.propertyList(object, isValidForFormat: format) {
+        case .plist(let object):
+            let format = PropertyListSerialization.PropertyListFormat.xml
+            if PropertyListSerialization.propertyList(object, isValidFor: format) {
                 do {
-                    let plist = try NSPropertyListSerialization.dataWithPropertyList(object, format: format, options: 0)
-                    if let nsString = NSString(data: plist, encoding: NSUTF8StringEncoding) {
+                    let plist = try PropertyListSerialization.data(fromPropertyList: object, format: format, options: 0)
+                    if let nsString = NSString(data: plist, encoding: String.Encoding.utf8.rawValue) {
                         return nsString as String
                     }
                 } catch let serializationError as NSError {
@@ -43,9 +43,9 @@ public enum HttpResponseBody {
                 }
             }
             return "Invalid object to serialise."
-        case .RAW(let body):
+        case .raw(let body):
             return body
-        case .HTML(let body):
+        case .html(let body):
             return "<html><body>\(body)</body></html>"
         }
     }
@@ -53,39 +53,39 @@ public enum HttpResponseBody {
 
 public enum HttpResponse {
     
-    case OK(HttpResponseBody), Created, Accepted
-    case MovedPermanently(String)
-    case BadRequest, Unauthorized, Forbidden, NotFound
-    case InternalServerError
-    case RAW(Int, NSData)
+    case ok(HttpResponseBody), created, accepted
+    case movedPermanently(String)
+    case badRequest, unauthorized, forbidden, notFound
+    case internalServerError
+    case raw(Int, Data)
     
     func statusCode() -> Int {
         switch self {
-        case .OK(_)                 : return 200
-        case .Created               : return 201
-        case .Accepted              : return 202
-        case .MovedPermanently      : return 301
-        case .BadRequest            : return 400
-        case .Unauthorized          : return 401
-        case .Forbidden             : return 403
-        case .NotFound              : return 404
-        case .InternalServerError   : return 500
-        case .RAW(let code, _)      : return code
+        case .ok(_)                 : return 200
+        case .created               : return 201
+        case .accepted              : return 202
+        case .movedPermanently      : return 301
+        case .badRequest            : return 400
+        case .unauthorized          : return 401
+        case .forbidden             : return 403
+        case .notFound              : return 404
+        case .internalServerError   : return 500
+        case .raw(let code, _)      : return code
         }
     }
     
     func reasonPhrase() -> String {
         switch self {
-        case .OK(_)                 : return "OK"
-        case .Created               : return "Created"
-        case .Accepted              : return "Accepted"
-        case .MovedPermanently      : return "Moved Permanently"
-        case .BadRequest            : return "Bad Request"
-        case .Unauthorized          : return "Unauthorized"
-        case .Forbidden             : return "Forbidden"
-        case .NotFound              : return "Not Found"
-        case .InternalServerError   : return "Internal Server Error"
-        case .RAW(_,_)              : return "Custom"
+        case .ok(_)                 : return "OK"
+        case .created               : return "Created"
+        case .accepted              : return "Accepted"
+        case .movedPermanently      : return "Moved Permanently"
+        case .badRequest            : return "Bad Request"
+        case .unauthorized          : return "Unauthorized"
+        case .forbidden             : return "Forbidden"
+        case .notFound              : return "Not Found"
+        case .internalServerError   : return "Internal Server Error"
+        case .raw(_,_)              : return "Custom"
         }
     }
     
@@ -94,16 +94,16 @@ public enum HttpResponse {
         headers["Server"] = "Swifter"
         headers["Access-Control-Allow-Origin"] = "*"
         switch self {
-        case .MovedPermanently(let location) : headers["Location"] = location
+        case .movedPermanently(let location) : headers["Location"] = location
         default:[]
         }
         return headers
     }
     
-    func body() -> NSData? {
+    func body() -> Data? {
         switch self {
-        case .OK(let body)      : return body.data()?.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)
-        case .RAW(_, let data)  : return data
+        case .ok(let body)      : return body.data()?.data(using: String.Encoding.utf8, allowLossyConversion: false)
+        case .raw(_, let data)  : return data
         default                 : return nil
         }
     }

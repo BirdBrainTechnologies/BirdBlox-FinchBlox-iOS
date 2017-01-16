@@ -17,23 +17,23 @@ let BLEServiceChangedStatusNotification = "kBLEServiceChangedStatusNotification"
 class BluetoothService: NSObject, CBPeripheralDelegate{
     
     internal var commandsSend = 0
-    var resetTimer: NSTimer = NSTimer()
+    var resetTimer: Timer = Timer()
     
-    typealias BLEDevice = (peripheral: CBPeripheral, tx: CBCharacteristic?, rx: CBCharacteristic?, data: NSData, name: String)
+    typealias BLEDevice = (peripheral: CBPeripheral, tx: CBCharacteristic?, rx: CBCharacteristic?, data: Data, name: String)
     var devices: [BLEDevice] = [BLEDevice]()
     
     deinit{
         self.resetAll()
     }
     
-    private func getIndex(name: String) -> Int? {
-        let i = devices.indexOf { (device: BLEDevice) -> Bool in
+    fileprivate func getIndex(_ name: String) -> Int? {
+        let i = devices.index { (device: BLEDevice) -> Bool in
             return device.name == name
         }
         return i
     }
-    private func getIndex(peripheral: CBPeripheral) -> Int? {
-        let i = devices.indexOf { (device: BLEDevice) -> Bool in
+    fileprivate func getIndex(_ peripheral: CBPeripheral) -> Int? {
+        let i = devices.index { (device: BLEDevice) -> Bool in
             return device.peripheral == peripheral
         }
         return i
@@ -46,48 +46,48 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
         //resetTimer = NSTimer.scheduledTimerWithTimeInterval(NSTimeInterval(1), target: self, selector: #selector(BluetoothService.getTimerInfo), userInfo: nil, repeats: false)
     }
     
-    func addPeripheral(peripheral: CBPeripheral, name: String) {
+    func addPeripheral(_ peripheral: CBPeripheral, name: String) {
         peripheral.delegate = self
-        let device: BLEDevice = (peripheral, nil, nil, NSData(bytes: [0,0,0,0,0] as [UInt8],length: 5), name)
+        let device: BLEDevice = (peripheral, nil, nil, Data(bytes: UnsafePointer<UInt8>([0,0,0,0,0] as [UInt8]),count: 5), name)
         devices.append(device)
-        dispatch_async(dispatch_get_main_queue()) {
-            self.resetTimer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: #selector(BluetoothService.getTimerInfo), userInfo: nil, repeats: true)
+        DispatchQueue.main.async {
+            self.resetTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(BluetoothService.getTimerInfo), userInfo: nil, repeats: true)
             NSLog("Started Timer")
             }
         startDiscoveringServices(name)
         
     }
-    func removePeripheralbyName(name: String) {
+    func removePeripheralbyName(_ name: String) {
         if let i = getIndex(name) {
             devices[i].peripheral.delegate = nil
-            devices.removeAtIndex(i)
+            devices.remove(at: i)
             self.sendBTServiceNotification(false, name: name)
         }
     }
     
-    func removePeripheral(peripheral: CBPeripheral) {
+    func removePeripheral(_ peripheral: CBPeripheral) {
         if let i = getIndex(peripheral) {
             devices[i].peripheral.delegate = nil
-            let device = devices.removeAtIndex(i)
+            let device = devices.remove(at: i)
             self.sendBTServiceNotification(false, name: device.name)
         }
     }
     
-    func renamePeripheral(peripheral: CBPeripheral, newName: String) {
+    func renamePeripheral(_ peripheral: CBPeripheral, newName: String) {
         if let i = getIndex(peripheral) {
             devices[i].name = newName
         }
     }
     
-    func startDiscoveringServices(name: String){
+    func startDiscoveringServices(_ name: String){
         if let i = getIndex(name) {
             devices[i].peripheral.discoverServices([BLEServiceUUID])
         }
     }
     
-    func reset(name: String){
+    func reset(_ name: String){
         if let index = getIndex(name) {
-            let device = devices.removeAtIndex(index)
+            let device = devices.remove(at: index)
             self.sendBTServiceNotification(false, name: device.name)
         }
         
@@ -98,7 +98,7 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
         self.sendBTServiceNotification(false, name: "~!!!!!!!!!!~")
     }
     
-    func peripheral(peripheral: CBPeripheral, didDiscoverServices error: NSError?) {
+    func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
         let neededUUIDs: [CBUUID] = [BLEServiceUUIDRX,BLEServiceUUIDTX]
         
         if (getIndex(peripheral) == nil){
@@ -111,13 +111,13 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
         }
         if let services = peripheral.services{
             for service in services {
-                if(service.UUID == BLEServiceUUID){
-                    peripheral.discoverCharacteristics(neededUUIDs, forService: service )
+                if(service.uuid == BLEServiceUUID){
+                    peripheral.discoverCharacteristics(neededUUIDs, for: service )
                 }
             }
         }
     }
-    func peripheral(peripheral: CBPeripheral, didDiscoverCharacteristicsForService service: CBService, error: NSError?) {
+    func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
         if(error != nil){
             return
         }
@@ -127,15 +127,15 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
             if let characteristics = service.characteristics{
                 for characteristic in characteristics {
                     let CBchar = characteristic
-                    dbg_print("Found characteristic of uuid" + CBchar.UUID.UUIDString)
-                    if(characteristic.UUID == BLEServiceUUIDTX){
+                    dbg_print("Found characteristic of uuid" + CBchar.uuid.uuidString)
+                    if(characteristic.uuid == BLEServiceUUIDTX){
                         devices[index].tx = characteristic
-                        peripheral.setNotifyValue(true, forCharacteristic: characteristic )
+                        peripheral.setNotifyValue(true, for: characteristic )
                         wasTXSet = true
                     }
-                    else if(characteristic.UUID == BLEServiceUUIDRX){
+                    else if(characteristic.uuid == BLEServiceUUIDRX){
                         devices[index].rx = characteristic
-                        peripheral.setNotifyValue(true, forCharacteristic: characteristic )
+                        peripheral.setNotifyValue(true, for: characteristic )
                         wasRXSet = true
                     }
                     if(wasTXSet && wasRXSet){
@@ -151,23 +151,23 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
             return
         }
     }
-    var lastMessageSent:NSData = NSData()
+    var lastMessageSent:Data = Data()
     var lastNameSent: String = ""
     
-    func peripheral(peripheral: CBPeripheral, didUpdateValueForCharacteristic characteristic: CBCharacteristic, error: NSError?) {
-        if(characteristic.UUID != BLEServiceUUIDRX){
+    func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
+        if(characteristic.uuid != BLEServiceUUIDRX){
             return
         }
-        if(characteristic.value!.length % 5 != 0){
+        if(characteristic.value!.count % 5 != 0){
             return
         }
         //let dataString = NSString(format: "rx value: %@", characteristic.value!)
         //dbg_print(dataString)
         if let index = getIndex(peripheral) {
             var temp: [UInt8] = [0,0,0,0]
-            characteristic.value!.getBytes(&temp,length: 4)
+            (characteristic.value! as NSData).getBytes(&temp,length: 4)
             var oldData: [UInt8] = [0,0,0,0]
-            devices[index].data.getBytes(&oldData, length: 4)
+            (devices[index].data as NSData).getBytes(&oldData, length: 4)
             //if (temp[0] == 0x47 && temp[1] == 0x33 && (temp[2] != 0x47 || temp[3] != 0x33)){//sensor data
                 oldData[0] = temp[0]
                 oldData[1] = temp[1]
@@ -175,17 +175,17 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
                 oldData[3] = temp[3]
             //}
             objc_sync_enter(devices[index].peripheral)
-            devices[index].data = NSData(bytes: oldData, length: 4)
+            devices[index].data = Data(bytes: UnsafePointer<UInt8>(oldData), count: 4)
             objc_sync_exit(devices[index].peripheral)
             //dbg_print(NSString(format: "stored data: %@", devices[index].data))
         }
     }
     
     
-    func setTX(name: String, message : NSData){
+    func setTX(_ name: String, message : Data){
         //dbg_print(NSString(format: "setTX called on %@", name))
-        if resetTimer.valid == false {
-            resetTimer = NSTimer.scheduledTimerWithTimeInterval(NSTimeInterval(1), target: self, selector: #selector(BluetoothService.getTimerInfo), userInfo: nil, repeats: false)
+        if resetTimer.isValid == false {
+            resetTimer = Timer.scheduledTimer(timeInterval: TimeInterval(1), target: self, selector: #selector(BluetoothService.getTimerInfo), userInfo: nil, repeats: false)
             NSLog("Kicking Timer")
 
         }
@@ -194,12 +194,12 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
                 dbg_print("tx is not avaliable")
                 return
             }
-            if(message.isEqualToData (lastMessageSent) && name == lastNameSent && !(message.isEqualToData(getPollSensorsCommand()))){
+            if((message == lastMessageSent) && name == lastNameSent && !(message == getPollSensorsCommand() as Data)){
                 //dbg_print("ignoring repeat message")
                 return
             }
             //dbg_print(NSString(format: "sending message %@", message))
-            devices[index].peripheral.writeValue(message, forCharacteristic: devices[index].tx!, type: CBCharacteristicWriteType.WithResponse)
+            devices[index].peripheral.writeValue(message, for: devices[index].tx!, type: CBCharacteristicWriteType.withResponse)
             lastMessageSent = message
             lastNameSent = name
             commandsSend += 1
@@ -207,26 +207,26 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
         }
     }
     
-    func getValues(name: String) -> NSData{
-        var ret = NSData()
+    func getValues(_ name: String) -> Data{
+        var ret = Data()
         if let index = getIndex(name) {
             objc_sync_enter(devices[index].peripheral)
-            ret = NSData(data: devices[index].data)
+            ret = NSData(data: devices[index].data) as Data
             objc_sync_exit(devices[index].peripheral)
         }
         return ret
     }
     
     func getDeviceNames() -> [String] {
-        let names = devices.map { (peripheral: CBPeripheral, tx: CBCharacteristic?, rx: CBCharacteristic?, data: NSData, name: String) -> String in
+        let names = devices.map { (peripheral: CBPeripheral, tx: CBCharacteristic?, rx: CBCharacteristic?, data: Data, name: String) -> String in
             return name
         }
         return names
     }
     
-    func sendBTServiceNotification(isConnected: Bool, name: String){
-        let connectionDetails = ["isConnected" : isConnected, "name" : name]
-        NSNotificationCenter.defaultCenter().postNotificationName(BLEServiceChangedStatusNotification, object: self, userInfo: connectionDetails as [NSObject : AnyObject])
+    func sendBTServiceNotification(_ isConnected: Bool, name: String){
+        let connectionDetails = ["isConnected" : isConnected, "name" : name] as [String : Any]
+        NotificationCenter.default.post(name: Notification.Name(rawValue: BLEServiceChangedStatusNotification), object: self, userInfo: connectionDetails as [AnyHashable: Any])
     }
     
     

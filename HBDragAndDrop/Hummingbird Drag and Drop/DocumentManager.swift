@@ -9,21 +9,21 @@
 import Foundation
 
 
-let documentsPath: NSURL! = NSURL(string: NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.DocumentDirectory, NSSearchPathDomainMask.UserDomainMask, true)[0])
-let repoUrl = NSURL(string: "https://github.com/BirdBrainTechnologies/HummingbirdDragAndDrop-/archive/master.zip")
-let logURL = NSURL(string: "https://raw.githubusercontent.com/BirdBrainTechnologies/HummingbirdDragAndDrop-/master/version.txt")
-let zipPath = documentsPath.URLByAppendingPathComponent("temp.zip")
-let unzipPath = documentsPath.URLByAppendingPathComponent("DragAndDrop")
-let fileManager = NSFileManager.defaultManager()
+let documentsPath: URL! = URL(string: NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory, FileManager.SearchPathDomainMask.userDomainMask, true)[0])
+let repoUrl = URL(string: "https://github.com/BirdBrainTechnologies/HummingbirdDragAndDrop-/archive/master.zip")
+let logURL = URL(string: "https://raw.githubusercontent.com/BirdBrainTechnologies/HummingbirdDragAndDrop-/master/version.txt")
+let zipPath = documentsPath.appendingPathComponent("temp.zip")
+let unzipPath = documentsPath.appendingPathComponent("DragAndDrop")
+let fileManager = FileManager.default
 
 public func getUpdate(){
-    let zippedData = NSData(contentsOfURL: repoUrl!)!
-    zippedData.writeToFile(zipPath.path!, atomically: true)
-    Main.unzipFileAtPath(zipPath.path!, toDestination: unzipPath.path!)
+    let zippedData = try! Data(contentsOf: repoUrl!)
+    try? zippedData.write(to: URL(fileURLWithPath: zipPath.path), options: [.atomic])
+    Main.unzipFile(atPath: zipPath.path, toDestination: unzipPath.path)
 }
 
-public func getPath() -> NSURL {
-    return unzipPath.URLByAppendingPathComponent("HummingbirdDragAndDrop--master")
+public func getPath() -> URL {
+    return unzipPath.appendingPathComponent("HummingbirdDragAndDrop--master")
 }
 
 public func shouldUpdate() -> Bool{
@@ -31,42 +31,43 @@ public func shouldUpdate() -> Bool{
 }
 
 private func compareHistory() -> Bool{
-    let newHistory = NSData(contentsOfURL: logURL!)
-    let oldHistoryPath = getPath().URLByAppendingPathComponent("version.txt")
-    if(!fileManager.fileExistsAtPath(oldHistoryPath.path!)){
+    let newHistory = try? Data(contentsOf: logURL!)
+    let oldHistoryPath = getPath().appendingPathComponent("version.txt")
+    if(!fileManager.fileExists(atPath: oldHistoryPath.path)){
         NSLog("nothing at old history path")
         return false
     }
-    let oldHistory = NSData(contentsOfFile: oldHistoryPath.path!)
+    let oldHistory = try? Data(contentsOf: URL(fileURLWithPath: oldHistoryPath.path))
     
     if(oldHistory == newHistory){
         NSLog("History files are identical")
         return true
     } else {
-        NSLog(String(stringInterpolationSegment: oldHistory?.length))
-        NSLog(String(stringInterpolationSegment: newHistory?.length))
+        NSLog(String(stringInterpolationSegment: oldHistory?.count))
+        NSLog(String(stringInterpolationSegment: newHistory?.count))
         NSLog("History files differ")
         return false
     }
 }
 
-public func saveStringToFile(string: NSString, fileName: String) -> Bool{
+public func saveStringToFile(_ string: NSString, fileName: String) -> Bool{
     let fullFileName = fileName + ".bbx"
-    let isDir: UnsafeMutablePointer<ObjCBool> = nil
-    if(!fileManager.fileExistsAtPath(getSavePath().path!, isDirectory: isDir)) {
+    let isDir: UnsafeMutablePointer<ObjCBool>? = nil
+    if(!fileManager.fileExists(atPath: getSavePath().path, isDirectory: isDir)) {
         do {
-        try fileManager.createDirectoryAtPath(getSavePath().path!, withIntermediateDirectories: false, attributes: nil)
+        try fileManager.createDirectory(atPath: getSavePath().path, withIntermediateDirectories: false, attributes: nil)
         }
         catch {
             NSLog("Failed to create save directory")
         }
     }
     
-    let path = getSavePath().URLByAppendingPathComponent(fullFileName).path!
+    let path = getSavePath().appendingPathComponent(fullFileName).path
     do {
         //fileManager.createFileAtPath(path, contents: nil, attributes: nil)
-        try string.writeToFile(path, atomically: true, encoding: NSUTF8StringEncoding)
+        try string.write(toFile: path, atomically: true, encoding: String.Encoding.utf8.rawValue)
         print("Wrote " + (string as String) + " to file")
+        NSLog("Filename of saved file: " + fullFileName)
         NSLog("return true")
         return true
     }
@@ -76,7 +77,7 @@ public func saveStringToFile(string: NSString, fileName: String) -> Bool{
     }
 }
 
-public func autosave(string: NSString) {
+public func autosave(_ string: NSString) {
     saveStringToFile(string, fileName: "autosaveFile")
 }
 
@@ -86,101 +87,121 @@ public func getAutosave() -> NSString {
 
 public func getSavedFileNames() -> [String]{
     do {
-        let paths = try fileManager.contentsOfDirectoryAtPath(getSavePath().path!)
+        let paths = try fileManager.contentsOfDirectory(atPath: getSavePath().path)
         var paths2 = paths.map({ (string) -> String in
-            return string.stringByReplacingOccurrencesOfString(".bbx", withString: "")
+            return string.replacingOccurrences(of: ".bbx", with: "")
         })
-        if let index = paths2.indexOf("autosaveFile") {
-            paths2.removeAtIndex(index)
+        if let index = paths2.index(of: "autosaveFile") {
+            paths2.remove(at: index)
         }
+        NSLog(getAllFiles().joined(separator: ", "))
         return paths2
     } catch {
+        NSLog(getAllFiles().joined(separator: ", "))
         return []
     }
 }
 
-public func getSavePath() -> NSURL{
-    return getDocPath().URLByAppendingPathComponent("SavedFiles")
+public func getAllFiles() -> [String] {
+    do {
+        let paths = try fileManager.contentsOfDirectory(atPath: getSavePath().path)
+        return paths
+    } catch {
+        return []
+    }
+
 }
 
-public func getSavedFileURL(filename: String) ->NSURL {
+public func getSavePath() -> URL{
+    return getDocPath().appendingPathComponent("SavedFiles")
+}
+
+public func getSavedFileURL(_ filename: String) ->URL {
     let fullFileName = filename + ".bbx"
-    let path = getSavePath().URLByAppendingPathComponent(fullFileName)
+    let path = getSavePath().appendingPathComponent(fullFileName)
     return path
 }
 
-public func getSavedFileByName(fileName: String) -> NSString {
+public func getSavedFileByName(_ fileName: String) -> NSString {
     do {
         let fullFileName = fileName + ".bbx"
-        let path = getSavePath().URLByAppendingPathComponent(fullFileName).path!
-        let file: NSString = try NSString(contentsOfFile: path, encoding: NSUTF8StringEncoding)
+        let path = getSavePath().appendingPathComponent(fullFileName).path
+        let file: NSString = try NSString(contentsOfFile: path, encoding: String.Encoding.utf8.rawValue)
         return file
     } catch {
         return "File not found"
     }
 }
 
-public func deleteFile(fileName: String) -> Bool {
+public func deleteFile(_ fileName: String) -> Bool {
     let fullFileName = fileName + ".bbx"
-    let path = getSavePath().URLByAppendingPathComponent(fullFileName).path!
+    let path = getSavePath().appendingPathComponent(fullFileName).path
     do {
-        try fileManager.removeItemAtPath(path)
+        try fileManager.removeItem(atPath: path)
         return true
     } catch {
         return false
     }
 }
 
-public func renameFile(startFileName: String, newFileName: String) -> Bool {
+public func deleteFileAtPath(_ path: String) {
+    do {
+        try fileManager.removeItem(atPath: path)
+    } catch {
+    
+    }
+}
+
+public func renameFile(_ startFileName: String, newFileName: String) -> Bool {
     let startFullFileName = startFileName + ".bbx"
-    let startPath = getSavePath().URLByAppendingPathComponent(startFullFileName).path!
+    let startPath = getSavePath().appendingPathComponent(startFullFileName).path
     let newFullFileName = newFileName + ".bbx"
-    let newPath = getSavePath().URLByAppendingPathComponent(newFullFileName).path!
+    let newPath = getSavePath().appendingPathComponent(newFullFileName).path
     do {
-        try fileManager.moveItemAtPath(startPath, toPath: newPath)
+        try fileManager.moveItem(atPath: startPath, toPath: newPath)
         return true
     } catch {
         return false
     }
 }
 
-public func getDocPath() -> NSURL{
+public func getDocPath() -> URL{
     return documentsPath
 }
 
-public func getSettingsPath() -> NSURL {
-    return getDocPath().URLByAppendingPathComponent("Settings.plist")
+public func getSettingsPath() -> URL {
+    return getDocPath().appendingPathComponent("Settings.plist")
 }
 
 private func getSettings() -> NSMutableDictionary {
     var settings: NSMutableDictionary
-    if (!fileManager.fileExistsAtPath(getSettingsPath().path!)) {
+    if (!fileManager.fileExists(atPath: getSettingsPath().path)) {
         settings = NSMutableDictionary()
-        settings.writeToFile(getSettingsPath().path!, atomically: true)
+        settings.write(toFile: getSettingsPath().path, atomically: true)
     }
-    settings = NSMutableDictionary(contentsOfFile: getSettingsPath().path!)!
+    settings = NSMutableDictionary(contentsOfFile: getSettingsPath().path)!
     return settings
 }
 
-private func saveSettings(settings: NSMutableDictionary) {
-    settings.writeToFile(getSettingsPath().path!, atomically: true)
+private func saveSettings(_ settings: NSMutableDictionary) {
+    settings.write(toFile: getSettingsPath().path, atomically: true)
 }
 
-public func addSetting(key: String, value: String) {
+public func addSetting(_ key: String, value: String) {
     let settings = getSettings()
     settings.setValue(value, forKey: key)
     saveSettings(settings)
 }
 
-public func getSetting(key: String) -> String? {
-    if let value = getSettings().valueForKey(key) {
+public func getSetting(_ key: String) -> String? {
+    if let value = getSettings().value(forKey: key) {
         return value as? String
     }
     return nil
 }
 
-public func removeSetting(key: String) {
+public func removeSetting(_ key: String) {
     let settings = getSettings()
-    settings.removeObjectForKey(key)
+    settings.removeObject(forKey: key)
     saveSettings(settings)
 }

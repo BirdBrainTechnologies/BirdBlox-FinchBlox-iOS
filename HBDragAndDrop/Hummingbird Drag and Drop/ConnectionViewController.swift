@@ -14,35 +14,35 @@ class ConnectionViewController: UITableViewController {
     
     let sharedBluetoothDiscovery = BluetoothDiscovery.getBLEDiscovery()
     var items = [String: CBPeripheral]()
-    var refreshTimer: NSTimer = NSTimer()
+    var refreshTimer: Timer = Timer()
     var skipping = false
     
     override func viewDidLoad(){
         super.viewDidLoad()
         self.items = sharedBluetoothDiscovery.getDiscovered()
         title = "BLE Devices"
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Refresh, target: self, action: #selector(ConnectionViewController.restart))
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FastForward, target: self, action: #selector(ConnectionViewController.skip))
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.refresh, target: self, action: #selector(ConnectionViewController.restart))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.fastForward, target: self, action: #selector(ConnectionViewController.skip))
         navigationController!.setNavigationBarHidden(false, animated:true)
         self.tableView.allowsSelection = false
-        self.tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cellIdentifier")
+        self.tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cellIdentifier")
         self.tableView.rowHeight = UITableViewAutomaticDimension
         self.tableView.allowsSelection = true
-        refreshTimer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: #selector(ConnectionViewController.refresh), userInfo: nil, repeats: true)
+        refreshTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(ConnectionViewController.refresh), userInfo: nil, repeats: true)
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         refreshTimer.invalidate()
         if (skipping == false) {
         let array = Array(self.items.values.lazy)
         let cell = sender as! UITableViewCell
         let name = (cell.textLabel?.text)!
-        let index = self.tableView.indexPathForCell(cell)
+        let index = self.tableView.indexPath(for: cell)
         let i = index!.row
         let item = array[i]
         let hbServe = HummingbirdServices()
         sharedBluetoothDiscovery.connectToPeripheral(item, name: name)
-        let mainView = segue.destinationViewController as! ViewController
+        let mainView = segue.destination as! ViewController
         hbServe.attachToDevice(name)
         mainView.hbServes[name] = hbServe
         }
@@ -54,32 +54,32 @@ class ConnectionViewController: UITableViewController {
     }
     func skip() {
         skipping = true
-        performSegueWithIdentifier("ShowMainSegue", sender: self)
+        performSegue(withIdentifier: "ShowMainSegue", sender: self)
     }
     func restart(){
         sharedBluetoothDiscovery.restartScan()
         refresh()
     }
     
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return items.count
     }
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let keys = Array(items.keys.lazy)
-        let cell: UITableViewCell = (tableView.dequeueReusableCellWithIdentifier("cellIdentifier", forIndexPath: indexPath) )
+        let cell: UITableViewCell = (tableView.dequeueReusableCell(withIdentifier: "cellIdentifier", for: indexPath) )
         cell.textLabel?.text = keys[indexPath.row]
         cell.updateConstraintsIfNeeded()
         return cell
     }
     
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let cell: UITableViewCell = self.tableView.cellForRowAtIndexPath(indexPath)!
-        performSegueWithIdentifier("ShowMainSegue", sender: cell)
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let cell: UITableViewCell = self.tableView.cellForRow(at: indexPath)!
+        performSegue(withIdentifier: "ShowMainSegue", sender: cell)
     }
     
     

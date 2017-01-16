@@ -6,22 +6,22 @@
 
 import Foundation
 
-public class HttpServer
+open class HttpServer
 {
-    public typealias Handler = HttpRequest -> HttpResponse
+    public typealias Handler = (HttpRequest) -> HttpResponse
     
     var handlers: [(expression: NSRegularExpression, handler: Handler)] = []
     var clientSockets: Set<CInt> = []
     let clientSocketsLock = 0
     var acceptSocket: CInt = -1
     
-    let matchingOptions = NSMatchingOptions(rawValue: 0)
-    let expressionOptions = NSRegularExpressionOptions(rawValue: 0)
+    let matchingOptions = NSRegularExpression.MatchingOptions(rawValue: 0)
+    let expressionOptions = NSRegularExpression.Options(rawValue: 0)
     
     public init(){
     }
     
-    public subscript (path: String) -> Handler? {
+    open subscript (path: String) -> Handler? {
         get {
             return nil
         }
@@ -37,20 +37,20 @@ public class HttpServer
         }
     }
     
-    public func routes() -> [String] { return handlers.map { $0.0.pattern } }
+    open func routes() -> [String] { return handlers.map { $0.0.pattern } }
     
-    public func start(listenPort: in_port_t = 8080, error: NSErrorPointer = nil) -> Bool {
+    open func start(_ listenPort: in_port_t = 8080, error: NSErrorPointer? = nil) -> Bool {
         stop()
         if let socket = Socket.tcpForListen(listenPort, error: error) {
             self.acceptSocket = socket
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), {
+            DispatchQueue.global(priority: DispatchQueue.GlobalQueuePriority.background).async(execute: {
                 while let socket = Socket.acceptClientSocket(self.acceptSocket) {
                     HttpServer.lock(self.clientSocketsLock) {
                         self.clientSockets.insert(socket)
                     }
                     if self.acceptSocket == -1 { return }
                     let socketAddress = Socket.peername(socket)
-                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), {
+                    DispatchQueue.global(priority: DispatchQueue.GlobalQueuePriority.background).async(execute: {
                         let parser = HttpParser()
                         while let request = parser.nextHttpRequest(socket) {
                             let keepAlive = parser.supportsKeepAlive(request.headers)
@@ -60,7 +60,7 @@ public class HttpServer
                                 
                                 HttpServer.respond(socket, response: handler(updatedRequest), keepAlive: keepAlive)
                             } else {
-                                HttpServer.respond(socket, response: HttpResponse.NotFound, keepAlive: keepAlive)
+                                HttpServer.respond(socket, response: HttpResponse.notFound, keepAlive: keepAlive)
                             }
                             if !keepAlive { break }
                         }
@@ -77,18 +77,18 @@ public class HttpServer
         return false
     }
     
-    public func findHandler(url:String) -> (NSRegularExpression, Handler)? {
+    open func findHandler(_ url:String) -> (NSRegularExpression, Handler)? {
         return self.handlers.filter {
-            $0.0.numberOfMatchesInString(url, options: self.matchingOptions, range: HttpServer.asciiRange(url)) > 0
+            $0.0.numberOfMatches(in: url, options: self.matchingOptions, range: HttpServer.asciiRange(url)) > 0
         }.first
     }
     
-    public func captureExpressionGroups(expression: NSRegularExpression, value: String) -> [String] {
+    open func captureExpressionGroups(_ expression: NSRegularExpression, value: String) -> [String] {
         var capturedGroups = [String]()
-        if let result = expression.firstMatchInString(value, options: matchingOptions, range: HttpServer.asciiRange(value)) {
-            let nsValue: NSString = value
+        if let result = expression.firstMatch(in: value, options: matchingOptions, range: HttpServer.asciiRange(value)) {
+            let nsValue: NSString = value as NSString
             for i in 1  ..< result.numberOfRanges  {
-                if let group = nsValue.substringWithRange(result.rangeAtIndex(i)).stringByRemovingPercentEncoding {
+                if let group = nsValue.substring(with: result.rangeAt(i)).stringByRemovingPercentEncoding {
                     capturedGroups.append(group)
                 }
             }
@@ -96,31 +96,31 @@ public class HttpServer
         return capturedGroups
     }
     
-    public func stop() {
+    open func stop() {
         Socket.release(acceptSocket)
         acceptSocket = -1
-        HttpServer.lock(self.clientSocketsLock) {
+        HttpServer.lock(self.clientSocketsLock as AnyObject) {
             for clientSocket in self.clientSockets {
                 Socket.release(clientSocket)
             }
-            self.clientSockets.removeAll(keepCapacity: true)
+            self.clientSockets.removeAll(keepingCapacity: true)
         }
     }
     
-    public class func asciiRange(value: String) -> NSRange {
-        return NSMakeRange(0, value.lengthOfBytesUsingEncoding(NSASCIIStringEncoding))
+    open class func asciiRange(_ value: String) -> NSRange {
+        return NSMakeRange(0, value.lengthOfBytes(using: String.Encoding.ascii))
     }
     
-    public class func lock(handle: AnyObject, closure: () -> ()) {
+    open class func lock(_ handle: AnyObject, closure: () -> ()) {
         objc_sync_enter(handle)
         closure()
         objc_sync_exit(handle)
     }
     
-    public class func respond(socket: CInt, response: HttpResponse, keepAlive: Bool) {
+    open class func respond(_ socket: CInt, response: HttpResponse, keepAlive: Bool) {
         Socket.writeUTF8(socket, string: "HTTP/1.1 \(response.statusCode()) \(response.reasonPhrase())\r\n")
         if let body = response.body() {
-            Socket.writeASCII(socket, string: "Content-Length: \(body.length)\r\n")
+            Socket.writeASCII(socket, string: "Content-Length: \(body.count)\r\n")
         } else {
             Socket.writeASCII(socket, string: "Content-Length: 0\r\n")
         }

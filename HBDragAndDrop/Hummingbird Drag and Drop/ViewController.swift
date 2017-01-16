@@ -14,6 +14,30 @@ import SystemConfiguration.CaptiveNetwork
 import CoreMotion
 import WebKit
 import MessageUI
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l > r
+  default:
+    return rhs < lhs
+  }
+}
+
 
 class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate, MFMailComposeViewControllerDelegate, AVAudioRecorderDelegate, WKNavigationDelegate {
     
@@ -25,8 +49,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
     //var hbServe: HummingbirdServices!
     let server: HttpServer = HttpServer()
     var wasShaken: Bool = false
-    var shakenTimer: NSTimer = NSTimer()
-    var pingTimer: NSTimer = NSTimer()
+    var shakenTimer: Timer = Timer()
+    var pingTimer: Timer = Timer()
     let locationManager = CLLocationManager()
     let altimeter = CMAltimeter()
     let motionManager = CMMotionManager()
@@ -44,16 +68,16 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
     var currentFileName: String?
     var tempNew = false
     
-    override func prefersStatusBarHidden() -> Bool {
+    override var prefersStatusBarHidden : Bool {
         return true
     }
     
     func isConnectedToInternet() -> Bool{
         var zeroAddress = sockaddr_in()
-        zeroAddress.sin_len = UInt8(sizeofValue(zeroAddress))
+        zeroAddress.sin_len = UInt8(MemoryLayout.size(ofValue: zeroAddress))
         zeroAddress.sin_family = sa_family_t(AF_INET)
         
-        let defaultRouteReachability = withUnsafePointer(&zeroAddress) {
+        let defaultRouteReachability = withUnsafePointer(to: &zeroAddress) {
             SCNetworkReachabilityCreateWithAddress(nil, UnsafePointer($0))
         }
         
@@ -68,55 +92,55 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         return isReachable && !needsConnection
     }
     
-    func webView(webView: WKWebView, didFinishNavigation navigation: WKNavigation!) {
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         NSLog(navigation.description)
     }
-    func webView(webView: WKWebView, decidePolicyForNavigationAction navigationAction: WKNavigationAction, decisionHandler: (WKNavigationActionPolicy) -> Void) {
-        decisionHandler(WKNavigationActionPolicy.Allow)
+    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        decisionHandler(WKNavigationActionPolicy.allow)
     }
     
-    func webView(webView: WKWebView, createWebViewWithConfiguration configuration: WKWebViewConfiguration, forNavigationAction navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
-        let url_str = navigationAction.request.URL!.absoluteString
+    func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
+        let url_str = navigationAction.request.url!.absoluteString
         print("Got NavigationAction Request of: ", url_str);
         if(navigationAction.targetFrame == nil) {
-            let request: NSMutableURLRequest = navigationAction.request.mutableCopy() as! NSMutableURLRequest
+            let request: NSMutableURLRequest = (navigationAction.request as NSURLRequest).mutableCopy() as! NSMutableURLRequest
             //if (navigationAction.request.URL?.absoluteString.hasPrefix("data:") == true) {
-            NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) {
+            NSURLConnection.sendAsynchronousRequest(request as URLRequest, queue: OperationQueue.main) {
                 response, text, error in
                 
-                if (error == nil && response!.MIMEType == "text/xml") {
-                    let xml = NSString(data: text!, encoding: NSUTF8StringEncoding)!
+                if (error == nil && response!.mimeType == "text/xml") {
+                    let xml = NSString(data: text!, encoding: String.Encoding.utf8.rawValue)!
                     if let filename = self.currentFileName  {
                         if(self.tempNew == false) {
                             saveStringToFile(xml, fileName: filename)
                             return
                         }
                     }
-                    let alertController = UIAlertController(title: "Save", message: "Enter a name for your file", preferredStyle: UIAlertControllerStyle.Alert)
-                    let okayAction = UIAlertAction(title: "Okay", style: UIAlertActionStyle.Default){
+                    let alertController = UIAlertController(title: "Save", message: "Enter a name for your file", preferredStyle: UIAlertControllerStyle.alert)
+                    let okayAction = UIAlertAction(title: "Okay", style: UIAlertActionStyle.default){
                         (action) -> Void in
                         if let textField: AnyObject = alertController.textFields?.first{
                             if let response = (textField as! UITextField).text{
-                                self.currentFileName = response.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
+                                self.currentFileName = response.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
                                 
                                 let allFiles = getSavedFileNames()
                                 //If we are about to overwrite a file
                                 if(allFiles.contains(self.currentFileName!)) {
                                     NSLog("File exists, asking for confirmation")
-                                    let newAlertController = UIAlertController(title: "Save", message: "This filename is already in use, do you want to overwrite the existing file?", preferredStyle: UIAlertControllerStyle.Alert)
-                                    let yesAction = UIAlertAction(title: "Yes", style: UIAlertActionStyle.Default) {
+                                    let newAlertController = UIAlertController(title: "Save", message: "This filename is already in use, do you want to overwrite the existing file?", preferredStyle: UIAlertControllerStyle.alert)
+                                    let yesAction = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default) {
                                         (action) -> Void in
                                         saveStringToFile(xml, fileName: self.currentFileName!)
                                     }
-                                    let noAction = UIAlertAction(title: "No", style: UIAlertActionStyle.Default) {
+                                    let noAction = UIAlertAction(title: "No", style: UIAlertActionStyle.default) {
                                         (action) -> Void in
                                         self.currentFileName = nil
-                                        self.presentViewController(alertController, animated: true, completion: nil)
+                                        self.present(alertController, animated: true, completion: nil)
                                     }
                                     newAlertController.addAction(yesAction)
                                     newAlertController.addAction(noAction)
                                     NSLog("Going to present confirmation dialog")
-                                    self.presentViewController(newAlertController, animated: true, completion: nil)
+                                    self.present(newAlertController, animated: true, completion: nil)
                                 } else {
                                     NSLog("Saving string to file")
                                     saveStringToFile(xml, fileName: self.currentFileName!)
@@ -125,12 +149,12 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                             }
                         }
                     }
-                    let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel) {
+                    let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel) {
                         (action) -> Void in
                         self.tempNew = false
                         return
                     }
-                    alertController.addTextFieldWithConfigurationHandler{
+                    alertController.addTextField{
                         (textField) -> Void in
                         textField.becomeFirstResponder()
                         textField.placeholder = "<Filename>"
@@ -138,10 +162,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                     alertController.addAction(okayAction)
                     alertController.addAction(cancelAction)
                     
-                    dispatch_async(dispatch_get_main_queue()){
+                    DispatchQueue.main.async{
                         NSLog("Start Present")
                         //self.presentViewController(UIAlertController(title: "TEST", message: "abc", preferredStyle: UIAlertControllerStyle.Alert), animated: true) {
-                        self.presentViewController(alertController, animated: true) {
+                        self.present(alertController, animated: true) {
                             NSLog("End Present")
                         }
                     }
@@ -152,14 +176,14 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         return nil
     }
 
-    func mailComposeController(controller: MFMailComposeViewController, didFinishWithResult result: MFMailComposeResult, error: NSError?) {
-        self.dismissViewControllerAnimated(true, completion: nil)
+    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+        self.dismiss(animated: true, completion: nil)
     }
     
     func checkServer() {
         //print("Pinging")
-        let url = NSURL(string: "http://localhost:22179/server/ping")
-        let task = NSURLSession.sharedSession().dataTaskWithURL(url!) {(data, response, error) in
+        let url = URL(string: "http://localhost:22179/server/ping")
+        let task = URLSession.shared.dataTask(with: url!, completionHandler: {(data, response, error) in
             if ((error) != nil){
                 print("Ping failed")
                 self.server.stop()
@@ -167,7 +191,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                 self.server.start(22179)
                 return
             }
-        }
+        }) 
         task.resume()
     }
     
@@ -175,7 +199,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         super.loadView()
         //TypingText.hidden = true
         mainWebView = WKWebView(frame: self.view.frame)
-        mainWebView.UIDelegate = self
+        mainWebView.uiDelegate = self
         mainWebView.navigationDelegate = self
     }
     
@@ -189,9 +213,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         if let navCon = navigationController {
             navCon.setNavigationBarHidden(true, animated:true)
         }
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ViewController.changedStatus(_:)), name: BluetoothStatusChangedNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(ViewController.changedStatus(_:)), name: NSNotification.Name(rawValue: BluetoothStatusChangedNotification), object: nil)
         
-        pingTimer = NSTimer.scheduledTimerWithTimeInterval(NSTimeInterval(5), target: self, selector: #selector(ViewController.checkServer), userInfo: nil, repeats: true)
+        pingTimer = Timer.scheduledTimer(timeInterval: TimeInterval(5), target: self, selector: #selector(ViewController.checkServer), userInfo: nil, repeats: true)
         checkServer()
         
         self.locationManager.requestAlwaysAuthorization()
@@ -204,18 +228,18 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         }
         
         if(CMAltimeter.isRelativeAltitudeAvailable()){
-            altimeter.startRelativeAltitudeUpdatesToQueue(NSOperationQueue.mainQueue(), withHandler: {data, error in
+            altimeter.startRelativeAltitudeUpdates(to: OperationQueue.main, withHandler: {data, error in
                 if(error == nil) {
                     self.currentAltitude = Float(data!.relativeAltitude)
                     self.currentPressure = Float(data!.pressure)
                 }
             })
         }
-        let queue = NSOperationQueue()
+        let queue = OperationQueue()
         self.motionManager.accelerometerUpdateInterval = 0.5
-        if(self.motionManager.accelerometerAvailable) {
-            self.motionManager.startAccelerometerUpdatesToQueue(queue, withHandler: {data, error in
-                dispatch_async(dispatch_get_main_queue(), {
+        if(self.motionManager.isAccelerometerAvailable) {
+            self.motionManager.startAccelerometerUpdates(to: queue, withHandler: {data, error in
+                DispatchQueue.main.async(execute: {
                     self.x = data!.acceleration.x
                     self.y = data!.acceleration.y
                     self.z = data!.acceleration.z
@@ -223,8 +247,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             })
 
         }
-        mainWebView.contentMode = UIViewContentMode.ScaleAspectFit
-        let url = NSURL(string: "http://localhost:22179/DragAndDrop/HummingbirdDragAndDrop.html")
+        mainWebView.contentMode = UIViewContentMode.scaleAspectFit
+        let url = URL(string: "http://localhost:22179/DragAndDrop/HummingbirdDragAndDrop.html")
         if(isConnectedToInternet()){
             if(shouldUpdate()){
                 getUpdate()
@@ -241,37 +265,37 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                 self.presentViewController(connectionAlert, animated: true, completion: nil)
             }
             */
-            let requestPage = NSURLRequest(URL: url!)
-            mainWebView!.loadRequest(requestPage)
+            let requestPage = URLRequest(url: url!)
+            mainWebView!.load(requestPage)
             self.view.addSubview(mainWebView)
  
         }
         else{
-            let noConnectionAlert = UIAlertController(title: "Cannot Connect", message: "This app required an internet connection for certain features to work. There is currently no connection avaliable. If this is your first time opening the app, it will NOT load. You need to open the app while you have internet at least once so that the source code can be downloaded", preferredStyle: UIAlertControllerStyle.Alert)
-            noConnectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
-            dispatch_async(dispatch_get_main_queue()){
-                self.presentViewController(noConnectionAlert, animated: true, completion: nil)
+            let noConnectionAlert = UIAlertController(title: "Cannot Connect", message: "This app required an internet connection for certain features to work. There is currently no connection avaliable. If this is your first time opening the app, it will NOT load. You need to open the app while you have internet at least once so that the source code can be downloaded", preferredStyle: UIAlertControllerStyle.alert)
+            noConnectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.default, handler: nil))
+            DispatchQueue.main.async{
+                self.present(noConnectionAlert, animated: true, completion: nil)
             }
-            let requestPage = NSURLRequest(URL: url!)
-            mainWebView!.loadRequest(requestPage)
+            let requestPage = URLRequest(url: url!)
+            mainWebView!.load(requestPage)
             self.view.addSubview(mainWebView)
         }
-        let urlFromXMl = (UIApplication.sharedApplication().delegate as! AppDelegate).getFileUrl()
+        let urlFromXMl = (UIApplication.shared.delegate as! AppDelegate).getFileUrl()
         var path: String
         if let tempURL = urlFromXMl{
             path = tempURL.path!
             do{
-                let rawText = try String(contentsOfFile: path, encoding: NSUTF8StringEncoding)
-                let filename = (path as NSString).lastPathComponent
-                saveStringToFile(rawText, fileName: filename)
+                let rawText = try String(contentsOfFile: path, encoding: String.Encoding.utf8)
+                let filename = (path as NSString).lastPathComponent.replacingOccurrences(of: ".bbx", with: "")
+                //saveStringToFile(rawText, fileName: filename)
                 
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0)){
-                    while(self.mainWebView.loading){
+                DispatchQueue.global(priority: DispatchQueue.GlobalQueuePriority.low).async{
+                    while(self.mainWebView.isLoading){
                         sched_yield()
                     };
                     print("Calling JS")
                     self.mainWebView.evaluateJavaScript("SaveManager.import( '"+filename+"' , '"+rawText+"')", completionHandler: nil)
-                    
+                    deleteFileAtPath(path)
                 }
             } catch {
                 print("Error: Couldn't get contents of XML file\n")
@@ -424,13 +448,13 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
     */
     
     //for shake
-    override func canBecomeFirstResponder() -> Bool {
+    override var canBecomeFirstResponder : Bool {
         return true
     }
-    override func motionEnded(motion: UIEventSubtype, withEvent event: UIEvent?) {
-        if (motion == UIEventSubtype.MotionShake){
+    override func motionEnded(_ motion: UIEventSubtype, with event: UIEvent?) {
+        if (motion == UIEventSubtype.motionShake){
             wasShaken = true
-            shakenTimer = NSTimer.scheduledTimerWithTimeInterval(NSTimeInterval(5), target: self, selector: #selector(ViewController.expireShake), userInfo: nil, repeats: false)
+            shakenTimer = Timer.scheduledTimer(timeInterval: TimeInterval(5), target: self, selector: #selector(ViewController.expireShake), userInfo: nil, repeats: false)
         }
     }
     func expireShake(){
@@ -447,7 +471,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
     }
     //end shake
     //location
-    func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         currentLocation = manager.location!.coordinate
     }
     //end location
@@ -457,9 +481,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         var ssid:NSString = "null"
         if let ifs:NSArray = CNCopySupportedInterfaces(){
             for i in 0..<CFArrayGetCount(ifs){
-                let ifName: UnsafePointer<Void> = CFArrayGetValueAtIndex(ifs, i)
-                let rec = unsafeBitCast(ifName, AnyObject.self)
-                let unsafeIfData = CNCopyCurrentNetworkInfo("\(rec)")
+                let ifName: UnsafeRawPointer = CFArrayGetValueAtIndex(ifs, i)
+                let rec = unsafeBitCast(ifName, to: AnyObject.self)
+                let unsafeIfData = CNCopyCurrentNetworkInfo("\(rec)" as CFString)
                 if unsafeIfData != nil {
                     let ifData = unsafeIfData! as Dictionary!
                     ssid = ifData["SSID"] as! NSString
@@ -475,31 +499,31 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         var address : String?
         
         // Get list of all interfaces on the local machine:
-        var ifaddr : UnsafeMutablePointer<ifaddrs> = nil
+        var ifaddr : UnsafeMutablePointer<ifaddrs>? = nil
         if getifaddrs(&ifaddr) == 0 {
             
             // For each interface ...
             var ptr = ifaddr
             while(ptr != nil) {
-                let interface = ptr.memory
+                let interface = ptr?.pointee
                 
                 // Check for IPv4 or IPv6 interface:
-                let addrFamily = interface.ifa_addr.memory.sa_family
+                let addrFamily = interface?.ifa_addr.pointee.sa_family
                 if addrFamily == UInt8(AF_INET) || addrFamily == UInt8(AF_INET6) {
                     
                     // Check interface name:
-                    if let name = String.fromCString(interface.ifa_name) where name == "en0" {
+                    if let name = String(validatingUTF8: (interface?.ifa_name)!), name == "en0" {
                         
                         // Convert interface address to a human readable string:
-                        var addr = interface.ifa_addr.memory
-                        var hostname = [CChar](count: Int(NI_MAXHOST), repeatedValue: 0)
-                        getnameinfo(&addr, socklen_t(interface.ifa_addr.memory.sa_len),
+                        var addr = interface?.ifa_addr.pointee
+                        var hostname = [CChar](repeating: 0, count: Int(NI_MAXHOST))
+                        getnameinfo(&addr!, socklen_t((interface?.ifa_addr.pointee.sa_len)!),
                             &hostname, socklen_t(hostname.count),
                             nil, socklen_t(0), NI_NUMERICHOST)
-                        address = String.fromCString(hostname)
+                        address = String(cString: hostname)
                     }
                 }
-            ptr = ptr.memory.ifa_next
+            ptr = ptr?.pointee.ifa_next
             }
             freeifaddrs(ifaddr)
         }
@@ -526,30 +550,30 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         return "In between"
     }
     
-    func handleBadRequest(name: String) {
+    func handleBadRequest(_ name: String) {
         NSLog("Attempted to send command to invalid device: " + name)
-        NSLog("Devices found in disovery" + self.sharedBluetoothDiscovery.getDiscovered().keys.joinWithSeparator(", "))
+        NSLog("Devices found in disovery" + self.sharedBluetoothDiscovery.getDiscovered().keys.joined(separator: ", "))
         self.sharedBluetoothDiscovery.startScan()
     }
     //end orientation
     deinit{
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: BluetoothStatusChangedNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: BluetoothStatusChangedNotification), object: nil)
     }
     func prepareServer(){
         server["/hummingbird/(.+)/out/led/(.+)/(.+)"] = { request in
             let captured = request.capturedUrlGroups
             
             let name = String(captured[0])
-            if(self.hbServes.keys.contains(name) == false) {
-                self.handleBadRequest(name) 
-                return .OK(.RAW("Not connected!"))
+            if(self.hbServes.keys.contains(name!) == false) {
+                self.handleBadRequest(name!) 
+                return .ok(.raw("Not connected!"))
             }
             let portInt = Int(captured[1])
             let temp = Int(round((captured[2] as NSString).floatValue))
             var intensity: UInt8
             
             if (portInt > 4 || portInt < 1){
-                return .OK(.RAW("Invalid Port (should be between 1 and 4 inclusively)"))
+                return .ok(.raw("Invalid Port (should be between 1 and 4 inclusively)"))
             }
             let port = UInt8(portInt!)
             if (temp < 0){
@@ -561,30 +585,30 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             else{
                 intensity = UInt8(temp)
             }
-            self.hbServes[name]!.setLED(port, intensity: intensity)
-            NSThread.sleepForTimeInterval(self.responseTime);
-            return .OK(.RAW("LED set"))
+            self.hbServes[name!]!.setLED(port, intensity: intensity)
+            Thread.sleep(forTimeInterval: self.responseTime);
+            return .ok(.raw("LED set"))
         }
         server["/hummingbird/(.+)/out/stop"] = { request in
             let captured = request.capturedUrlGroups
             
             let name = String(captured[0])
-            if(self.hbServes.keys.contains(name) == false) {
-                self.handleBadRequest(name)
-                return .OK(.RAW("Not connected!"))
+            if(self.hbServes.keys.contains(name!) == false) {
+                self.handleBadRequest(name!)
+                return .ok(.raw("Not connected!"))
             }
-            self.hbServes[name]!.setLED(1, intensity: 0)
-            self.hbServes[name]!.setLED(2, intensity: 0)
-            self.hbServes[name]!.setLED(3, intensity: 0)
-            self.hbServes[name]!.setLED(4, intensity: 0)
-            self.hbServes[name]!.setTriLED(1, r: 0, g: 0, b: 0)
-            self.hbServes[name]!.setTriLED(2, r: 0, g: 0, b: 0)
-            self.hbServes[name]!.setMotor(1, speed: 0)
-            self.hbServes[name]!.setMotor(2, speed: 0)
-            self.hbServes[name]!.setVibration(1, intensity: 0)
-            self.hbServes[name]!.setVibration(2, intensity: 0)
-            NSThread.sleepForTimeInterval(self.responseTime);
-            return .OK(.RAW("Turned off outputs"))
+            self.hbServes[name!]!.setLED(1, intensity: 0)
+            self.hbServes[name!]!.setLED(2, intensity: 0)
+            self.hbServes[name!]!.setLED(3, intensity: 0)
+            self.hbServes[name!]!.setLED(4, intensity: 0)
+            self.hbServes[name!]!.setTriLED(1, r: 0, g: 0, b: 0)
+            self.hbServes[name!]!.setTriLED(2, r: 0, g: 0, b: 0)
+            self.hbServes[name!]!.setMotor(1, speed: 0)
+            self.hbServes[name!]!.setMotor(2, speed: 0)
+            self.hbServes[name!]!.setVibration(1, intensity: 0)
+            self.hbServes[name!]!.setVibration(2, intensity: 0)
+            Thread.sleep(forTimeInterval: self.responseTime);
+            return .ok(.raw("Turned off outputs"))
         }
         
         server["/hummingbird/out/stopAll"] = { request in
@@ -601,22 +625,22 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                 self.hbServes[name]!.setVibration(1, intensity: 0)
                 self.hbServes[name]!.setVibration(2, intensity: 0)
             }
-            return .OK(.RAW("Turned off all outputs for all Hummingbirds"))
+            return .ok(.raw("Turned off all outputs for all Hummingbirds"))
         }
         server["/hummingbird/(.+)/out/triled/(.+)/(.+)/(.+)/(.+)"] = { request in
             let captured = request.capturedUrlGroups
             
             let name = String(captured[0])
-            if(self.hbServes.keys.contains(name) == false) {
-                self.handleBadRequest(name)
-                return .OK(.RAW("Not connected!"))
+            if(self.hbServes.keys.contains(name!) == false) {
+                self.handleBadRequest(name!)
+                return .ok(.raw("Not connected!"))
             }
             let portInt = Int(captured[1])
             var temp = Int(round((captured[2] as NSString).floatValue))
             var rValue: UInt8
             
             if (portInt > 2 || portInt < 1){
-                return .OK(.RAW("Invalid Port (should be between 1 and 4 inclusively)"))
+                return .ok(.raw("Invalid Port (should be between 1 and 4 inclusively)"))
             }
             let port = UInt8(portInt!)
             
@@ -651,16 +675,16 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             else{
                 bValue = UInt8(temp)
             }
-            self.hbServes[name]!.setTriLED(port, r: rValue, g: gValue, b: bValue)
-            NSThread.sleepForTimeInterval(self.responseTime);
-            return .OK(.RAW("Tri-LED set"))
+            self.hbServes[name!]!.setTriLED(port, r: rValue, g: gValue, b: bValue)
+            Thread.sleep(forTimeInterval: self.responseTime);
+            return .ok(.raw("Tri-LED set"))
         }
         server["/hummingbird/(.+)/out/vibration/(.+)/(.+)"] = { request in
             let captured = request.capturedUrlGroups
             let name = String(captured[0])
-            if(self.hbServes.keys.contains(name) == false) {
-                self.handleBadRequest(name)
-                return .OK(.RAW("Not connected!"))
+            if(self.hbServes.keys.contains(name!) == false) {
+                self.handleBadRequest(name!)
+                return .ok(.raw("Not connected!"))
             }
             let portInt = Int(captured[1])
             let temp = Int(round((captured[2] as NSString).floatValue))
@@ -668,7 +692,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             
             
             if (portInt > 2 || portInt < 1){
-                return .OK(.RAW("Invalid Port (should be between 1 and 4 inclusively)"))
+                return .ok(.raw("Invalid Port (should be between 1 and 4 inclusively)"))
             }
             let port = UInt8(portInt!)
             
@@ -682,21 +706,21 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                 intensity = UInt8(temp)
             }
             
-            self.hbServes[name]!.setVibration(port, intensity: intensity)
-            NSThread.sleepForTimeInterval(self.responseTime);
-            return .OK(.RAW("Vibration set"))
+            self.hbServes[name!]!.setVibration(port, intensity: intensity)
+            Thread.sleep(forTimeInterval: self.responseTime);
+            return .ok(.raw("Vibration set"))
         }
         server["/hummingbird/(.+)/out/servo/(.+)/(.+)"] = { request in
             let captured = request.capturedUrlGroups
             let name = String(captured[0])
-            if(self.hbServes.keys.contains(name) == false) {
-                self.handleBadRequest(name)
-                return .OK(.RAW("Not connected!"))
+            if(self.hbServes.keys.contains(name!) == false) {
+                self.handleBadRequest(name!)
+                return .ok(.raw("Not connected!"))
             }
             let portInt = Int(captured[1])
             let temp = Int(round((captured[2] as NSString).floatValue))
             if (portInt > 4 || portInt < 1){
-                return .OK(.RAW("Invalid Port (should be between 1 and 4 inclusively)"))
+                return .ok(.raw("Invalid Port (should be between 1 and 4 inclusively)"))
             }
             let port = UInt8(portInt!)
             var angle: UInt8
@@ -710,23 +734,23 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                 angle = UInt8(temp)
             }
             
-            self.hbServes[name]!.setServo(port, angle: angle)
-            NSThread.sleepForTimeInterval(self.responseTime);
-            return .OK(.RAW("Servo set"))
+            self.hbServes[name!]!.setServo(port, angle: angle)
+            Thread.sleep(forTimeInterval: self.responseTime);
+            return .ok(.raw("Servo set"))
         }
         server["/hummingbird/(.+)/out/motor/(.+)/(.+)"] = { request in
             let captured = request.capturedUrlGroups
             let name = String(captured[0])
-            if(self.hbServes.keys.contains(name) == false) {
-                self.handleBadRequest(name)
-                return .OK(.RAW("Not connected!"))
+            if(self.hbServes.keys.contains(name!) == false) {
+                self.handleBadRequest(name!)
+                return .ok(.raw("Not connected!"))
             }
             let portInt = Int(captured[1])
             let temp = Int(round((captured[2] as NSString).floatValue))
             var intensity: Int
 
             if (portInt > 2 || portInt < 1){
-                return .OK(.RAW("Invalid Port (should be between 1 and 4 inclusively)"))
+                return .ok(.raw("Invalid Port (should be between 1 and 4 inclusively)"))
             }
             let port = UInt8(portInt!)
             
@@ -739,163 +763,163 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             else{
                 intensity = temp
             }
-            self.hbServes[name]!.setMotor(port, speed: intensity)
-            NSThread.sleepForTimeInterval(self.responseTime);
-            return .OK(.RAW("Motor set"))
+            self.hbServes[name!]!.setMotor(port, speed: intensity)
+            Thread.sleep(forTimeInterval: self.responseTime);
+            return .ok(.raw("Motor set"))
         }
         server["/hummingbird/(.+)/in/sensors"] = { request in
             let name = String(request.capturedUrlGroups[0])
-            if(self.hbServes.keys.contains(name) == false) {
-                self.handleBadRequest(name)
-                return .OK(.RAW("Not connected!"))
+            if(self.hbServes.keys.contains(name!) == false) {
+                self.handleBadRequest(name!)
+                return .ok(.raw("Not connected!"))
             }
-            var sensorData = self.hbServes[name]!.getAllSensorDataFromPoll()
+            var sensorData = self.hbServes[name!]!.getAllSensorDataFromPoll()
             let response: String = "" + String(rawto100scale(sensorData[0])) + " " + String(rawto100scale(sensorData[1])) + " " + String(rawto100scale(sensorData[2])) + " " + String(rawto100scale(sensorData[3]))
-            return .OK(.RAW(response))
+            return .ok(.raw(response))
         }
         server["/hummingbird/(.+)/in/sensor/(.+)"] = { request in
             let captured = request.capturedUrlGroups
             let name = String(captured[0])
-            if(self.hbServes.keys.contains(name) == false) {
-                self.handleBadRequest(name)
-                return .OK(.RAW("Not connected!"))
+            if(self.hbServes.keys.contains(name!) == false) {
+                self.handleBadRequest(name!)
+                return .ok(.raw("Not connected!"))
             }
             let portInt = Int(captured[1])
             if (portInt > 4 || portInt < 1){
-                return .OK(.RAW("Invalid Port (should be between 1 and 4 inclusively)"))
+                return .ok(.raw("Invalid Port (should be between 1 and 4 inclusively)"))
             }
             let port = UInt8(portInt!)
             
             let sensorData = rawto100scale(self.hbServes[name]!.getSensorDataFromPoll(port))
             let response: String = String(sensorData)
-            return .OK(.RAW(response))
+            return .ok(.raw(response))
         }
         server["/hummingbird/(.+)/in/distance/(.+)"] = { request in
             let captured = request.capturedUrlGroups
             let name = String(captured[0])
-            if(self.hbServes.keys.contains(name) == false) {
-                self.handleBadRequest(name)
-                return .OK(.RAW("Not connected!"))
+            if(self.hbServes.keys.contains(name!) == false) {
+                self.handleBadRequest(name!)
+                return .ok(.raw("Not connected!"))
             }
             let portInt = Int(captured[1])
             if (portInt > 4 || portInt < 1){
-                return .OK(.RAW("Invalid Port (should be between 1 and 4 inclusively)"))
+                return .ok(.raw("Invalid Port (should be between 1 and 4 inclusively)"))
             }
             let port = UInt8(portInt!)
             
             let sensorData = rawToDistance(self.hbServes[name]!.getSensorDataFromPoll(port))
             let response: String = String(sensorData)
-            return .OK(.RAW(response))
+            return .ok(.raw(response))
         }
         server["/hummingbird/(.+)/in/sound/(.+)"] = { request in
             let captured = request.capturedUrlGroups
             let name = String(captured[0])
-            if(self.hbServes.keys.contains(name) == false) {
-                self.handleBadRequest(name)
-                return .OK(.RAW("Not connected!"))
+            if(self.hbServes.keys.contains(name!) == false) {
+                self.handleBadRequest(name!)
+                return .ok(.raw("Not connected!"))
             }
             let portInt = Int(captured[1])
             if (portInt > 4 || portInt < 1){
-                return .OK(.RAW("Invalid Port (should be between 1 and 4 inclusively)"))
+                return .ok(.raw("Invalid Port (should be between 1 and 4 inclusively)"))
             }
             let port = UInt8(portInt!)
             
             let sensorData = rawToSound(self.hbServes[name]!.getSensorDataFromPoll(port))
             let response: String = String(sensorData)
-            return .OK(.RAW(response))
+            return .ok(.raw(response))
         }
         server["/hummingbird/(.+)/in/temperature/(.+)"] = { request in
             let captured = request.capturedUrlGroups
             let name = String(captured[0])
-            if(self.hbServes.keys.contains(name) == false) {
-                self.handleBadRequest(name)
-                return .OK(.RAW("Not connected!"))
+            if(self.hbServes.keys.contains(name!) == false) {
+                self.handleBadRequest(name!)
+                return .ok(.raw("Not connected!"))
             }
             let portInt = Int(captured[1])
             if (portInt > 4 || portInt < 1){
-                return .OK(.RAW("Invalid Port (should be between 1 and 4 inclusively)"))
+                return .ok(.raw("Invalid Port (should be between 1 and 4 inclusively)"))
             }
             let port = UInt8(portInt!)
             
             let sensorData = rawToTemp(self.hbServes[name]!.getSensorDataFromPoll(port))
             let response: String = String(sensorData)
-            return .OK(.RAW(response))
+            return .ok(.raw(response))
         }
         server["/hummingbird/(.+)/status"] = { request in
             let name = String(request.capturedUrlGroups[0])
-            let response = (self.hbServes[name] != nil) ? 1 : 0
-            return .OK(.RAW(String(response)))
+            let response = (self.hbServes[name!] != nil) ? 1 : 0
+            return .ok(.raw(String(response)))
         }
         server["/hummingbird/(.+)/rename/(.+)"] = { request in
             let nameFrom = request.capturedUrlGroups[0]
             if(self.hbServes.keys.contains(nameFrom) == false) {
                 self.handleBadRequest(nameFrom)
-                return .OK(.RAW("Not connected!"))
+                return .ok(.raw("Not connected!"))
             }
             let nameTo = request.capturedUrlGroups[1]
             if self.hbServes[nameFrom] != nil {
                 if let newName = self.hbServes[nameFrom]!.renameDevice(nameTo) {
-                    self.hbServes[newName] = self.hbServes.removeValueForKey(nameFrom)
+                    self.hbServes[newName] = self.hbServes.removeValue(forKey: nameFrom)
                     self.hbServes[newName]!.setName(newName)
                     NSLog("number of items in HBSERVE: " + String(self.hbServes.count))
-                    return .OK(.RAW("Renamed"))
+                    return .ok(.raw("Renamed"))
                 }
             }
-            return .OK(.RAW("Name not found!"))
+            return .ok(.raw("Name not found!"))
         }
         server["/hummingbird/names"] = { request in
-            let names = Array(self.hbServes.keys.lazy).joinWithSeparator("\n")
-            return .OK(.RAW(names))
+            let names = Array(self.hbServes.keys.lazy).joined(separator: "\n")
+            return .ok(.raw(names))
         }
         server["/hummingbird/connectedNames"] = {request in
-            let names = self.sharedBluetoothDiscovery.getConnected().joinWithSeparator("\n")
-            return .OK(.RAW(names))
+            let names = self.sharedBluetoothDiscovery.getConnected().joined(separator: "\n")
+            return .ok(.raw(names))
         }
         server["/hummingbird/serviceNames"] = {request in
-            let names = self.sharedBluetoothDiscovery.getServiceNames().joinWithSeparator("\n")
-            return .OK(.RAW(names))
+            let names = self.sharedBluetoothDiscovery.getServiceNames().joined(separator: "\n")
+            return .ok(.raw(names))
         }
         server["/hummingbird/ALLNames"] = {request in
-            let names = self.sharedBluetoothDiscovery.getAllNames().joinWithSeparator("\n")
-            return .OK(.RAW(names))
+            let names = self.sharedBluetoothDiscovery.getAllNames().joined(separator: "\n")
+            return .ok(.raw(names))
         }
         server["/hummingbird/(.+)/disconnect"] = { request in
             let name = request.capturedUrlGroups[0]
             if(self.hbServes.keys.contains(name) == false) {
                 self.handleBadRequest(name)
                 self.sharedBluetoothDiscovery.removeConnected(name)
-                return .OK(.RAW("Not connected!"))
+                return .ok(.raw("Not connected!"))
             }
             self.hbServes[name]!.disconnectFromDevice()
             if (self.hbServes.keys.contains(name)) {
-                self.hbServes.removeValueForKey(name)
+                self.hbServes.removeValue(forKey: name)
             }
-            return .OK(.RAW("Disconnected"))
+            return .ok(.raw("Disconnected"))
         }
         server["/hummingbird/discover"] = { request in
             self.sharedBluetoothDiscovery.startScan()
             let dict = self.sharedBluetoothDiscovery.getDiscovered()
             let strings = Array(dict.keys.lazy)
-            return .OK(.RAW(strings.joinWithSeparator("\n")))
+            return .ok(.raw(strings.joined(separator: "\n")))
         }
         server["/hummingbird/ForceDiscover"] = { request in
             print("CALLED FORCE!")
             self.sharedBluetoothDiscovery.restartScan()
             let dict = self.sharedBluetoothDiscovery.getDiscovered()
             let strings = Array(dict.keys.lazy)
-            return .OK(.RAW(strings.joinWithSeparator("\n")))
+            return .ok(.raw(strings.joined(separator: "\n")))
         }
         server["/hummingbird/totalStatus"] = { request in
             let connectedCount = self.sharedBluetoothDiscovery.getConnected().count
             let hbServeCount = self.hbServes.count
             if (connectedCount == 0) {
-                return .OK(.RAW("2"))
+                return .ok(.raw("2"))
             }
             if (connectedCount == hbServeCount) {
-                return .OK(.RAW("1"))
+                return .ok(.raw("1"))
             } else {
                 
-                return .OK(.RAW("0"))
+                return .ok(.raw("0"))
             }
         }
         server["/hummingbird/(.+)/connect"] = { request in
@@ -905,85 +929,88 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                 self.hbServes[name] = hbServe
                 self.hbServes[name]!.attachToDevice(name)
                 self.sharedBluetoothDiscovery.connectToPeripheral(peripheral, name: name)
-                return .OK(.RAW("Connected!"))
+                return .ok(.raw("Connected!"))
             } else {
-                return .OK(.RAW("Device not found"))
+                return .ok(.raw("Device not found"))
             }
         }
         server["/speak/(.+)"] = { request in
             let captured = request.capturedUrlGroups
             let words = String(captured[0])
-            let utterance = AVSpeechUtterance(string: words)
+            let utterance = AVSpeechUtterance(string: words!)
             utterance.rate = 0.3
-            self.synth.speakUtterance(utterance)
-            return .OK(.RAW(words))
+            self.synth.speak(utterance)
+            return .ok(.raw(words))
             
         }
         server["/iPad/shake"] = {request in
             let checkShake = self.checkShaken()
             if checkShake{
-                 return .OK(.RAW(String(1)))
+                 return .ok(.raw(String(1)))
             }
-            return .OK(.RAW(String(0)))
+            return .ok(.raw(String(0)))
         }
         server["/iPad/location"] = {request in
             let latitude = Double(self.currentLocation.latitude)
             let longitude = Double(self.currentLocation.longitude)
             let retString = NSString(format: "%f %f", latitude, longitude)
-            return .OK(.RAW(String(retString)))
+            return .ok(.raw(String(retString)))
         }
         server["/iPad/ssid"] = {request in
             let ssid = self.getSSIDInfo()
-            return .OK(.RAW(ssid))
+            return .ok(.raw(ssid))
         }
         server["/iPad/pressure"] = {request in
-            return .OK(.RAW(String(format: "%f", self.currentPressure)))
+            return .ok(.raw(String(format: "%f", self.currentPressure)))
         }
         server["/iPad/altitude"] = {request in
-            return .OK(.RAW(String(format: "%f", self.currentAltitude)))
+            return .ok(.raw(String(format: "%f", self.currentAltitude)))
         }
         server["/iPad/acceleration"] = {request in
-            return .OK(.RAW(String(format: "%f %f %f", self.x, self.y, self.z)))
+            return .ok(.raw(String(format: "%f %f %f", self.x, self.y, self.z)))
         }
         server["/iPad/orientation"] = {request in
-            return .OK(.RAW(self.getOrientation()))
+            return .ok(.raw(self.getOrientation()))
         }
         server["/iPad/choice/(.+)/(.+)/(.+)/(.+)"] = { request in
+            NSLog("choice called");
             self.last_choice_response = 0
             let captured = request.capturedUrlGroups
             let title = String(captured[0])
             let question = String(captured[1])
             let button1Text = String(captured[2])
             let button2Text = String(captured[3])
-            let alertController = UIAlertController(title: title, message: question, preferredStyle: UIAlertControllerStyle.Alert)
-            let button1Action = UIAlertAction(title: button1Text, style: UIAlertActionStyle.Default){
+            let alertController = UIAlertController(title: title, message: question, preferredStyle: UIAlertControllerStyle.alert)
+            let button1Action = UIAlertAction(title: button1Text, style: UIAlertActionStyle.default){
                 (action) -> Void in
                 self.last_choice_response = 1
             }
-            let button2Action = UIAlertAction(title: button2Text, style: UIAlertActionStyle.Default){
+            let button2Action = UIAlertAction(title: button2Text, style: UIAlertActionStyle.default){
                 (action) -> Void in
                 self.last_choice_response = 2
             }
             alertController.addAction(button1Action)
             alertController.addAction(button2Action)
-            dispatch_async(dispatch_get_main_queue()){
-                self.presentViewController(alertController, animated: true, completion: nil)
+            DispatchQueue.main.async{
+                UIApplication.shared.keyWindow?.rootViewController!.present(alertController, animated: true, completion: nil)
+                NSLog("choice opened view controller")
                 
             }
-            return .OK(.RAW("Choice Dialog Presented"))
+            return .ok(.raw("Choice Dialog Presented"))
 
         }
         server["iPad/choice_response"] = {request in
-            return .OK(.RAW(String(self.last_choice_response)))
+            return .ok(.raw(String(self.last_choice_response)))
         }
         server["/iPad/dialog/(.+)/(.+)/(.+)"] = {request in
+            NSLog("dialog called");
             self.last_dialog_response = nil
             let captured = request.capturedUrlGroups
             let title = String(captured[0])
             let question = String(captured[1])
             let answerHolder = String(captured[2])
-            let alertController = UIAlertController(title: title, message: question, preferredStyle: UIAlertControllerStyle.Alert)
-            let okayAction = UIAlertAction(title: "Okay", style: UIAlertActionStyle.Default){
+            let alertController = UIAlertController(title: title, message: question, preferredStyle: UIAlertControllerStyle.alert)
+            let okayAction = UIAlertAction(title: "Okay", style: UIAlertActionStyle.default){
                 (action) -> Void in
                 if let textField: AnyObject = alertController.textFields?.first{
                     if let response = (textField as! UITextField).text{
@@ -991,32 +1018,34 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                     }
                 }
             }
-            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel){
+            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel){
                 (action) -> Void in
                     self.last_dialog_response = "!~<!--CANCELLED-->~!"
             }
-            alertController.addTextFieldWithConfigurationHandler{
+            alertController.addTextField{
                 (txtName) -> Void in
                 txtName.placeholder = answerHolder
             }
             alertController.addAction(okayAction)
             alertController.addAction(cancelAction)
-            dispatch_async(dispatch_get_main_queue()){
-                self.presentViewController(alertController, animated: true, completion: nil)
-                
+            DispatchQueue.main.async{
+                print("ABOUT TO DISPLAY")
+                //self.navigationController?.pushViewController(alertController, animated: true)
+                UIApplication.shared.keyWindow?.rootViewController!.present(alertController, animated: true, completion: nil)
+                print("DISPLAYED")
             }
-            return .OK(.RAW("Dialog Presented"))
+            return .ok(.raw("Dialog Presented"))
         }
         server["/iPad/dialog_response"] = {request in
             if let response = self.last_dialog_response {
                 if (response == "!~<!--CANCELLED-->~!") {
-                    return .OK(.RAW("Cancelled"))
+                    return .ok(.raw("Cancelled"))
                 } else {
-                    return .OK(.RAW("\'" + response + "\'"))
+                    return .ok(.raw("\'" + response + "\'"))
                 }
             }
             else {
-                return .OK(.RAW("No Response"))
+                return .ok(.raw("No Response"))
             }
             
         }
@@ -1024,69 +1053,69 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             let fileList = getSavedFileNames()
             var files: String = "";
             fileList.forEach({ (string) in
-                files.appendContentsOf(string)
-                files.appendContentsOf("\n")
+                files.append(string)
+                files.append("\n")
             })
-            return .OK(.RAW(files))
+            return .ok(.raw(files))
         }
         server["/data/filename"] = {request in
             if let filename = self.currentFileName {
-                return .OK(.RAW(filename))
+                return .ok(.raw(filename))
             } else {
-                return .OK(.RAW("File has no name."))
+                return .ok(.raw("File has no name."))
             }
         }
         server["/data/load/(.+)"] = {request in
             let filename = String(request.capturedUrlGroups[0])
             let fileContent = getSavedFileByName(filename)
             if (fileContent == "File not found") {
-                return .OK(.RAW("File Not Found"))
+                return .ok(.raw("File Not Found"))
             }
-            self.currentFileName = filename.stringByReplacingOccurrencesOfString(".bbx", withString: "")
-            return .OK(.RAW(fileContent as (String)))
+            self.currentFileName = filename?.replacingOccurrences(of: ".bbx", with: "")
+            return .ok(.raw(fileContent as (String)))
         }
         server["/data/save/(.+)"] = {request in
             NSLog("GOT SAVE")
             let filename = String(request.capturedUrlGroups[0])
             if let requestBody = request.body {
-                let xml: String = requestBody.stringByReplacingOccurrencesOfString("data=", withString: "")
+                let xml: String = requestBody.replacingOccurrences(of: "data=", with: "")
                 //print(xml)
                 saveStringToFile(xml, fileName: filename)
                 self.currentFileName = filename
-                return .OK(.RAW("Saved"))
+                return .ok(.raw("Saved"))
             } else {
                 NSLog("Bodyless")
-                return .OK(.RAW("darn"))
+                return .ok(.raw("darn"))
             }
         }
         server["/data/export/(.+)"] = {request in
             let filename = String(request.capturedUrlGroups[0])
             if let requestBody = request.body {
-                let xml: String = requestBody.stringByReplacingOccurrencesOfString("data=", withString: "")
+                let xml: String = requestBody.replacingOccurrences(of: "data=", with: "")
                 saveStringToFile(xml, fileName: filename)
                 self.currentFileName = filename
                 let exportedPath = getSavedFileURL(filename)
-                let url = NSURL(fileURLWithPath: exportedPath.path!)
+                let url = URL(fileURLWithPath: exportedPath.path!)
                 print(url.absoluteString)
                 let view = UIActivityViewController(activityItems: [url], applicationActivities: nil)
                 view.popoverPresentationController?.sourceView = self.mainWebView
                 view.excludedActivityTypes = nil
-                dispatch_async(dispatch_get_main_queue()){
-                    self.presentViewController(view, animated: true, completion: nil)
+                DispatchQueue.main.async{
+                    self.present(view, animated: true, completion: nil)
                 }
             }
-            return .OK(.RAW("Done"))
+            return .ok(.raw("Done"))
         }
         server["/data/delete/(.+)"] = {request in
             let filename = String(request.capturedUrlGroups[0])
             let result = deleteFile(filename)
             if (result == false) {
-                return .OK(.RAW("File Not Found"))
+                return .ok(.raw("File Not Found"))
             }
             if (self.currentFileName == filename) {
                 self.currentFileName = nil
             }
-            return .OK(.RAW("File Deleted"))
+            return .ok(.raw("File Deleted"))
         }
         server["/data/rename/(.+)/(.+)"] = {request in
             let captured = request.capturedUrlGroups
@@ -1095,57 +1124,57 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             
             let result = renameFile(filename, newFileName: newFilename)
             if (result == false) {
-                return .OK(.RAW("File Not Found"))
+                return .ok(.raw("File Not Found"))
             }
             if (self.currentFileName == filename) {
                 self.currentFileName = newFilename
             }
-            return .OK(.RAW("File Renamed"))
+            return .ok(.raw("File Renamed"))
         }
         server["/data/new"] = {request in
             self.currentFileName = nil
-            return .OK(.RAW("Filename reset"))
+            return .ok(.raw("Filename reset"))
         }
         server["/data/saveAsNew"] = {request in
             self.tempNew = true
-            return .OK(.RAW("Filename temporarily cleared"))
+            return .ok(.raw("Filename temporarily cleared"))
         }
         
         server["/data/autosave"] = {request in
             if let requestBody = request.body {
-                let xml: String = requestBody.stringByReplacingOccurrencesOfString("data=", withString: "")
+                let xml: String = requestBody.replacingOccurrences(of: "data=", with: "")
                 autosave(xml)
-                return .OK(.RAW("Saved"))
+                return .ok(.raw("Saved"))
             } else {
-                return .OK(.RAW("darn"))
+                return .ok(.raw("darn"))
             }
         }
         server["/data/loadAutosave"] = {request in
             let fileContent = getSavedFileByName("autosaveFile")
             if (fileContent == "File not found") {
-                return .OK(.RAW("File Not Found"))
+                return .ok(.raw("File Not Found"))
             }
             self.currentFileName = "autosaveFile"
-            return .OK(.RAW(fileContent as (String)))
+            return .ok(.raw(fileContent as (String)))
         }
         
         
         server["/server/ping"] = {request in
-            return .OK(.RAW("pong"))
+            return .ok(.raw("pong"))
         }
         server["/iPad/screenSize"] = {request in
-            let screenSize: CGRect = UIScreen.mainScreen().bounds
-            let width = String(screenSize.width)
-            let height = String(screenSize.height)
-            return .OK(.RAW(height + "\n" + width))
+            let screenSize: CGRect = UIScreen.main.bounds
+            let width = String(describing: screenSize.width)
+            let height = String(describing: screenSize.height)
+            return .ok(.raw(height + "\n" + width))
         }
         server["/iPad/ip"] = {request in
             if (self.isConnectedToInternet()) {
                 if let ip = self.getWiFiAddress() {
-                    return .OK(.RAW(ip))
+                    return .ok(.raw(ip))
                 }
             }
-            return .OK(.RAW("0.0.0.0"))
+            return .ok(.raw("0.0.0.0"))
         }
         
         /*server["/project.bbx"] = {request in
@@ -1174,9 +1203,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             let key = request.capturedUrlGroups[0]
             let value = getSetting(key)
             if let nullCheckedValue = value {
-                return .OK(.RAW(nullCheckedValue))
+                return .ok(.raw(nullCheckedValue))
             } else {
-                return .OK(.RAW("Default"))
+                return .ok(.raw("Default"))
             }
         }
         server["/settings/set/(.+)/(.+)"] = {request in
@@ -1184,24 +1213,24 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             let key = captured[0]
             let value = captured[1]
             addSetting(key, value: value)
-            return .OK(.RAW("Setting saved"))
+            return .ok(.raw("Setting saved"))
         }
         server["settings/delete/key/(.+)"] = {request in
             let key = request.capturedUrlGroups[0]
             removeSetting(key)
-            return .OK(.RAW("Setting Deleted"))
+            return .ok(.raw("Setting Deleted"))
         }
         server["/DragAndDrop/(.+)"] = HttpHandlers.directoryBrowser(getPath().path!)
-        server["/DragAndDrop/Block/(.+)"] = HttpHandlers.directoryBrowser(getPath().URLByAppendingPathComponent("Block").path!)
-        server["/DragAndDrop/BlockContainers/(.+)"] = HttpHandlers.directoryBrowser(getPath().URLByAppendingPathComponent("BlockContainers").path!)
-        server["/DragAndDrop/BlockDefsAndList/(.+)"] = HttpHandlers.directoryBrowser(getPath().URLByAppendingPathComponent("BlockDefsAndList").path!)
-        server["/DragAndDrop/BlockParts/(.+)"] = HttpHandlers.directoryBrowser(getPath().URLByAppendingPathComponent("BlockParts").path!)
-        server["/DragAndDrop/ColorsAndGraphics/(.+)"] = HttpHandlers.directoryBrowser(getPath().URLByAppendingPathComponent("ColorsAndGraphics").path!)
-        server["/DragAndDrop/Data/(.+)"] = HttpHandlers.directoryBrowser(getPath().URLByAppendingPathComponent("Data").path!)
-        server["/DragAndDrop/SVGIcons/(.+)"] = HttpHandlers.directoryBrowser(getPath().URLByAppendingPathComponent("SVGIcons").path!)
-        server["/DragAndDrop/UIParts/(.+)"] = HttpHandlers.directoryBrowser(getPath().URLByAppendingPathComponent("UIParts").path!)
+        server["/DragAndDrop/Block/(.+)"] = HttpHandlers.directoryBrowser(getPath().appendingPathComponent("Block").path!)
+        server["/DragAndDrop/BlockContainers/(.+)"] = HttpHandlers.directoryBrowser(getPath().appendingPathComponent("BlockContainers").path!)
+        server["/DragAndDrop/BlockDefsAndList/(.+)"] = HttpHandlers.directoryBrowser(getPath().appendingPathComponent("BlockDefsAndList").path!)
+        server["/DragAndDrop/BlockParts/(.+)"] = HttpHandlers.directoryBrowser(getPath().appendingPathComponent("BlockParts").path!)
+        server["/DragAndDrop/ColorsAndGraphics/(.+)"] = HttpHandlers.directoryBrowser(getPath().appendingPathComponent("ColorsAndGraphics").path!)
+        server["/DragAndDrop/Data/(.+)"] = HttpHandlers.directoryBrowser(getPath().appendingPathComponent("Data").path!)
+        server["/DragAndDrop/SVGIcons/(.+)"] = HttpHandlers.directoryBrowser(getPath().appendingPathComponent("SVGIcons").path!)
+        server["/DragAndDrop/UIParts/(.+)"] = HttpHandlers.directoryBrowser(getPath().appendingPathComponent("UIParts").path!)
     }
-    func changedStatus(notification: NSNotification){
+    func changedStatus(_ notification: Notification){
         let userinfo = notification.userInfo as! [String: AnyObject]
         NSLog("View controller got notification: " + notification.name)
         if let name: String = userinfo["name"] as? String {
@@ -1209,27 +1238,27 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             if let isConnected: Bool = userinfo["isConnected"] as? Bool{
                 NSLog("Got connection status")
                 if isConnected{
-                    NSLog("device connected")
+                    NSLog("device connected:" + name)
                     if(hbServes[name] == nil) {
                         let hbServe = HummingbirdServices()
                         self.hbServes[name] = hbServe
                         self.hbServes[name]!.attachToDevice(name)
                     }
                     hbServes[name]!.turnOffLightsMotor()
-                    NSThread.sleepForTimeInterval(0.1)
+                    Thread.sleep(forTimeInterval: 0.1)
                     hbServes[name]!.stopPolling()
-                    NSThread.sleepForTimeInterval(0.1)
+                    Thread.sleep(forTimeInterval: 0.1)
                     hbServes[name]!.beginPolling()
-                    dispatch_async(dispatch_get_main_queue()){
+                    DispatchQueue.main.async{
                         //self.connectedIndicator.textColor = UIColor.greenColor()
                     }
                 }
                 else{
-                    NSLog("device disconnected")
-                    dispatch_async(dispatch_get_main_queue()){
+                    NSLog("device disconnected:" + name)
+                    DispatchQueue.main.async{
                         //self.connectedIndicator.textColor = UIColor.redColor()
                         if (self.hbServes.keys.contains(name)) {
-                            self.hbServes.removeValueForKey(name)
+                            self.hbServes.removeValue(forKey: name)
                         }
                         self.sharedBluetoothDiscovery.restartScan()
                         
