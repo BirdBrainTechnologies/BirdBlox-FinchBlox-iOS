@@ -594,7 +594,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         server["/hummingbird/:param1/out/triled/:param2/:param3/:param4/:param5"] = { request in
             let captured = request.params
             
-            let name = captured[":param1"]
+            let name = captured[":param1"]?.removingPercentEncoding
             if(self.hbServes.keys.contains(name!) == false) {
                 self.handleBadRequest(name!)
                 return .ok(.text("Not connected!"))
