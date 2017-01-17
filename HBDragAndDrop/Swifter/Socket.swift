@@ -1,120 +1,170 @@
 //
 //  Socket.swift
 //  Swifter
-//  Copyright (c) 2014 Damian Kołakowski. All rights reserved.
+//
+//  Copyright (c) 2014-2016 Damian Kołakowski. All rights reserved.
 //
 
 import Foundation
 
-/* Low level routines for POSIX sockets */
 
-struct Socket {
-        
-    static func lastErr(_ reason: String) -> NSError {
-        let errorCode = errno
-        if let errorText = String(validatingUTF8: UnsafePointer(strerror(errorCode))) {
-            return NSError(domain: "SOCKET", code: Int(errorCode), userInfo: [NSLocalizedFailureReasonErrorKey : reason, NSLocalizedDescriptionKey : errorText])
-        }
-        return NSError(domain: "SOCKET", code: Int(errorCode), userInfo: nil)
+public enum SocketError: Error {
+    case socketCreationFailed(String)
+    case socketSettingReUseAddrFailed(String)
+    case bindFailed(String)
+    case listenFailed(String)
+    case writeFailed(String)
+    case getPeerNameFailed(String)
+    case convertingPeerNameFailed
+    case getNameInfoFailed(String)
+    case acceptFailed(String)
+    case recvFailed(String)
+    case getSockNameFailed(String)
+}
+
+open class Socket: Hashable, Equatable {
+    
+    let socketFileDescriptor: Int32
+    private var shutdown = false
+    
+    
+    public init(socketFileDescriptor: Int32) {
+        self.socketFileDescriptor = socketFileDescriptor
     }
     
-    static func tcpForListen(_ port: in_port_t = 8080, error: NSErrorPointer? = nil) -> CInt? {
-        let s = socket(AF_INET, SOCK_STREAM, 0)
-        if ( s == -1 ) {
-            if error != nil { error??.pointee = lastErr("socket(...) failed.") }
-            return nil
-        }
-        var value: Int32 = 1;
-        if ( setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &value, socklen_t(MemoryLayout<Int32>.size)) == -1 ) {
-            release(s)
-            if error != nil { error??.pointee = lastErr("setsockopt(...) failed.") }
-            return nil
-        }
-        nosigpipe(s)
-        var addr = sockaddr_in(sin_len: __uint8_t(MemoryLayout<sockaddr_in>.size), sin_family: sa_family_t(AF_INET),
-            sin_port: port_htons(port), sin_addr: in_addr(s_addr: inet_addr("0.0.0.0")), sin_zero: (0, 0, 0, 0, 0, 0, 0, 0))
-        
-        var sock_addr = sockaddr(sa_len: 0, sa_family: 0, sa_data: (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
-        memcpy(&sock_addr, &addr, Int(MemoryLayout<sockaddr_in>.size))
-        if ( bind(s, &sock_addr, socklen_t(MemoryLayout<sockaddr_in>.size)) == -1 ) {
-            release(s)
-            if error != nil { error??.pointee = lastErr("bind(...) failed.") }
-            return nil
-        }
-        if ( listen(s, 20 /* max pending connection */ ) == -1 ) {
-            release(s)
-            if error != nil { error??.pointee = lastErr("listen(...) failed.") }
-            return nil
-        }
-        return s
+    deinit {
+        close()
     }
     
-    static func writeUTF8(_ socket: CInt, string: String, error: NSErrorPointer? = nil) -> Bool {
-        if let nsdata = string.data(using: String.Encoding.utf8) {
-            return writeData(socket, data: nsdata, error: error)
+    public var hashValue: Int { return Int(self.socketFileDescriptor) }
+    
+    public func close() {
+        if shutdown {
+            return
         }
-        return true
+        shutdown = true
+        Socket.close(self.socketFileDescriptor)
     }
     
-    static func writeASCII(_ socket: CInt, string: String, error: NSErrorPointer? = nil) -> Bool {
-        if let nsdata = string.data(using: String.Encoding.ascii) {
-            return writeData(socket, data: nsdata, error: error)
+    public func port() throws -> in_port_t {
+        var addr = sockaddr_in()
+        return try withUnsafePointer(to: &addr) { pointer in
+            var len = socklen_t(MemoryLayout<sockaddr_in>.size)
+            if getsockname(socketFileDescriptor, UnsafeMutablePointer(OpaquePointer(pointer)), &len) != 0 {
+                throw SocketError.getSockNameFailed(Errno.description())
+            }
+            #if os(Linux)
+                return ntohs(addr.sin_port)
+            #else
+                return Int(OSHostByteOrder()) != OSLittleEndian ? addr.sin_port.littleEndian : addr.sin_port.bigEndian
+            #endif
         }
-        return true
     }
     
-    static func writeData(_ socket: CInt, data: Data, error: NSErrorPointer? = nil) -> Bool {
+    public func isIPv4() throws -> Bool {
+        var addr = sockaddr_in()
+        return try withUnsafePointer(to: &addr) { pointer in
+            var len = socklen_t(MemoryLayout<sockaddr_in>.size)
+            if getsockname(socketFileDescriptor, UnsafeMutablePointer(OpaquePointer(pointer)), &len) != 0 {
+                throw SocketError.getSockNameFailed(Errno.description())
+            }
+            return Int32(addr.sin_family) == AF_INET
+        }
+    }
+    
+    public func writeUTF8(_ string: String) throws {
+        try writeUInt8(ArraySlice(string.utf8))
+    }
+    
+    public func writeUInt8(_ data: [UInt8]) throws {
+        try writeUInt8(ArraySlice(data))
+    }
+    
+    public func writeUInt8(_ data: ArraySlice<UInt8>) throws {
+        try data.withUnsafeBufferPointer {
+            try writeBuffer($0.baseAddress!, length: data.count)
+        }
+    }
+    
+    public func writeData(_ data: NSData) throws {
+        try writeBuffer(data.bytes, length: data.length)
+    }
+    
+    public func writeData(_ data: Data) throws {
+        try data.withUnsafeBytes { (pointer: UnsafePointer<UInt8>) -> Void in
+            try self.writeBuffer(pointer, length: data.count)
+        }
+    }
+    
+    private func writeBuffer(_ pointer: UnsafeRawPointer, length: Int) throws {
         var sent = 0
-        let unsafePointer = (data as NSData).bytes.bindMemory(to: UInt8.self, capacity: data.count)
-        while ( sent < data.count ) {
-            let s = write(socket, unsafePointer + sent, Int(data.count - sent))
-            if ( s <= 0 ) {
-                if error != nil { error??.pointee = lastErr("write(...) failed.") }
-                return false
+        while sent < length {
+            #if os(Linux)
+                let s = send(self.socketFileDescriptor, pointer + sent, Int(length - sent), Int32(MSG_NOSIGNAL))
+            #else
+                let s = write(self.socketFileDescriptor, pointer + sent, Int(length - sent))
+            #endif
+            if s <= 0 {
+                throw SocketError.writeFailed(Errno.description())
             }
             sent += s
         }
-        return true
     }
     
-    static func acceptClientSocket(_ socket: CInt, error:NSErrorPointer? = nil) -> CInt? {
-        var addr = sockaddr(sa_len: 0, sa_family: 0, sa_data: (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)), len: socklen_t = 0
-        let clientSocket = accept(socket, &addr, &len)
-        if ( clientSocket != -1 ) {
-            Socket.nosigpipe(clientSocket)
-            return clientSocket
+    open func read() throws -> UInt8 {
+        var buffer = [UInt8](repeating: 0, count: 1)
+        let next = recv(self.socketFileDescriptor as Int32, &buffer, Int(buffer.count), 0)
+        if next <= 0 {
+            throw SocketError.recvFailed(Errno.description())
         }
-        if error != nil { error??.pointee = lastErr("accept(...) failed.") }
-        return nil
+        return buffer[0]
     }
     
-    static func nosigpipe(_ socket: CInt) {
-        // prevents crashes when blocking calls are pending and the app is paused ( via Home button )
-        var no_sig_pipe: Int32 = 1;
-        setsockopt(socket, SOL_SOCKET, SO_NOSIGPIPE, &no_sig_pipe, socklen_t(MemoryLayout<Int32>.size));
+    private static let CR = UInt8(13)
+    private static let NL = UInt8(10)
+    
+    public func readLine() throws -> String {
+        var characters: String = ""
+        var n: UInt8 = 0
+        repeat {
+            n = try self.read()
+            if n > Socket.CR { characters.append(Character(UnicodeScalar(n))) }
+        } while n != Socket.NL
+        return characters
     }
     
-    static func port_htons(_ port: in_port_t) -> in_port_t {
-        let isLittleEndian = Int(OSHostByteOrder()) == OSLittleEndian
-        return isLittleEndian ? _OSSwapInt16(port) : port
-    }
-    
-    static func release(_ socket: CInt) {
-        shutdown(socket, SHUT_RDWR)
-        close(socket)
-    }
-    
-    static func peername(_ socket: CInt, error: NSErrorPointer? = nil) -> String? {
+    public func peername() throws -> String {
         var addr = sockaddr(), len: socklen_t = socklen_t(MemoryLayout<sockaddr>.size)
-        if getpeername(socket, &addr, &len) != 0 {
-            if error != nil { error??.pointee = lastErr("getpeername(...) failed.") }
-            return nil
+        if getpeername(self.socketFileDescriptor, &addr, &len) != 0 {
+            throw SocketError.getPeerNameFailed(Errno.description())
         }
         var hostBuffer = [CChar](repeating: 0, count: Int(NI_MAXHOST))
         if getnameinfo(&addr, len, &hostBuffer, socklen_t(hostBuffer.count), nil, 0, NI_NUMERICHOST) != 0 {
-            if error != nil { error??.pointee = lastErr("getnameinfo(...) failed.") }
-            return nil
+            throw SocketError.getNameInfoFailed(Errno.description())
         }
         return String(cString: hostBuffer)
     }
+    
+    public class func setNoSigPipe(_ socket: Int32) {
+        #if os(Linux)
+            // There is no SO_NOSIGPIPE in Linux (nor some other systems). You can instead use the MSG_NOSIGNAL flag when calling send(),
+            // or use signal(SIGPIPE, SIG_IGN) to make your entire application ignore SIGPIPE.
+        #else
+            // Prevents crashes when blocking calls are pending and the app is paused ( via Home button ).
+            var no_sig_pipe: Int32 = 1
+            setsockopt(socket, SOL_SOCKET, SO_NOSIGPIPE, &no_sig_pipe, socklen_t(MemoryLayout<Int32>.size))
+        #endif
+    }
+    
+    public class func close(_ socket: Int32) {
+        #if os(Linux)
+            let _ = Glibc.close(socket)
+        #else
+            let _ = Darwin.close(socket)
+        #endif
+    }
+}
+
+public func == (socket1: Socket, socket2: Socket) -> Bool {
+    return socket1.socketFileDescriptor == socket2.socketFileDescriptor
 }

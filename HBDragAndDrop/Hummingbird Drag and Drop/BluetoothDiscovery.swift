@@ -14,6 +14,14 @@
 import Foundation
 import CoreBluetooth
 
+extension CBCentralManager {
+    internal var centralManagerState: CBCentralManagerState  {
+        get {
+            return CBCentralManagerState(rawValue: state.rawValue) ?? .unknown
+        }
+    }
+}
+
 private let sharedBluetoothDiscovery = BluetoothDiscovery()
 
 class BluetoothDiscovery: NSObject, CBCentralManagerDelegate {
@@ -147,7 +155,8 @@ class BluetoothDiscovery: NSObject, CBCentralManagerDelegate {
     }
     
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
-        switch (central.state) {
+        
+        switch (central.centralManagerState) {
         case CBCentralManagerState.poweredOff:
             //self.clearDevices
             break
@@ -234,7 +243,7 @@ class BluetoothDiscovery: NSObject, CBCentralManagerDelegate {
                 discoveredDevices[localName!] = peripheral
             }
         }
-        serviceBLE.renamePeripheral(peripheral, newName: localName)
+        serviceBLE.renamePeripheral(peripheral, newName: localName!)
         return localName!
     }
     /**

@@ -28,7 +28,6 @@
 		BA88B6381B2233C9009EF1C3 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = BA88B6361B2233C9009EF1C3 /* LaunchScreen.xib */; };
 		BA88B65A1B223990009EF1C3 /* ConnectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA88B6581B223990009EF1C3 /* ConnectionViewController.swift */; };
 		BA88B65B1B223990009EF1C3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BA88B6591B223990009EF1C3 /* Main.storyboard */; };
-		BA95C01A1BBEE1DC003AEC1A /* HttpHandlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA95C0191BBEE1DC003AEC1A /* HttpHandlers.swift */; };
 		BA95C0201BBEE2CE003AEC1A /* HttpParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA95C01B1BBEE2CE003AEC1A /* HttpParser.swift */; };
 		BA95C0211BBEE2CE003AEC1A /* HttpRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA95C01C1BBEE2CE003AEC1A /* HttpRequest.swift */; };
 		BA95C0221BBEE2CE003AEC1A /* HttpResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA95C01D1BBEE2CE003AEC1A /* HttpResponse.swift */; };
@@ -37,6 +36,19 @@
 		BA95C0261BBEF609003AEC1A /* libz.1.2.5.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = BA95C0251BBEF609003AEC1A /* libz.1.2.5.tbd */; };
 		BA95C0281BBEF61A003AEC1A /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = BA95C0271BBEF61A003AEC1A /* libsqlite3.tbd */; };
 		BADF9BB71D2FF77900ABC410 /* HTMLParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = BADF9BB61D2FF77900ABC410 /* HTMLParser.swift */; };
+		BAFD53A21E2EA02D0062FC3D /* Errno.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAFD53A11E2EA02D0062FC3D /* Errno.swift */; };
+		BAFD53A41E2EA0380062FC3D /* Files.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAFD53A31E2EA0380062FC3D /* Files.swift */; };
+		BAFD53B01E2EA0680062FC3D /* HttpRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAFD53A51E2EA0680062FC3D /* HttpRouter.swift */; };
+		BAFD53B11E2EA0680062FC3D /* HttpServerIO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAFD53A61E2EA0680062FC3D /* HttpServerIO.swift */; };
+		BAFD53B21E2EA0680062FC3D /* Process.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAFD53A71E2EA0680062FC3D /* Process.swift */; };
+		BAFD53B31E2EA0680062FC3D /* Scopes.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAFD53A81E2EA0680062FC3D /* Scopes.swift */; };
+		BAFD53B41E2EA0680062FC3D /* Socket+File.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAFD53A91E2EA0680062FC3D /* Socket+File.swift */; };
+		BAFD53B51E2EA0680062FC3D /* Socket+Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAFD53AA1E2EA0680062FC3D /* Socket+Server.swift */; };
+		BAFD53B61E2EA0680062FC3D /* String+BASE64.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAFD53AB1E2EA0680062FC3D /* String+BASE64.swift */; };
+		BAFD53B71E2EA0680062FC3D /* String+File.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAFD53AC1E2EA0680062FC3D /* String+File.swift */; };
+		BAFD53B81E2EA0680062FC3D /* String+Misc.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAFD53AD1E2EA0680062FC3D /* String+Misc.swift */; };
+		BAFD53B91E2EA0680062FC3D /* String+SHA1.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAFD53AE1E2EA0680062FC3D /* String+SHA1.swift */; };
+		BAFD53BA1E2EA0680062FC3D /* WebSockets.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAFD53AF1E2EA0680062FC3D /* WebSockets.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -84,7 +96,6 @@
 		BA88B6371B2233C9009EF1C3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		BA88B6581B223990009EF1C3 /* ConnectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionViewController.swift; sourceTree = "<group>"; };
 		BA88B6591B223990009EF1C3 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
-		BA95C0191BBEE1DC003AEC1A /* HttpHandlers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpHandlers.swift; sourceTree = "<group>"; };
 		BA95C01B1BBEE2CE003AEC1A /* HttpParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpParser.swift; sourceTree = "<group>"; };
 		BA95C01C1BBEE2CE003AEC1A /* HttpRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpRequest.swift; sourceTree = "<group>"; };
 		BA95C01D1BBEE2CE003AEC1A /* HttpResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpResponse.swift; sourceTree = "<group>"; };
@@ -93,6 +104,19 @@
 		BA95C0251BBEF609003AEC1A /* libz.1.2.5.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.1.2.5.tbd; path = usr/lib/libz.1.2.5.tbd; sourceTree = SDKROOT; };
 		BA95C0271BBEF61A003AEC1A /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		BADF9BB61D2FF77900ABC410 /* HTMLParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTMLParser.swift; sourceTree = "<group>"; };
+		BAFD53A11E2EA02D0062FC3D /* Errno.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Errno.swift; sourceTree = "<group>"; };
+		BAFD53A31E2EA0380062FC3D /* Files.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Files.swift; sourceTree = "<group>"; };
+		BAFD53A51E2EA0680062FC3D /* HttpRouter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpRouter.swift; sourceTree = "<group>"; };
+		BAFD53A61E2EA0680062FC3D /* HttpServerIO.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpServerIO.swift; sourceTree = "<group>"; };
+		BAFD53A71E2EA0680062FC3D /* Process.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Process.swift; sourceTree = "<group>"; };
+		BAFD53A81E2EA0680062FC3D /* Scopes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Scopes.swift; sourceTree = "<group>"; };
+		BAFD53A91E2EA0680062FC3D /* Socket+File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Socket+File.swift"; sourceTree = "<group>"; };
+		BAFD53AA1E2EA0680062FC3D /* Socket+Server.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Socket+Server.swift"; sourceTree = "<group>"; };
+		BAFD53AB1E2EA0680062FC3D /* String+BASE64.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+BASE64.swift"; sourceTree = "<group>"; };
+		BAFD53AC1E2EA0680062FC3D /* String+File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+File.swift"; sourceTree = "<group>"; };
+		BAFD53AD1E2EA0680062FC3D /* String+Misc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+Misc.swift"; sourceTree = "<group>"; };
+		BAFD53AE1E2EA0680062FC3D /* String+SHA1.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+SHA1.swift"; sourceTree = "<group>"; };
+		BAFD53AF1E2EA0680062FC3D /* WebSockets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebSockets.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -142,7 +166,19 @@
 		BA7F0A541B25D0D9007DD94E /* Swifter */ = {
 			isa = PBXGroup;
 			children = (
-				BA95C0191BBEE1DC003AEC1A /* HttpHandlers.swift */,
+				BAFD53A51E2EA0680062FC3D /* HttpRouter.swift */,
+				BAFD53A61E2EA0680062FC3D /* HttpServerIO.swift */,
+				BAFD53A71E2EA0680062FC3D /* Process.swift */,
+				BAFD53A81E2EA0680062FC3D /* Scopes.swift */,
+				BAFD53A91E2EA0680062FC3D /* Socket+File.swift */,
+				BAFD53AA1E2EA0680062FC3D /* Socket+Server.swift */,
+				BAFD53AB1E2EA0680062FC3D /* String+BASE64.swift */,
+				BAFD53AC1E2EA0680062FC3D /* String+File.swift */,
+				BAFD53AD1E2EA0680062FC3D /* String+Misc.swift */,
+				BAFD53AE1E2EA0680062FC3D /* String+SHA1.swift */,
+				BAFD53AF1E2EA0680062FC3D /* WebSockets.swift */,
+				BAFD53A31E2EA0380062FC3D /* Files.swift */,
+				BAFD53A11E2EA02D0062FC3D /* Errno.swift */,
 				BA95C01B1BBEE2CE003AEC1A /* HttpParser.swift */,
 				BA95C01C1BBEE2CE003AEC1A /* HttpRequest.swift */,
 				BA95C01D1BBEE2CE003AEC1A /* HttpResponse.swift */,
@@ -237,6 +273,7 @@
 				TargetAttributes = {
 					BA88B6271B2233C9009EF1C3 = {
 						CreatedOnToolsVersion = 6.3.2;
+						DevelopmentTeam = N6XC9HC8PB;
 						LastSwiftMigration = 0820;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
@@ -286,23 +323,35 @@
 			buildActionMask = 2147483647;
 			files = (
 				BA27E2C41B3C960000A0DF58 /* BluetoothService.swift in Sources */,
+				BAFD53A41E2EA0380062FC3D /* Files.swift in Sources */,
+				BAFD53A21E2EA02D0062FC3D /* Errno.swift in Sources */,
 				BA054A031B541E9500A6FA8B /* ioapi.c in Sources */,
+				BAFD53B41E2EA0680062FC3D /* Socket+File.swift in Sources */,
 				BA95C0231BBEE2CE003AEC1A /* HttpServer.swift in Sources */,
 				BA95C0221BBEE2CE003AEC1A /* HttpResponse.swift in Sources */,
 				BA95C0201BBEE2CE003AEC1A /* HttpParser.swift in Sources */,
 				BA054A0A1B54354200A6FA8B /* DocumentManager.swift in Sources */,
-				BA95C01A1BBEE1DC003AEC1A /* HttpHandlers.swift in Sources */,
 				BA88B6301B2233C9009EF1C3 /* ViewController.swift in Sources */,
 				BA88B62E1B2233C9009EF1C3 /* AppDelegate.swift in Sources */,
 				BADF9BB71D2FF77900ABC410 /* HTMLParser.swift in Sources */,
+				BAFD53BA1E2EA0680062FC3D /* WebSockets.swift in Sources */,
+				BAFD53B31E2EA0680062FC3D /* Scopes.swift in Sources */,
+				BAFD53B11E2EA0680062FC3D /* HttpServerIO.swift in Sources */,
+				BAFD53B61E2EA0680062FC3D /* String+BASE64.swift in Sources */,
 				BA95C0241BBEE2CE003AEC1A /* Socket.swift in Sources */,
 				BA88B65A1B223990009EF1C3 /* ConnectionViewController.swift in Sources */,
 				BA054A061B541E9500A6FA8B /* zip.c in Sources */,
+				BAFD53B21E2EA0680062FC3D /* Process.swift in Sources */,
 				BA27E2C31B3C960000A0DF58 /* BluetoothDiscovery.swift in Sources */,
+				BAFD53B01E2EA0680062FC3D /* HttpRouter.swift in Sources */,
 				BA27E2C61B3C960000A0DF58 /* Utility.swift in Sources */,
 				BA054A041B541E9500A6FA8B /* mztools.c in Sources */,
+				BAFD53B71E2EA0680062FC3D /* String+File.swift in Sources */,
 				BA054A051B541E9500A6FA8B /* unzip.c in Sources */,
+				BAFD53B81E2EA0680062FC3D /* String+Misc.swift in Sources */,
+				BAFD53B91E2EA0680062FC3D /* String+SHA1.swift in Sources */,
 				BA054A021B541E9500A6FA8B /* Main.m in Sources */,
+				BAFD53B51E2EA0680062FC3D /* Socket+Server.swift in Sources */,
 				BA95C0211BBEE2CE003AEC1A /* HttpRequest.swift in Sources */,
 				BA27E2C51B3C960000A0DF58 /* HummingbirdServices.swift in Sources */,
 			);
@@ -417,7 +466,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = N6XC9HC8PB;
 				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -445,7 +494,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = N6XC9HC8PB;
 				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",

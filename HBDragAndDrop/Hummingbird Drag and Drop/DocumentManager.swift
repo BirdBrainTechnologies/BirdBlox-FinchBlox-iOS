@@ -59,6 +59,7 @@ public func saveStringToFile(_ string: NSString, fileName: String) -> Bool{
         }
         catch {
             NSLog("Failed to create save directory")
+            return false
         }
     }
     

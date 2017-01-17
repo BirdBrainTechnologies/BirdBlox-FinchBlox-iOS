@@ -9,7 +9,7 @@
 import Foundation
 import CoreBluetooth
 
-let BLEServiceUUID      = CBUUID(string: "6E400001-B5A3-F393-E0A9-E50E24DCCA9E")
+let BLEServiceUUID      = CBUUID(string: "6E400001-B5A3-F393-E0A9-E50E24DCCA9E")//BLE adapter
 let BLEServiceUUIDTX    = CBUUID(string: "6E400002-B5A3-F393-E0A9-E50E24DCCA9E")//sending
 let BLEServiceUUIDRX    = CBUUID(string: "6E400003-B5A3-F393-E0A9-E50E24DCCA9E")//receiving
 let BLEServiceChangedStatusNotification = "kBLEServiceChangedStatusNotification"
@@ -19,7 +19,12 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
     internal var commandsSend = 0
     var resetTimer: Timer = Timer()
     
+    //This typedef contains all the relevant info about a bluetooth device (hummingbird)
     typealias BLEDevice = (peripheral: CBPeripheral, tx: CBCharacteristic?, rx: CBCharacteristic?, data: Data, name: String)
+    
+    //This is a list of all of the connected BLE devices. There is some redundancy
+    //here between this list and the connected devices list in the discovery
+    //class
     var devices: [BLEDevice] = [BLEDevice]()
     
     deinit{
@@ -39,21 +44,14 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
         return i
     }
     
-    func getTimerInfo() {
-        //NSLog("Timer Fired!")
-        //NSLog("Commands sent in the last second: " + String(commandsSend))
-        commandsSend = 0;
-        //resetTimer = NSTimer.scheduledTimerWithTimeInterval(NSTimeInterval(1), target: self, selector: #selector(BluetoothService.getTimerInfo), userInfo: nil, repeats: false)
-    }
-    
+    /**
+     * This adds a peripheral to our BLE devices list and begins the process
+     * of discovering the services the device has
+     */
     func addPeripheral(_ peripheral: CBPeripheral, name: String) {
         peripheral.delegate = self
         let device: BLEDevice = (peripheral, nil, nil, Data(bytes: UnsafePointer<UInt8>([0,0,0,0,0] as [UInt8]),count: 5), name)
         devices.append(device)
-        DispatchQueue.main.async {
-            self.resetTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(BluetoothService.getTimerInfo), userInfo: nil, repeats: true)
-            NSLog("Started Timer")
-            }
         startDiscoveringServices(name)
         
     }
@@ -84,7 +82,10 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
             devices[i].peripheral.discoverServices([BLEServiceUUID])
         }
     }
-    
+    /**
+     * This removes a device from our device list and tell the discovery class
+     * that the device has been disconnected
+     */
     func reset(_ name: String){
         if let index = getIndex(name) {
             let device = devices.remove(at: index)
@@ -97,7 +98,11 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
         devices.removeAll()
         self.sendBTServiceNotification(false, name: "~!!!!!!!!!!~")
     }
-    
+    /**
+     * This is called when a service is discovered for a peripheral
+     * We specifically want the GATT service and start discovering characteristics
+     * for that GATT service
+     */
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
         let neededUUIDs: [CBUUID] = [BLEServiceUUIDRX,BLEServiceUUIDTX]
         
@@ -117,6 +122,11 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
             }
         }
     }
+    /**
+     * Once we find a characteristic, we check if it is the RX or TX line that was
+     * found. Once we have found both, we send a notification saying the device
+     * is now conencted
+     */
     func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
         if(error != nil){
             return
@@ -154,6 +164,11 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
     var lastMessageSent:Data = Data()
     var lastNameSent: String = ""
     
+    /*
+     * When the RX characteristic gets updated, it should contain the latest
+     * sensor info from the hummingbird
+     * We make sure the data is well formatted and then store that data
+     */
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
         if(characteristic.uuid != BLEServiceUUIDRX){
             return
@@ -184,11 +199,6 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
     
     func setTX(_ name: String, message : Data){
         //dbg_print(NSString(format: "setTX called on %@", name))
-        if resetTimer.isValid == false {
-            resetTimer = Timer.scheduledTimer(timeInterval: TimeInterval(1), target: self, selector: #selector(BluetoothService.getTimerInfo), userInfo: nil, repeats: false)
-            NSLog("Kicking Timer")
-
-        }
         if let index = getIndex(name) {
             if (devices[index].tx == nil){
                 dbg_print("tx is not avaliable")

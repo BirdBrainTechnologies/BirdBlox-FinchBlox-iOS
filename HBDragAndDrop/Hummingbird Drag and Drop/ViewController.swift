@@ -78,7 +78,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         zeroAddress.sin_family = sa_family_t(AF_INET)
         
         let defaultRouteReachability = withUnsafePointer(to: &zeroAddress) {
-            SCNetworkReachabilityCreateWithAddress(nil, UnsafePointer($0))
+            $0.withMemoryRebound(to: sockaddr.self, capacity: 1) {zeroSockAddress in
+                SCNetworkReachabilityCreateWithAddress(nil, zeroSockAddress)
+            }
         }
         
         var flags: SCNetworkReachabilityFlags = SCNetworkReachabilityFlags()
@@ -188,7 +190,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                 print("Ping failed")
                 self.server.stop()
                 self.prepareServer()
-                self.server.start(22179)
+                do {
+                    try self.server.start(22179)
+                } catch {
+                    return
+                }
                 return
             }
         }) 
@@ -209,7 +215,14 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
 //        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ViewController.keyboardDidHide(_:)), name: UIKeyboardDidHideNotification, object: nil)
         
         prepareServer()
-        server.start(22179)
+        do {
+            try self.server.start(22179)
+        } catch {
+            NSLog("Failed to Load Server")
+            loadView()
+            return
+        }
+        NSLog("Loaded Server")
         if let navCon = navigationController {
             navCon.setNavigationBarHidden(true, animated:true)
         }
@@ -255,14 +268,18 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             }
             /*
             if let ip = getWiFiAddress(){
-                let connectionAlert = UIAlertController(title: "Connected", message: "The app is currently connecting to a local version of BirdBlox. If would like to use the app as a server use this IP address: " + ip + " with port: 22179", preferredStyle: UIAlertControllerStyle.Alert)
-                connectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
-                self.presentViewController(connectionAlert, animated: true, completion: nil)
+                let connectionAlert = UIAlertController(title: "Connected", message: "The app is currently connecting to a local version of BirdBlox. If would like to use the app as a server use this IP address: " + ip + " with port: 22179", preferredStyle: UIAlertControllerStyle.alert)
+                connectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.default, handler: nil))
+                DispatchQueue.main.async{
+                    self.present(connectionAlert, animated: true, completion: nil)
+                }
             }
             else{
-                let connectionAlert = UIAlertController(title: "Connected", message: "The app is currently connecting to a local version of BirdBlox. If would like to use the app as a server, you need to be connected to wifi. Either you are not connected to wifi or have some connection connection issues.", preferredStyle: UIAlertControllerStyle.Alert)
-                connectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
-                self.presentViewController(connectionAlert, animated: true, completion: nil)
+                let connectionAlert = UIAlertController(title: "Connected", message: "The app is currently connecting to a local version of BirdBlox. If would like to use the app as a server, you need to be connected to wifi. Either you are not connected to wifi or have some connection connection issues.", preferredStyle: UIAlertControllerStyle.alert)
+                connectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.default, handler: nil))
+                DispatchQueue.main.async{
+                    self.present(connectionAlert, animated: true, completion: nil)
+                }
             }
             */
             let requestPage = URLRequest(url: url!)
@@ -283,13 +300,13 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         let urlFromXMl = (UIApplication.shared.delegate as! AppDelegate).getFileUrl()
         var path: String
         if let tempURL = urlFromXMl{
-            path = tempURL.path!
+            path = tempURL.path
             do{
                 let rawText = try String(contentsOfFile: path, encoding: String.Encoding.utf8)
                 let filename = (path as NSString).lastPathComponent.replacingOccurrences(of: ".bbx", with: "")
                 //saveStringToFile(rawText, fileName: filename)
                 
-                DispatchQueue.global(priority: DispatchQueue.GlobalQueuePriority.low).async{
+                DispatchQueue.global(qos: DispatchQoS.QoSClass.default).async{
                     while(self.mainWebView.isLoading){
                         sched_yield()
                     };
@@ -301,67 +318,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                 print("Error: Couldn't get contents of XML file\n")
             }
         }
-        //self.view.bringSubviewToFront(importButton)
         //self.view.bringSubviewToFront(recordButton)
-        //self.view.bringSubviewToFront(connectedIndicator)
-        //self.view.bringSubviewToFront(renameButton)
-        //self.view.bringSubviewToFront(TypingText)
     }
-    //var scrollingTimer = NSTimer()
-    //func keyboardDidShow(notification:NSNotification){
-    //    //TypingText.hidden = false
-    //
-    //    scrollingTimer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: #selector(ViewController.scrollToTop), userInfo: nil, repeats: true)
-    //}
-    //func keyboardDidHide(notification:NSNotification){
-    //    //TypingText.hidden = true
-    //    //TypingText.text=""
-    //    scrollingTimer.invalidate()
-    //}
-    
-    //func scrollToTop(){
-    //    mainWebView.scrollView.contentOffset = CGPointMake(0, 0)
-    //}
     /*
-    @IBAction func renamePressed(sender: UIButton) {
-            let alertController = UIAlertController(title: "Set Name", message: "Enter a name for your Hummingbird (up to 18 characters)", preferredStyle: UIAlertControllerStyle.Alert)
-            let okayAction = UIAlertAction(title: "Okay", style: UIAlertActionStyle.Default){
-                (action) -> Void in
-                if let textField: AnyObject = alertController.textFields?.first{
-                    if let name = (textField as! UITextField).text{
-                            self.hbServe.setName(name)
-                    }
-                }
-            }
-            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: nil)
-            alertController.addTextFieldWithConfigurationHandler{
-                (txtName) -> Void in
-                txtName.placeholder = "<Enter a new name>"
-            }
-            alertController.addAction(okayAction)
-            alertController.addAction(cancelAction)
-            self.presentViewController(alertController, animated: true, completion: nil)
-    }
-    
-    @IBAction func importPressed(sender: UIButton) {
-        var xmlField: UITextField?
-        func didPasteFile(alert: UIAlertAction!){
-            importedXMLText = xmlField?.text
-            let url = NSURL(string: "http://localhost:22179/snap/snap.html#open:http://localhost:22179/project.bbx")
-            let requestPage = NSURLRequest(URL: url!)
-            mainWebView?.loadRequest(requestPage)
-        }
-        func addTextFieldConfigHandler(textField: UITextField!){
-            textField.placeholder = "Paste your XML project text here!"
-            xmlField = textField
-        }
-        let importPrompt = UIAlertController(title: "File Import", message: "Paste your xml project file to import it.", preferredStyle: UIAlertControllerStyle.Alert)
-        importPrompt.addTextFieldWithConfigurationHandler(addTextFieldConfigHandler)
-        importPrompt.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Default, handler: nil))
-        importPrompt.addAction(UIAlertAction(title: "Import", style: UIAlertActionStyle.Default, handler: didPasteFile))
-        presentViewController(importPrompt, animated: true, completion: nil)
-    }
-    
     @IBAction func recordPressed(sender: UIButton) {
         let firstPrompt = UIAlertController(title: "Record Audio", message: "Click the record button to start recording or cancel to close this window.", preferredStyle: UIAlertControllerStyle.Alert)
         
@@ -376,7 +335,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             AVSampleRateKey : 44100.0,
             AVNumberOfChannelsKey : 2,
             AVEncoderBitRateKey: 320000,
-            AVEncoderAudioQualityKey : AVAudioQuality.High.rawValue
+            AVEncoderAudioQualityKey : AVAudioQuality.High.textValue
         ]
         let soundFolderURL = getSnapPath().URLByAppendingPathComponent("Sounds")
         let soundFileURL = soundFolderURL.URLByAppendingPathComponent("tempAudio.m4a")
@@ -478,19 +437,23 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
     
     //get ssid
     func getSSIDInfo() -> String{
-        var ssid:NSString = "null"
-        if let ifs:NSArray = CNCopySupportedInterfaces(){
-            for i in 0..<CFArrayGetCount(ifs){
-                let ifName: UnsafeRawPointer = CFArrayGetValueAtIndex(ifs, i)
-                let rec = unsafeBitCast(ifName, to: AnyObject.self)
-                let unsafeIfData = CNCopyCurrentNetworkInfo("\(rec)" as CFString)
-                if unsafeIfData != nil {
-                    let ifData = unsafeIfData! as Dictionary!
-                    ssid = ifData["SSID"] as! NSString
+        var currentSSID = "null"
+        if let interfaces:CFArray = CNCopySupportedInterfaces() {
+            for i in 0..<CFArrayGetCount(interfaces){
+                let interfaceName: UnsafeRawPointer = CFArrayGetValueAtIndex(interfaces, i)
+                let rec = unsafeBitCast(interfaceName, to: AnyObject.self)
+                let unsafeInterfaceData = CNCopyCurrentNetworkInfo("\(rec)" as CFString)
+                if unsafeInterfaceData != nil {
+                    let interfaceData = unsafeInterfaceData! as Dictionary!
+                    for dictData in interfaceData! {
+                        if dictData.key as! String == "SSID" {
+                            currentSSID = dictData.value as! String
+                        }
+                    }
                 }
             }
         }
-        return ssid as String
+        return currentSSID
     }
     //end ssid
     //get ip
@@ -560,20 +523,21 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: BluetoothStatusChangedNotification), object: nil)
     }
     func prepareServer(){
-        server["/hummingbird/(.+)/out/led/(.+)/(.+)"] = { request in
-            let captured = request.capturedUrlGroups
-            
-            let name = String(captured[0])
+        server["/hummingbird/:param1/out/led/:param2/:param3"] = { request in
+            let captured = request.params
+
+            let name = captured[":param1"]?.removingPercentEncoding
             if(self.hbServes.keys.contains(name!) == false) {
-                self.handleBadRequest(name!) 
-                return .ok(.raw("Not connected!"))
+                self.handleBadRequest(name!)
+                return .ok(.text("Not connected!"))
             }
-            let portInt = Int(captured[1])
-            let temp = Int(round((captured[2] as NSString).floatValue))
+            let portInt = Int(captured[":param2"]!)
+            
+            let temp = Int(round((captured[":param3"]! as NSString).floatValue))
             var intensity: UInt8
             
             if (portInt > 4 || portInt < 1){
-                return .ok(.raw("Invalid Port (should be between 1 and 4 inclusively)"))
+                return .ok(.text("Invalid Port (should be between 1 and 4 inclusively)"))
             }
             let port = UInt8(portInt!)
             if (temp < 0){
@@ -587,15 +551,15 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             }
             self.hbServes[name!]!.setLED(port, intensity: intensity)
             Thread.sleep(forTimeInterval: self.responseTime);
-            return .ok(.raw("LED set"))
+            return .ok(.text("LED set"))
         }
-        server["/hummingbird/(.+)/out/stop"] = { request in
-            let captured = request.capturedUrlGroups
+        server["/hummingbird/:param1/out/stop"] = { request in
+            let captured = request.params
             
-            let name = String(captured[0])
+            let name = captured[":param1"]?.removingPercentEncoding
             if(self.hbServes.keys.contains(name!) == false) {
                 self.handleBadRequest(name!)
-                return .ok(.raw("Not connected!"))
+                return .ok(.text("Not connected!"))
             }
             self.hbServes[name!]!.setLED(1, intensity: 0)
             self.hbServes[name!]!.setLED(2, intensity: 0)
@@ -608,10 +572,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             self.hbServes[name!]!.setVibration(1, intensity: 0)
             self.hbServes[name!]!.setVibration(2, intensity: 0)
             Thread.sleep(forTimeInterval: self.responseTime);
-            return .ok(.raw("Turned off outputs"))
+            return .ok(.text("Turned off outputs"))
         }
         
-        server["/hummingbird/out/stopAll"] = { request in
+        server.GET["/hummingbird/out/stopAll"] = { request in
         let names = Array(self.hbServes.keys.lazy)
             for name in names {
                 self.hbServes[name]!.setLED(1, intensity: 0)
@@ -625,22 +589,22 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                 self.hbServes[name]!.setVibration(1, intensity: 0)
                 self.hbServes[name]!.setVibration(2, intensity: 0)
             }
-            return .ok(.raw("Turned off all outputs for all Hummingbirds"))
+            return .ok(.text("Turned off all outputs for all Hummingbirds"))
         }
-        server["/hummingbird/(.+)/out/triled/(.+)/(.+)/(.+)/(.+)"] = { request in
-            let captured = request.capturedUrlGroups
+        server["/hummingbird/:param1/out/triled/:param2/:param3/:param4/:param5"] = { request in
+            let captured = request.params
             
-            let name = String(captured[0])
+            let name = captured[":param1"]
             if(self.hbServes.keys.contains(name!) == false) {
                 self.handleBadRequest(name!)
-                return .ok(.raw("Not connected!"))
+                return .ok(.text("Not connected!"))
             }
-            let portInt = Int(captured[1])
-            var temp = Int(round((captured[2] as NSString).floatValue))
+            let portInt = Int(captured[":param2"]!)
+            var temp = Int(round((captured[":param3"]! as NSString).floatValue))
             var rValue: UInt8
             
             if (portInt > 2 || portInt < 1){
-                return .ok(.raw("Invalid Port (should be between 1 and 4 inclusively)"))
+                return .ok(.text("Invalid Port (should be between 1 and 4 inclusively)"))
             }
             let port = UInt8(portInt!)
             
@@ -653,7 +617,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             else{
                 rValue = UInt8(temp)
             }
-            temp = Int(round((captured[3] as NSString).floatValue))
+            temp = Int(round((captured[":param4"]! as NSString).floatValue))
             var gValue: UInt8
             if (temp < 0){
                 gValue = 0
@@ -664,7 +628,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             else{
                 gValue = UInt8(temp)
             }
-            temp = Int(round((captured[4] as NSString).floatValue))
+            temp = Int(round((captured[":param5"]! as NSString).floatValue))
             var bValue: UInt8
             if (temp < 0){
                 bValue = 0
@@ -677,22 +641,22 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             }
             self.hbServes[name!]!.setTriLED(port, r: rValue, g: gValue, b: bValue)
             Thread.sleep(forTimeInterval: self.responseTime);
-            return .ok(.raw("Tri-LED set"))
+            return .ok(.text("Tri-LED set"))
         }
-        server["/hummingbird/(.+)/out/vibration/(.+)/(.+)"] = { request in
-            let captured = request.capturedUrlGroups
-            let name = String(captured[0])
+        server["/hummingbird/:param1/out/vibration/:param2/:param3"] = { request in
+            let captured = request.params
+            let name = captured[":param1"]?.removingPercentEncoding
             if(self.hbServes.keys.contains(name!) == false) {
                 self.handleBadRequest(name!)
-                return .ok(.raw("Not connected!"))
+                return .ok(.text("Not connected!"))
             }
-            let portInt = Int(captured[1])
-            let temp = Int(round((captured[2] as NSString).floatValue))
+            let portInt = Int(captured[":param2"]!)
+            let temp = Int(round((captured[":param3"]! as NSString).floatValue))
             var intensity: UInt8
             
             
             if (portInt > 2 || portInt < 1){
-                return .ok(.raw("Invalid Port (should be between 1 and 4 inclusively)"))
+                return .ok(.text("Invalid Port (should be between 1 and 4 inclusively)"))
             }
             let port = UInt8(portInt!)
             
@@ -708,19 +672,19 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             
             self.hbServes[name!]!.setVibration(port, intensity: intensity)
             Thread.sleep(forTimeInterval: self.responseTime);
-            return .ok(.raw("Vibration set"))
+            return .ok(.text("Vibration set"))
         }
-        server["/hummingbird/(.+)/out/servo/(.+)/(.+)"] = { request in
-            let captured = request.capturedUrlGroups
-            let name = String(captured[0])
+        server["/hummingbird/:param1/out/servo/:param2/:param3"] = { request in
+            let captured = request.params
+            let name = captured[":param1"]?.removingPercentEncoding
             if(self.hbServes.keys.contains(name!) == false) {
                 self.handleBadRequest(name!)
-                return .ok(.raw("Not connected!"))
+                return .ok(.text("Not connected!"))
             }
-            let portInt = Int(captured[1])
-            let temp = Int(round((captured[2] as NSString).floatValue))
+            let portInt = Int(captured[":param2"]!)
+            let temp = Int(round((captured[":param3"]! as NSString).floatValue))
             if (portInt > 4 || portInt < 1){
-                return .ok(.raw("Invalid Port (should be between 1 and 4 inclusively)"))
+                return .ok(.text("Invalid Port (should be between 1 and 4 inclusively)"))
             }
             let port = UInt8(portInt!)
             var angle: UInt8
@@ -736,21 +700,21 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             
             self.hbServes[name!]!.setServo(port, angle: angle)
             Thread.sleep(forTimeInterval: self.responseTime);
-            return .ok(.raw("Servo set"))
+            return .ok(.text("Servo set"))
         }
-        server["/hummingbird/(.+)/out/motor/(.+)/(.+)"] = { request in
-            let captured = request.capturedUrlGroups
-            let name = String(captured[0])
+        server["/hummingbird/:param1/out/motor/:param2/:param3"] = { request in
+            let captured = request.params
+            let name = captured[":param1"]?.removingPercentEncoding
             if(self.hbServes.keys.contains(name!) == false) {
                 self.handleBadRequest(name!)
-                return .ok(.raw("Not connected!"))
+                return .ok(.text("Not connected!"))
             }
-            let portInt = Int(captured[1])
-            let temp = Int(round((captured[2] as NSString).floatValue))
+            let portInt = Int(captured[":param2"]!)
+            let temp = Int(round((captured[":param3"]! as NSString).floatValue))
             var intensity: Int
 
             if (portInt > 2 || portInt < 1){
-                return .ok(.raw("Invalid Port (should be between 1 and 4 inclusively)"))
+                return .ok(.text("Invalid Port (should be between 1 and 4 inclusively)"))
             }
             let port = UInt8(portInt!)
             
@@ -765,221 +729,223 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             }
             self.hbServes[name!]!.setMotor(port, speed: intensity)
             Thread.sleep(forTimeInterval: self.responseTime);
-            return .ok(.raw("Motor set"))
+            return .ok(.text("Motor set"))
         }
-        server["/hummingbird/(.+)/in/sensors"] = { request in
-            let name = String(request.capturedUrlGroups[0])
+        server["/hummingbird/:param1/in/sensors"] = { request in
+            let name = request.params[":param1"]?.removingPercentEncoding
             if(self.hbServes.keys.contains(name!) == false) {
                 self.handleBadRequest(name!)
-                return .ok(.raw("Not connected!"))
+                return .ok(.text("Not connected!"))
             }
             var sensorData = self.hbServes[name!]!.getAllSensorDataFromPoll()
             let response: String = "" + String(rawto100scale(sensorData[0])) + " " + String(rawto100scale(sensorData[1])) + " " + String(rawto100scale(sensorData[2])) + " " + String(rawto100scale(sensorData[3]))
-            return .ok(.raw(response))
+            return .ok(.text(response))
         }
-        server["/hummingbird/(.+)/in/sensor/(.+)"] = { request in
-            let captured = request.capturedUrlGroups
-            let name = String(captured[0])
+        server["/hummingbird/:param1/in/sensor/:param2"] = { request in
+            let captured = request.params
+            let name = captured[":param1"]?.removingPercentEncoding
             if(self.hbServes.keys.contains(name!) == false) {
                 self.handleBadRequest(name!)
-                return .ok(.raw("Not connected!"))
+                return .ok(.text("Not connected!"))
             }
-            let portInt = Int(captured[1])
+            let portInt = Int(captured[":param2"]!)
             if (portInt > 4 || portInt < 1){
-                return .ok(.raw("Invalid Port (should be between 1 and 4 inclusively)"))
+                return .ok(.text("Invalid Port (should be between 1 and 4 inclusively)"))
             }
             let port = UInt8(portInt!)
             
-            let sensorData = rawto100scale(self.hbServes[name]!.getSensorDataFromPoll(port))
+            let sensorData = rawto100scale(self.hbServes[name!]!.getSensorDataFromPoll(port))
             let response: String = String(sensorData)
-            return .ok(.raw(response))
+            return .ok(.text(response))
         }
-        server["/hummingbird/(.+)/in/distance/(.+)"] = { request in
-            let captured = request.capturedUrlGroups
-            let name = String(captured[0])
+        server["/hummingbird/:param1/in/distance/:param2"] = { request in
+            let captured = request.params
+            let name = captured[":param1"]?.removingPercentEncoding
             if(self.hbServes.keys.contains(name!) == false) {
                 self.handleBadRequest(name!)
-                return .ok(.raw("Not connected!"))
+                return .ok(.text("Not connected!"))
             }
-            let portInt = Int(captured[1])
+            let portInt = Int(captured[":param2"]!)
             if (portInt > 4 || portInt < 1){
-                return .ok(.raw("Invalid Port (should be between 1 and 4 inclusively)"))
+                return .ok(.text("Invalid Port (should be between 1 and 4 inclusively)"))
             }
             let port = UInt8(portInt!)
             
-            let sensorData = rawToDistance(self.hbServes[name]!.getSensorDataFromPoll(port))
+            let sensorData = rawToDistance(self.hbServes[name!]!.getSensorDataFromPoll(port))
             let response: String = String(sensorData)
-            return .ok(.raw(response))
+            return .ok(.text(response))
         }
-        server["/hummingbird/(.+)/in/sound/(.+)"] = { request in
-            let captured = request.capturedUrlGroups
-            let name = String(captured[0])
+        server["/hummingbird/:param1/in/sound/:param2"] = { request in
+            let captured = request.params
+            let name = captured[":param1"]?.removingPercentEncoding
             if(self.hbServes.keys.contains(name!) == false) {
                 self.handleBadRequest(name!)
-                return .ok(.raw("Not connected!"))
+                return .ok(.text("Not connected!"))
             }
-            let portInt = Int(captured[1])
+            let portInt = Int(captured[":param2"]!)
             if (portInt > 4 || portInt < 1){
-                return .ok(.raw("Invalid Port (should be between 1 and 4 inclusively)"))
+                return .ok(.text("Invalid Port (should be between 1 and 4 inclusively)"))
             }
             let port = UInt8(portInt!)
             
-            let sensorData = rawToSound(self.hbServes[name]!.getSensorDataFromPoll(port))
+            let sensorData = rawToSound(self.hbServes[name!]!.getSensorDataFromPoll(port))
             let response: String = String(sensorData)
-            return .ok(.raw(response))
+            return .ok(.text(response))
         }
-        server["/hummingbird/(.+)/in/temperature/(.+)"] = { request in
-            let captured = request.capturedUrlGroups
-            let name = String(captured[0])
-            if(self.hbServes.keys.contains(name!) == false) {
-                self.handleBadRequest(name!)
-                return .ok(.raw("Not connected!"))
+        server["/hummingbird/:param1/in/temperature/:param2"] = { request in
+            let captured = request.params
+            let name = (captured[":param1"]?.removingPercentEncoding)!
+            if(self.hbServes.keys.contains(name) == false) {
+                self.handleBadRequest(name)
+                return .ok(.text("Not connected!"))
             }
-            let portInt = Int(captured[1])
+            let portInt = Int(captured[":param2"]!)
             if (portInt > 4 || portInt < 1){
-                return .ok(.raw("Invalid Port (should be between 1 and 4 inclusively)"))
+                return .ok(.text("Invalid Port (should be between 1 and 4 inclusively)"))
             }
             let port = UInt8(portInt!)
             
             let sensorData = rawToTemp(self.hbServes[name]!.getSensorDataFromPoll(port))
             let response: String = String(sensorData)
-            return .ok(.raw(response))
+            return .ok(.text(response))
         }
-        server["/hummingbird/(.+)/status"] = { request in
-            let name = String(request.capturedUrlGroups[0])
-            let response = (self.hbServes[name!] != nil) ? 1 : 0
-            return .ok(.raw(String(response)))
+        server["/hummingbird/:param1/status"] = { request in
+            let name = (request.params[":param1"]?.removingPercentEncoding)!
+            let response = (self.hbServes[name] != nil) ? 1 : 0
+            return .ok(.text(String(response)))
         }
-        server["/hummingbird/(.+)/rename/(.+)"] = { request in
-            let nameFrom = request.capturedUrlGroups[0]
+        server["/hummingbird/:param1/rename/:param2"] = { request in
+            let nameFrom = (request.params[":param1"]?.removingPercentEncoding)!
             if(self.hbServes.keys.contains(nameFrom) == false) {
                 self.handleBadRequest(nameFrom)
-                return .ok(.raw("Not connected!"))
+                return .ok(.text("Not connected!"))
             }
-            let nameTo = request.capturedUrlGroups[1]
+            let nameTo = (request.params[":param2"]?.removingPercentEncoding)!
             if self.hbServes[nameFrom] != nil {
                 if let newName = self.hbServes[nameFrom]!.renameDevice(nameTo) {
                     self.hbServes[newName] = self.hbServes.removeValue(forKey: nameFrom)
                     self.hbServes[newName]!.setName(newName)
                     NSLog("number of items in HBSERVE: " + String(self.hbServes.count))
-                    return .ok(.raw("Renamed"))
+                    return .ok(.text("Renamed"))
                 }
             }
-            return .ok(.raw("Name not found!"))
+            return .ok(.text("Name not found!"))
         }
-        server["/hummingbird/names"] = { request in
+        server.GET["/hummingbird/names"] = { request in
             let names = Array(self.hbServes.keys.lazy).joined(separator: "\n")
-            return .ok(.raw(names))
+            return .ok(.text(names))
         }
-        server["/hummingbird/connectedNames"] = {request in
+        server.GET["/hummingbird/connectedNames"] = {request in
             let names = self.sharedBluetoothDiscovery.getConnected().joined(separator: "\n")
-            return .ok(.raw(names))
+            return .ok(.text(names))
         }
-        server["/hummingbird/serviceNames"] = {request in
+        server.GET["/hummingbird/serviceNames"] = {request in
             let names = self.sharedBluetoothDiscovery.getServiceNames().joined(separator: "\n")
-            return .ok(.raw(names))
+            return .ok(.text(names))
         }
-        server["/hummingbird/ALLNames"] = {request in
+        server.GET["/hummingbird/ALLNames"] = {request in
             let names = self.sharedBluetoothDiscovery.getAllNames().joined(separator: "\n")
-            return .ok(.raw(names))
+            return .ok(.text(names))
         }
-        server["/hummingbird/(.+)/disconnect"] = { request in
-            let name = request.capturedUrlGroups[0]
+        server["/hummingbird/:param1/disconnect"] = { request in
+            let name = (request.params[":param1"]?.removingPercentEncoding)!
             if(self.hbServes.keys.contains(name) == false) {
                 self.handleBadRequest(name)
                 self.sharedBluetoothDiscovery.removeConnected(name)
-                return .ok(.raw("Not connected!"))
+                return .ok(.text("Not connected!"))
             }
             self.hbServes[name]!.disconnectFromDevice()
             if (self.hbServes.keys.contains(name)) {
                 self.hbServes.removeValue(forKey: name)
             }
-            return .ok(.raw("Disconnected"))
+            return .ok(.text("Disconnected"))
         }
-        server["/hummingbird/discover"] = { request in
+        server.GET["/hummingbird/discover"] = { request in
             self.sharedBluetoothDiscovery.startScan()
             let dict = self.sharedBluetoothDiscovery.getDiscovered()
             let strings = Array(dict.keys.lazy)
-            return .ok(.raw(strings.joined(separator: "\n")))
+            return .ok(.text(strings.joined(separator: "\n")))
         }
-        server["/hummingbird/ForceDiscover"] = { request in
+        server.GET["/hummingbird/ForceDiscover"] = { request in
             print("CALLED FORCE!")
             self.sharedBluetoothDiscovery.restartScan()
             let dict = self.sharedBluetoothDiscovery.getDiscovered()
             let strings = Array(dict.keys.lazy)
-            return .ok(.raw(strings.joined(separator: "\n")))
+            return .ok(.text(strings.joined(separator: "\n")))
         }
-        server["/hummingbird/totalStatus"] = { request in
+        server.GET["/hummingbird/totalStatus"] = { request in
             let connectedCount = self.sharedBluetoothDiscovery.getConnected().count
             let hbServeCount = self.hbServes.count
             if (connectedCount == 0) {
-                return .ok(.raw("2"))
+                return .ok(.text("2"))
             }
             if (connectedCount == hbServeCount) {
-                return .ok(.raw("1"))
+                return .ok(.text("1"))
             } else {
                 
-                return .ok(.raw("0"))
+                return .ok(.text("0"))
             }
         }
-        server["/hummingbird/(.+)/connect"] = { request in
-            let name = request.capturedUrlGroups[0]
+        server["/hummingbird/:param1/connect"] = { request in
+            let name = (request.params[":param1"]?.removingPercentEncoding)!
             if let peripheral = self.sharedBluetoothDiscovery.getDiscovered()[name] {
                 let hbServe = HummingbirdServices()
                 self.hbServes[name] = hbServe
                 self.hbServes[name]!.attachToDevice(name)
                 self.sharedBluetoothDiscovery.connectToPeripheral(peripheral, name: name)
-                return .ok(.raw("Connected!"))
+                return .ok(.text("Connected!"))
             } else {
-                return .ok(.raw("Device not found"))
+                print(name)
+                print(self.sharedBluetoothDiscovery.getDiscovered())
+                return .ok(.text("Device not found"))
             }
         }
-        server["/speak/(.+)"] = { request in
-            let captured = request.capturedUrlGroups
-            let words = String(captured[0])
-            let utterance = AVSpeechUtterance(string: words!)
+        server["/speak/:param1"] = { request in
+            let captured = request.params
+            let words = (captured[":param1"]?.removingPercentEncoding)!
+            let utterance = AVSpeechUtterance(string: words)
             utterance.rate = 0.3
             self.synth.speak(utterance)
-            return .ok(.raw(words))
+            return .ok(.text(words))
             
         }
         server["/iPad/shake"] = {request in
             let checkShake = self.checkShaken()
             if checkShake{
-                 return .ok(.raw(String(1)))
+                 return .ok(.text(String(1)))
             }
-            return .ok(.raw(String(0)))
+            return .ok(.text(String(0)))
         }
         server["/iPad/location"] = {request in
             let latitude = Double(self.currentLocation.latitude)
             let longitude = Double(self.currentLocation.longitude)
             let retString = NSString(format: "%f %f", latitude, longitude)
-            return .ok(.raw(String(retString)))
+            return .ok(.text(String(retString)))
         }
         server["/iPad/ssid"] = {request in
             let ssid = self.getSSIDInfo()
-            return .ok(.raw(ssid))
+            return .ok(.text(ssid))
         }
         server["/iPad/pressure"] = {request in
-            return .ok(.raw(String(format: "%f", self.currentPressure)))
+            return .ok(.text(String(format: "%f", self.currentPressure)))
         }
         server["/iPad/altitude"] = {request in
-            return .ok(.raw(String(format: "%f", self.currentAltitude)))
+            return .ok(.text(String(format: "%f", self.currentAltitude)))
         }
         server["/iPad/acceleration"] = {request in
-            return .ok(.raw(String(format: "%f %f %f", self.x, self.y, self.z)))
+            return .ok(.text(String(format: "%f %f %f", self.x, self.y, self.z)))
         }
         server["/iPad/orientation"] = {request in
-            return .ok(.raw(self.getOrientation()))
+            return .ok(.text(self.getOrientation()))
         }
-        server["/iPad/choice/(.+)/(.+)/(.+)/(.+)"] = { request in
+        server["/iPad/choice/:param1/:param2/:param3/:param4"] = { request in
             NSLog("choice called");
             self.last_choice_response = 0
-            let captured = request.capturedUrlGroups
-            let title = String(captured[0])
-            let question = String(captured[1])
-            let button1Text = String(captured[2])
-            let button2Text = String(captured[3])
+            let captured = request.params
+            let title = (captured[":param1"]?.removingPercentEncoding)!
+            let question = (captured[":param2"]?.removingPercentEncoding)!
+            let button1Text = (captured[":param3"]?.removingPercentEncoding)!
+            let button2Text = (captured[":param4"]?.removingPercentEncoding)!
             let alertController = UIAlertController(title: title, message: question, preferredStyle: UIAlertControllerStyle.alert)
             let button1Action = UIAlertAction(title: button1Text, style: UIAlertActionStyle.default){
                 (action) -> Void in
@@ -996,19 +962,19 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                 NSLog("choice opened view controller")
                 
             }
-            return .ok(.raw("Choice Dialog Presented"))
+            return .ok(.text("Choice Dialog Presented"))
 
         }
-        server["iPad/choice_response"] = {request in
-            return .ok(.raw(String(self.last_choice_response)))
+        server["/iPad/choice_response"] = {request in
+            return .ok(.text(String(self.last_choice_response)))
         }
-        server["/iPad/dialog/(.+)/(.+)/(.+)"] = {request in
+        server["/iPad/dialog/:param1/:param2/:param3"] = {request in
             NSLog("dialog called");
             self.last_dialog_response = nil
-            let captured = request.capturedUrlGroups
-            let title = String(captured[0])
-            let question = String(captured[1])
-            let answerHolder = String(captured[2])
+            let captured = request.params
+            let title = (captured[":param1"]?.removingPercentEncoding)!
+            let question = (captured[":param2"]?.removingPercentEncoding)!
+            let answerHolder = (captured[":param3"]?.removingPercentEncoding)!
             let alertController = UIAlertController(title: title, message: question, preferredStyle: UIAlertControllerStyle.alert)
             let okayAction = UIAlertAction(title: "Okay", style: UIAlertActionStyle.default){
                 (action) -> Void in
@@ -1034,18 +1000,18 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                 UIApplication.shared.keyWindow?.rootViewController!.present(alertController, animated: true, completion: nil)
                 print("DISPLAYED")
             }
-            return .ok(.raw("Dialog Presented"))
+            return .ok(.text("Dialog Presented"))
         }
         server["/iPad/dialog_response"] = {request in
             if let response = self.last_dialog_response {
                 if (response == "!~<!--CANCELLED-->~!") {
-                    return .ok(.raw("Cancelled"))
+                    return .ok(.text("Cancelled"))
                 } else {
-                    return .ok(.raw("\'" + response + "\'"))
+                    return .ok(.text("\'" + response + "\'"))
                 }
             }
             else {
-                return .ok(.raw("No Response"))
+                return .ok(.text("No Response"))
             }
             
         }
@@ -1056,46 +1022,62 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                 files.append(string)
                 files.append("\n")
             })
-            return .ok(.raw(files))
+            return .ok(.text(files))
         }
         server["/data/filename"] = {request in
             if let filename = self.currentFileName {
-                return .ok(.raw(filename))
+                return .ok(.text(filename))
             } else {
-                return .ok(.raw("File has no name."))
+                return .ok(.text("File has no name."))
             }
         }
-        server["/data/load/(.+)"] = {request in
-            let filename = String(request.capturedUrlGroups[0])
-            let fileContent = getSavedFileByName(filename)
+        server["/data/load/:param1"] = {request in
+            let filename = request.params[":param1"]?.removingPercentEncoding
+            let fileContent = getSavedFileByName(filename!)
             if (fileContent == "File not found") {
-                return .ok(.raw("File Not Found"))
+                return .ok(.text("File Not Found"))
             }
             self.currentFileName = filename?.replacingOccurrences(of: ".bbx", with: "")
-            return .ok(.raw(fileContent as (String)))
+            return .ok(.text(fileContent as (String)))
         }
-        server["/data/save/(.+)"] = {request in
+        server["/data/save/:param1"] = {request in
             NSLog("GOT SAVE")
-            let filename = String(request.capturedUrlGroups[0])
-            if let requestBody = request.body {
+            let filename = (request.params[":param1"]?.removingPercentEncoding)!
+            let requestForms = request.parseUrlencodedForm()
+            var body: String? = nil
+            for form in requestForms {
+                if form.0 == "data" {
+                    body = form.1
+                    break
+                }
+            }
+            if let requestBody = body {
                 let xml: String = requestBody.replacingOccurrences(of: "data=", with: "")
                 //print(xml)
-                saveStringToFile(xml, fileName: filename)
+                saveStringToFile(xml as NSString, fileName: filename)
                 self.currentFileName = filename
-                return .ok(.raw("Saved"))
+                return .ok(.text("Saved"))
             } else {
                 NSLog("Bodyless")
-                return .ok(.raw("darn"))
+                return .ok(.text("darn"))
             }
         }
-        server["/data/export/(.+)"] = {request in
-            let filename = String(request.capturedUrlGroups[0])
-            if let requestBody = request.body {
+        server["/data/export/:param1"] = {request in
+            let filename = (request.params[":param1"]?.removingPercentEncoding)!
+            let requestForms = request.parseUrlencodedForm()
+            var body: String? = nil
+            for form in requestForms {
+                if form.0 == "data" {
+                    body = form.1
+                    break
+                }
+            }
+            if let requestBody = body {
                 let xml: String = requestBody.replacingOccurrences(of: "data=", with: "")
-                saveStringToFile(xml, fileName: filename)
+                saveStringToFile(xml as NSString, fileName: filename)
                 self.currentFileName = filename
                 let exportedPath = getSavedFileURL(filename)
-                let url = URL(fileURLWithPath: exportedPath.path!)
+                let url = URL(fileURLWithPath: exportedPath.path)
                 print(url.absoluteString)
                 let view = UIActivityViewController(activityItems: [url], applicationActivities: nil)
                 view.popoverPresentationController?.sourceView = self.mainWebView
@@ -1104,83 +1086,91 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                     self.present(view, animated: true, completion: nil)
                 }
             }
-            return .ok(.raw("Done"))
+            return .ok(.text("Done"))
         }
-        server["/data/delete/(.+)"] = {request in
-            let filename = String(request.capturedUrlGroups[0])
-            let result = deleteFile(filename)
+        server["/data/delete/:param1"] = {request in
+            let filename = request.params[":param1"]?.removingPercentEncoding
+            let result = deleteFile(filename!)
             if (result == false) {
-                return .ok(.raw("File Not Found"))
+                return .ok(.text("File Not Found"))
             }
             if (self.currentFileName == filename) {
                 self.currentFileName = nil
             }
-            return .ok(.raw("File Deleted"))
+            return .ok(.text("File Deleted"))
         }
-        server["/data/rename/(.+)/(.+)"] = {request in
-            let captured = request.capturedUrlGroups
-            let filename = String(captured[0])
-            let newFilename = String(captured[1])
+        server["/data/rename/:param1/:param2"] = {request in
+            let captured = request.params
+            let filename = (captured[":param1"]?.removingPercentEncoding)!
+            let newFilename = (captured[":param2"]?.removingPercentEncoding)!
             
             let result = renameFile(filename, newFileName: newFilename)
             if (result == false) {
-                return .ok(.raw("File Not Found"))
+                return .ok(.text("File Not Found"))
             }
             if (self.currentFileName == filename) {
                 self.currentFileName = newFilename
             }
-            return .ok(.raw("File Renamed"))
+            return .ok(.text("File Renamed"))
         }
         server["/data/new"] = {request in
             self.currentFileName = nil
-            return .ok(.raw("Filename reset"))
+            return .ok(.text("Filename reset"))
         }
         server["/data/saveAsNew"] = {request in
             self.tempNew = true
-            return .ok(.raw("Filename temporarily cleared"))
+            return .ok(.text("Filename temporarily cleared"))
         }
         
         server["/data/autosave"] = {request in
-            if let requestBody = request.body {
+            let requestForms = request.parseUrlencodedForm()
+            var body: String? = nil
+            for form in requestForms {
+                if form.0 == "data" {
+                    body = form.1
+                    break
+                }
+            }
+            if let requestBody = body {
                 let xml: String = requestBody.replacingOccurrences(of: "data=", with: "")
-                autosave(xml)
-                return .ok(.raw("Saved"))
+                autosave(xml as NSString)
+                return .ok(.text("Saved"))
             } else {
-                return .ok(.raw("darn"))
+                return .ok(.text("darn"))
             }
         }
         server["/data/loadAutosave"] = {request in
             let fileContent = getSavedFileByName("autosaveFile")
             if (fileContent == "File not found") {
-                return .ok(.raw("File Not Found"))
+                return .ok(.text("File Not Found"))
             }
             self.currentFileName = "autosaveFile"
-            return .ok(.raw(fileContent as (String)))
+            return .ok(.text(fileContent as (String)))
         }
         
         
         server["/server/ping"] = {request in
-            return .ok(.raw("pong"))
+            return .ok(.text("pong"))
         }
         server["/iPad/screenSize"] = {request in
             let screenSize: CGRect = UIScreen.main.bounds
             let width = String(describing: screenSize.width)
             let height = String(describing: screenSize.height)
-            return .ok(.raw(height + "\n" + width))
+            return .ok(.text(height + "\n" + width))
         }
         server["/iPad/ip"] = {request in
             if (self.isConnectedToInternet()) {
                 if let ip = self.getWiFiAddress() {
-                    return .ok(.raw(ip))
+                    return .ok(.text(ip))
                 }
             }
-            return .ok(.raw("0.0.0.0"))
+            return .ok(.text("0.0.0.0"))
         }
         
         /*server["/project.bbx"] = {request in
             if let importText = self.importedXMLText{
                 self.importedXMLText = nil
-                return .OK(.RAW(importText))
+                return .OK(.text(importText))
             }
             
             let urlFromXMl = (UIApplication.sharedApplication().delegate as! AppDelegate).getFileUrl()
@@ -1192,47 +1182,48 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             }
             do{
                 let rawText = try String(contentsOfFile: path, encoding: NSUTF8StringEncoding)
-                return .OK(.RAW(rawText))
+                return .OK(.text(rawText))
             } catch {
                 print("Error: Couldn't get contents of XML file\n")
                 let rawText = ""
-                return .OK(.RAW(rawText))
+                return .OK(.text(rawText))
             }
         }*/
-        server["/settings/get/(.+)"] = {request in
-            let key = request.capturedUrlGroups[0]
+        server["/settings/get/:param1"] = {request in
+            let key = (request.params[":param1"]?.removingPercentEncoding)!
             let value = getSetting(key)
             if let nullCheckedValue = value {
-                return .ok(.raw(nullCheckedValue))
+                return .ok(.text(nullCheckedValue))
             } else {
-                return .ok(.raw("Default"))
+                return .ok(.text("Default"))
             }
         }
-        server["/settings/set/(.+)/(.+)"] = {request in
-            let captured = request.capturedUrlGroups
-            let key = captured[0]
-            let value = captured[1]
+        server["/settings/set/:param1/:param2"] = {request in
+            let captured = request.params
+            let key = (captured[":param1"]?.removingPercentEncoding)!
+            let value = (captured[":param2"]?.removingPercentEncoding)!
             addSetting(key, value: value)
-            return .ok(.raw("Setting saved"))
+            return .ok(.text("Setting saved"))
         }
-        server["settings/delete/key/(.+)"] = {request in
-            let key = request.capturedUrlGroups[0]
+        server["/settings/delete/key/:param1"] = {request in
+            let key = (request.params[":param1"]?.removingPercentEncoding)!
             removeSetting(key)
-            return .ok(.raw("Setting Deleted"))
+            return .ok(.text("Setting Deleted"))
         }
-        server["/DragAndDrop/(.+)"] = HttpHandlers.directoryBrowser(getPath().path!)
-        server["/DragAndDrop/Block/(.+)"] = HttpHandlers.directoryBrowser(getPath().appendingPathComponent("Block").path!)
-        server["/DragAndDrop/BlockContainers/(.+)"] = HttpHandlers.directoryBrowser(getPath().appendingPathComponent("BlockContainers").path!)
-        server["/DragAndDrop/BlockDefsAndList/(.+)"] = HttpHandlers.directoryBrowser(getPath().appendingPathComponent("BlockDefsAndList").path!)
-        server["/DragAndDrop/BlockParts/(.+)"] = HttpHandlers.directoryBrowser(getPath().appendingPathComponent("BlockParts").path!)
-        server["/DragAndDrop/ColorsAndGraphics/(.+)"] = HttpHandlers.directoryBrowser(getPath().appendingPathComponent("ColorsAndGraphics").path!)
-        server["/DragAndDrop/Data/(.+)"] = HttpHandlers.directoryBrowser(getPath().appendingPathComponent("Data").path!)
-        server["/DragAndDrop/SVGIcons/(.+)"] = HttpHandlers.directoryBrowser(getPath().appendingPathComponent("SVGIcons").path!)
-        server["/DragAndDrop/UIParts/(.+)"] = HttpHandlers.directoryBrowser(getPath().appendingPathComponent("UIParts").path!)
+        server["/DragAndDrop/:path"] = directoryBrowser(getPath().path)
+        //server["/DragAndDrop/Block/(.+)"] = directoryBrowser(getPath().appendingPathComponent("Block").path)
+        //server["/DragAndDrop/BlockContainers/(.+)"] = directoryBrowser(getPath().appendingPathComponent("BlockContainers").path)
+        //server["/DragAndDrop/BlockDefsAndList/(.+)"] = directoryBrowser(getPath().appendingPathComponent("BlockDefsAndList").path)
+        //server["/DragAndDrop/BlockParts/(.+)"] = directoryBrowser(getPath().appendingPathComponent("BlockParts").path)
+        //server["/DragAndDrop/ColorsAndGraphics/(.+)"] = directoryBrowser(getPath().appendingPathComponent("ColorsAndGraphics").path)
+        //server["/DragAndDrop/Data/(.+)"] = directoryBrowser(getPath().appendingPathComponent("Data").path)
+        //server["/DragAndDrop/SVGIcons/(.+)"] = directoryBrowser(getPath().appendingPathComponent("SVGIcons").path)
+        //server["/DragAndDrop/UIParts/(.+)"] = directoryBrowser(getPath().appendingPathComponent("UIParts").path)
+        NSLog("Server prepared")
     }
     func changedStatus(_ notification: Notification){
         let userinfo = notification.userInfo as! [String: AnyObject]
-        NSLog("View controller got notification: " + notification.name)
+        NSLog("View controller got notification: " + notification.name.rawValue)
         if let name: String = userinfo["name"] as? String {
             NSLog("Got name " + name)
             if let isConnected: Bool = userinfo["isConnected"] as? Bool{

@@ -104,7 +104,7 @@ open class HummingbirdServices: NSObject{
     open func recieveByteArray()-> Data{
         let serviceBLE = sharedBluetoothDiscovery.serviceBLE
         let value = serviceBLE.getValues(self.name)
-        dbg_print(NSString(format: "got data: %@", value))
+        dbg_print(NSString(format: "got data: %@", value as CVarArg))
         if (value.count >= 4){
             return value
         }
