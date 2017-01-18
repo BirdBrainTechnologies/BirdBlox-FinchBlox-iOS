@@ -49,6 +49,7 @@
 		BAFD53B81E2EA0680062FC3D /* String+Misc.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAFD53AD1E2EA0680062FC3D /* String+Misc.swift */; };
 		BAFD53B91E2EA0680062FC3D /* String+SHA1.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAFD53AE1E2EA0680062FC3D /* String+SHA1.swift */; };
 		BAFD53BA1E2EA0680062FC3D /* WebSockets.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAFD53AF1E2EA0680062FC3D /* WebSockets.swift */; };
+		BAFD53BC1E2FC9380062FC3D /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAFD53BB1E2FC9380062FC3D /* AudioManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -117,6 +118,7 @@
 		BAFD53AD1E2EA0680062FC3D /* String+Misc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+Misc.swift"; sourceTree = "<group>"; };
 		BAFD53AE1E2EA0680062FC3D /* String+SHA1.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+SHA1.swift"; sourceTree = "<group>"; };
 		BAFD53AF1E2EA0680062FC3D /* WebSockets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebSockets.swift; sourceTree = "<group>"; };
+		BAFD53BB1E2FC9380062FC3D /* AudioManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -223,6 +225,7 @@
 				BA88B62F1B2233C9009EF1C3 /* ViewController.swift */,
 				BA88B6581B223990009EF1C3 /* ConnectionViewController.swift */,
 				BA054A091B54354200A6FA8B /* DocumentManager.swift */,
+				BAFD53BB1E2FC9380062FC3D /* AudioManager.swift */,
 				BADF9BB61D2FF77900ABC410 /* HTMLParser.swift */,
 				BA88B6591B223990009EF1C3 /* Main.storyboard */,
 				BA88B6341B2233C9009EF1C3 /* Images.xcassets */,
@@ -331,6 +334,7 @@
 				BA95C0221BBEE2CE003AEC1A /* HttpResponse.swift in Sources */,
 				BA95C0201BBEE2CE003AEC1A /* HttpParser.swift in Sources */,
 				BA054A0A1B54354200A6FA8B /* DocumentManager.swift in Sources */,
+				BAFD53BC1E2FC9380062FC3D /* AudioManager.swift in Sources */,
 				BA88B6301B2233C9009EF1C3 /* ViewController.swift in Sources */,
 				BA88B62E1B2233C9009EF1C3 /* AppDelegate.swift in Sources */,
 				BADF9BB71D2FF77900ABC410 /* HTMLParser.swift in Sources */,

@@ -14,6 +14,8 @@ import SystemConfiguration.CaptiveNetwork
 import CoreMotion
 import WebKit
 import MessageUI
+
+
 // FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
 // Consider refactoring the code to use the non-optional operators.
 fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
@@ -64,7 +66,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
     var importedXMLText: String?
     var recorder: AVAudioRecorder?
     let sharedBluetoothDiscovery = BluetoothDiscovery.getBLEDiscovery()
-    
+    let audioManager = AudioManager()
     var currentFileName: String?
     var tempNew = false
     
@@ -1166,7 +1168,13 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             }
             return .ok(.text("0.0.0.0"))
         }
-        
+        server["sound/note/:param1/:param2"] = {request in
+            let captured = request.params
+            let note: UInt8 = UInt8(captured[":param1"]!)!
+            let duration: Int = Int(captured[":param2"]!)!
+            self.audioManager.playNote(noteIndex: note, duration: duration)
+            return .ok(.text("Sound?"))
+        }
         /*server["/project.bbx"] = {request in
             if let importText = self.importedXMLText{
                 self.importedXMLText = nil
