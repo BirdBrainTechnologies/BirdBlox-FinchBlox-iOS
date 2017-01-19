@@ -15,6 +15,7 @@ class AudioManager: NSObject {
     var audioEngine:AVAudioEngine
     var sampler:AVAudioUnitSampler
     var mixer:AVAudioMixerNode
+    var player: AVAudioPlayer
     
     override init() {
         //super.init()
@@ -33,6 +34,7 @@ class AudioManager: NSObject {
         // and connect it to the mixer node
         audioEngine.attach(sampler)
         audioEngine.connect(sampler, to: mixer, format: nil)
+        player = AVAudioPlayer()
         do {
             try audioEngine.start()
         } catch {
@@ -45,5 +47,20 @@ class AudioManager: NSObject {
             self.sampler.stopNote(noteIndex, onChannel: 1)
         }
         
+    }
+    func getSoundDuration(filename: String) -> Int {
+        let asset = AVURLAsset(url: getSoundPath().appendingPathComponent(filename), options: nil)
+        let audioDuration: Float64 = CMTimeGetSeconds(asset.duration)
+        //convert to milliseconds
+        return Int(audioDuration * 1000)
+    }
+    func playSound(filename: String) {
+        do {
+            try player = AVAudioPlayer(contentsOf: getSoundPath().appendingPathComponent(filename))
+            player.prepareToPlay()
+            player.play()
+        } catch {
+            NSLog("failed to play: " + filename)
+        }
     }
 }

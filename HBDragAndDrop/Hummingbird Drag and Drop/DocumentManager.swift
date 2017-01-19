@@ -26,6 +26,20 @@ public func getPath() -> URL {
     return unzipPath.appendingPathComponent("HummingbirdDragAndDrop--master")
 }
 
+public func getSoundPath() -> URL {
+    return getPath().appendingPathComponent("SoundClips")
+}
+
+public func getSoundNames () -> [String]{
+    do {
+        let paths = try fileManager.contentsOfDirectory(atPath: getSoundPath().path)
+        return paths
+
+    } catch {
+        return []
+    }
+}
+
 public func shouldUpdate() -> Bool{
     return !compareHistory()
 }

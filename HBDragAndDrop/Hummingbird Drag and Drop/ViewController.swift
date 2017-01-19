@@ -1154,6 +1154,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         server["/server/ping"] = {request in
             return .ok(.text("pong"))
         }
+        server["/server/log/:param1"] = {request in
+            let data = request.params[":param1"]!
+            NSLog(data)
+            return .ok(.text(data))
+        }
         server["/iPad/screenSize"] = {request in
             let screenSize: CGRect = UIScreen.main.bounds
             let width = String(describing: screenSize.width)
@@ -1174,6 +1179,27 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             let duration: Int = Int(captured[":param2"]!)!
             self.audioManager.playNote(noteIndex: note, duration: duration)
             return .ok(.text("Sound?"))
+        }
+        server["sound/names"] = {request in
+            let soundList = getSoundNames()
+            var sounds: String = "";
+            soundList.forEach({ (string) in
+                sounds.append(string)
+                sounds.append("\n")
+            })
+            print("got sound names: \n", sounds)
+            return .ok(.text(sounds))
+        }
+        server["sound/duration/:param1"] = {request in
+            let filename = request.params[":param1"]!
+            print("got duration of:", filename)
+            return .ok(.text(String(self.audioManager.getSoundDuration(filename: filename))))
+        }
+        server["sound/play/:param1"] = {request in
+            let filename = request.params[":param1"]!
+            self.audioManager.playSound(filename: filename)
+            print("Playing: ", filename)
+            return .ok(.text("Playing sound"))
         }
         /*server["/project.bbx"] = {request in
             if let importText = self.importedXMLText{
