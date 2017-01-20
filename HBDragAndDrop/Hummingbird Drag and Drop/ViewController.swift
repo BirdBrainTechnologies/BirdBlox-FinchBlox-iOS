@@ -1187,18 +1187,15 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                 sounds.append(string)
                 sounds.append("\n")
             })
-            print("got sound names: \n", sounds)
             return .ok(.text(sounds))
         }
         server["sound/duration/:param1"] = {request in
             let filename = request.params[":param1"]!
-            print("got duration of:", filename)
             return .ok(.text(String(self.audioManager.getSoundDuration(filename: filename))))
         }
         server["sound/play/:param1"] = {request in
             let filename = request.params[":param1"]!
             self.audioManager.playSound(filename: filename)
-            print("Playing: ", filename)
             return .ok(.text("Playing sound"))
         }
         /*server["/project.bbx"] = {request in

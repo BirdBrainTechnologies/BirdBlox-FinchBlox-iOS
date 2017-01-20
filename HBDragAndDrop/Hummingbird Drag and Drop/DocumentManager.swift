@@ -57,8 +57,8 @@ private func compareHistory() -> Bool{
         NSLog("History files are identical")
         return true
     } else {
-        NSLog(String(stringInterpolationSegment: oldHistory?.count))
-        NSLog(String(stringInterpolationSegment: newHistory?.count))
+        NSLog(String(stringInterpolationSegment: oldHistory))
+        NSLog(String(stringInterpolationSegment: newHistory))
         NSLog("History files differ")
         return false
     }

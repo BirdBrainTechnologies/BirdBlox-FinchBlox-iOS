@@ -54,10 +54,15 @@ class AudioManager: NSObject {
         
     }
     func getSoundDuration(filename: String) -> Int {
-        let asset = AVURLAsset(url: getSoundPath().appendingPathComponent(filename), options: nil)
-        let audioDuration: Float64 = CMTimeGetSeconds(asset.duration)
+        do {
+        try player = AVAudioPlayer(contentsOf: getSoundPath().appendingPathComponent(filename))
         //convert to milliseconds
-        return Int(audioDuration * 1000)
+        let audioDuration: Float64 = player.duration * 1000
+        return Int(audioDuration)
+        } catch {
+            NSLog("Failed to get duration")
+            return 0
+        }
     }
     func playSound(filename: String) {
         do {
@@ -68,4 +73,5 @@ class AudioManager: NSObject {
             NSLog("failed to play: " + filename)
         }
     }
+    
 }
