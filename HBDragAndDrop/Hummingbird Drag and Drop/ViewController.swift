@@ -1175,7 +1175,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         }
         server["sound/note/:param1/:param2"] = {request in
             let captured = request.params
-            let note: UInt8 = UInt8(captured[":param1"]!)!
+            let note: UInt = UInt(captured[":param1"]!)!
             let duration: Int = Int(captured[":param2"]!)!
             self.audioManager.playNote(noteIndex: note, duration: duration)
             return .ok(.text("Sound?"))

@@ -41,10 +41,15 @@ class AudioManager: NSObject {
             NSLog("Failed to start audio player")
         }
     }
-    func playNote(noteIndex: UInt8, duration: Int) {
-        sampler.startNote(noteIndex, withVelocity: 127, onChannel: 1)
+    func playNote(noteIndex: UInt, duration: Int) {
+        var cappedNote = noteIndex
+        if(cappedNote >= UInt(UInt8.max)) {
+            cappedNote = 255
+        }
+        let noteEightBit = UInt8(cappedNote)
+        sampler.startNote(noteEightBit, withVelocity: 127, onChannel: 1)
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(duration)) {
-            self.sampler.stopNote(noteIndex, onChannel: 1)
+            self.sampler.stopNote(noteEightBit, onChannel: 1)
         }
         
     }
