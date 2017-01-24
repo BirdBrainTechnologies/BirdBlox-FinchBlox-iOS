@@ -10,8 +10,11 @@ import Foundation
 
 
 let documentsPath: URL! = URL(string: NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory, FileManager.SearchPathDomainMask.userDomainMask, true)[0])
-let repoUrl = URL(string: "https://github.com/BirdBrainTechnologies/HummingbirdDragAndDrop-/archive/master.zip")
-let logURL = URL(string: "https://raw.githubusercontent.com/BirdBrainTechnologies/HummingbirdDragAndDrop-/master/version.txt")
+let branch = "dev"
+//let branch = "stable"
+//let branch = "master"
+let repoUrl = URL(string: "https://github.com/BirdBrainTechnologies/HummingbirdDragAndDrop-/archive/"+branch+".zip")
+let logURL = URL(string: "https://raw.githubusercontent.com/BirdBrainTechnologies/HummingbirdDragAndDrop-/"+branch+"/version.txt")
 let zipPath = documentsPath.appendingPathComponent("temp.zip")
 let unzipPath = documentsPath.appendingPathComponent("DragAndDrop")
 let fileManager = FileManager.default
@@ -23,7 +26,7 @@ public func getUpdate(){
 }
 
 public func getPath() -> URL {
-    return unzipPath.appendingPathComponent("HummingbirdDragAndDrop--master")
+    return unzipPath.appendingPathComponent("HummingbirdDragAndDrop--"+branch)
 }
 
 public func getSoundPath() -> URL {
