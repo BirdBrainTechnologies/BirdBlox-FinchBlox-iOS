@@ -55,7 +55,7 @@ class AudioManager: NSObject {
     }
     func getSoundDuration(filename: String) -> Int {
         do {
-        try player = AVAudioPlayer(contentsOf: getSoundPath().appendingPathComponent(filename))
+        try player = AVAudioPlayer(contentsOf: getPath().appendingPathComponent(filename))
         //convert to milliseconds
         let audioDuration: Float64 = player.duration * 1000
         return Int(audioDuration)
@@ -66,7 +66,7 @@ class AudioManager: NSObject {
     }
     func playSound(filename: String) {
         do {
-            try player = AVAudioPlayer(contentsOf: getSoundPath().appendingPathComponent(filename))
+            try player = AVAudioPlayer(contentsOf: getPath().appendingPathComponent(filename))
             player.prepareToPlay()
             player.play()
         } catch {

@@ -50,6 +50,178 @@
 		BAFD53B91E2EA0680062FC3D /* String+SHA1.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAFD53AE1E2EA0680062FC3D /* String+SHA1.swift */; };
 		BAFD53BA1E2EA0680062FC3D /* WebSockets.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAFD53AF1E2EA0680062FC3D /* WebSockets.swift */; };
 		BAFD53BC1E2FC9380062FC3D /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAFD53BB1E2FC9380062FC3D /* AudioManager.swift */; };
+		BAFD547D1E37BB280062FC3D /* codeStyleSettings.xml in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53C11E37BB280062FC3D /* codeStyleSettings.xml */; };
+		BAFD547E1E37BB280062FC3D /* Tom.xml in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53C31E37BB280062FC3D /* Tom.xml */; };
+		BAFD547F1E37BB280062FC3D /* Git.iml in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53C41E37BB280062FC3D /* Git.iml */; };
+		BAFD54801E37BB280062FC3D /* modules.xml in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53C51E37BB280062FC3D /* modules.xml */; };
+		BAFD54811E37BB280062FC3D /* vcs.xml in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53C61E37BB280062FC3D /* vcs.xml */; };
+		BAFD54821E37BB280062FC3D /* workspace.xml in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53C71E37BB280062FC3D /* workspace.xml */; };
+		BAFD54831E37BB280062FC3D /* AppIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53C81E37BB280062FC3D /* AppIcon.png */; };
+		BAFD54841E37BB280062FC3D /* Block.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53CA1E37BB280062FC3D /* Block.js */; };
+		BAFD54851E37BB280062FC3D /* CommandBlock.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53CB1E37BB280062FC3D /* CommandBlock.js */; };
+		BAFD54861E37BB280062FC3D /* DoubleLoopBlock.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53CC1E37BB280062FC3D /* DoubleLoopBlock.js */; };
+		BAFD54871E37BB280062FC3D /* HatBlock.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53CD1E37BB280062FC3D /* HatBlock.js */; };
+		BAFD54881E37BB280062FC3D /* LoopBlock.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53CE1E37BB280062FC3D /* LoopBlock.js */; };
+		BAFD54891E37BB280062FC3D /* PredicateBlock.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53CF1E37BB280062FC3D /* PredicateBlock.js */; };
+		BAFD548A1E37BB280062FC3D /* ReporterBlock.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53D01E37BB280062FC3D /* ReporterBlock.js */; };
+		BAFD548B1E37BB280062FC3D /* BlockStack.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53D21E37BB280062FC3D /* BlockStack.js */; };
+		BAFD548C1E37BB280062FC3D /* DisplayStack.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53D31E37BB280062FC3D /* DisplayStack.js */; };
+		BAFD548D1E37BB280062FC3D /* BlockDefs_control.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53D51E37BB280062FC3D /* BlockDefs_control.js */; };
+		BAFD548E1E37BB280062FC3D /* BlockDefs_hummingbird.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53D61E37BB280062FC3D /* BlockDefs_hummingbird.js */; };
+		BAFD548F1E37BB280062FC3D /* BlockDefs_ipad.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53D71E37BB280062FC3D /* BlockDefs_ipad.js */; };
+		BAFD54901E37BB280062FC3D /* BlockDefs_looks.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53D81E37BB280062FC3D /* BlockDefs_looks.js */; };
+		BAFD54911E37BB280062FC3D /* BlockDefs_motion.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53D91E37BB280062FC3D /* BlockDefs_motion.js */; };
+		BAFD54921E37BB280062FC3D /* BlockDefs_operators.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53DA1E37BB280062FC3D /* BlockDefs_operators.js */; };
+		BAFD54931E37BB280062FC3D /* BlockDefs_sensing.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53DB1E37BB280062FC3D /* BlockDefs_sensing.js */; };
+		BAFD54941E37BB280062FC3D /* BlockDefs_sound.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53DC1E37BB280062FC3D /* BlockDefs_sound.js */; };
+		BAFD54951E37BB280062FC3D /* BlockDefs_variables.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53DD1E37BB280062FC3D /* BlockDefs_variables.js */; };
+		BAFD54961E37BB280062FC3D /* BlockList.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53DE1E37BB280062FC3D /* BlockList.js */; };
+		BAFD54971E37BB280062FC3D /* BlockIcon.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53E01E37BB280062FC3D /* BlockIcon.js */; };
+		BAFD54981E37BB280062FC3D /* LabelText.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53E11E37BB280062FC3D /* LabelText.js */; };
+		BAFD54991E37BB280062FC3D /* BlockSlot.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53E31E37BB280062FC3D /* BlockSlot.js */; };
+		BAFD549A1E37BB280062FC3D /* BoolSlot.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53E41E37BB280062FC3D /* BoolSlot.js */; };
+		BAFD549B1E37BB280062FC3D /* BroadcastDropSlot.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53E51E37BB280062FC3D /* BroadcastDropSlot.js */; };
+		BAFD549C1E37BB280062FC3D /* DropSlot.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53E61E37BB280062FC3D /* DropSlot.js */; };
+		BAFD549D1E37BB280062FC3D /* HBDropSlot.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53E71E37BB280062FC3D /* HBDropSlot.js */; };
+		BAFD549E1E37BB280062FC3D /* HexSlot.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53E81E37BB280062FC3D /* HexSlot.js */; };
+		BAFD549F1E37BB280062FC3D /* ListDropSlot.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53E91E37BB280062FC3D /* ListDropSlot.js */; };
+		BAFD54A01E37BB280062FC3D /* NumSlot.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53EA1E37BB280062FC3D /* NumSlot.js */; };
+		BAFD54A11E37BB280062FC3D /* RectSlot.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53EB1E37BB280062FC3D /* RectSlot.js */; };
+		BAFD54A21E37BB280062FC3D /* RoundSlot.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53EC1E37BB280062FC3D /* RoundSlot.js */; };
+		BAFD54A31E37BB280062FC3D /* Slot.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53ED1E37BB280062FC3D /* Slot.js */; };
+		BAFD54A41E37BB280062FC3D /* SoundDropSlot.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53EE1E37BB280062FC3D /* SoundDropSlot.js */; };
+		BAFD54A51E37BB280062FC3D /* StringSlot.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53EF1E37BB280062FC3D /* StringSlot.js */; };
+		BAFD54A61E37BB280062FC3D /* VarDropSlot.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53F01E37BB280062FC3D /* VarDropSlot.js */; };
+		BAFD54A71E37BB280062FC3D /* CodeManager.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53F11E37BB280062FC3D /* CodeManager.js */; };
+		BAFD54A81E37BB280062FC3D /* BlockGraphics.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53F31E37BB280062FC3D /* BlockGraphics.js */; };
+		BAFD54A91E37BB280062FC3D /* Colors.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53F41E37BB280062FC3D /* Colors.js */; };
+		BAFD54AA1E37BB280062FC3D /* Sounds.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53F51E37BB280062FC3D /* Sounds.js */; };
+		BAFD54AB1E37BB280062FC3D /* BoolData.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53F71E37BB280062FC3D /* BoolData.js */; };
+		BAFD54AC1E37BB280062FC3D /* Data.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53F81E37BB280062FC3D /* Data.js */; };
+		BAFD54AD1E37BB280062FC3D /* ListData.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53F91E37BB280062FC3D /* ListData.js */; };
+		BAFD54AE1E37BB280062FC3D /* NumData.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53FA1E37BB280062FC3D /* NumData.js */; };
+		BAFD54AF1E37BB280062FC3D /* SelectionData.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53FB1E37BB280062FC3D /* SelectionData.js */; };
+		BAFD54B01E37BB280062FC3D /* StringData.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53FC1E37BB280062FC3D /* StringData.js */; };
+		BAFD54B11E37BB280062FC3D /* GuiElements.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53FD1E37BB280062FC3D /* GuiElements.js */; };
+		BAFD54B21E37BB280062FC3D /* HtmlServer.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53FE1E37BB280062FC3D /* HtmlServer.js */; };
+		BAFD54B31E37BB280062FC3D /* Hummingbird.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD53FF1E37BB280062FC3D /* Hummingbird.js */; };
+		BAFD54B41E37BB280062FC3D /* HummingbirdDragAndDrop.html in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54001E37BB280062FC3D /* HummingbirdDragAndDrop.html */; };
+		BAFD54B51E37BB280062FC3D /* HummingbirdManager.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54011E37BB280062FC3D /* HummingbirdManager.js */; };
+		BAFD54B61E37BB280062FC3D /* hBIconDarkGraOldy.png in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54031E37BB280062FC3D /* hBIconDarkGraOldy.png */; };
+		BAFD54B71E37BB280062FC3D /* hBIconDarkGray.png in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54041E37BB280062FC3D /* hBIconDarkGray.png */; };
+		BAFD54B81E37BB280062FC3D /* hBIconWhite.png in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54051E37BB280062FC3D /* hBIconWhite.png */; };
+		BAFD54B91E37BB280062FC3D /* hBIconWhiteOld.png in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54061E37BB280062FC3D /* hBIconWhiteOld.png */; };
+		BAFD54BA1E37BB280062FC3D /* ImageList.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54071E37BB280062FC3D /* ImageList.js */; };
+		BAFD54BB1E37BB280062FC3D /* LICENSE.md in Sources */ = {isa = PBXBuildFile; fileRef = BAFD54081E37BB280062FC3D /* LICENSE.md */; };
+		BAFD54BC1E37BB280062FC3D /* List.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54091E37BB280062FC3D /* List.js */; };
+		BAFD54BD1E37BB280062FC3D /* MyCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = BAFD540A1E37BB280062FC3D /* MyCSS.css */; };
+		BAFD54BE1E37BB280062FC3D /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = BAFD540B1E37BB280062FC3D /* README.md */; };
+		BAFD54BF1E37BB280062FC3D /* SaveManager.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD540C1E37BB280062FC3D /* SaveManager.js */; };
+		BAFD54C01E37BB280062FC3D /* alarm.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD540E1E37BB280062FC3D /* alarm.wav */; };
+		BAFD54C11E37BB280062FC3D /* ba_doom_crash.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD540F1E37BB280062FC3D /* ba_doom_crash.wav */; };
+		BAFD54C21E37BB280062FC3D /* baby_rattle.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54101E37BB280062FC3D /* baby_rattle.wav */; };
+		BAFD54C31E37BB280062FC3D /* baby_saying_mama.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54111E37BB280062FC3D /* baby_saying_mama.wav */; };
+		BAFD54C41E37BB280062FC3D /* baby_sneeze.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54121E37BB280062FC3D /* baby_sneeze.wav */; };
+		BAFD54C51E37BB280062FC3D /* bark.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54131E37BB280062FC3D /* bark.wav */; };
+		BAFD54C61E37BB280062FC3D /* bathtub_full_of_lentils.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54141E37BB280062FC3D /* bathtub_full_of_lentils.wav */; };
+		BAFD54C71E37BB280062FC3D /* beat.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54151E37BB280062FC3D /* beat.wav */; };
+		BAFD54C81E37BB280062FC3D /* beepbeep.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54161E37BB280062FC3D /* beepbeep.wav */; };
+		BAFD54C91E37BB280062FC3D /* bell.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54171E37BB280062FC3D /* bell.wav */; };
+		BAFD54CA1E37BB280062FC3D /* bird.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54181E37BB280062FC3D /* bird.wav */; };
+		BAFD54CB1E37BB280062FC3D /* bloupy.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54191E37BB280062FC3D /* bloupy.wav */; };
+		BAFD54CC1E37BB280062FC3D /* blowing_into_a_bottle.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD541A1E37BB280062FC3D /* blowing_into_a_bottle.wav */; };
+		BAFD54CD1E37BB290062FC3D /* burp.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD541B1E37BB280062FC3D /* burp.wav */; };
+		BAFD54CE1E37BB290062FC3D /* bzzzz_appa_tap.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD541C1E37BB280062FC3D /* bzzzz_appa_tap.wav */; };
+		BAFD54CF1E37BB290062FC3D /* chink.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD541D1E37BB280062FC3D /* chink.wav */; };
+		BAFD54D01E37BB290062FC3D /* chirrp.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD541E1E37BB280062FC3D /* chirrp.wav */; };
+		BAFD54D11E37BB290062FC3D /* chomp.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD541F1E37BB280062FC3D /* chomp.wav */; };
+		BAFD54D21E37BB290062FC3D /* clang_high.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54201E37BB280062FC3D /* clang_high.wav */; };
+		BAFD54D31E37BB290062FC3D /* clang_low.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54211E37BB280062FC3D /* clang_low.wav */; };
+		BAFD54D41E37BB290062FC3D /* click_click.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54221E37BB280062FC3D /* click_click.wav */; };
+		BAFD54D51E37BB290062FC3D /* creaking_wood.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54231E37BB280062FC3D /* creaking_wood.wav */; };
+		BAFD54D61E37BB290062FC3D /* creaky_dishwasher_door.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54241E37BB280062FC3D /* creaky_dishwasher_door.wav */; };
+		BAFD54D71E37BB290062FC3D /* crow.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54251E37BB280062FC3D /* crow.wav */; };
+		BAFD54D81E37BB290062FC3D /* doowee.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54261E37BB280062FC3D /* doowee.wav */; };
+		BAFD54D91E37BB290062FC3D /* doowoo.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54271E37BB280062FC3D /* doowoo.wav */; };
+		BAFD54DA1E37BB290062FC3D /* dragon_wheeze.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54281E37BB280062FC3D /* dragon_wheeze.wav */; };
+		BAFD54DB1E37BB290062FC3D /* eating_pizza.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54291E37BB280062FC3D /* eating_pizza.wav */; };
+		BAFD54DC1E37BB290062FC3D /* electric_pump.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD542A1E37BB280062FC3D /* electric_pump.wav */; };
+		BAFD54DD1E37BB290062FC3D /* electric_sadness.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD542B1E37BB280062FC3D /* electric_sadness.wav */; };
+		BAFD54DE1E37BB290062FC3D /* elf_laughing1.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD542C1E37BB280062FC3D /* elf_laughing1.wav */; };
+		BAFD54DF1E37BB290062FC3D /* elf_laughing2.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD542D1E37BB280062FC3D /* elf_laughing2.wav */; };
+		BAFD54E01E37BB290062FC3D /* flappity.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD542E1E37BB280062FC3D /* flappity.wav */; };
+		BAFD54E11E37BB290062FC3D /* fly_by.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD542F1E37BB280062FC3D /* fly_by.wav */; };
+		BAFD54E21E37BB290062FC3D /* gobbler.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54301E37BB280062FC3D /* gobbler.wav */; };
+		BAFD54E31E37BB290062FC3D /* gulp.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54311E37BB280062FC3D /* gulp.wav */; };
+		BAFD54E41E37BB290062FC3D /* hen_announcing_egg.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54321E37BB280062FC3D /* hen_announcing_egg.wav */; };
+		BAFD54E51E37BB290062FC3D /* hens_leaving_coop.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54331E37BB280062FC3D /* hens_leaving_coop.wav */; };
+		BAFD54E61E37BB290062FC3D /* hitting_a_wire_cage1.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54341E37BB280062FC3D /* hitting_a_wire_cage1.wav */; };
+		BAFD54E71E37BB290062FC3D /* hitting_a_wire_cage2.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54351E37BB280062FC3D /* hitting_a_wire_cage2.wav */; };
+		BAFD54E81E37BB290062FC3D /* hitting_a_wooden_pole1.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54361E37BB280062FC3D /* hitting_a_wooden_pole1.wav */; };
+		BAFD54E91E37BB290062FC3D /* hitting_a_wooden_pole2.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54371E37BB280062FC3D /* hitting_a_wooden_pole2.wav */; };
+		BAFD54EA1E37BB290062FC3D /* kink_brrrrrrrr_teck.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54381E37BB280062FC3D /* kink_brrrrrrrr_teck.wav */; };
+		BAFD54EB1E37BB290062FC3D /* lighting_a_match.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54391E37BB280062FC3D /* lighting_a_match.wav */; };
+		BAFD54EC1E37BB290062FC3D /* loose_bow_string.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD543A1E37BB280062FC3D /* loose_bow_string.wav */; };
+		BAFD54ED1E37BB290062FC3D /* machine_hum.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD543B1E37BB280062FC3D /* machine_hum.wav */; };
+		BAFD54EE1E37BB290062FC3D /* malfunction.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD543C1E37BB280062FC3D /* malfunction.wav */; };
+		BAFD54EF1E37BB290062FC3D /* meow.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD543D1E37BB280062FC3D /* meow.wav */; };
+		BAFD54F01E37BB290062FC3D /* moan.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD543E1E37BB280062FC3D /* moan.wav */; };
+		BAFD54F11E37BB290062FC3D /* mouth_pop.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD543F1E37BB280062FC3D /* mouth_pop.wav */; };
+		BAFD54F21E37BB290062FC3D /* pebbles_on_concrete.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54401E37BB280062FC3D /* pebbles_on_concrete.wav */; };
+		BAFD54F31E37BB290062FC3D /* pouring_boiling_water_into_teacup.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54411E37BB280062FC3D /* pouring_boiling_water_into_teacup.wav */; };
+		BAFD54F41E37BB290062FC3D /* pouring_lentils.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54421E37BB280062FC3D /* pouring_lentils.wav */; };
+		BAFD54F51E37BB290062FC3D /* pouring_liquid_from_bottle.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54431E37BB280062FC3D /* pouring_liquid_from_bottle.wav */; };
+		BAFD54F61E37BB290062FC3D /* pouring_water_on_hot_stones.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54441E37BB280062FC3D /* pouring_water_on_hot_stones.wav */; };
+		BAFD54F71E37BB290062FC3D /* ray_gun.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54451E37BB280062FC3D /* ray_gun.wav */; };
+		BAFD54F81E37BB290062FC3D /* school_bell.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54461E37BB280062FC3D /* school_bell.wav */; };
+		BAFD54F91E37BB290062FC3D /* scirocco.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54471E37BB280062FC3D /* scirocco.wav */; };
+		BAFD54FA1E37BB290062FC3D /* spacey_drone.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54481E37BB280062FC3D /* spacey_drone.wav */; };
+		BAFD54FB1E37BB290062FC3D /* thud.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54491E37BB280062FC3D /* thud.wav */; };
+		BAFD54FC1E37BB290062FC3D /* ting.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD544A1E37BB280062FC3D /* ting.wav */; };
+		BAFD54FD1E37BB290062FC3D /* tock_tick1.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD544B1E37BB280062FC3D /* tock_tick1.wav */; };
+		BAFD54FE1E37BB290062FC3D /* tock_tick2.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD544C1E37BB280062FC3D /* tock_tick2.wav */; };
+		BAFD54FF1E37BB290062FC3D /* toilet_flush.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD544D1E37BB280062FC3D /* toilet_flush.wav */; };
+		BAFD55001E37BB290062FC3D /* tone_correct.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD544E1E37BB280062FC3D /* tone_correct.wav */; };
+		BAFD55011E37BB290062FC3D /* tone_incorrect.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD544F1E37BB280062FC3D /* tone_incorrect.wav */; };
+		BAFD55021E37BB290062FC3D /* toy_phone_busy_signal.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54501E37BB280062FC3D /* toy_phone_busy_signal.wav */; };
+		BAFD55031E37BB290062FC3D /* toy_phone_dialing.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54511E37BB280062FC3D /* toy_phone_dialing.wav */; };
+		BAFD55041E37BB290062FC3D /* woo.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54521E37BB280062FC3D /* woo.wav */; };
+		BAFD55051E37BB290062FC3D /* wooooooooooo.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54531E37BB280062FC3D /* wooooooooooo.wav */; };
+		BAFD55061E37BB290062FC3D /* woowoo.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54541E37BB280062FC3D /* woowoo.wav */; };
+		BAFD55071E37BB290062FC3D /* zap.wav in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54551E37BB280062FC3D /* zap.wav */; };
+		BAFD55081E37BB290062FC3D /* BlockIcon.js - Shortcut.lnk in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54571E37BB280062FC3D /* BlockIcon.js - Shortcut.lnk */; };
+		BAFD55091E37BB290062FC3D /* VectorIcon.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54581E37BB280062FC3D /* VectorIcon.js */; };
+		BAFD550A1E37BB290062FC3D /* VectorPaths.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54591E37BB280062FC3D /* VectorPaths.js */; };
+		BAFD550B1E37BB290062FC3D /* Test.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD545A1E37BB280062FC3D /* Test.js */; };
+		BAFD550C1E37BB290062FC3D /* TouchReceiver.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD545B1E37BB280062FC3D /* TouchReceiver.js */; };
+		BAFD550D1E37BB290062FC3D /* BlockContextMenu.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD545D1E37BB280062FC3D /* BlockContextMenu.js */; };
+		BAFD550E1E37BB290062FC3D /* BlockPalette.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD545F1E37BB280062FC3D /* BlockPalette.js */; };
+		BAFD550F1E37BB290062FC3D /* Category.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54601E37BB280062FC3D /* Category.js */; };
+		BAFD55101E37BB290062FC3D /* CategoryBN.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54611E37BB280062FC3D /* CategoryBN.js */; };
+		BAFD55111E37BB290062FC3D /* BubbleOverlay.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54621E37BB280062FC3D /* BubbleOverlay.js */; };
+		BAFD55121E37BB290062FC3D /* Button.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54631E37BB280062FC3D /* Button.js */; };
+		BAFD55131E37BB290062FC3D /* ConnectMultipleHBDialog.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54641E37BB280062FC3D /* ConnectMultipleHBDialog.js */; };
+		BAFD55141E37BB290062FC3D /* ConnectOneHBDialog.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54651E37BB280062FC3D /* ConnectOneHBDialog.js */; };
+		BAFD55151E37BB290062FC3D /* DisplayBox.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54661E37BB280062FC3D /* DisplayBox.js */; };
+		BAFD55161E37BB290062FC3D /* HBConnectionList.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54671E37BB280062FC3D /* HBConnectionList.js */; };
+		BAFD55171E37BB290062FC3D /* HBStatusLight.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54681E37BB280062FC3D /* HBStatusLight.js */; };
+		BAFD55181E37BB290062FC3D /* Highlighter.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54691E37BB280062FC3D /* Highlighter.js */; };
+		BAFD55191E37BB290062FC3D /* DisplayNum.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD546B1E37BB280062FC3D /* DisplayNum.js */; };
+		BAFD551A1E37BB290062FC3D /* InputPad.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD546C1E37BB280062FC3D /* InputPad.js */; };
+		BAFD551B1E37BB290062FC3D /* DebugMenu.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD546E1E37BB280062FC3D /* DebugMenu.js */; };
+		BAFD551C1E37BB290062FC3D /* FileMenu.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD546F1E37BB280062FC3D /* FileMenu.js */; };
+		BAFD551D1E37BB290062FC3D /* HummingbirdMenu.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54701E37BB280062FC3D /* HummingbirdMenu.js */; };
+		BAFD551E1E37BB290062FC3D /* Menu.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54711E37BB280062FC3D /* Menu.js */; };
+		BAFD551F1E37BB290062FC3D /* ViewMenu.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54721E37BB280062FC3D /* ViewMenu.js */; };
+		BAFD55201E37BB290062FC3D /* MenuBnList.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54731E37BB280062FC3D /* MenuBnList.js */; };
+		BAFD55211E37BB290062FC3D /* OpenDialog.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54741E37BB280062FC3D /* OpenDialog.js */; };
+		BAFD55221E37BB290062FC3D /* ResultBubble.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54751E37BB280062FC3D /* ResultBubble.js */; };
+		BAFD55231E37BB290062FC3D /* Tab.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54771E37BB280062FC3D /* Tab.js */; };
+		BAFD55241E37BB290062FC3D /* TabManager.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54781E37BB280062FC3D /* TabManager.js */; };
+		BAFD55251E37BB290062FC3D /* TitleBar.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD54791E37BB280062FC3D /* TitleBar.js */; };
+		BAFD55261E37BB290062FC3D /* Variable.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD547A1E37BB280062FC3D /* Variable.js */; };
+		BAFD55271E37BB290062FC3D /* version.txt in Resources */ = {isa = PBXBuildFile; fileRef = BAFD547B1E37BB280062FC3D /* version.txt */; };
+		BAFD55281E37BB290062FC3D /* XmlWriter.js in Resources */ = {isa = PBXBuildFile; fileRef = BAFD547C1E37BB280062FC3D /* XmlWriter.js */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -119,6 +291,178 @@
 		BAFD53AE1E2EA0680062FC3D /* String+SHA1.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+SHA1.swift"; sourceTree = "<group>"; };
 		BAFD53AF1E2EA0680062FC3D /* WebSockets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebSockets.swift; sourceTree = "<group>"; };
 		BAFD53BB1E2FC9380062FC3D /* AudioManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioManager.swift; sourceTree = "<group>"; };
+		BAFD53C11E37BB280062FC3D /* codeStyleSettings.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = codeStyleSettings.xml; sourceTree = "<group>"; };
+		BAFD53C31E37BB280062FC3D /* Tom.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Tom.xml; sourceTree = "<group>"; };
+		BAFD53C41E37BB280062FC3D /* Git.iml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Git.iml; sourceTree = "<group>"; };
+		BAFD53C51E37BB280062FC3D /* modules.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = modules.xml; sourceTree = "<group>"; };
+		BAFD53C61E37BB280062FC3D /* vcs.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = vcs.xml; sourceTree = "<group>"; };
+		BAFD53C71E37BB280062FC3D /* workspace.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = workspace.xml; sourceTree = "<group>"; };
+		BAFD53C81E37BB280062FC3D /* AppIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AppIcon.png; sourceTree = "<group>"; };
+		BAFD53CA1E37BB280062FC3D /* Block.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = Block.js; sourceTree = "<group>"; };
+		BAFD53CB1E37BB280062FC3D /* CommandBlock.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = CommandBlock.js; sourceTree = "<group>"; };
+		BAFD53CC1E37BB280062FC3D /* DoubleLoopBlock.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = DoubleLoopBlock.js; sourceTree = "<group>"; };
+		BAFD53CD1E37BB280062FC3D /* HatBlock.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = HatBlock.js; sourceTree = "<group>"; };
+		BAFD53CE1E37BB280062FC3D /* LoopBlock.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = LoopBlock.js; sourceTree = "<group>"; };
+		BAFD53CF1E37BB280062FC3D /* PredicateBlock.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = PredicateBlock.js; sourceTree = "<group>"; };
+		BAFD53D01E37BB280062FC3D /* ReporterBlock.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = ReporterBlock.js; sourceTree = "<group>"; };
+		BAFD53D21E37BB280062FC3D /* BlockStack.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = BlockStack.js; sourceTree = "<group>"; };
+		BAFD53D31E37BB280062FC3D /* DisplayStack.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = DisplayStack.js; sourceTree = "<group>"; };
+		BAFD53D51E37BB280062FC3D /* BlockDefs_control.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = BlockDefs_control.js; sourceTree = "<group>"; };
+		BAFD53D61E37BB280062FC3D /* BlockDefs_hummingbird.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = BlockDefs_hummingbird.js; sourceTree = "<group>"; };
+		BAFD53D71E37BB280062FC3D /* BlockDefs_ipad.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = BlockDefs_ipad.js; sourceTree = "<group>"; };
+		BAFD53D81E37BB280062FC3D /* BlockDefs_looks.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = BlockDefs_looks.js; sourceTree = "<group>"; };
+		BAFD53D91E37BB280062FC3D /* BlockDefs_motion.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = BlockDefs_motion.js; sourceTree = "<group>"; };
+		BAFD53DA1E37BB280062FC3D /* BlockDefs_operators.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = BlockDefs_operators.js; sourceTree = "<group>"; };
+		BAFD53DB1E37BB280062FC3D /* BlockDefs_sensing.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = BlockDefs_sensing.js; sourceTree = "<group>"; };
+		BAFD53DC1E37BB280062FC3D /* BlockDefs_sound.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = BlockDefs_sound.js; sourceTree = "<group>"; };
+		BAFD53DD1E37BB280062FC3D /* BlockDefs_variables.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = BlockDefs_variables.js; sourceTree = "<group>"; };
+		BAFD53DE1E37BB280062FC3D /* BlockList.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = BlockList.js; sourceTree = "<group>"; };
+		BAFD53E01E37BB280062FC3D /* BlockIcon.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = BlockIcon.js; sourceTree = "<group>"; };
+		BAFD53E11E37BB280062FC3D /* LabelText.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = LabelText.js; sourceTree = "<group>"; };
+		BAFD53E31E37BB280062FC3D /* BlockSlot.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = BlockSlot.js; sourceTree = "<group>"; };
+		BAFD53E41E37BB280062FC3D /* BoolSlot.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = BoolSlot.js; sourceTree = "<group>"; };
+		BAFD53E51E37BB280062FC3D /* BroadcastDropSlot.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = BroadcastDropSlot.js; sourceTree = "<group>"; };
+		BAFD53E61E37BB280062FC3D /* DropSlot.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = DropSlot.js; sourceTree = "<group>"; };
+		BAFD53E71E37BB280062FC3D /* HBDropSlot.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = HBDropSlot.js; sourceTree = "<group>"; };
+		BAFD53E81E37BB280062FC3D /* HexSlot.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = HexSlot.js; sourceTree = "<group>"; };
+		BAFD53E91E37BB280062FC3D /* ListDropSlot.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = ListDropSlot.js; sourceTree = "<group>"; };
+		BAFD53EA1E37BB280062FC3D /* NumSlot.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = NumSlot.js; sourceTree = "<group>"; };
+		BAFD53EB1E37BB280062FC3D /* RectSlot.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = RectSlot.js; sourceTree = "<group>"; };
+		BAFD53EC1E37BB280062FC3D /* RoundSlot.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = RoundSlot.js; sourceTree = "<group>"; };
+		BAFD53ED1E37BB280062FC3D /* Slot.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = Slot.js; sourceTree = "<group>"; };
+		BAFD53EE1E37BB280062FC3D /* SoundDropSlot.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = SoundDropSlot.js; sourceTree = "<group>"; };
+		BAFD53EF1E37BB280062FC3D /* StringSlot.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = StringSlot.js; sourceTree = "<group>"; };
+		BAFD53F01E37BB280062FC3D /* VarDropSlot.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = VarDropSlot.js; sourceTree = "<group>"; };
+		BAFD53F11E37BB280062FC3D /* CodeManager.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = CodeManager.js; sourceTree = "<group>"; };
+		BAFD53F31E37BB280062FC3D /* BlockGraphics.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = BlockGraphics.js; sourceTree = "<group>"; };
+		BAFD53F41E37BB280062FC3D /* Colors.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = Colors.js; sourceTree = "<group>"; };
+		BAFD53F51E37BB280062FC3D /* Sounds.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = Sounds.js; sourceTree = "<group>"; };
+		BAFD53F71E37BB280062FC3D /* BoolData.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = BoolData.js; sourceTree = "<group>"; };
+		BAFD53F81E37BB280062FC3D /* Data.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = Data.js; sourceTree = "<group>"; };
+		BAFD53F91E37BB280062FC3D /* ListData.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = ListData.js; sourceTree = "<group>"; };
+		BAFD53FA1E37BB280062FC3D /* NumData.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = NumData.js; sourceTree = "<group>"; };
+		BAFD53FB1E37BB280062FC3D /* SelectionData.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = SelectionData.js; sourceTree = "<group>"; };
+		BAFD53FC1E37BB280062FC3D /* StringData.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = StringData.js; sourceTree = "<group>"; };
+		BAFD53FD1E37BB280062FC3D /* GuiElements.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = GuiElements.js; sourceTree = "<group>"; };
+		BAFD53FE1E37BB280062FC3D /* HtmlServer.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = HtmlServer.js; sourceTree = "<group>"; };
+		BAFD53FF1E37BB280062FC3D /* Hummingbird.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = Hummingbird.js; sourceTree = "<group>"; };
+		BAFD54001E37BB280062FC3D /* HummingbirdDragAndDrop.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = HummingbirdDragAndDrop.html; sourceTree = "<group>"; };
+		BAFD54011E37BB280062FC3D /* HummingbirdManager.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = HummingbirdManager.js; sourceTree = "<group>"; };
+		BAFD54031E37BB280062FC3D /* hBIconDarkGraOldy.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = hBIconDarkGraOldy.png; sourceTree = "<group>"; };
+		BAFD54041E37BB280062FC3D /* hBIconDarkGray.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = hBIconDarkGray.png; sourceTree = "<group>"; };
+		BAFD54051E37BB280062FC3D /* hBIconWhite.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = hBIconWhite.png; sourceTree = "<group>"; };
+		BAFD54061E37BB280062FC3D /* hBIconWhiteOld.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = hBIconWhiteOld.png; sourceTree = "<group>"; };
+		BAFD54071E37BB280062FC3D /* ImageList.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = ImageList.js; sourceTree = "<group>"; };
+		BAFD54081E37BB280062FC3D /* LICENSE.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = LICENSE.md; sourceTree = "<group>"; };
+		BAFD54091E37BB280062FC3D /* List.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = List.js; sourceTree = "<group>"; };
+		BAFD540A1E37BB280062FC3D /* MyCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = MyCSS.css; sourceTree = "<group>"; };
+		BAFD540B1E37BB280062FC3D /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		BAFD540C1E37BB280062FC3D /* SaveManager.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = SaveManager.js; sourceTree = "<group>"; };
+		BAFD540E1E37BB280062FC3D /* alarm.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = alarm.wav; sourceTree = "<group>"; };
+		BAFD540F1E37BB280062FC3D /* ba_doom_crash.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = ba_doom_crash.wav; sourceTree = "<group>"; };
+		BAFD54101E37BB280062FC3D /* baby_rattle.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = baby_rattle.wav; sourceTree = "<group>"; };
+		BAFD54111E37BB280062FC3D /* baby_saying_mama.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = baby_saying_mama.wav; sourceTree = "<group>"; };
+		BAFD54121E37BB280062FC3D /* baby_sneeze.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = baby_sneeze.wav; sourceTree = "<group>"; };
+		BAFD54131E37BB280062FC3D /* bark.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = bark.wav; sourceTree = "<group>"; };
+		BAFD54141E37BB280062FC3D /* bathtub_full_of_lentils.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = bathtub_full_of_lentils.wav; sourceTree = "<group>"; };
+		BAFD54151E37BB280062FC3D /* beat.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = beat.wav; sourceTree = "<group>"; };
+		BAFD54161E37BB280062FC3D /* beepbeep.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = beepbeep.wav; sourceTree = "<group>"; };
+		BAFD54171E37BB280062FC3D /* bell.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = bell.wav; sourceTree = "<group>"; };
+		BAFD54181E37BB280062FC3D /* bird.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = bird.wav; sourceTree = "<group>"; };
+		BAFD54191E37BB280062FC3D /* bloupy.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = bloupy.wav; sourceTree = "<group>"; };
+		BAFD541A1E37BB280062FC3D /* blowing_into_a_bottle.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = blowing_into_a_bottle.wav; sourceTree = "<group>"; };
+		BAFD541B1E37BB280062FC3D /* burp.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = burp.wav; sourceTree = "<group>"; };
+		BAFD541C1E37BB280062FC3D /* bzzzz_appa_tap.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = bzzzz_appa_tap.wav; sourceTree = "<group>"; };
+		BAFD541D1E37BB280062FC3D /* chink.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = chink.wav; sourceTree = "<group>"; };
+		BAFD541E1E37BB280062FC3D /* chirrp.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = chirrp.wav; sourceTree = "<group>"; };
+		BAFD541F1E37BB280062FC3D /* chomp.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = chomp.wav; sourceTree = "<group>"; };
+		BAFD54201E37BB280062FC3D /* clang_high.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = clang_high.wav; sourceTree = "<group>"; };
+		BAFD54211E37BB280062FC3D /* clang_low.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = clang_low.wav; sourceTree = "<group>"; };
+		BAFD54221E37BB280062FC3D /* click_click.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = click_click.wav; sourceTree = "<group>"; };
+		BAFD54231E37BB280062FC3D /* creaking_wood.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = creaking_wood.wav; sourceTree = "<group>"; };
+		BAFD54241E37BB280062FC3D /* creaky_dishwasher_door.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = creaky_dishwasher_door.wav; sourceTree = "<group>"; };
+		BAFD54251E37BB280062FC3D /* crow.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = crow.wav; sourceTree = "<group>"; };
+		BAFD54261E37BB280062FC3D /* doowee.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = doowee.wav; sourceTree = "<group>"; };
+		BAFD54271E37BB280062FC3D /* doowoo.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = doowoo.wav; sourceTree = "<group>"; };
+		BAFD54281E37BB280062FC3D /* dragon_wheeze.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = dragon_wheeze.wav; sourceTree = "<group>"; };
+		BAFD54291E37BB280062FC3D /* eating_pizza.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = eating_pizza.wav; sourceTree = "<group>"; };
+		BAFD542A1E37BB280062FC3D /* electric_pump.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = electric_pump.wav; sourceTree = "<group>"; };
+		BAFD542B1E37BB280062FC3D /* electric_sadness.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = electric_sadness.wav; sourceTree = "<group>"; };
+		BAFD542C1E37BB280062FC3D /* elf_laughing1.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = elf_laughing1.wav; sourceTree = "<group>"; };
+		BAFD542D1E37BB280062FC3D /* elf_laughing2.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = elf_laughing2.wav; sourceTree = "<group>"; };
+		BAFD542E1E37BB280062FC3D /* flappity.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = flappity.wav; sourceTree = "<group>"; };
+		BAFD542F1E37BB280062FC3D /* fly_by.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = fly_by.wav; sourceTree = "<group>"; };
+		BAFD54301E37BB280062FC3D /* gobbler.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = gobbler.wav; sourceTree = "<group>"; };
+		BAFD54311E37BB280062FC3D /* gulp.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = gulp.wav; sourceTree = "<group>"; };
+		BAFD54321E37BB280062FC3D /* hen_announcing_egg.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = hen_announcing_egg.wav; sourceTree = "<group>"; };
+		BAFD54331E37BB280062FC3D /* hens_leaving_coop.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = hens_leaving_coop.wav; sourceTree = "<group>"; };
+		BAFD54341E37BB280062FC3D /* hitting_a_wire_cage1.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = hitting_a_wire_cage1.wav; sourceTree = "<group>"; };
+		BAFD54351E37BB280062FC3D /* hitting_a_wire_cage2.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = hitting_a_wire_cage2.wav; sourceTree = "<group>"; };
+		BAFD54361E37BB280062FC3D /* hitting_a_wooden_pole1.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = hitting_a_wooden_pole1.wav; sourceTree = "<group>"; };
+		BAFD54371E37BB280062FC3D /* hitting_a_wooden_pole2.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = hitting_a_wooden_pole2.wav; sourceTree = "<group>"; };
+		BAFD54381E37BB280062FC3D /* kink_brrrrrrrr_teck.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = kink_brrrrrrrr_teck.wav; sourceTree = "<group>"; };
+		BAFD54391E37BB280062FC3D /* lighting_a_match.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = lighting_a_match.wav; sourceTree = "<group>"; };
+		BAFD543A1E37BB280062FC3D /* loose_bow_string.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = loose_bow_string.wav; sourceTree = "<group>"; };
+		BAFD543B1E37BB280062FC3D /* machine_hum.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = machine_hum.wav; sourceTree = "<group>"; };
+		BAFD543C1E37BB280062FC3D /* malfunction.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = malfunction.wav; sourceTree = "<group>"; };
+		BAFD543D1E37BB280062FC3D /* meow.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = meow.wav; sourceTree = "<group>"; };
+		BAFD543E1E37BB280062FC3D /* moan.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = moan.wav; sourceTree = "<group>"; };
+		BAFD543F1E37BB280062FC3D /* mouth_pop.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = mouth_pop.wav; sourceTree = "<group>"; };
+		BAFD54401E37BB280062FC3D /* pebbles_on_concrete.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = pebbles_on_concrete.wav; sourceTree = "<group>"; };
+		BAFD54411E37BB280062FC3D /* pouring_boiling_water_into_teacup.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = pouring_boiling_water_into_teacup.wav; sourceTree = "<group>"; };
+		BAFD54421E37BB280062FC3D /* pouring_lentils.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = pouring_lentils.wav; sourceTree = "<group>"; };
+		BAFD54431E37BB280062FC3D /* pouring_liquid_from_bottle.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = pouring_liquid_from_bottle.wav; sourceTree = "<group>"; };
+		BAFD54441E37BB280062FC3D /* pouring_water_on_hot_stones.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = pouring_water_on_hot_stones.wav; sourceTree = "<group>"; };
+		BAFD54451E37BB280062FC3D /* ray_gun.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = ray_gun.wav; sourceTree = "<group>"; };
+		BAFD54461E37BB280062FC3D /* school_bell.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = school_bell.wav; sourceTree = "<group>"; };
+		BAFD54471E37BB280062FC3D /* scirocco.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = scirocco.wav; sourceTree = "<group>"; };
+		BAFD54481E37BB280062FC3D /* spacey_drone.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = spacey_drone.wav; sourceTree = "<group>"; };
+		BAFD54491E37BB280062FC3D /* thud.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = thud.wav; sourceTree = "<group>"; };
+		BAFD544A1E37BB280062FC3D /* ting.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = ting.wav; sourceTree = "<group>"; };
+		BAFD544B1E37BB280062FC3D /* tock_tick1.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = tock_tick1.wav; sourceTree = "<group>"; };
+		BAFD544C1E37BB280062FC3D /* tock_tick2.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = tock_tick2.wav; sourceTree = "<group>"; };
+		BAFD544D1E37BB280062FC3D /* toilet_flush.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = toilet_flush.wav; sourceTree = "<group>"; };
+		BAFD544E1E37BB280062FC3D /* tone_correct.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = tone_correct.wav; sourceTree = "<group>"; };
+		BAFD544F1E37BB280062FC3D /* tone_incorrect.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = tone_incorrect.wav; sourceTree = "<group>"; };
+		BAFD54501E37BB280062FC3D /* toy_phone_busy_signal.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = toy_phone_busy_signal.wav; sourceTree = "<group>"; };
+		BAFD54511E37BB280062FC3D /* toy_phone_dialing.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = toy_phone_dialing.wav; sourceTree = "<group>"; };
+		BAFD54521E37BB280062FC3D /* woo.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = woo.wav; sourceTree = "<group>"; };
+		BAFD54531E37BB280062FC3D /* wooooooooooo.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = wooooooooooo.wav; sourceTree = "<group>"; };
+		BAFD54541E37BB280062FC3D /* woowoo.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = woowoo.wav; sourceTree = "<group>"; };
+		BAFD54551E37BB280062FC3D /* zap.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = zap.wav; sourceTree = "<group>"; };
+		BAFD54571E37BB280062FC3D /* BlockIcon.js - Shortcut.lnk */ = {isa = PBXFileReference; lastKnownFileType = file; path = "BlockIcon.js - Shortcut.lnk"; sourceTree = "<group>"; };
+		BAFD54581E37BB280062FC3D /* VectorIcon.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = VectorIcon.js; sourceTree = "<group>"; };
+		BAFD54591E37BB280062FC3D /* VectorPaths.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = VectorPaths.js; sourceTree = "<group>"; };
+		BAFD545A1E37BB280062FC3D /* Test.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = Test.js; sourceTree = "<group>"; };
+		BAFD545B1E37BB280062FC3D /* TouchReceiver.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = TouchReceiver.js; sourceTree = "<group>"; };
+		BAFD545D1E37BB280062FC3D /* BlockContextMenu.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = BlockContextMenu.js; sourceTree = "<group>"; };
+		BAFD545F1E37BB280062FC3D /* BlockPalette.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = BlockPalette.js; sourceTree = "<group>"; };
+		BAFD54601E37BB280062FC3D /* Category.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = Category.js; sourceTree = "<group>"; };
+		BAFD54611E37BB280062FC3D /* CategoryBN.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = CategoryBN.js; sourceTree = "<group>"; };
+		BAFD54621E37BB280062FC3D /* BubbleOverlay.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = BubbleOverlay.js; sourceTree = "<group>"; };
+		BAFD54631E37BB280062FC3D /* Button.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = Button.js; sourceTree = "<group>"; };
+		BAFD54641E37BB280062FC3D /* ConnectMultipleHBDialog.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = ConnectMultipleHBDialog.js; sourceTree = "<group>"; };
+		BAFD54651E37BB280062FC3D /* ConnectOneHBDialog.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = ConnectOneHBDialog.js; sourceTree = "<group>"; };
+		BAFD54661E37BB280062FC3D /* DisplayBox.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = DisplayBox.js; sourceTree = "<group>"; };
+		BAFD54671E37BB280062FC3D /* HBConnectionList.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = HBConnectionList.js; sourceTree = "<group>"; };
+		BAFD54681E37BB280062FC3D /* HBStatusLight.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = HBStatusLight.js; sourceTree = "<group>"; };
+		BAFD54691E37BB280062FC3D /* Highlighter.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = Highlighter.js; sourceTree = "<group>"; };
+		BAFD546B1E37BB280062FC3D /* DisplayNum.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = DisplayNum.js; sourceTree = "<group>"; };
+		BAFD546C1E37BB280062FC3D /* InputPad.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = InputPad.js; sourceTree = "<group>"; };
+		BAFD546E1E37BB280062FC3D /* DebugMenu.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = DebugMenu.js; sourceTree = "<group>"; };
+		BAFD546F1E37BB280062FC3D /* FileMenu.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = FileMenu.js; sourceTree = "<group>"; };
+		BAFD54701E37BB280062FC3D /* HummingbirdMenu.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = HummingbirdMenu.js; sourceTree = "<group>"; };
+		BAFD54711E37BB280062FC3D /* Menu.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = Menu.js; sourceTree = "<group>"; };
+		BAFD54721E37BB280062FC3D /* ViewMenu.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = ViewMenu.js; sourceTree = "<group>"; };
+		BAFD54731E37BB280062FC3D /* MenuBnList.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = MenuBnList.js; sourceTree = "<group>"; };
+		BAFD54741E37BB280062FC3D /* OpenDialog.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = OpenDialog.js; sourceTree = "<group>"; };
+		BAFD54751E37BB280062FC3D /* ResultBubble.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = ResultBubble.js; sourceTree = "<group>"; };
+		BAFD54771E37BB280062FC3D /* Tab.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = Tab.js; sourceTree = "<group>"; };
+		BAFD54781E37BB280062FC3D /* TabManager.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = TabManager.js; sourceTree = "<group>"; };
+		BAFD54791E37BB280062FC3D /* TitleBar.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = TitleBar.js; sourceTree = "<group>"; };
+		BAFD547A1E37BB280062FC3D /* Variable.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = Variable.js; sourceTree = "<group>"; };
+		BAFD547B1E37BB280062FC3D /* version.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = version.txt; sourceTree = "<group>"; };
+		BAFD547C1E37BB280062FC3D /* XmlWriter.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = XmlWriter.js; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -194,6 +538,7 @@
 		BA88B61F1B2233C9009EF1C3 = {
 			isa = PBXGroup;
 			children = (
+				BAFD53BF1E37BB280062FC3D /* HummingbirdDragAndDrop- */,
 				BA95C0271BBEF61A003AEC1A /* libsqlite3.tbd */,
 				BA95C0251BBEF609003AEC1A /* libz.1.2.5.tbd */,
 				BA05493F1B4AF2EA00A6FA8B /* CoreData.framework */,
@@ -241,6 +586,322 @@
 				BA88B62C1B2233C9009EF1C3 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		BAFD53BF1E37BB280062FC3D /* HummingbirdDragAndDrop- */ = {
+			isa = PBXGroup;
+			children = (
+				BAFD53C01E37BB280062FC3D /* .idea */,
+				BAFD53C81E37BB280062FC3D /* AppIcon.png */,
+				BAFD53C91E37BB280062FC3D /* Block */,
+				BAFD53D11E37BB280062FC3D /* BlockContainers */,
+				BAFD53D41E37BB280062FC3D /* BlockDefsAndList */,
+				BAFD53DF1E37BB280062FC3D /* BlockParts */,
+				BAFD53F11E37BB280062FC3D /* CodeManager.js */,
+				BAFD53F21E37BB280062FC3D /* ColorsAndGraphics */,
+				BAFD53F61E37BB280062FC3D /* Data */,
+				BAFD53FD1E37BB280062FC3D /* GuiElements.js */,
+				BAFD53FE1E37BB280062FC3D /* HtmlServer.js */,
+				BAFD53FF1E37BB280062FC3D /* Hummingbird.js */,
+				BAFD54001E37BB280062FC3D /* HummingbirdDragAndDrop.html */,
+				BAFD54011E37BB280062FC3D /* HummingbirdManager.js */,
+				BAFD54021E37BB280062FC3D /* Images */,
+				BAFD54081E37BB280062FC3D /* LICENSE.md */,
+				BAFD54091E37BB280062FC3D /* List.js */,
+				BAFD540A1E37BB280062FC3D /* MyCSS.css */,
+				BAFD540B1E37BB280062FC3D /* README.md */,
+				BAFD540C1E37BB280062FC3D /* SaveManager.js */,
+				BAFD540D1E37BB280062FC3D /* SoundClips */,
+				BAFD54561E37BB280062FC3D /* SVGIcons */,
+				BAFD545A1E37BB280062FC3D /* Test.js */,
+				BAFD545B1E37BB280062FC3D /* TouchReceiver.js */,
+				BAFD545C1E37BB280062FC3D /* UIParts */,
+				BAFD547A1E37BB280062FC3D /* Variable.js */,
+				BAFD547B1E37BB280062FC3D /* version.txt */,
+				BAFD547C1E37BB280062FC3D /* XmlWriter.js */,
+			);
+			name = "HummingbirdDragAndDrop-";
+			path = "Hummingbird Drag and Drop/HummingbirdDragAndDrop-";
+			sourceTree = "<group>";
+		};
+		BAFD53C01E37BB280062FC3D /* .idea */ = {
+			isa = PBXGroup;
+			children = (
+				BAFD53C11E37BB280062FC3D /* codeStyleSettings.xml */,
+				BAFD53C21E37BB280062FC3D /* dictionaries */,
+				BAFD53C41E37BB280062FC3D /* Git.iml */,
+				BAFD53C51E37BB280062FC3D /* modules.xml */,
+				BAFD53C61E37BB280062FC3D /* vcs.xml */,
+				BAFD53C71E37BB280062FC3D /* workspace.xml */,
+			);
+			path = .idea;
+			sourceTree = "<group>";
+		};
+		BAFD53C21E37BB280062FC3D /* dictionaries */ = {
+			isa = PBXGroup;
+			children = (
+				BAFD53C31E37BB280062FC3D /* Tom.xml */,
+			);
+			path = dictionaries;
+			sourceTree = "<group>";
+		};
+		BAFD53C91E37BB280062FC3D /* Block */ = {
+			isa = PBXGroup;
+			children = (
+				BAFD53CA1E37BB280062FC3D /* Block.js */,
+				BAFD53CB1E37BB280062FC3D /* CommandBlock.js */,
+				BAFD53CC1E37BB280062FC3D /* DoubleLoopBlock.js */,
+				BAFD53CD1E37BB280062FC3D /* HatBlock.js */,
+				BAFD53CE1E37BB280062FC3D /* LoopBlock.js */,
+				BAFD53CF1E37BB280062FC3D /* PredicateBlock.js */,
+				BAFD53D01E37BB280062FC3D /* ReporterBlock.js */,
+			);
+			path = Block;
+			sourceTree = "<group>";
+		};
+		BAFD53D11E37BB280062FC3D /* BlockContainers */ = {
+			isa = PBXGroup;
+			children = (
+				BAFD53D21E37BB280062FC3D /* BlockStack.js */,
+				BAFD53D31E37BB280062FC3D /* DisplayStack.js */,
+			);
+			path = BlockContainers;
+			sourceTree = "<group>";
+		};
+		BAFD53D41E37BB280062FC3D /* BlockDefsAndList */ = {
+			isa = PBXGroup;
+			children = (
+				BAFD53D51E37BB280062FC3D /* BlockDefs_control.js */,
+				BAFD53D61E37BB280062FC3D /* BlockDefs_hummingbird.js */,
+				BAFD53D71E37BB280062FC3D /* BlockDefs_ipad.js */,
+				BAFD53D81E37BB280062FC3D /* BlockDefs_looks.js */,
+				BAFD53D91E37BB280062FC3D /* BlockDefs_motion.js */,
+				BAFD53DA1E37BB280062FC3D /* BlockDefs_operators.js */,
+				BAFD53DB1E37BB280062FC3D /* BlockDefs_sensing.js */,
+				BAFD53DC1E37BB280062FC3D /* BlockDefs_sound.js */,
+				BAFD53DD1E37BB280062FC3D /* BlockDefs_variables.js */,
+				BAFD53DE1E37BB280062FC3D /* BlockList.js */,
+			);
+			path = BlockDefsAndList;
+			sourceTree = "<group>";
+		};
+		BAFD53DF1E37BB280062FC3D /* BlockParts */ = {
+			isa = PBXGroup;
+			children = (
+				BAFD53E01E37BB280062FC3D /* BlockIcon.js */,
+				BAFD53E11E37BB280062FC3D /* LabelText.js */,
+				BAFD53E21E37BB280062FC3D /* Slot */,
+			);
+			path = BlockParts;
+			sourceTree = "<group>";
+		};
+		BAFD53E21E37BB280062FC3D /* Slot */ = {
+			isa = PBXGroup;
+			children = (
+				BAFD53E31E37BB280062FC3D /* BlockSlot.js */,
+				BAFD53E41E37BB280062FC3D /* BoolSlot.js */,
+				BAFD53E51E37BB280062FC3D /* BroadcastDropSlot.js */,
+				BAFD53E61E37BB280062FC3D /* DropSlot.js */,
+				BAFD53E71E37BB280062FC3D /* HBDropSlot.js */,
+				BAFD53E81E37BB280062FC3D /* HexSlot.js */,
+				BAFD53E91E37BB280062FC3D /* ListDropSlot.js */,
+				BAFD53EA1E37BB280062FC3D /* NumSlot.js */,
+				BAFD53EB1E37BB280062FC3D /* RectSlot.js */,
+				BAFD53EC1E37BB280062FC3D /* RoundSlot.js */,
+				BAFD53ED1E37BB280062FC3D /* Slot.js */,
+				BAFD53EE1E37BB280062FC3D /* SoundDropSlot.js */,
+				BAFD53EF1E37BB280062FC3D /* StringSlot.js */,
+				BAFD53F01E37BB280062FC3D /* VarDropSlot.js */,
+			);
+			path = Slot;
+			sourceTree = "<group>";
+		};
+		BAFD53F21E37BB280062FC3D /* ColorsAndGraphics */ = {
+			isa = PBXGroup;
+			children = (
+				BAFD53F31E37BB280062FC3D /* BlockGraphics.js */,
+				BAFD53F41E37BB280062FC3D /* Colors.js */,
+				BAFD53F51E37BB280062FC3D /* Sounds.js */,
+			);
+			path = ColorsAndGraphics;
+			sourceTree = "<group>";
+		};
+		BAFD53F61E37BB280062FC3D /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				BAFD53F71E37BB280062FC3D /* BoolData.js */,
+				BAFD53F81E37BB280062FC3D /* Data.js */,
+				BAFD53F91E37BB280062FC3D /* ListData.js */,
+				BAFD53FA1E37BB280062FC3D /* NumData.js */,
+				BAFD53FB1E37BB280062FC3D /* SelectionData.js */,
+				BAFD53FC1E37BB280062FC3D /* StringData.js */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		BAFD54021E37BB280062FC3D /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				BAFD54031E37BB280062FC3D /* hBIconDarkGraOldy.png */,
+				BAFD54041E37BB280062FC3D /* hBIconDarkGray.png */,
+				BAFD54051E37BB280062FC3D /* hBIconWhite.png */,
+				BAFD54061E37BB280062FC3D /* hBIconWhiteOld.png */,
+				BAFD54071E37BB280062FC3D /* ImageList.js */,
+			);
+			path = Images;
+			sourceTree = "<group>";
+		};
+		BAFD540D1E37BB280062FC3D /* SoundClips */ = {
+			isa = PBXGroup;
+			children = (
+				BAFD540E1E37BB280062FC3D /* alarm.wav */,
+				BAFD540F1E37BB280062FC3D /* ba_doom_crash.wav */,
+				BAFD54101E37BB280062FC3D /* baby_rattle.wav */,
+				BAFD54111E37BB280062FC3D /* baby_saying_mama.wav */,
+				BAFD54121E37BB280062FC3D /* baby_sneeze.wav */,
+				BAFD54131E37BB280062FC3D /* bark.wav */,
+				BAFD54141E37BB280062FC3D /* bathtub_full_of_lentils.wav */,
+				BAFD54151E37BB280062FC3D /* beat.wav */,
+				BAFD54161E37BB280062FC3D /* beepbeep.wav */,
+				BAFD54171E37BB280062FC3D /* bell.wav */,
+				BAFD54181E37BB280062FC3D /* bird.wav */,
+				BAFD54191E37BB280062FC3D /* bloupy.wav */,
+				BAFD541A1E37BB280062FC3D /* blowing_into_a_bottle.wav */,
+				BAFD541B1E37BB280062FC3D /* burp.wav */,
+				BAFD541C1E37BB280062FC3D /* bzzzz_appa_tap.wav */,
+				BAFD541D1E37BB280062FC3D /* chink.wav */,
+				BAFD541E1E37BB280062FC3D /* chirrp.wav */,
+				BAFD541F1E37BB280062FC3D /* chomp.wav */,
+				BAFD54201E37BB280062FC3D /* clang_high.wav */,
+				BAFD54211E37BB280062FC3D /* clang_low.wav */,
+				BAFD54221E37BB280062FC3D /* click_click.wav */,
+				BAFD54231E37BB280062FC3D /* creaking_wood.wav */,
+				BAFD54241E37BB280062FC3D /* creaky_dishwasher_door.wav */,
+				BAFD54251E37BB280062FC3D /* crow.wav */,
+				BAFD54261E37BB280062FC3D /* doowee.wav */,
+				BAFD54271E37BB280062FC3D /* doowoo.wav */,
+				BAFD54281E37BB280062FC3D /* dragon_wheeze.wav */,
+				BAFD54291E37BB280062FC3D /* eating_pizza.wav */,
+				BAFD542A1E37BB280062FC3D /* electric_pump.wav */,
+				BAFD542B1E37BB280062FC3D /* electric_sadness.wav */,
+				BAFD542C1E37BB280062FC3D /* elf_laughing1.wav */,
+				BAFD542D1E37BB280062FC3D /* elf_laughing2.wav */,
+				BAFD542E1E37BB280062FC3D /* flappity.wav */,
+				BAFD542F1E37BB280062FC3D /* fly_by.wav */,
+				BAFD54301E37BB280062FC3D /* gobbler.wav */,
+				BAFD54311E37BB280062FC3D /* gulp.wav */,
+				BAFD54321E37BB280062FC3D /* hen_announcing_egg.wav */,
+				BAFD54331E37BB280062FC3D /* hens_leaving_coop.wav */,
+				BAFD54341E37BB280062FC3D /* hitting_a_wire_cage1.wav */,
+				BAFD54351E37BB280062FC3D /* hitting_a_wire_cage2.wav */,
+				BAFD54361E37BB280062FC3D /* hitting_a_wooden_pole1.wav */,
+				BAFD54371E37BB280062FC3D /* hitting_a_wooden_pole2.wav */,
+				BAFD54381E37BB280062FC3D /* kink_brrrrrrrr_teck.wav */,
+				BAFD54391E37BB280062FC3D /* lighting_a_match.wav */,
+				BAFD543A1E37BB280062FC3D /* loose_bow_string.wav */,
+				BAFD543B1E37BB280062FC3D /* machine_hum.wav */,
+				BAFD543C1E37BB280062FC3D /* malfunction.wav */,
+				BAFD543D1E37BB280062FC3D /* meow.wav */,
+				BAFD543E1E37BB280062FC3D /* moan.wav */,
+				BAFD543F1E37BB280062FC3D /* mouth_pop.wav */,
+				BAFD54401E37BB280062FC3D /* pebbles_on_concrete.wav */,
+				BAFD54411E37BB280062FC3D /* pouring_boiling_water_into_teacup.wav */,
+				BAFD54421E37BB280062FC3D /* pouring_lentils.wav */,
+				BAFD54431E37BB280062FC3D /* pouring_liquid_from_bottle.wav */,
+				BAFD54441E37BB280062FC3D /* pouring_water_on_hot_stones.wav */,
+				BAFD54451E37BB280062FC3D /* ray_gun.wav */,
+				BAFD54461E37BB280062FC3D /* school_bell.wav */,
+				BAFD54471E37BB280062FC3D /* scirocco.wav */,
+				BAFD54481E37BB280062FC3D /* spacey_drone.wav */,
+				BAFD54491E37BB280062FC3D /* thud.wav */,
+				BAFD544A1E37BB280062FC3D /* ting.wav */,
+				BAFD544B1E37BB280062FC3D /* tock_tick1.wav */,
+				BAFD544C1E37BB280062FC3D /* tock_tick2.wav */,
+				BAFD544D1E37BB280062FC3D /* toilet_flush.wav */,
+				BAFD544E1E37BB280062FC3D /* tone_correct.wav */,
+				BAFD544F1E37BB280062FC3D /* tone_incorrect.wav */,
+				BAFD54501E37BB280062FC3D /* toy_phone_busy_signal.wav */,
+				BAFD54511E37BB280062FC3D /* toy_phone_dialing.wav */,
+				BAFD54521E37BB280062FC3D /* woo.wav */,
+				BAFD54531E37BB280062FC3D /* wooooooooooo.wav */,
+				BAFD54541E37BB280062FC3D /* woowoo.wav */,
+				BAFD54551E37BB280062FC3D /* zap.wav */,
+			);
+			path = SoundClips;
+			sourceTree = "<group>";
+		};
+		BAFD54561E37BB280062FC3D /* SVGIcons */ = {
+			isa = PBXGroup;
+			children = (
+				BAFD54571E37BB280062FC3D /* BlockIcon.js - Shortcut.lnk */,
+				BAFD54581E37BB280062FC3D /* VectorIcon.js */,
+				BAFD54591E37BB280062FC3D /* VectorPaths.js */,
+			);
+			path = SVGIcons;
+			sourceTree = "<group>";
+		};
+		BAFD545C1E37BB280062FC3D /* UIParts */ = {
+			isa = PBXGroup;
+			children = (
+				BAFD545D1E37BB280062FC3D /* BlockContextMenu.js */,
+				BAFD545E1E37BB280062FC3D /* BlockPalette */,
+				BAFD54621E37BB280062FC3D /* BubbleOverlay.js */,
+				BAFD54631E37BB280062FC3D /* Button.js */,
+				BAFD54641E37BB280062FC3D /* ConnectMultipleHBDialog.js */,
+				BAFD54651E37BB280062FC3D /* ConnectOneHBDialog.js */,
+				BAFD54661E37BB280062FC3D /* DisplayBox.js */,
+				BAFD54671E37BB280062FC3D /* HBConnectionList.js */,
+				BAFD54681E37BB280062FC3D /* HBStatusLight.js */,
+				BAFD54691E37BB280062FC3D /* Highlighter.js */,
+				BAFD546A1E37BB280062FC3D /* InputPad */,
+				BAFD546D1E37BB280062FC3D /* Menu */,
+				BAFD54731E37BB280062FC3D /* MenuBnList.js */,
+				BAFD54741E37BB280062FC3D /* OpenDialog.js */,
+				BAFD54751E37BB280062FC3D /* ResultBubble.js */,
+				BAFD54761E37BB280062FC3D /* TabManager */,
+				BAFD54791E37BB280062FC3D /* TitleBar.js */,
+			);
+			path = UIParts;
+			sourceTree = "<group>";
+		};
+		BAFD545E1E37BB280062FC3D /* BlockPalette */ = {
+			isa = PBXGroup;
+			children = (
+				BAFD545F1E37BB280062FC3D /* BlockPalette.js */,
+				BAFD54601E37BB280062FC3D /* Category.js */,
+				BAFD54611E37BB280062FC3D /* CategoryBN.js */,
+			);
+			path = BlockPalette;
+			sourceTree = "<group>";
+		};
+		BAFD546A1E37BB280062FC3D /* InputPad */ = {
+			isa = PBXGroup;
+			children = (
+				BAFD546B1E37BB280062FC3D /* DisplayNum.js */,
+				BAFD546C1E37BB280062FC3D /* InputPad.js */,
+			);
+			path = InputPad;
+			sourceTree = "<group>";
+		};
+		BAFD546D1E37BB280062FC3D /* Menu */ = {
+			isa = PBXGroup;
+			children = (
+				BAFD546E1E37BB280062FC3D /* DebugMenu.js */,
+				BAFD546F1E37BB280062FC3D /* FileMenu.js */,
+				BAFD54701E37BB280062FC3D /* HummingbirdMenu.js */,
+				BAFD54711E37BB280062FC3D /* Menu.js */,
+				BAFD54721E37BB280062FC3D /* ViewMenu.js */,
+			);
+			path = Menu;
+			sourceTree = "<group>";
+		};
+		BAFD54761E37BB280062FC3D /* TabManager */ = {
+			isa = PBXGroup;
+			children = (
+				BAFD54771E37BB280062FC3D /* Tab.js */,
+				BAFD54781E37BB280062FC3D /* TabManager.js */,
+			);
+			path = TabManager;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -309,12 +970,182 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BAFD550B1E37BB290062FC3D /* Test.js in Resources */,
+				BAFD549B1E37BB280062FC3D /* BroadcastDropSlot.js in Resources */,
+				BAFD55021E37BB290062FC3D /* toy_phone_busy_signal.wav in Resources */,
+				BAFD54B11E37BB280062FC3D /* GuiElements.js in Resources */,
+				BAFD54C01E37BB280062FC3D /* alarm.wav in Resources */,
+				BAFD54C61E37BB280062FC3D /* bathtub_full_of_lentils.wav in Resources */,
+				BAFD54881E37BB280062FC3D /* LoopBlock.js in Resources */,
+				BAFD54F71E37BB290062FC3D /* ray_gun.wav in Resources */,
+				BAFD54B51E37BB280062FC3D /* HummingbirdManager.js in Resources */,
+				BAFD54A11E37BB280062FC3D /* RectSlot.js in Resources */,
+				BAFD54F51E37BB290062FC3D /* pouring_liquid_from_bottle.wav in Resources */,
+				BAFD55111E37BB290062FC3D /* BubbleOverlay.js in Resources */,
+				BAFD54831E37BB280062FC3D /* AppIcon.png in Resources */,
+				BAFD54BC1E37BB280062FC3D /* List.js in Resources */,
+				BAFD55121E37BB290062FC3D /* Button.js in Resources */,
+				BAFD54E01E37BB290062FC3D /* flappity.wav in Resources */,
 				BA88B6381B2233C9009EF1C3 /* LaunchScreen.xib in Resources */,
+				BAFD54D71E37BB290062FC3D /* crow.wav in Resources */,
+				BAFD54801E37BB280062FC3D /* modules.xml in Resources */,
+				BAFD55131E37BB290062FC3D /* ConnectMultipleHBDialog.js in Resources */,
+				BAFD54D61E37BB290062FC3D /* creaky_dishwasher_door.wav in Resources */,
+				BAFD54D11E37BB290062FC3D /* chomp.wav in Resources */,
+				BAFD54F81E37BB290062FC3D /* school_bell.wav in Resources */,
+				BAFD55171E37BB290062FC3D /* HBStatusLight.js in Resources */,
+				BAFD55151E37BB290062FC3D /* DisplayBox.js in Resources */,
+				BAFD54F01E37BB290062FC3D /* moan.wav in Resources */,
+				BAFD55001E37BB290062FC3D /* tone_correct.wav in Resources */,
+				BAFD549A1E37BB280062FC3D /* BoolSlot.js in Resources */,
+				BAFD54DB1E37BB290062FC3D /* eating_pizza.wav in Resources */,
+				BAFD55251E37BB290062FC3D /* TitleBar.js in Resources */,
+				BAFD55191E37BB290062FC3D /* DisplayNum.js in Resources */,
+				BAFD54EA1E37BB290062FC3D /* kink_brrrrrrrr_teck.wav in Resources */,
+				BAFD54AE1E37BB280062FC3D /* NumData.js in Resources */,
+				BAFD54CE1E37BB290062FC3D /* bzzzz_appa_tap.wav in Resources */,
+				BAFD550C1E37BB290062FC3D /* TouchReceiver.js in Resources */,
+				BAFD54EF1E37BB290062FC3D /* meow.wav in Resources */,
+				BAFD54C51E37BB280062FC3D /* bark.wav in Resources */,
+				BAFD54B91E37BB280062FC3D /* hBIconWhiteOld.png in Resources */,
+				BAFD54971E37BB280062FC3D /* BlockIcon.js in Resources */,
+				BAFD54C81E37BB280062FC3D /* beepbeep.wav in Resources */,
+				BAFD54AA1E37BB280062FC3D /* Sounds.js in Resources */,
 				BA88B6351B2233C9009EF1C3 /* Images.xcassets in Resources */,
+				BAFD55201E37BB290062FC3D /* MenuBnList.js in Resources */,
+				BAFD54B31E37BB280062FC3D /* Hummingbird.js in Resources */,
+				BAFD549D1E37BB280062FC3D /* HBDropSlot.js in Resources */,
+				BAFD55031E37BB290062FC3D /* toy_phone_dialing.wav in Resources */,
+				BAFD54991E37BB280062FC3D /* BlockSlot.js in Resources */,
+				BAFD551A1E37BB290062FC3D /* InputPad.js in Resources */,
+				BAFD547D1E37BB280062FC3D /* codeStyleSettings.xml in Resources */,
+				BAFD54B41E37BB280062FC3D /* HummingbirdDragAndDrop.html in Resources */,
+				BAFD54DC1E37BB290062FC3D /* electric_pump.wav in Resources */,
+				BAFD54B81E37BB280062FC3D /* hBIconWhite.png in Resources */,
+				BAFD54A31E37BB280062FC3D /* Slot.js in Resources */,
+				BAFD551C1E37BB290062FC3D /* FileMenu.js in Resources */,
+				BAFD551D1E37BB290062FC3D /* HummingbirdMenu.js in Resources */,
+				BAFD54B01E37BB280062FC3D /* StringData.js in Resources */,
+				BAFD54F41E37BB290062FC3D /* pouring_lentils.wav in Resources */,
+				BAFD550A1E37BB290062FC3D /* VectorPaths.js in Resources */,
+				BAFD54E21E37BB290062FC3D /* gobbler.wav in Resources */,
+				BAFD54E51E37BB290062FC3D /* hens_leaving_coop.wav in Resources */,
 				BA054A081B541EA200A6FA8B /* LICENSE.txt in Resources */,
+				BAFD54AF1E37BB280062FC3D /* SelectionData.js in Resources */,
+				BAFD55091E37BB290062FC3D /* VectorIcon.js in Resources */,
+				BAFD55241E37BB290062FC3D /* TabManager.js in Resources */,
+				BAFD55161E37BB290062FC3D /* HBConnectionList.js in Resources */,
+				BAFD54811E37BB280062FC3D /* vcs.xml in Resources */,
+				BAFD54C11E37BB280062FC3D /* ba_doom_crash.wav in Resources */,
+				BAFD54871E37BB280062FC3D /* HatBlock.js in Resources */,
+				BAFD551F1E37BB290062FC3D /* ViewMenu.js in Resources */,
+				BAFD54F31E37BB290062FC3D /* pouring_boiling_water_into_teacup.wav in Resources */,
+				BAFD54901E37BB280062FC3D /* BlockDefs_looks.js in Resources */,
+				BAFD54CC1E37BB280062FC3D /* blowing_into_a_bottle.wav in Resources */,
 				BA27E2C81B3CA18800A0DF58 /* LICENSE in Resources */,
+				BAFD55051E37BB290062FC3D /* wooooooooooo.wav in Resources */,
+				BAFD54CD1E37BB290062FC3D /* burp.wav in Resources */,
+				BAFD54FB1E37BB290062FC3D /* thud.wav in Resources */,
+				BAFD54FC1E37BB290062FC3D /* ting.wav in Resources */,
+				BAFD54A21E37BB280062FC3D /* RoundSlot.js in Resources */,
+				BAFD54DE1E37BB290062FC3D /* elf_laughing1.wav in Resources */,
+				BAFD55041E37BB290062FC3D /* woo.wav in Resources */,
+				BAFD54E41E37BB290062FC3D /* hen_announcing_egg.wav in Resources */,
+				BAFD54D81E37BB290062FC3D /* doowee.wav in Resources */,
+				BAFD54E61E37BB290062FC3D /* hitting_a_wire_cage1.wav in Resources */,
+				BAFD54F61E37BB290062FC3D /* pouring_water_on_hot_stones.wav in Resources */,
+				BAFD54D01E37BB290062FC3D /* chirrp.wav in Resources */,
+				BAFD54E11E37BB290062FC3D /* fly_by.wav in Resources */,
+				BAFD54981E37BB280062FC3D /* LabelText.js in Resources */,
+				BAFD54DD1E37BB290062FC3D /* electric_sadness.wav in Resources */,
+				BAFD548B1E37BB280062FC3D /* BlockStack.js in Resources */,
+				BAFD54FF1E37BB290062FC3D /* toilet_flush.wav in Resources */,
+				BAFD54F11E37BB290062FC3D /* mouth_pop.wav in Resources */,
+				BAFD549C1E37BB280062FC3D /* DropSlot.js in Resources */,
+				BAFD54941E37BB280062FC3D /* BlockDefs_sound.js in Resources */,
+				BAFD549E1E37BB280062FC3D /* HexSlot.js in Resources */,
+				BAFD54931E37BB280062FC3D /* BlockDefs_sensing.js in Resources */,
+				BAFD54A61E37BB280062FC3D /* VarDropSlot.js in Resources */,
+				BAFD550D1E37BB290062FC3D /* BlockContextMenu.js in Resources */,
+				BAFD54841E37BB280062FC3D /* Block.js in Resources */,
+				BAFD54DA1E37BB290062FC3D /* dragon_wheeze.wav in Resources */,
+				BAFD54CA1E37BB280062FC3D /* bird.wav in Resources */,
+				BAFD55101E37BB290062FC3D /* CategoryBN.js in Resources */,
+				BAFD55281E37BB290062FC3D /* XmlWriter.js in Resources */,
+				BAFD54891E37BB280062FC3D /* PredicateBlock.js in Resources */,
+				BAFD548E1E37BB280062FC3D /* BlockDefs_hummingbird.js in Resources */,
+				BAFD54C71E37BB280062FC3D /* beat.wav in Resources */,
+				BAFD54AB1E37BB280062FC3D /* BoolData.js in Resources */,
+				BAFD54911E37BB280062FC3D /* BlockDefs_motion.js in Resources */,
+				BAFD54F21E37BB290062FC3D /* pebbles_on_concrete.wav in Resources */,
+				BAFD54A71E37BB280062FC3D /* CodeManager.js in Resources */,
+				BAFD54A91E37BB280062FC3D /* Colors.js in Resources */,
+				BAFD54A41E37BB280062FC3D /* SoundDropSlot.js in Resources */,
+				BAFD550F1E37BB290062FC3D /* Category.js in Resources */,
+				BAFD54FA1E37BB290062FC3D /* spacey_drone.wav in Resources */,
+				BAFD54C91E37BB280062FC3D /* bell.wav in Resources */,
+				BAFD54D51E37BB290062FC3D /* creaking_wood.wav in Resources */,
+				BAFD54EB1E37BB290062FC3D /* lighting_a_match.wav in Resources */,
+				BAFD54B71E37BB280062FC3D /* hBIconDarkGray.png in Resources */,
 				BA88B65B1B223990009EF1C3 /* Main.storyboard in Resources */,
+				BAFD54AC1E37BB280062FC3D /* Data.js in Resources */,
+				BAFD54AD1E37BB280062FC3D /* ListData.js in Resources */,
+				BAFD54EC1E37BB290062FC3D /* loose_bow_string.wav in Resources */,
+				BAFD54CF1E37BB290062FC3D /* chink.wav in Resources */,
+				BAFD55221E37BB290062FC3D /* ResultBubble.js in Resources */,
+				BAFD54EE1E37BB290062FC3D /* malfunction.wav in Resources */,
+				BAFD54BD1E37BB280062FC3D /* MyCSS.css in Resources */,
+				BAFD55081E37BB290062FC3D /* BlockIcon.js - Shortcut.lnk in Resources */,
+				BAFD54D91E37BB290062FC3D /* doowoo.wav in Resources */,
+				BAFD54851E37BB280062FC3D /* CommandBlock.js in Resources */,
+				BAFD54F91E37BB290062FC3D /* scirocco.wav in Resources */,
+				BAFD547F1E37BB280062FC3D /* Git.iml in Resources */,
+				BAFD54FD1E37BB290062FC3D /* tock_tick1.wav in Resources */,
+				BAFD54DF1E37BB290062FC3D /* elf_laughing2.wav in Resources */,
+				BAFD54C41E37BB280062FC3D /* baby_sneeze.wav in Resources */,
+				BAFD54B61E37BB280062FC3D /* hBIconDarkGraOldy.png in Resources */,
+				BAFD549F1E37BB280062FC3D /* ListDropSlot.js in Resources */,
+				BAFD548C1E37BB280062FC3D /* DisplayStack.js in Resources */,
+				BAFD550E1E37BB290062FC3D /* BlockPalette.js in Resources */,
+				BAFD54E71E37BB290062FC3D /* hitting_a_wire_cage2.wav in Resources */,
+				BAFD54D21E37BB290062FC3D /* clang_high.wav in Resources */,
+				BAFD54E91E37BB290062FC3D /* hitting_a_wooden_pole2.wav in Resources */,
+				BAFD54921E37BB280062FC3D /* BlockDefs_operators.js in Resources */,
+				BAFD54BA1E37BB280062FC3D /* ImageList.js in Resources */,
+				BAFD54951E37BB280062FC3D /* BlockDefs_variables.js in Resources */,
+				BAFD54B21E37BB280062FC3D /* HtmlServer.js in Resources */,
+				BAFD55071E37BB290062FC3D /* zap.wav in Resources */,
+				BAFD548D1E37BB280062FC3D /* BlockDefs_control.js in Resources */,
+				BAFD55181E37BB290062FC3D /* Highlighter.js in Resources */,
+				BAFD551E1E37BB290062FC3D /* Menu.js in Resources */,
+				BAFD55061E37BB290062FC3D /* woowoo.wav in Resources */,
+				BAFD54C21E37BB280062FC3D /* baby_rattle.wav in Resources */,
+				BAFD551B1E37BB290062FC3D /* DebugMenu.js in Resources */,
+				BAFD55211E37BB290062FC3D /* OpenDialog.js in Resources */,
+				BAFD54CB1E37BB280062FC3D /* bloupy.wav in Resources */,
+				BAFD55231E37BB290062FC3D /* Tab.js in Resources */,
+				BAFD547E1E37BB280062FC3D /* Tom.xml in Resources */,
+				BAFD55011E37BB290062FC3D /* tone_incorrect.wav in Resources */,
+				BAFD54861E37BB280062FC3D /* DoubleLoopBlock.js in Resources */,
+				BAFD548A1E37BB280062FC3D /* ReporterBlock.js in Resources */,
+				BAFD54A51E37BB280062FC3D /* StringSlot.js in Resources */,
+				BAFD54A01E37BB280062FC3D /* NumSlot.js in Resources */,
+				BAFD55141E37BB290062FC3D /* ConnectOneHBDialog.js in Resources */,
+				BAFD54C31E37BB280062FC3D /* baby_saying_mama.wav in Resources */,
+				BAFD54BF1E37BB280062FC3D /* SaveManager.js in Resources */,
+				BAFD55261E37BB290062FC3D /* Variable.js in Resources */,
+				BAFD55271E37BB290062FC3D /* version.txt in Resources */,
+				BAFD54FE1E37BB290062FC3D /* tock_tick2.wav in Resources */,
+				BAFD54A81E37BB280062FC3D /* BlockGraphics.js in Resources */,
+				BAFD54E81E37BB290062FC3D /* hitting_a_wooden_pole1.wav in Resources */,
+				BAFD54ED1E37BB290062FC3D /* machine_hum.wav in Resources */,
+				BAFD54E31E37BB290062FC3D /* gulp.wav in Resources */,
+				BAFD54D41E37BB290062FC3D /* click_click.wav in Resources */,
+				BAFD548F1E37BB280062FC3D /* BlockDefs_ipad.js in Resources */,
+				BAFD54D31E37BB290062FC3D /* clang_low.wav in Resources */,
 				BA054A011B541E9500A6FA8B /* Info.plist in Resources */,
+				BAFD54961E37BB280062FC3D /* BlockList.js in Resources */,
+				BAFD54821E37BB280062FC3D /* workspace.xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -339,8 +1170,10 @@
 				BA88B62E1B2233C9009EF1C3 /* AppDelegate.swift in Sources */,
 				BADF9BB71D2FF77900ABC410 /* HTMLParser.swift in Sources */,
 				BAFD53BA1E2EA0680062FC3D /* WebSockets.swift in Sources */,
+				BAFD54BB1E37BB280062FC3D /* LICENSE.md in Sources */,
 				BAFD53B31E2EA0680062FC3D /* Scopes.swift in Sources */,
 				BAFD53B11E2EA0680062FC3D /* HttpServerIO.swift in Sources */,
+				BAFD54BE1E37BB280062FC3D /* README.md in Sources */,
 				BAFD53B61E2EA0680062FC3D /* String+BASE64.swift in Sources */,
 				BA95C0241BBEE2CE003AEC1A /* Socket.swift in Sources */,
 				BA88B65A1B223990009EF1C3 /* ConnectionViewController.swift in Sources */,

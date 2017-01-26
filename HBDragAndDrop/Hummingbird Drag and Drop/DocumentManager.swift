@@ -10,60 +10,23 @@ import Foundation
 
 
 let documentsPath: URL! = URL(string: NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory, FileManager.SearchPathDomainMask.userDomainMask, true)[0])
-let branch = "dev"
-//let branch = "stable"
-//let branch = "master"
-let repoUrl = URL(string: "https://github.com/BirdBrainTechnologies/HummingbirdDragAndDrop-/archive/"+branch+".zip")
-let logURL = URL(string: "https://raw.githubusercontent.com/BirdBrainTechnologies/HummingbirdDragAndDrop-/"+branch+"/version.txt")
-let zipPath = documentsPath.appendingPathComponent("temp.zip")
-let unzipPath = documentsPath.appendingPathComponent("DragAndDrop")
-let fileManager = FileManager.default
 
-public func getUpdate(){
-    let zippedData = try! Data(contentsOf: repoUrl!)
-    try? zippedData.write(to: URL(fileURLWithPath: zipPath.path), options: [.atomic])
-    Main.unzipFile(atPath: zipPath.path, toDestination: unzipPath.path)
-}
+let fileManager = FileManager.default
+let mainBundle = CFBundleGetMainBundle()
+
 
 public func getPath() -> URL {
-    return unzipPath.appendingPathComponent("HummingbirdDragAndDrop--"+branch)
-}
-
-public func getSoundPath() -> URL {
-    return getPath().appendingPathComponent("SoundClips")
+    let path: URL = CFBundleCopyBundleURL(mainBundle) as URL
+    return path
 }
 
 public func getSoundNames () -> [String]{
     do {
-        let paths = try fileManager.contentsOfDirectory(atPath: getSoundPath().path)
-        return paths
-
+        let paths = try fileManager.contentsOfDirectory(atPath: getPath().path)
+        let files = paths.filter{ (getPath().appendingPathComponent($0)).pathExtension == "wav" }
+        return files
     } catch {
         return []
-    }
-}
-
-public func shouldUpdate() -> Bool{
-    return !compareHistory()
-}
-
-private func compareHistory() -> Bool{
-    let newHistory = try? Data(contentsOf: logURL!)
-    let oldHistoryPath = getPath().appendingPathComponent("version.txt")
-    if(!fileManager.fileExists(atPath: oldHistoryPath.path)){
-        NSLog("nothing at old history path")
-        return false
-    }
-    let oldHistory = try? Data(contentsOf: URL(fileURLWithPath: oldHistoryPath.path))
-    
-    if(oldHistory == newHistory){
-        NSLog("History files are identical")
-        return true
-    } else {
-        NSLog(String(stringInterpolationSegment: oldHistory))
-        NSLog(String(stringInterpolationSegment: newHistory))
-        NSLog("History files differ")
-        return false
     }
 }
 

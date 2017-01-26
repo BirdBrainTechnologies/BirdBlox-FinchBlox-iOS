@@ -265,36 +265,17 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
         mainWebView.contentMode = UIViewContentMode.scaleAspectFit
         let url = URL(string: "http://localhost:22179/DragAndDrop/HummingbirdDragAndDrop.html")
         if(isConnectedToInternet()){
-            if(shouldUpdate()){
-                getUpdate()
-            }
-            /*
-            if let ip = getWiFiAddress(){
-                let connectionAlert = UIAlertController(title: "Connected", message: "The app is currently connecting to a local version of BirdBlox. If would like to use the app as a server use this IP address: " + ip + " with port: 22179", preferredStyle: UIAlertControllerStyle.alert)
-                connectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.default, handler: nil))
-                DispatchQueue.main.async{
-                    self.present(connectionAlert, animated: true, completion: nil)
-                }
-            }
-            else{
-                let connectionAlert = UIAlertController(title: "Connected", message: "The app is currently connecting to a local version of BirdBlox. If would like to use the app as a server, you need to be connected to wifi. Either you are not connected to wifi or have some connection connection issues.", preferredStyle: UIAlertControllerStyle.alert)
-                connectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.default, handler: nil))
-                DispatchQueue.main.async{
-                    self.present(connectionAlert, animated: true, completion: nil)
-                }
-            }
-            */
             let requestPage = URLRequest(url: url!)
             mainWebView!.load(requestPage)
             self.view.addSubview(mainWebView)
  
         }
         else{
-            let noConnectionAlert = UIAlertController(title: "Cannot Connect", message: "This app required an internet connection for certain features to work. There is currently no connection avaliable. If this is your first time opening the app, it will NOT load. You need to open the app while you have internet at least once so that the source code can be downloaded", preferredStyle: UIAlertControllerStyle.alert)
-            noConnectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.default, handler: nil))
-            DispatchQueue.main.async{
-                self.present(noConnectionAlert, animated: true, completion: nil)
-            }
+            //let noConnectionAlert = UIAlertController(title: "Cannot Connect", message: "This app required an internet connection for certain features to work. There is currently no connection avaliable.", preferredStyle: UIAlertControllerStyle.alert)
+            //noConnectionAlert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.default, handler: nil))
+            //DispatchQueue.main.async{
+            //    self.present(noConnectionAlert, animated: true, completion: nil)
+            //}
             let requestPage = URLRequest(url: url!)
             mainWebView!.load(requestPage)
             self.view.addSubview(mainWebView)
@@ -1241,15 +1222,72 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             removeSetting(key)
             return .ok(.text("Setting Deleted"))
         }
-        server["/DragAndDrop/:path"] = directoryBrowser(getPath().path)
-        //server["/DragAndDrop/Block/(.+)"] = directoryBrowser(getPath().appendingPathComponent("Block").path)
-        //server["/DragAndDrop/BlockContainers/(.+)"] = directoryBrowser(getPath().appendingPathComponent("BlockContainers").path)
-        //server["/DragAndDrop/BlockDefsAndList/(.+)"] = directoryBrowser(getPath().appendingPathComponent("BlockDefsAndList").path)
-        //server["/DragAndDrop/BlockParts/(.+)"] = directoryBrowser(getPath().appendingPathComponent("BlockParts").path)
-        //server["/DragAndDrop/ColorsAndGraphics/(.+)"] = directoryBrowser(getPath().appendingPathComponent("ColorsAndGraphics").path)
-        //server["/DragAndDrop/Data/(.+)"] = directoryBrowser(getPath().appendingPathComponent("Data").path)
-        //server["/DragAndDrop/SVGIcons/(.+)"] = directoryBrowser(getPath().appendingPathComponent("SVGIcons").path)
-        //server["/DragAndDrop/UIParts/(.+)"] = directoryBrowser(getPath().appendingPathComponent("UIParts").path)
+        /*
+        server["/DragAndDrop/Block/:path"] = directoryBrowser(getPath2().path)
+        server["/DragAndDrop/BlockContainers/:path"] = directoryBrowser(getPath2().path)
+        server["/DragAndDrop/BlockDefsAndList/:path"] = directoryBrowser(getPath2().path)
+        server["/DragAndDrop/BlockParts/:path"] = directoryBrowser(getPath2().path)
+        server["/DragAndDrop/ColorsAndGraphics/:path"] = directoryBrowser(getPath2().path)
+        server["/DragAndDrop/Data/:path"] = directoryBrowser(getPath2().path)
+        server["/DragAndDrop/Images/:path"] = directoryBrowser(getPath2().path)
+        server["/DragAndDrop/SoundClips/:path"] = directoryBrowser(getPath2().path)
+        server["/DragAndDrop/SVGIcons/:path"] = directoryBrowser(getPath2().path)
+        server["/DragAndDrop/UIParts/:path"] = directoryBrowser(getPath2().path)
+        */
+        server["/DragAndDrop/:param1/"] = { request in
+            let captured = request.params
+            let path1 = (captured[":param1"]?.removingPercentEncoding)!
+            if path1 != ""{
+                let path = getPath().appendingPathComponent(path1)
+                guard let file = try? path.path.openForReading() else {
+                    return .notFound
+                }
+                return .raw(200, "OK", [:], { writer in
+                    try? writer.write(file)
+                    file.close()
+                })
+            } else {
+                return .notFound
+            }
+        }
+        server["/DragAndDrop/:param1/:param2/:param3"] = { request in
+            let captured = request.params
+            let path1 = (captured[":param1"]?.removingPercentEncoding)!
+            let path2 = (captured[":param2"]?.removingPercentEncoding)!
+            let path3 = (captured[":param3"]?.removingPercentEncoding)!
+            if path3 != "" {
+                let path = getPath().appendingPathComponent(path3)
+                guard let file = try? path.path.openForReading() else {
+                    return .notFound
+                }
+                return .raw(200, "OK", [:], { writer in
+                    try? writer.write(file)
+                    file.close()
+                })
+            } else if path2 != "" {
+                let path = getPath().appendingPathComponent(path2)
+                guard let file = try? path.path.openForReading() else {
+                    return .notFound
+                }
+                return .raw(200, "OK", [:], { writer in
+                    try? writer.write(file)
+                    file.close()
+                })
+            } else if path1 != ""{
+                let path = getPath().appendingPathComponent(path1)
+                guard let file = try? path.path.openForReading() else {
+                    return .notFound
+                }
+                return .raw(200, "OK", [:], { writer in
+                    try? writer.write(file)
+                    file.close()
+                })
+            } else {
+                return .notFound
+            }
+        }
+
+
         NSLog("Server prepared")
     }
     func changedStatus(_ notification: Notification){
