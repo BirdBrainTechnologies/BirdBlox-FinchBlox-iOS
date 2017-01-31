@@ -1179,6 +1179,16 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             self.audioManager.playSound(filename: filename)
             return .ok(.text("Playing sound"))
         }
+        server["sound/stop"] = {request in
+            self.audioManager.stopSounds()
+            return .ok(.text("Sounds Stopped"))
+        }
+        server["sound/stopAll"] = {request in
+            self.audioManager.stopTones()
+            self.audioManager.stopSounds()
+            return .ok(.text("Sounds All Audio"))
+
+        }
         /*server["/project.bbx"] = {request in
             if let importText = self.importedXMLText{
                 self.importedXMLText = nil

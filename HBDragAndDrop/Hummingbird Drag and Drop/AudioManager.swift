@@ -15,7 +15,7 @@ class AudioManager: NSObject {
     var audioEngine:AVAudioEngine
     var sampler:AVAudioUnitSampler
     var mixer:AVAudioMixerNode
-    var player: AVAudioPlayer
+    var players:[AVAudioPlayer]
     
     override init() {
         //super.init()
@@ -34,13 +34,14 @@ class AudioManager: NSObject {
         // and connect it to the mixer node
         audioEngine.attach(sampler)
         audioEngine.connect(sampler, to: mixer, format: nil)
-        player = AVAudioPlayer()
+        players = [AVAudioPlayer]()
         do {
             try audioEngine.start()
         } catch {
             NSLog("Failed to start audio player")
         }
     }
+    
     func playNote(noteIndex: UInt, duration: Int) {
         var cappedNote = noteIndex
         if(cappedNote >= UInt(UInt8.max)) {
@@ -53,9 +54,10 @@ class AudioManager: NSObject {
         }
         
     }
+    
     func getSoundDuration(filename: String) -> Int {
         do {
-        try player = AVAudioPlayer(contentsOf: getPath().appendingPathComponent(filename))
+        let player = try AVAudioPlayer(contentsOf: getPath().appendingPathComponent(filename))
         //convert to milliseconds
         let audioDuration: Float64 = player.duration * 1000
         return Int(audioDuration)
@@ -64,14 +66,32 @@ class AudioManager: NSObject {
             return 0
         }
     }
+    
     func playSound(filename: String) {
         do {
-            try player = AVAudioPlayer(contentsOf: getPath().appendingPathComponent(filename))
+            let player = try AVAudioPlayer(contentsOf: getPath().appendingPathComponent(filename))
             player.prepareToPlay()
             player.play()
+            players.append(player)
         } catch {
             NSLog("failed to play: " + filename)
         }
+    }
+    
+    func stopTones() {
+        audioEngine.stop()
+        do {
+            try audioEngine.start()
+        } catch {
+            NSLog("Failed to start audio player")
+        }
+    }
+    
+    func stopSounds() {
+        for player in players {
+            player.stop()
+        }
+        players.removeAll()
     }
     
 }
