@@ -1183,7 +1183,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             self.audioManager.stopSounds()
             return .ok(.text("Sounds Stopped"))
         }
-        server["sound/stopAll"] = {request in
+        server["sound/stop_all"] = {request in
             self.audioManager.stopTones()
             self.audioManager.stopSounds()
             return .ok(.text("Sounds All Audio"))
