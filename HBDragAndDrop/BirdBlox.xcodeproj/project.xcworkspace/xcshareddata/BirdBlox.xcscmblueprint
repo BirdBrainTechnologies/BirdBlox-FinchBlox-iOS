@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "84234F29160A9240DF4FADECE851CA333446318B",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "84234F29160A9240DF4FADECE851CA333446318B" : 9223372036854775807,
+    "2B4525725D07CCFE9F60D2F3343783EEFD7C4ED8" : 9223372036854775807
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "A8FD489A-B51D-45C6-ACCE-ADD98AB8810B",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "84234F29160A9240DF4FADECE851CA333446318B" : "Hummingbird-iOS-Support\/",
+    "2B4525725D07CCFE9F60D2F3343783EEFD7C4ED8" : "Hummingbird-iOS-Support\/HBDragAndDrop\/HummingbirdDragAndDrop-\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "BirdBlox",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "HBDragAndDrop\/BirdBlox.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/BirdBrainTechnologies\/HummingbirdDragAndDrop-.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "2B4525725D07CCFE9F60D2F3343783EEFD7C4ED8"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/BirdBrainTechnologies\/Hummingbird-iOS-Support.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "84234F29160A9240DF4FADECE851CA333446318B"
+    }
+  ]
+}
