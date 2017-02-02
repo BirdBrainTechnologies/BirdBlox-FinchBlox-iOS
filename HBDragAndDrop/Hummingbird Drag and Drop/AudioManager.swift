@@ -21,7 +21,18 @@ class AudioManager: NSObject {
         //super.init()
         // Instatiate audio engine
         audioEngine = AVAudioEngine()
-    
+        do {
+            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
+            do {
+                try AVAudioSession.sharedInstance().setActive(true)
+            }
+            catch {
+                NSLog("Failed to set audio session")
+            }
+        }
+        catch {
+            NSLog("Failed to set audio session")
+        }
         // get the reference to the mixer to
         // connect the output of the AVAudio
         mixer = audioEngine.mainMixerNode
