@@ -48,7 +48,6 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
     var last_choice_response = 0
     let responseTime = 0.001
     var hbServes = [String:HummingbirdServices]()
-    //var hbServe: HummingbirdServices!
     let server: HttpServer = HttpServer()
     var wasShaken: Bool = false
     var shakenTimer: Timer = Timer()

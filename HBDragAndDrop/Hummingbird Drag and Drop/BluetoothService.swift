@@ -12,6 +12,8 @@ import CoreBluetooth
 let BLEServiceUUID      = CBUUID(string: "6E400001-B5A3-F393-E0A9-E50E24DCCA9E")//BLE adapter
 let BLEServiceUUIDTX    = CBUUID(string: "6E400002-B5A3-F393-E0A9-E50E24DCCA9E")//sending
 let BLEServiceUUIDRX    = CBUUID(string: "6E400003-B5A3-F393-E0A9-E50E24DCCA9E")//receiving
+
+
 let BLEServiceChangedStatusNotification = "kBLEServiceChangedStatusNotification"
 
 class BluetoothService: NSObject, CBPeripheralDelegate{

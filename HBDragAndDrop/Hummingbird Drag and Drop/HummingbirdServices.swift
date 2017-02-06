@@ -13,10 +13,15 @@ public let BluetoothStatusChangedNotification = "BluetoothStatusChangedForHummin
 
 open class HummingbirdServices: NSObject{
     fileprivate var vibrations: [UInt8] = [0,0]
+    fileprivate var vibrations_time: [Double] = [0,0]
     fileprivate var motors: [Int] = [0,0]
+    fileprivate var motors_time: [Double] = [0,0]
     fileprivate var servos: [UInt8] = [0,0,0,0]
+    fileprivate var servos_time: [Double] = [0,0,0,0]
     fileprivate var leds: [UInt8] = [0,0,0,0]
+    fileprivate var leds_time: [Double] = [0,0,0,0]
     fileprivate var trileds: [[UInt8]] = [[0,0,0],[0,0,0]]
+    fileprivate var trileds_time: [Double] = [0,0]
     fileprivate var lastKnowSensorPoll: [UInt8] = [0,0,0,0]
     fileprivate var name: String = ""
     
@@ -25,6 +30,7 @@ open class HummingbirdServices: NSObject{
     var allowSend = true
     let sendInterval = 0.06
     let readInterval = 0.2
+    let cache_timeout: Double = 15.0 //in seconds
     let sharedBluetoothDiscovery = BluetoothDiscovery.getBLEDiscovery()
     let sendQueue = OperationQueue()
     
@@ -60,16 +66,20 @@ open class HummingbirdServices: NSObject{
     open func disconnectFromDevice(){
         sharedBluetoothDiscovery.disconnectFromPeripheralbyName(self.name)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: BLEServiceChangedStatusNotification), object: nil)
-
     }
     
     open func attachToDevice(_ name: String) {
         self.name = name;
         vibrations = [0,0]
+        vibrations_time = [0,0]
         motors = [0,0]
+        motors_time = [0,0]
         servos = [0,0,0,0]
+        servos_time = [0,0,0,0]
         leds = [0,0,0,0]
+        leds_time = [0,0,0,0]
         trileds = [[0,0,0],[0,0,0]]
+        trileds_time = [0,0]
         lastKnowSensorPoll = [0,0,0,0]
     }
     
@@ -115,51 +125,63 @@ open class HummingbirdServices: NSObject{
     
     open func setLED(_ port: UInt8, intensity: UInt8){
         let realPort = Int(port-1)
-        if(leds[realPort] == intensity){
+        let current_time = NSDate().timeIntervalSince1970
+        if(leds[realPort] == intensity && (current_time - leds_time[realPort]) < cache_timeout){
             return;
         }
         let command: Data = getLEDCommand(port, intensity: intensity)
         leds[realPort] = intensity
+        leds_time[realPort] = current_time
         self.sendByteArray(command)
     }
     
     open func setTriLED(_ port: UInt8, r: UInt8, g: UInt8, b: UInt8){
         let realPort = Int(port-1)
-        if(trileds[realPort] == [r,g,b]){
+        let current_time = NSDate().timeIntervalSince1970
+        if(trileds[realPort] == [r,g,b] && (current_time - trileds_time[realPort]) < cache_timeout){
             return;
         }
         let command: Data = getTriLEDCommand(port, redVal: r, greenVal: g, blueVal: b)
         trileds[realPort] = [r,g,b]
+        trileds_time[realPort] = current_time
         self.sendByteArray(command)
     }
     
     open func setMotor(_ port: UInt8, speed: Int){
         let realPort = Int(port-1)
-        if(motors[realPort] == speed){
+        let current_time = NSDate().timeIntervalSince1970
+        if(motors[realPort] == speed && (current_time - motors_time[realPort]) < cache_timeout){
             return
         }
         let command: Data = getMotorCommand(port, speed: speed)
         motors[realPort] = speed
+        motors_time[realPort] = current_time
+
         self.sendByteArray(command)
     }
     
     open func setVibration(_ port: UInt8, intensity: UInt8){
         let realPort = Int(port-1)
-        if(vibrations[realPort] == intensity){
+        let current_time = NSDate().timeIntervalSince1970
+        if(vibrations[realPort] == intensity && (current_time - vibrations_time[realPort]) < cache_timeout){
             return
         }
         let command: Data = getVibrationCommand(port, intensity: intensity)
         vibrations[realPort] = intensity
+        vibrations_time[realPort] = current_time
+
         self.sendByteArray(command)
     }
     
     open func setServo(_ port: UInt8, angle: UInt8){
         let realPort = Int(port-1)
-        if(servos[realPort] == angle){
+        let current_time = NSDate().timeIntervalSince1970
+        if(servos[realPort] == angle && (current_time - servos_time[realPort]) < cache_timeout){
             return
         }
         let command: Data = getServoCommand(port, angle: angle)
         servos[realPort] = angle
+        servos_time[realPort] = current_time
         self.sendByteArray(command)
     }
     
