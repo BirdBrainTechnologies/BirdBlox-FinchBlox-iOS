@@ -22,6 +22,7 @@
 		BA27E2C61B3C960000A0DF58 /* Utility.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA27E2C21B3C960000A0DF58 /* Utility.swift */; };
 		BA27E2C81B3CA18800A0DF58 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = BA27E2C71B3CA18800A0DF58 /* LICENSE */; };
 		BA7F0A761B25E5D2007DD94E /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA7F0A751B25E5D2007DD94E /* AVFoundation.framework */; };
+		BA8167C21E5B5C2400AAF7A3 /* FlutterServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8167C11E5B5C2400AAF7A3 /* FlutterServices.swift */; };
 		BA88B62E1B2233C9009EF1C3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA88B62D1B2233C9009EF1C3 /* AppDelegate.swift */; };
 		BA88B6301B2233C9009EF1C3 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA88B62F1B2233C9009EF1C3 /* ViewController.swift */; };
 		BA88B6351B2233C9009EF1C3 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BA88B6341B2233C9009EF1C3 /* Images.xcassets */; };
@@ -255,6 +256,7 @@
 		BA27E2C21B3C960000A0DF58 /* Utility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utility.swift; sourceTree = "<group>"; };
 		BA27E2C71B3CA18800A0DF58 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		BA7F0A751B25E5D2007DD94E /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		BA8167C11E5B5C2400AAF7A3 /* FlutterServices.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlutterServices.swift; sourceTree = "<group>"; };
 		BA88B6281B2233C9009EF1C3 /* BirdBlox.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BirdBlox.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA88B62C1B2233C9009EF1C3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BA88B62D1B2233C9009EF1C3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -559,6 +561,7 @@
 				BA27E2BF1B3C960000A0DF58 /* BluetoothDiscovery.swift */,
 				BA27E2C01B3C960000A0DF58 /* BluetoothService.swift */,
 				BA27E2C11B3C960000A0DF58 /* HummingbirdServices.swift */,
+				BA8167C11E5B5C2400AAF7A3 /* FlutterServices.swift */,
 				BA27E2C21B3C960000A0DF58 /* Utility.swift */,
 				BA88B62D1B2233C9009EF1C3 /* AppDelegate.swift */,
 				BA88B62F1B2233C9009EF1C3 /* ViewController.swift */,
@@ -1165,6 +1168,7 @@
 				BA95C0241BBEE2CE003AEC1A /* Socket.swift in Sources */,
 				BA88B65A1B223990009EF1C3 /* ConnectionViewController.swift in Sources */,
 				BA054A061B541E9500A6FA8B /* zip.c in Sources */,
+				BA8167C21E5B5C2400AAF7A3 /* FlutterServices.swift in Sources */,
 				BAFD53B21E2EA0680062FC3D /* Process.swift in Sources */,
 				BA27E2C31B3C960000A0DF58 /* BluetoothDiscovery.swift in Sources */,
 				BAFD53B01E2EA0680062FC3D /* HttpRouter.swift in Sources */,

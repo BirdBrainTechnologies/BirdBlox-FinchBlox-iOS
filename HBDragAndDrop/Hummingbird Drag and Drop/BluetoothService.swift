@@ -9,12 +9,7 @@
 import Foundation
 import CoreBluetooth
 
-let BLEServiceUUID      = CBUUID(string: "6E400001-B5A3-F393-E0A9-E50E24DCCA9E")//BLE adapter
-let BLEServiceUUIDTX    = CBUUID(string: "6E400002-B5A3-F393-E0A9-E50E24DCCA9E")//sending
-let BLEServiceUUIDRX    = CBUUID(string: "6E400003-B5A3-F393-E0A9-E50E24DCCA9E")//receiving
-
-
-let BLEServiceChangedStatusNotification = "kBLEServiceChangedStatusNotification"
+public let BluetoothStatusChangedNotification = "BluetoothStatusChanged"
 
 class BluetoothService: NSObject, CBPeripheralDelegate{
     
@@ -22,7 +17,7 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
     var resetTimer: Timer = Timer()
     
     //This typedef contains all the relevant info about a bluetooth device (hummingbird)
-    typealias BLEDevice = (peripheral: CBPeripheral, tx: CBCharacteristic?, rx: CBCharacteristic?, data: Data, name: String)
+    typealias BLEDevice = (peripheral: CBPeripheral, tx: CBCharacteristic?, rx: CBCharacteristic?, data: Data, name: String, type: String)
     
     //This is a list of all of the connected BLE devices. There is some redundancy
     //here between this list and the connected devices list in the discovery
@@ -52,24 +47,26 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
      */
     func addPeripheral(_ peripheral: CBPeripheral, name: String) {
         peripheral.delegate = self
-        let device: BLEDevice = (peripheral, nil, nil, Data(bytes: UnsafePointer<UInt8>([0,0,0,0,0] as [UInt8]),count: 5), name)
+        let device: BLEDevice = (peripheral, nil, nil, Data(bytes: UnsafePointer<UInt8>([0,0,0,0,0] as [UInt8]),count: 5), name, type: "")
         devices.append(device)
         startDiscoveringServices(name)
         
     }
     func removePeripheralbyName(_ name: String) {
         if let i = getIndex(name) {
+            let type = devices[i].type
             devices[i].peripheral.delegate = nil
             devices.remove(at: i)
-            self.sendBTServiceNotification(false, name: name)
+            self.sendBTServiceNotification(false, name: name, type: type)
         }
     }
     
     func removePeripheral(_ peripheral: CBPeripheral) {
         if let i = getIndex(peripheral) {
+            let type = devices[i].type
             devices[i].peripheral.delegate = nil
             let device = devices.remove(at: i)
-            self.sendBTServiceNotification(false, name: device.name)
+            self.sendBTServiceNotification(false, name: device.name, type: type)
         }
     }
     
@@ -81,7 +78,7 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
     
     func startDiscoveringServices(_ name: String){
         if let i = getIndex(name) {
-            devices[i].peripheral.discoverServices([BLEServiceUUID])
+            devices[i].peripheral.discoverServices(serviceUUIDs)
         }
     }
     /**
@@ -91,14 +88,14 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
     func reset(_ name: String){
         if let index = getIndex(name) {
             let device = devices.remove(at: index)
-            self.sendBTServiceNotification(false, name: device.name)
+            self.sendBTServiceNotification(false, name: device.name, type: device.type)
         }
         
     }
     
     func resetAll(){
         devices.removeAll()
-        self.sendBTServiceNotification(false, name: "~!!!!!!!!!!~")
+        self.sendBTServiceNotification(false, name: "~!!!!!!!!!!~", type: "")
     }
     /**
      * This is called when a service is discovered for a peripheral
@@ -106,7 +103,6 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
      * for that GATT service
      */
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
-        let neededUUIDs: [CBUUID] = [BLEServiceUUIDRX,BLEServiceUUIDTX]
         
         if (getIndex(peripheral) == nil){
             dbg_print("not right peripheral")
@@ -118,8 +114,19 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
         }
         if let services = peripheral.services{
             for service in services {
-                if(service.uuid == BLEServiceUUID){
+                if(service.uuid == HummingbirdServices.ServiceUUID){
+                    let neededUUIDs: [CBUUID] = [HummingbirdServices.RxUUID,HummingbirdServices.TxUUID]
+                    if let i = getIndex(peripheral) {
+                        devices[i].type = "hummingbird"
+                    }
                     peripheral.discoverCharacteristics(neededUUIDs, for: service )
+                }
+                else if (service.uuid == FlutterServices.ServiceUUID) {
+                    let neededUUIDs: [CBUUID] = [FlutterServices.RxUUID,FlutterServices.TxUUID]
+                    if let i = getIndex(peripheral) {
+                        devices[i].type = "flutter"
+                    }
+                    peripheral.discoverCharacteristics(neededUUIDs, for: service)
                 }
             }
         }
@@ -134,26 +141,37 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
             return
         }
         if let index = getIndex(peripheral){
-        var wasTXSet = false
-        var wasRXSet = false
+            var wasTXSet = false
+            var wasRXSet = false
             if let characteristics = service.characteristics{
                 for characteristic in characteristics {
-                    let CBchar = characteristic
-                    dbg_print("Found characteristic of uuid" + CBchar.uuid.uuidString)
-                    if(characteristic.uuid == BLEServiceUUIDTX){
+                    
+                    var tx_uuid: CBUUID, rx_uuid: CBUUID
+                    if service.uuid == HummingbirdServices.ServiceUUID {
+                        tx_uuid = HummingbirdServices.TxUUID
+                        rx_uuid = HummingbirdServices.RxUUID
+                    } else if service.uuid == FlutterServices.ServiceUUID {
+                        tx_uuid = FlutterServices.TxUUID
+                        rx_uuid = FlutterServices.RxUUID
+                    } else {
+                        return
+                    }
+                    
+                    if(characteristic.uuid == tx_uuid){
                         devices[index].tx = characteristic
                         peripheral.setNotifyValue(true, for: characteristic )
                         wasTXSet = true
                     }
-                    else if(characteristic.uuid == BLEServiceUUIDRX){
+                    else if(characteristic.uuid == rx_uuid){
                         devices[index].rx = characteristic
                         peripheral.setNotifyValue(true, for: characteristic )
                         wasRXSet = true
                     }
+                    
                     if(wasTXSet && wasRXSet){
                         dbg_print("tx and rx characteristics were set")
                         dbg_print("Sending Notification with name: " + devices[index].name)
-                        self.sendBTServiceNotification(true, name: devices[index].name)
+                        self.sendBTServiceNotification(true, name: devices[index].name, type: devices[index].type)
                         return
                     }
                 }
@@ -172,25 +190,26 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
      * We make sure the data is well formatted and then store that data
      */
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
-        if(characteristic.uuid != BLEServiceUUIDRX){
-            return
-        }
-        if(characteristic.value!.count % 5 != 0){
-            return
-        }
         //let dataString = NSString(format: "rx value: %@", characteristic.value!)
         //dbg_print(dataString)
         if let index = getIndex(peripheral) {
+            if(characteristic.uuid != devices[index].rx){
+                return
+            }
+            if(characteristic.uuid == HummingbirdServices.RxUUID && characteristic.value!.count % 5 != 0){
+                return
+            }
+            if(characteristic.uuid == FlutterServices.RxUUID && characteristic.value!.count % 4 != 0){
+                return
+            }
             var temp: [UInt8] = [0,0,0,0]
             (characteristic.value! as NSData).getBytes(&temp,length: 4)
             var oldData: [UInt8] = [0,0,0,0]
             (devices[index].data as NSData).getBytes(&oldData, length: 4)
-            //if (temp[0] == 0x47 && temp[1] == 0x33 && (temp[2] != 0x47 || temp[3] != 0x33)){//sensor data
                 oldData[0] = temp[0]
                 oldData[1] = temp[1]
                 oldData[2] = temp[2]
                 oldData[3] = temp[3]
-            //}
             objc_sync_enter(devices[index].peripheral)
             devices[index].data = Data(bytes: UnsafePointer<UInt8>(oldData), count: 4)
             objc_sync_exit(devices[index].peripheral)
@@ -230,15 +249,15 @@ class BluetoothService: NSObject, CBPeripheralDelegate{
     }
     
     func getDeviceNames() -> [String] {
-        let names = devices.map { (peripheral: CBPeripheral, tx: CBCharacteristic?, rx: CBCharacteristic?, data: Data, name: String) -> String in
+        let names = devices.map { (peripheral: CBPeripheral, tx: CBCharacteristic?, rx: CBCharacteristic?, data: Data, name: String, type: String) -> String in
             return name
         }
         return names
     }
     
-    func sendBTServiceNotification(_ isConnected: Bool, name: String){
-        let connectionDetails = ["isConnected" : isConnected, "name" : name] as [String : Any]
-        NotificationCenter.default.post(name: Notification.Name(rawValue: BLEServiceChangedStatusNotification), object: self, userInfo: connectionDetails as [AnyHashable: Any])
+    func sendBTServiceNotification(_ isConnected: Bool, name: String, type: String){
+        let connectionDetails = ["isConnected" : isConnected, "name" : name, "type" : type] as [String : Any]
+        NotificationCenter.default.post(name: Notification.Name(rawValue: BluetoothStatusChangedNotification), object: self, userInfo: connectionDetails as [AnyHashable: Any])
     }
     
     

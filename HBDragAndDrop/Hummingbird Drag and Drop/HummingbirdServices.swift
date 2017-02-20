@@ -9,9 +9,11 @@
 import Foundation
 import CoreBluetooth
 
-public let BluetoothStatusChangedNotification = "BluetoothStatusChangedForHummingbird"
-
 open class HummingbirdServices: NSObject{
+    static let ServiceUUID      = CBUUID(string: "6E400001-B5A3-F393-E0A9-E50E24DCCA9E")//BLE adapter for HB
+    static let TxUUID    = CBUUID(string: "6E400002-B5A3-F393-E0A9-E50E24DCCA9E")//sending
+    static let RxUUID    = CBUUID(string: "6E400003-B5A3-F393-E0A9-E50E24DCCA9E")//receiving
+    
     fileprivate var vibrations: [UInt8] = [0,0]
     fileprivate var vibrations_time: [Double] = [0,0]
     fileprivate var motors: [Int] = [0,0]
@@ -38,12 +40,8 @@ open class HummingbirdServices: NSObject{
     public override init(){
         super.init()
         sendQueue.maxConcurrentOperationCount = 1
-        NotificationCenter.default.addObserver(self, selector: #selector(HummingbirdServices.connectionChanged(_:)), name: NSNotification.Name(rawValue: BLEServiceChangedStatusNotification), object: nil)
     }
-    
-    deinit{
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: BLEServiceChangedStatusNotification), object: nil)
-    }
+
     //functions for timer
     func timerElapsedSend(){
         self.allowSend = true
@@ -65,7 +63,6 @@ open class HummingbirdServices: NSObject{
  
     open func disconnectFromDevice(){
         sharedBluetoothDiscovery.disconnectFromPeripheralbyName(self.name)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: BLEServiceChangedStatusNotification), object: nil)
     }
     
     open func attachToDevice(_ name: String) {
@@ -264,14 +261,6 @@ open class HummingbirdServices: NSObject{
         self.sendByteArray(command1)
         Thread.sleep(forTimeInterval: 0.2)
         self.sendByteArray(command2)
-    }
-    
-    func connectionChanged(_ notification: Notification){
-        let userinfo = notification.userInfo! as [AnyHashable: Any]
-        if let isConnected: Bool = userinfo["isConnected"] as? Bool{
-            let connectionDetails = ["isConnected" : isConnected, "name": self.name] as [String : Any]
-            NotificationCenter.default.post(name: Notification.Name(rawValue: BluetoothStatusChangedNotification), object: self, userInfo: connectionDetails as [AnyHashable: Any])
-        }
     }
 
 }

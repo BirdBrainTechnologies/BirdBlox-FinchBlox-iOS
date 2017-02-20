@@ -22,6 +22,8 @@ extension CBCentralManager {
     }
 }
 
+let serviceUUIDs = [HummingbirdServices.ServiceUUID, FlutterServices.ServiceUUID]
+
 private let sharedBluetoothDiscovery = BluetoothDiscovery()
 
 class BluetoothDiscovery: NSObject, CBCentralManagerDelegate {
@@ -61,11 +63,10 @@ class BluetoothDiscovery: NSObject, CBCentralManagerDelegate {
         if !isScanning {
             if let central = centralManager{
                 discoveredDevices = [String: CBPeripheral]()
-                NSLog("looking for devices with a service of UUID: " + BLEServiceUUID.uuidString)
-                central.scanForPeripherals(withServices: [BLEServiceUUID], options: nil)
+                NSLog("looking for devices")
+                central.scanForPeripherals(withServices: serviceUUIDs, options: nil)
                 isScanning = true
                 discoverTimer = Timer.scheduledTimer(timeInterval: TimeInterval(30), target: self, selector: #selector(BluetoothDiscovery.stopScan), userInfo: nil, repeats: false)
-                //central.scanForPeripheralsWithServices(nil, options: nil)
             } else {
                 NSLog("Failed to acquire central manager")
             }
