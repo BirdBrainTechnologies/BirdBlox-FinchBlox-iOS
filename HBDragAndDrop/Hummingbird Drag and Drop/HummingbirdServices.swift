@@ -122,36 +122,41 @@ open class HummingbirdServices: NSObject{
     
     open func setLED(_ port: UInt8, intensity: UInt8){
         let realPort = Int(port-1)
+        let checked_intensity = bound(intensity, min: 0, max: 100)
         let current_time = NSDate().timeIntervalSince1970
-        if(leds[realPort] == intensity && (current_time - leds_time[realPort]) < cache_timeout){
+        if(leds[realPort] == checked_intensity && (current_time - leds_time[realPort]) < cache_timeout){
             return;
         }
-        let command: Data = getLEDCommand(port, intensity: intensity)
-        leds[realPort] = intensity
+        let command: Data = getLEDCommand(port, intensity: checked_intensity)
+        leds[realPort] = checked_intensity
         leds_time[realPort] = current_time
         self.sendByteArray(command)
     }
     
     open func setTriLED(_ port: UInt8, r: UInt8, g: UInt8, b: UInt8){
         let realPort = Int(port-1)
+        let checked_r = bound(r, min: 0, max: 100)
+        let checked_g = bound(g, min: 0, max: 100)
+        let checked_b = bound(b, min: 0, max: 100)
         let current_time = NSDate().timeIntervalSince1970
-        if(trileds[realPort] == [r,g,b] && (current_time - trileds_time[realPort]) < cache_timeout){
+        if(trileds[realPort] == [checked_r, checked_g, checked_b] && (current_time - trileds_time[realPort]) < cache_timeout){
             return;
         }
-        let command: Data = getTriLEDCommand(port, redVal: r, greenVal: g, blueVal: b)
-        trileds[realPort] = [r,g,b]
+        let command: Data = getTriLEDCommand(port, redVal: checked_r, greenVal: checked_g, blueVal: checked_b)
+        trileds[realPort] = [checked_r, checked_g, checked_b]
         trileds_time[realPort] = current_time
         self.sendByteArray(command)
     }
     
     open func setMotor(_ port: UInt8, speed: Int){
         let realPort = Int(port-1)
+        let checked_speed = bound(speed, min: -100, max: 100)
         let current_time = NSDate().timeIntervalSince1970
-        if(motors[realPort] == speed && (current_time - motors_time[realPort]) < cache_timeout){
+        if(motors[realPort] == checked_speed && (current_time - motors_time[realPort]) < cache_timeout){
             return
         }
-        let command: Data = getMotorCommand(port, speed: speed)
-        motors[realPort] = speed
+        let command: Data = getMotorCommand(port, speed: checked_speed)
+        motors[realPort] = checked_speed
         motors_time[realPort] = current_time
 
         self.sendByteArray(command)
@@ -159,12 +164,13 @@ open class HummingbirdServices: NSObject{
     
     open func setVibration(_ port: UInt8, intensity: UInt8){
         let realPort = Int(port-1)
+        let checked_intensity = bound(intensity, min: 0, max: 100)
         let current_time = NSDate().timeIntervalSince1970
-        if(vibrations[realPort] == intensity && (current_time - vibrations_time[realPort]) < cache_timeout){
+        if(vibrations[realPort] == checked_intensity && (current_time - vibrations_time[realPort]) < cache_timeout){
             return
         }
-        let command: Data = getVibrationCommand(port, intensity: intensity)
-        vibrations[realPort] = intensity
+        let command: Data = getVibrationCommand(port, intensity: checked_intensity)
+        vibrations[realPort] = checked_intensity
         vibrations_time[realPort] = current_time
 
         self.sendByteArray(command)
@@ -172,12 +178,13 @@ open class HummingbirdServices: NSObject{
     
     open func setServo(_ port: UInt8, angle: UInt8){
         let realPort = Int(port-1)
+        let checked_angle = bound(angle, min: 0, max: 180)
         let current_time = NSDate().timeIntervalSince1970
-        if(servos[realPort] == angle && (current_time - servos_time[realPort]) < cache_timeout){
+        if(servos[realPort] == checked_angle && (current_time - servos_time[realPort]) < cache_timeout){
             return
         }
-        let command: Data = getServoCommand(port, angle: angle)
-        servos[realPort] = angle
+        let command: Data = getServoCommand(port, angle: checked_angle)
+        servos[realPort] = checked_angle
         servos_time[realPort] = current_time
         self.sendByteArray(command)
     }

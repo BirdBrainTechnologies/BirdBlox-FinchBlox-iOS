@@ -48,6 +48,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
     var last_choice_response = 0
     let responseTime = 0.001
     var hbServes = [String:HummingbirdServices]()
+    var flutterServes = [String:FlutterServices]()
     let server: HttpServer = HttpServer()
     var wasShaken: Bool = false
     var shakenTimer: Timer = Timer()
@@ -514,23 +515,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                 return .ok(.text("Not connected!"))
             }
             let portInt = Int(captured[":param2"]!)
-            
-            let temp = Int(round((captured[":param3"]! as NSString).floatValue))
-            var intensity: UInt8
-            
             if (portInt > 4 || portInt < 1){
                 return .ok(.text("Invalid Port (should be between 1 and 4 inclusively)"))
             }
             let port = UInt8(portInt!)
-            if (temp < 0){
-                intensity = 0
-            }
-            else if (temp > 100){
-                intensity = 100
-            }
-            else{
-                intensity = UInt8(temp)
-            }
+            let intensity = toUInt8(Int(round((captured[":param3"]! as NSString).floatValue)))
             self.hbServes[name!]!.setLED(port, intensity: intensity)
             Thread.sleep(forTimeInterval: self.responseTime);
             return .ok(.text("LED set"))
@@ -582,47 +571,42 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                 return .ok(.text("Not connected!"))
             }
             let portInt = Int(captured[":param2"]!)
-            var temp = Int(round((captured[":param3"]! as NSString).floatValue))
-            var rValue: UInt8
-            
             if (portInt > 2 || portInt < 1){
-                return .ok(.text("Invalid Port (should be between 1 and 4 inclusively)"))
+                return .ok(.text("Invalid Port (should be between 1 and 2 inclusively)"))
             }
             let port = UInt8(portInt!)
             
-            if (temp < 0){
-                rValue = 0
-            }
-            else if (temp > 100){
-                rValue = 100
-            }
-            else{
-                rValue = UInt8(temp)
-            }
-            temp = Int(round((captured[":param4"]! as NSString).floatValue))
-            var gValue: UInt8
-            if (temp < 0){
-                gValue = 0
-            }
-            else if (temp > 100){
-                gValue = 100
-            }
-            else{
-                gValue = UInt8(temp)
-            }
-            temp = Int(round((captured[":param5"]! as NSString).floatValue))
-            var bValue: UInt8
-            if (temp < 0){
-                bValue = 0
-            }
-            else if (temp > 100){
-                bValue = 100
-            }
-            else{
-                bValue = UInt8(temp)
-            }
+            let rValue = toUInt8(Int(round((captured[":param3"]! as NSString).floatValue)))
+            let gValue = toUInt8(Int(round((captured[":param4"]! as NSString).floatValue)))
+            let bValue = toUInt8(Int(round((captured[":param5"]! as NSString).floatValue)))
             self.hbServes[name!]!.setTriLED(port, r: rValue, g: gValue, b: bValue)
             Thread.sleep(forTimeInterval: self.responseTime);
+            return .ok(.text("Tri-LED set"))
+        }
+        server["/flutter/:param1/out/triled/:param2/:param3/:param4/:param5"] = { request in
+            let captured = request.params
+            
+            let name = captured[":param1"]?.removingPercentEncoding
+            if(self.flutterServes.keys.contains(name!) == false) {
+                self.handleBadRequest(name!)
+                return .ok(.text("Not connected!"))
+            }
+            
+            let portInt = Int(captured[":param2"]!)
+            if (portInt > 3 || portInt < 1){
+                return .ok(.text("Invalid Port (should be between 1 and 3 inclusively)"))
+            }
+            let port = UInt8(portInt!)
+            
+            let rValue = toUInt8(Int(round((captured[":param3"]! as NSString).floatValue)))
+            let gValue = toUInt8(Int(round((captured[":param4"]! as NSString).floatValue)))
+            let bValue = toUInt8(Int(round((captured[":param5"]! as NSString).floatValue)))
+            
+            self.flutterServes[name!]!.setTriLEDRed(port, value: rValue)
+            self.flutterServes[name!]!.setTriLEDGreen(port, value: gValue)
+            self.flutterServes[name!]!.setTriLEDBlue(port, value: bValue)
+            Thread.sleep(forTimeInterval: self.responseTime);
+            
             return .ok(.text("Tri-LED set"))
         }
         server["/hummingbird/:param1/out/vibration/:param2/:param3"] = { request in
@@ -633,56 +617,16 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                 return .ok(.text("Not connected!"))
             }
             let portInt = Int(captured[":param2"]!)
-            let temp = Int(round((captured[":param3"]! as NSString).floatValue))
-            var intensity: UInt8
-            
-            
             if (portInt > 2 || portInt < 1){
                 return .ok(.text("Invalid Port (should be between 1 and 4 inclusively)"))
             }
             let port = UInt8(portInt!)
             
-            if (temp < 0){
-                intensity = 0
-            }
-            else if (temp > 100){
-                intensity = 100
-            }
-            else{
-                intensity = UInt8(temp)
-            }
+            let intensity = toUInt8(Int(round((captured[":param3"]! as NSString).floatValue)))
             
             self.hbServes[name!]!.setVibration(port, intensity: intensity)
             Thread.sleep(forTimeInterval: self.responseTime);
             return .ok(.text("Vibration set"))
-        }
-        server["/hummingbird/:param1/out/servo/:param2/:param3"] = { request in
-            let captured = request.params
-            let name = captured[":param1"]?.removingPercentEncoding
-            if(self.hbServes.keys.contains(name!) == false) {
-                self.handleBadRequest(name!)
-                return .ok(.text("Not connected!"))
-            }
-            let portInt = Int(captured[":param2"]!)
-            let temp = Int(round((captured[":param3"]! as NSString).floatValue))
-            if (portInt > 4 || portInt < 1){
-                return .ok(.text("Invalid Port (should be between 1 and 4 inclusively)"))
-            }
-            let port = UInt8(portInt!)
-            var angle: UInt8
-            if (temp < 0){
-                angle = 0
-            }
-            else if (temp > 180){
-                angle = 180
-            }
-            else{
-                angle = UInt8(temp)
-            }
-            
-            self.hbServes[name!]!.setServo(port, angle: angle)
-            Thread.sleep(forTimeInterval: self.responseTime);
-            return .ok(.text("Servo set"))
         }
         server["/hummingbird/:param1/out/motor/:param2/:param3"] = { request in
             let captured = request.params
@@ -692,26 +636,53 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                 return .ok(.text("Not connected!"))
             }
             let portInt = Int(captured[":param2"]!)
-            let temp = Int(round((captured[":param3"]! as NSString).floatValue))
-            var intensity: Int
-
             if (portInt > 2 || portInt < 1){
                 return .ok(.text("Invalid Port (should be between 1 and 4 inclusively)"))
             }
             let port = UInt8(portInt!)
             
-            if (temp < -100){
-                intensity = -100
-            }
-            else if (temp > 100){
-                intensity = 100
-            }
-            else{
-                intensity = temp
-            }
+            let intensity = Int(round((captured[":param3"]! as NSString).floatValue))
             self.hbServes[name!]!.setMotor(port, speed: intensity)
             Thread.sleep(forTimeInterval: self.responseTime);
             return .ok(.text("Motor set"))
+        }
+        server["/hummingbird/:param1/out/servo/:param2/:param3"] = { request in
+            let captured = request.params
+            let name = captured[":param1"]?.removingPercentEncoding
+            if(self.hbServes.keys.contains(name!) == false) {
+                self.handleBadRequest(name!)
+                return .ok(.text("Not connected!"))
+            }
+            let portInt = Int(captured[":param2"]!)
+            if (portInt > 4 || portInt < 1){
+                return .ok(.text("Invalid Port (should be between 1 and 4 inclusively)"))
+            }
+            let port = UInt8(portInt!)
+            
+            let angle: UInt8 = toUInt8(Int(round((captured[":param3"]! as NSString).floatValue)))
+            
+            self.hbServes[name!]!.setServo(port, angle: angle)
+            Thread.sleep(forTimeInterval: self.responseTime);
+            return .ok(.text("Servo set"))
+        }
+
+        server["/flutter/:param1/out/servo/:param2/:param3"] = { request in
+            let captured = request.params
+            let name = captured[":param1"]?.removingPercentEncoding
+            if(self.hbServes.keys.contains(name!) == false) {
+                self.handleBadRequest(name!)
+                return .ok(.text("Not connected!"))
+            }
+            let portInt = Int(captured[":param2"]!)
+            if (portInt > 3 || portInt < 1){
+                return .ok(.text("Invalid Port (should be between 1 and 3 inclusively)"))
+            }
+            let port = UInt8(portInt!)
+            let angle = toUInt8(Int(round((captured[":param3"]! as NSString).floatValue)))
+    
+            self.flutterServes[name!]!.setServo(port, value: angle)
+            Thread.sleep(forTimeInterval: self.responseTime);
+            return .ok(.text("Servo set"))
         }
         server["/hummingbird/:param1/in/sensors"] = { request in
             let name = request.params[":param1"]?.removingPercentEncoding
@@ -817,6 +788,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             let names = Array(self.hbServes.keys.lazy).joined(separator: "\n")
             return .ok(.text(names))
         }
+        server.GET["/flutter/names"] = { request in
+            let names = Array(self.flutterServes.keys.lazy).joined(separator: "\n")
+            return .ok(.text(names))
+        }
         server.GET["/hummingbird/connectedNames"] = {request in
             let names = self.sharedBluetoothDiscovery.getConnected().joined(separator: "\n")
             return .ok(.text(names))
@@ -874,6 +849,20 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                 let hbServe = HummingbirdServices()
                 self.hbServes[name] = hbServe
                 self.hbServes[name]!.attachToDevice(name)
+                self.sharedBluetoothDiscovery.connectToPeripheral(peripheral, name: name)
+                return .ok(.text("Connected!"))
+            } else {
+                print(name)
+                print(self.sharedBluetoothDiscovery.getDiscovered())
+                return .ok(.text("Device not found"))
+            }
+        }
+        server["/flutter/:param1/connect"] = { request in
+            let name = (request.params[":param1"]?.removingPercentEncoding)!
+            if let peripheral = self.sharedBluetoothDiscovery.getDiscovered()[name] {
+                let flutterServe = FlutterServices()
+                self.flutterServes[name] = flutterServe
+                self.flutterServes[name]!.attachToDevice(name)
                 self.sharedBluetoothDiscovery.connectToPeripheral(peripheral, name: name)
                 return .ok(.text("Connected!"))
             } else {
@@ -1188,28 +1177,6 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             return .ok(.text("Sounds All Audio"))
 
         }
-        /*server["/project.bbx"] = {request in
-            if let importText = self.importedXMLText{
-                self.importedXMLText = nil
-                return .OK(.text(importText))
-            }
-            
-            let urlFromXMl = (UIApplication.sharedApplication().delegate as! AppDelegate).getFileUrl()
-            var path: String
-            if let tempURL = urlFromXMl{
-                path = tempURL.path!
-            } else {
-                path = NSBundle.mainBundle().pathForResource("iPadstart", ofType: "xml")!
-            }
-            do{
-                let rawText = try String(contentsOfFile: path, encoding: NSUTF8StringEncoding)
-                return .OK(.text(rawText))
-            } catch {
-                print("Error: Couldn't get contents of XML file\n")
-                let rawText = ""
-                return .OK(.text(rawText))
-            }
-        }*/
         server["/settings/get/:param1"] = {request in
             let key = (request.params[":param1"]?.removingPercentEncoding)!
             let value = getSetting(key)
@@ -1307,19 +1274,27 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
             if let isConnected: Bool = userinfo["isConnected"] as? Bool{
                 NSLog("Got connection status")
                 if isConnected{
-                    NSLog("device connected:" + name)
-                    if(hbServes[name] == nil) {
-                        let hbServe = HummingbirdServices()
-                        self.hbServes[name] = hbServe
-                        self.hbServes[name]!.attachToDevice(name)
-                    }
-                    hbServes[name]!.turnOffLightsMotor()
-                    Thread.sleep(forTimeInterval: 0.1)
-                    hbServes[name]!.stopPolling()
-                    Thread.sleep(forTimeInterval: 0.1)
-                    hbServes[name]!.beginPolling()
-                    DispatchQueue.main.async{
-                        //self.connectedIndicator.textColor = UIColor.greenColor()
+                    if let type = userinfo["type"] as? String {
+                        NSLog("device connected: " + type + ":" + name)
+                        if (type == "flutter") {
+                            
+                            if(flutterServes[name] == nil) {
+                                let flutterServe = FlutterServices()
+                                self.flutterServes[name] = flutterServe
+                                self.flutterServes[name]!.attachToDevice(name)
+                            }
+                        } else if (type == "hummingbird") {
+                            if(hbServes[name] == nil) {
+                                let hbServe = HummingbirdServices()
+                                self.hbServes[name] = hbServe
+                                self.hbServes[name]!.attachToDevice(name)
+                            }
+                            hbServes[name]!.turnOffLightsMotor()
+                            Thread.sleep(forTimeInterval: 0.1)
+                            hbServes[name]!.stopPolling()
+                            Thread.sleep(forTimeInterval: 0.1)
+                            hbServes[name]!.beginPolling()
+                        }
                     }
                 }
                 else{
@@ -1328,6 +1303,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate,
                         //self.connectedIndicator.textColor = UIColor.redColor()
                         if (self.hbServes.keys.contains(name)) {
                             self.hbServes.removeValue(forKey: name)
+                        }
+                        if (self.flutterServes.keys.contains(name)) {
+                            self.flutterServes.removeValue(forKey: name)
                         }
                         self.sharedBluetoothDiscovery.restartScan()
                         

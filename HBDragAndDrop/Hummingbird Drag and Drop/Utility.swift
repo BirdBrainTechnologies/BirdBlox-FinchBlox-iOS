@@ -16,6 +16,12 @@ public func getUnicode(_ num: UInt8) -> UInt8{
     let scalars = String(num).unicodeScalars
     return UInt8(scalars[scalars.startIndex].value)
 }
+
+public func getUnicode(_ char: Character) -> UInt8{
+    let scalars = String(char).unicodeScalars
+    return UInt8(scalars[scalars.startIndex].value)
+}
+
 public func StringToCommand(_ phrase: String) -> Data{
     var result: [UInt8] = []
     for character in phrase.utf8{
@@ -113,6 +119,21 @@ public func getPollStopCommand() -> Data{
     return Data(bytes: UnsafePointer<UInt8>([letter,num] as [UInt8]), count: 2)
 }
 
+public func getFlutterSet(_ port: UInt8, output: Character, value: UInt8) ->Data{
+    let realPort: UInt8 = getUnicode(port)
+    let letter: UInt8 = getUnicode("s")
+    let comma: UInt8 = getUnicode(",")
+    let outputUnicode = getUnicode(output)
+    let end: UInt8 = 0x0D
+    return Data(bytes: UnsafePointer<UInt8>([letter, outputUnicode, realPort, comma, value, end] as [UInt8]), count: 6)
+}
+
+public func getFlutterRead() -> Data {
+    let letter: UInt8 = getUnicode("r")
+    let end: UInt8 = 0x0D
+    return Data(bytes: UnsafePointer<UInt8>([letter, end] as [UInt8]), count: 2)
+}
+
 //data Conversions
 public func rawToTemp(_ rawVal: UInt8) -> Int{
     let temp: Int = Int(floor(((Double(rawVal) - 127.0)/2.4 + 25) * 100 / 100));
@@ -155,4 +176,22 @@ public func rawToRotary(_ rawVal: UInt8) -> Int{
 
 public func rawToLight(_ rawVal: UInt8) -> Int{
     return rawto100scale(rawVal)
+}
+
+public func bound(_ value: UInt8, min: UInt8, max: UInt8) -> UInt8 {
+    var new_value = value < min ? min : value
+    new_value = value > max ? max : value
+    return new_value
+}
+
+public func bound(_ value: Int, min: Int, max: Int) -> Int {
+    var new_value = value < min ? min : value
+    new_value = value > max ? max : value
+    return new_value
+}
+
+public func toUInt8(_ value: Int) -> UInt8 {
+    var new_value = value < 0 ? 0 : value
+    new_value = value > 255 ? 255 : value
+    return UInt8(new_value)
 }
