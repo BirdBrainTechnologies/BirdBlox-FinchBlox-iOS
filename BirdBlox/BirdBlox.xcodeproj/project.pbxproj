@@ -7,76 +7,123 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BA8169301E819F6400AAF7A3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA81692F1E819F6400AAF7A3 /* AppDelegate.swift */; };
-		BA8169321E819F6400AAF7A3 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8169311E819F6400AAF7A3 /* ViewController.swift */; };
-		BA8169351E819F6400AAF7A3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BA8169331E819F6400AAF7A3 /* Main.storyboard */; };
-		BA8169381E819F6400AAF7A3 /* BirdBlox.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = BA8169361E819F6400AAF7A3 /* BirdBlox.xcdatamodeld */; };
-		BA81693A1E819F6400AAF7A3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BA8169391E819F6400AAF7A3 /* Assets.xcassets */; };
-		BA81693D1E819F6400AAF7A3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BA81693B1E819F6400AAF7A3 /* LaunchScreen.storyboard */; };
+		BA8169511E81A98A00AAF7A3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8169501E81A98A00AAF7A3 /* AppDelegate.swift */; };
+		BA8169531E81A98A00AAF7A3 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8169521E81A98A00AAF7A3 /* ViewController.swift */; };
+		BA8169561E81A98A00AAF7A3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BA8169541E81A98A00AAF7A3 /* Main.storyboard */; };
+		BA8169581E81A98A00AAF7A3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BA8169571E81A98A00AAF7A3 /* Assets.xcassets */; };
+		BA81695B1E81A98A00AAF7A3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BA8169591E81A98A00AAF7A3 /* LaunchScreen.storyboard */; };
+		BA8169641E81AEB400AAF7A3 /* MainServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8169631E81AEB400AAF7A3 /* MainServer.swift */; };
+		BA8169681E81B72D00AAF7A3 /* FrontendRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8169671E81B72D00AAF7A3 /* FrontendRequests.swift */; };
+		BA81696B1E81B7BC00AAF7A3 /* DocumentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA81696A1E81B7BC00AAF7A3 /* DocumentManager.swift */; };
+		BA81696D1E81BC3F00AAF7A3 /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA81696C1E81BC3F00AAF7A3 /* StringExtensions.swift */; };
+		BA81696E1E81CFBE00AAF7A3 /* Frontend in Resources */ = {isa = PBXBuildFile; fileRef = BA8169651E81B17600AAF7A3 /* Frontend */; };
+		DB4B601313BCF127ED80CC5E /* Pods_BirdBlox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B9CF54964A1E1D488464E38 /* Pods_BirdBlox.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		BA81692C1E819F6400AAF7A3 /* BirdBlox.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BirdBlox.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		BA81692F1E819F6400AAF7A3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		BA8169311E819F6400AAF7A3 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		BA8169341E819F6400AAF7A3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		BA8169371E819F6400AAF7A3 /* BirdBlox.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BirdBlox.xcdatamodel; sourceTree = "<group>"; };
-		BA8169391E819F6400AAF7A3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		BA81693C1E819F6400AAF7A3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		BA81693E1E819F6400AAF7A3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1CBEFB40603958D76A5BFE44 /* Pods-BirdBlox.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BirdBlox.release.xcconfig"; path = "Pods/Target Support Files/Pods-BirdBlox/Pods-BirdBlox.release.xcconfig"; sourceTree = "<group>"; };
+		4B9CF54964A1E1D488464E38 /* Pods_BirdBlox.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BirdBlox.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		BA81694D1E81A98A00AAF7A3 /* BirdBlox.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BirdBlox.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BA8169501E81A98A00AAF7A3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		BA8169521E81A98A00AAF7A3 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		BA8169551E81A98A00AAF7A3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		BA8169571E81A98A00AAF7A3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		BA81695A1E81A98A00AAF7A3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		BA81695C1E81A98A00AAF7A3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BA8169631E81AEB400AAF7A3 /* MainServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainServer.swift; sourceTree = "<group>"; };
+		BA8169651E81B17600AAF7A3 /* Frontend */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Frontend; sourceTree = "<group>"; };
+		BA8169671E81B72D00AAF7A3 /* FrontendRequests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FrontendRequests.swift; sourceTree = "<group>"; };
+		BA81696A1E81B7BC00AAF7A3 /* DocumentManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentManager.swift; sourceTree = "<group>"; };
+		BA81696C1E81BC3F00AAF7A3 /* StringExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringExtensions.swift; sourceTree = "<group>"; };
+		E8B8191F17118ABB8EDC2784 /* Pods-BirdBlox.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BirdBlox.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BirdBlox/Pods-BirdBlox.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		BA8169291E819F6400AAF7A3 /* Frameworks */ = {
+		BA81694A1E81A98A00AAF7A3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DB4B601313BCF127ED80CC5E /* Pods_BirdBlox.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		BA8169231E819F6400AAF7A3 = {
+		57E3AA007C026CA11E6DC062 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				BA81692E1E819F6400AAF7A3 /* BirdBlox */,
-				BA81692D1E819F6400AAF7A3 /* Products */,
+				E8B8191F17118ABB8EDC2784 /* Pods-BirdBlox.debug.xcconfig */,
+				1CBEFB40603958D76A5BFE44 /* Pods-BirdBlox.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		B5B6F9AE55235342912C86D5 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4B9CF54964A1E1D488464E38 /* Pods_BirdBlox.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		BA8169441E81A98A00AAF7A3 = {
+			isa = PBXGroup;
+			children = (
+				BA8169651E81B17600AAF7A3 /* Frontend */,
+				BA81694F1E81A98A00AAF7A3 /* BirdBlox */,
+				BA81694E1E81A98A00AAF7A3 /* Products */,
+				57E3AA007C026CA11E6DC062 /* Pods */,
+				B5B6F9AE55235342912C86D5 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
-		BA81692D1E819F6400AAF7A3 /* Products */ = {
+		BA81694E1E81A98A00AAF7A3 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				BA81692C1E819F6400AAF7A3 /* BirdBlox.app */,
+				BA81694D1E81A98A00AAF7A3 /* BirdBlox.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		BA81692E1E819F6400AAF7A3 /* BirdBlox */ = {
+		BA81694F1E81A98A00AAF7A3 /* BirdBlox */ = {
 			isa = PBXGroup;
 			children = (
-				BA81692F1E819F6400AAF7A3 /* AppDelegate.swift */,
-				BA8169311E819F6400AAF7A3 /* ViewController.swift */,
-				BA8169331E819F6400AAF7A3 /* Main.storyboard */,
-				BA8169391E819F6400AAF7A3 /* Assets.xcassets */,
-				BA81693B1E819F6400AAF7A3 /* LaunchScreen.storyboard */,
-				BA81693E1E819F6400AAF7A3 /* Info.plist */,
-				BA8169361E819F6400AAF7A3 /* BirdBlox.xcdatamodeld */,
+				BA8169621E81AD7C00AAF7A3 /* httpServer */,
+				BA8169501E81A98A00AAF7A3 /* AppDelegate.swift */,
+				BA8169521E81A98A00AAF7A3 /* ViewController.swift */,
+				BA8169541E81A98A00AAF7A3 /* Main.storyboard */,
+				BA8169571E81A98A00AAF7A3 /* Assets.xcassets */,
+				BA8169591E81A98A00AAF7A3 /* LaunchScreen.storyboard */,
+				BA81695C1E81A98A00AAF7A3 /* Info.plist */,
+				BA81696A1E81B7BC00AAF7A3 /* DocumentManager.swift */,
+				BA81696C1E81BC3F00AAF7A3 /* StringExtensions.swift */,
 			);
 			path = BirdBlox;
+			sourceTree = "<group>";
+		};
+		BA8169621E81AD7C00AAF7A3 /* httpServer */ = {
+			isa = PBXGroup;
+			children = (
+				BA8169631E81AEB400AAF7A3 /* MainServer.swift */,
+				BA8169671E81B72D00AAF7A3 /* FrontendRequests.swift */,
+			);
+			name = httpServer;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		BA81692B1E819F6400AAF7A3 /* BirdBlox */ = {
+		BA81694C1E81A98A00AAF7A3 /* BirdBlox */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = BA8169411E819F6400AAF7A3 /* Build configuration list for PBXNativeTarget "BirdBlox" */;
+			buildConfigurationList = BA81695F1E81A98A00AAF7A3 /* Build configuration list for PBXNativeTarget "BirdBlox" */;
 			buildPhases = (
-				BA8169281E819F6400AAF7A3 /* Sources */,
-				BA8169291E819F6400AAF7A3 /* Frameworks */,
-				BA81692A1E819F6400AAF7A3 /* Resources */,
+				AF272EDB977A6E683F2D4546 /* [CP] Check Pods Manifest.lock */,
+				BA8169491E81A98A00AAF7A3 /* Sources */,
+				BA81694A1E81A98A00AAF7A3 /* Frameworks */,
+				BA81694B1E81A98A00AAF7A3 /* Resources */,
+				34A648280F2DC120B983B97B /* [CP] Embed Pods Frameworks */,
+				3EC9D73D6B08B732DA3AAFF4 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -84,27 +131,27 @@
 			);
 			name = BirdBlox;
 			productName = BirdBlox;
-			productReference = BA81692C1E819F6400AAF7A3 /* BirdBlox.app */;
+			productReference = BA81694D1E81A98A00AAF7A3 /* BirdBlox.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		BA8169241E819F6400AAF7A3 /* Project object */ = {
+		BA8169451E81A98A00AAF7A3 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0820;
 				LastUpgradeCheck = 0820;
 				ORGANIZATIONNAME = "Birdbrain Technologies LLC.";
 				TargetAttributes = {
-					BA81692B1E819F6400AAF7A3 = {
+					BA81694C1E81A98A00AAF7A3 = {
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = N6XC9HC8PB;
 						ProvisioningStyle = Automatic;
 					};
 				};
 			};
-			buildConfigurationList = BA8169271E819F6400AAF7A3 /* Build configuration list for PBXProject "BirdBlox" */;
+			buildConfigurationList = BA8169481E81A98A00AAF7A3 /* Build configuration list for PBXProject "BirdBlox" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -112,55 +159,107 @@
 				en,
 				Base,
 			);
-			mainGroup = BA8169231E819F6400AAF7A3;
-			productRefGroup = BA81692D1E819F6400AAF7A3 /* Products */;
+			mainGroup = BA8169441E81A98A00AAF7A3;
+			productRefGroup = BA81694E1E81A98A00AAF7A3 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				BA81692B1E819F6400AAF7A3 /* BirdBlox */,
+				BA81694C1E81A98A00AAF7A3 /* BirdBlox */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		BA81692A1E819F6400AAF7A3 /* Resources */ = {
+		BA81694B1E81A98A00AAF7A3 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BA81693D1E819F6400AAF7A3 /* LaunchScreen.storyboard in Resources */,
-				BA81693A1E819F6400AAF7A3 /* Assets.xcassets in Resources */,
-				BA8169351E819F6400AAF7A3 /* Main.storyboard in Resources */,
+				BA81696E1E81CFBE00AAF7A3 /* Frontend in Resources */,
+				BA81695B1E81A98A00AAF7A3 /* LaunchScreen.storyboard in Resources */,
+				BA8169581E81A98A00AAF7A3 /* Assets.xcassets in Resources */,
+				BA8169561E81A98A00AAF7A3 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		34A648280F2DC120B983B97B /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BirdBlox/Pods-BirdBlox-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		3EC9D73D6B08B732DA3AAFF4 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BirdBlox/Pods-BirdBlox-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		AF272EDB977A6E683F2D4546 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
-		BA8169281E819F6400AAF7A3 /* Sources */ = {
+		BA8169491E81A98A00AAF7A3 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BA8169321E819F6400AAF7A3 /* ViewController.swift in Sources */,
-				BA8169381E819F6400AAF7A3 /* BirdBlox.xcdatamodeld in Sources */,
-				BA8169301E819F6400AAF7A3 /* AppDelegate.swift in Sources */,
+				BA8169531E81A98A00AAF7A3 /* ViewController.swift in Sources */,
+				BA8169681E81B72D00AAF7A3 /* FrontendRequests.swift in Sources */,
+				BA81696B1E81B7BC00AAF7A3 /* DocumentManager.swift in Sources */,
+				BA8169511E81A98A00AAF7A3 /* AppDelegate.swift in Sources */,
+				BA81696D1E81BC3F00AAF7A3 /* StringExtensions.swift in Sources */,
+				BA8169641E81AEB400AAF7A3 /* MainServer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		BA8169331E819F6400AAF7A3 /* Main.storyboard */ = {
+		BA8169541E81A98A00AAF7A3 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				BA8169341E819F6400AAF7A3 /* Base */,
+				BA8169551E81A98A00AAF7A3 /* Base */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
 		};
-		BA81693B1E819F6400AAF7A3 /* LaunchScreen.storyboard */ = {
+		BA8169591E81A98A00AAF7A3 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				BA81693C1E819F6400AAF7A3 /* Base */,
+				BA81695A1E81A98A00AAF7A3 /* Base */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -168,7 +267,7 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		BA81693F1E819F6400AAF7A3 /* Debug */ = {
+		BA81695D1E81A98A00AAF7A3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -218,7 +317,7 @@
 			};
 			name = Debug;
 		};
-		BA8169401E819F6400AAF7A3 /* Release */ = {
+		BA81695E1E81A98A00AAF7A3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -261,12 +360,14 @@
 			};
 			name = Release;
 		};
-		BA8169421E819F6400AAF7A3 /* Debug */ = {
+		BA8169601E81A98A00AAF7A3 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E8B8191F17118ABB8EDC2784 /* Pods-BirdBlox.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = N6XC9HC8PB;
 				INFOPLIST_FILE = BirdBlox/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = BirdBrainTech.BirdBlox;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -274,12 +375,14 @@
 			};
 			name = Debug;
 		};
-		BA8169431E819F6400AAF7A3 /* Release */ = {
+		BA8169611E81A98A00AAF7A3 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1CBEFB40603958D76A5BFE44 /* Pods-BirdBlox.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = N6XC9HC8PB;
 				INFOPLIST_FILE = BirdBlox/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = BirdBrainTech.BirdBlox;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -290,37 +393,25 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		BA8169271E819F6400AAF7A3 /* Build configuration list for PBXProject "BirdBlox" */ = {
+		BA8169481E81A98A00AAF7A3 /* Build configuration list for PBXProject "BirdBlox" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				BA81693F1E819F6400AAF7A3 /* Debug */,
-				BA8169401E819F6400AAF7A3 /* Release */,
+				BA81695D1E81A98A00AAF7A3 /* Debug */,
+				BA81695E1E81A98A00AAF7A3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		BA8169411E819F6400AAF7A3 /* Build configuration list for PBXNativeTarget "BirdBlox" */ = {
+		BA81695F1E81A98A00AAF7A3 /* Build configuration list for PBXNativeTarget "BirdBlox" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				BA8169421E819F6400AAF7A3 /* Debug */,
-				BA8169431E819F6400AAF7A3 /* Release */,
+				BA8169601E81A98A00AAF7A3 /* Debug */,
+				BA8169611E81A98A00AAF7A3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCVersionGroup section */
-		BA8169361E819F6400AAF7A3 /* BirdBlox.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				BA8169371E819F6400AAF7A3 /* BirdBlox.xcdatamodel */,
-			);
-			currentVersion = BA8169371E819F6400AAF7A3 /* BirdBlox.xcdatamodel */;
-			path = BirdBlox.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
-		};
-/* End XCVersionGroup section */
 	};
-	rootObject = BA8169241E819F6400AAF7A3 /* Project object */;
+	rootObject = BA8169451E81A98A00AAF7A3 /* Project object */;
 }
