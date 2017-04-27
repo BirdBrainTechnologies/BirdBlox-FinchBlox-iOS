@@ -11,22 +11,31 @@ import Swifter
 
 class MainServer {
     let port = 22179
-    let server: HttpServer
+    var server: HttpServer
+    let hummingbird_requests: HummingbirdRequests
+    let flutter_requests: FlutterRequests
     
     init(){
+        hummingbird_requests = HummingbirdRequests()
+        flutter_requests = FlutterRequests()
         server = HttpServer()
-        server.GET["/DragAndDrop/:path1"] = handleFrontEndRequest
-        server.GET["/DragAndDrop/:path1/:path2/:path3"] = handleFrontEndRequest
         
-        server.GET["/server/ping"] = {r in return .ok(.text("pong"))}
-
+        server["/DragAndDrop/:path1"] = handleFrontEndRequest
+        server["/DragAndDrop/:path1/:path2/:path3"] = handleFrontEndRequest
+        server["/server/ping"] = {r in return .ok(.text("pong"))}
+        hummingbird_requests.loadRequests(server: &server)
+        flutter_requests.loadRequests(server: &server)
+        
     }
+    
     func start() {
         do {
-            try server.start(22179)
+            try server.start(22179, forceIPv4: true, priority: DispatchQoS.default.qosClass)
         } catch {
             return
         }
+        
+        print (server.routes)
     }
     
 }

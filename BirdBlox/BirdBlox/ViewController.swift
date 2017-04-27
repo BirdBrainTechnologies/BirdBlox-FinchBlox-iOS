@@ -21,9 +21,9 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
         self.web_view = WKWebView(frame: self.view.frame)
         self.web_view!.navigationDelegate = self
         self.web_view!.uiDelegate = self
+        self.web_view!.contentMode = UIViewContentMode.scaleAspectFit
 
         let req = URLRequest(url: URL(string: "http://localhost:22179/DragAndDrop/HummingbirdDragAndDrop.html")!)
-        //let req = URLRequest(url: URL(string: "http://www.google.com")!)
 
         self.web_view!.load(req)
         self.view.addSubview(self.web_view!)
