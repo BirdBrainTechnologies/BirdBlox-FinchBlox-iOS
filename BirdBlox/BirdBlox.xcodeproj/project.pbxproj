@@ -18,6 +18,8 @@
 		BA81696D1E81BC3F00AAF7A3 /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA81696C1E81BC3F00AAF7A3 /* StringExtensions.swift */; };
 		BA81696E1E81CFBE00AAF7A3 /* Frontend in Resources */ = {isa = PBXBuildFile; fileRef = BA8169651E81B17600AAF7A3 /* Frontend */; };
 		BA8A75911EA7192000ECFABC /* FlutterRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8A75901EA7192000ECFABC /* FlutterRequests.swift */; };
+		BA8A75931EB2481F00ECFABC /* DataRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8A75921EB2481F00ECFABC /* DataRequests.swift */; };
+		BA8A75951EB2519200ECFABC /* HostDeviceRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8A75941EB2519200ECFABC /* HostDeviceRequests.swift */; };
 		BAE1FDA01E920A6600304BEE /* SharedUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAE1FD9F1E920A6600304BEE /* SharedUtilities.swift */; };
 		BAE1FDA21E920A7500304BEE /* HummingbirdUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAE1FDA11E920A7500304BEE /* HummingbirdUtilities.swift */; };
 		BAE1FDA41E920A8D00304BEE /* FlutterUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAE1FDA31E920A8D00304BEE /* FlutterUtilities.swift */; };
@@ -44,6 +46,8 @@
 		BA81696A1E81B7BC00AAF7A3 /* DocumentManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentManager.swift; sourceTree = "<group>"; };
 		BA81696C1E81BC3F00AAF7A3 /* StringExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringExtensions.swift; sourceTree = "<group>"; };
 		BA8A75901EA7192000ECFABC /* FlutterRequests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlutterRequests.swift; sourceTree = "<group>"; };
+		BA8A75921EB2481F00ECFABC /* DataRequests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataRequests.swift; sourceTree = "<group>"; };
+		BA8A75941EB2519200ECFABC /* HostDeviceRequests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HostDeviceRequests.swift; sourceTree = "<group>"; };
 		BAE1FD9F1E920A6600304BEE /* SharedUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharedUtilities.swift; sourceTree = "<group>"; };
 		BAE1FDA11E920A7500304BEE /* HummingbirdUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HummingbirdUtilities.swift; sourceTree = "<group>"; };
 		BAE1FDA31E920A8D00304BEE /* FlutterUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlutterUtilities.swift; sourceTree = "<group>"; };
@@ -127,6 +131,8 @@
 				BA8169671E81B72D00AAF7A3 /* FrontendRequests.swift */,
 				BAE2EBD41E84550900198B19 /* HummingbirdRequests.swift */,
 				BA8A75901EA7192000ECFABC /* FlutterRequests.swift */,
+				BA8A75921EB2481F00ECFABC /* DataRequests.swift */,
+				BA8A75941EB2519200ECFABC /* HostDeviceRequests.swift */,
 			);
 			name = httpServer;
 			sourceTree = "<group>";
@@ -288,6 +294,8 @@
 				BA81696D1E81BC3F00AAF7A3 /* StringExtensions.swift in Sources */,
 				BA8A75911EA7192000ECFABC /* FlutterRequests.swift in Sources */,
 				BA8169641E81AEB400AAF7A3 /* MainServer.swift in Sources */,
+				BA8A75931EB2481F00ECFABC /* DataRequests.swift in Sources */,
+				BA8A75951EB2519200ECFABC /* HostDeviceRequests.swift in Sources */,
 				BAE2EBCF1E84417000198B19 /* BLECentralManager.swift in Sources */,
 				BAE1FDA21E920A7500304BEE /* HummingbirdUtilities.swift in Sources */,
 			);

@@ -14,10 +14,16 @@ class MainServer {
     var server: HttpServer
     let hummingbird_requests: HummingbirdRequests
     let flutter_requests: FlutterRequests
+    let data_requests: DataRequests
+    let host_device_requests: HostDeviceRequests
+    let view_controller: UIViewController
     
-    init(){
+    init(view_controller: ViewController){
+        self.view_controller = view_controller
         hummingbird_requests = HummingbirdRequests()
         flutter_requests = FlutterRequests()
+        data_requests = DataRequests(view_controller: view_controller)
+        host_device_requests = HostDeviceRequests(view_controller: view_controller)
         server = HttpServer()
         
         server["/DragAndDrop/:path1"] = handleFrontEndRequest
@@ -25,7 +31,8 @@ class MainServer {
         server["/server/ping"] = {r in return .ok(.text("pong"))}
         hummingbird_requests.loadRequests(server: &server)
         flutter_requests.loadRequests(server: &server)
-        
+        data_requests.loadRequests(server: &server)
+        host_device_requests.loadRequests(server: &server)
     }
     
     func start() {

@@ -22,3 +22,140 @@ func getPathOfBundleFile(filename: String, directory: String) -> String? {
         return nil
     }
 }
+
+public func getSavePath() -> URL{
+    return documentsPath.appendingPathComponent("SavedFiles")
+}
+
+public func saveStringToFile(_ string: NSString, filename: String) -> Bool{
+    let fullFileName = filename + ".bbx"
+    let isDir: UnsafeMutablePointer<ObjCBool>? = nil
+    if(!fileManager.fileExists(atPath: getSavePath().path, isDirectory: isDir)) {
+        do {
+            try fileManager.createDirectory(atPath: getSavePath().path, withIntermediateDirectories: false, attributes: nil)
+        }
+        catch {
+            return false
+        }
+    }
+    let path = getSavePath().appendingPathComponent(fullFileName).path
+    do {
+        try string.write(toFile: path, atomically: true, encoding: String.Encoding.utf8.rawValue)
+        return true
+    }
+    catch {
+        return false
+    }
+}
+
+fileprivate func getAllFiles() -> [String] {
+    do {
+        let paths = try fileManager.contentsOfDirectory(atPath: getSavePath().path)
+        return paths
+    } catch {
+        return []
+    }
+    
+}
+
+public func getSavedFileURL(_ filename: String) ->URL {
+    let fullFileName = filename + ".bbx"
+    let path = getSavePath().appendingPathComponent(fullFileName)
+    return path
+}
+
+public func getSavedFileNames() -> [String]{
+    do {
+        let paths = try fileManager.contentsOfDirectory(atPath: getSavePath().path)
+        var paths2 = paths.map({ (string) -> String in
+            return string.replacingOccurrences(of: ".bbx", with: "")
+        })
+        if let index = paths2.index(of: "autosaveFile") {
+            paths2.remove(at: index)
+        }
+        NSLog(getAllFiles().joined(separator: ", "))
+        return paths2
+    } catch {
+        NSLog(getAllFiles().joined(separator: ", "))
+        return []
+    }
+}
+
+public func getSavedFileByName(_ filename: String) -> NSString {
+    do {
+        let path = getSavedFileURL(filename).path
+        let file: NSString = try NSString(contentsOfFile: path, encoding: String.Encoding.utf8.rawValue)
+        return file
+    } catch {
+        return "File not found"
+    }
+}
+
+public func deleteFile(_ filename: String) -> Bool {
+    let path = getSavedFileURL(filename).path
+    do {
+        try fileManager.removeItem(atPath: path)
+        return true
+    } catch {
+        return false
+    }
+}
+
+public func deleteFileAtPath(_ path: String) {
+    do {
+        try fileManager.removeItem(atPath: path)
+    } catch {
+        
+    }
+}
+
+public func renameFile(_ start_filename: String, new_filename: String) -> Bool {
+    let startFullFileName = start_filename + ".bbx"
+    let startPath = getSavePath().appendingPathComponent(startFullFileName).path
+    let newFullFileName = new_filename + ".bbx"
+    let newPath = getSavePath().appendingPathComponent(newFullFileName).path
+    do {
+        try fileManager.moveItem(atPath: startPath, toPath: newPath)
+        return true
+    } catch {
+        return false
+    }
+}
+
+//For managing Settings
+public func getSettingsPath() -> URL {
+    return documentsPath.appendingPathComponent("Settings.plist")
+}
+
+private func getSettings() -> NSMutableDictionary {
+    var settings: NSMutableDictionary
+    if (!fileManager.fileExists(atPath: getSettingsPath().path)) {
+        settings = NSMutableDictionary()
+        settings.write(toFile: getSettingsPath().path, atomically: true)
+    }
+    settings = NSMutableDictionary(contentsOfFile: getSettingsPath().path)!
+    return settings
+}
+
+private func saveSettings(_ settings: NSMutableDictionary) {
+    settings.write(toFile: getSettingsPath().path, atomically: true)
+}
+
+public func addSetting(_ key: String, value: String) {
+    let settings = getSettings()
+    settings.setValue(value, forKey: key)
+    saveSettings(settings)
+}
+
+public func getSetting(_ key: String) -> String? {
+    if let value = getSettings().value(forKey: key) {
+        return value as? String
+    }
+    return nil
+}
+
+public func removeSetting(_ key: String) {
+    let settings = getSettings()
+    settings.removeObject(forKey: key)
+    saveSettings(settings)
+}

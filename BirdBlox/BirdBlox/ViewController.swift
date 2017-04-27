@@ -11,11 +11,13 @@ import WebKit
 
 class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
     var web_view: WKWebView?
+    var wasShaken: Bool = false
+    var shakenTimer: Timer = Timer()
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        let main_server = MainServer()
+        let main_server = MainServer(view_controller: self)
         main_server.start()
         
         self.web_view = WKWebView(frame: self.view.frame)
@@ -34,6 +36,36 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
     }
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         decisionHandler(WKNavigationActionPolicy.allow)
+    }
+    
+    
+    //for shake 
+    //Note, this code needs to be here and not in the HostDeviceRequests file
+    override var canBecomeFirstResponder : Bool {
+        return true
+    }
+    override func motionEnded(_ motion: UIEventSubtype, with event: UIEvent?) {
+        if (motion == UIEventSubtype.motionShake){
+            wasShaken = true
+            shakenTimer = Timer.scheduledTimer(timeInterval: TimeInterval(5), target: self, selector: #selector(ViewController.expireShake), userInfo: nil, repeats: false)
+        }
+    }
+    func expireShake(){
+        wasShaken = false
+        shakenTimer.invalidate()
+    }
+    public func checkShaken() -> Bool{
+        shakenTimer.invalidate()
+        if wasShaken{
+            wasShaken = false
+            return true
+        }
+        return false
+    }
+    //end shake
+    
+    override var prefersStatusBarHidden : Bool {
+        return true
     }
     
     override func didReceiveMemoryWarning() {

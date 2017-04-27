@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Location Blocks need to get location</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>Uses BLE to connect to various robots</string>
 	<key>UIRequiresFullScreen</key>

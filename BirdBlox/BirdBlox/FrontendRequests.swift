@@ -37,5 +37,4 @@ func handleFrontEndRequest(request: HttpRequest) -> HttpResponse {
     }
  
     return .notFound
-
 }
