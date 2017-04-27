@@ -23,6 +23,12 @@ func getPathOfBundleFile(filename: String, directory: String) -> String? {
     }
 }
 
+public func getSoundPath() -> URL{
+    let mainBundle = Bundle.main
+    let path_as_string = mainBundle.bundlePath + "/SoundClips"
+    return URL(fileURLWithPath: path_as_string)
+}
+
 public func getSavePath() -> URL{
     return documentsPath.appendingPathComponent("SavedFiles")
 }

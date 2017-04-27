@@ -81,8 +81,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
     }
     
     /**
-     * If we disconnected from a peripheral, we remove it from our services and
-     * start discovering new devices
+     * If we disconnected from a peripheral
      */
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
     
