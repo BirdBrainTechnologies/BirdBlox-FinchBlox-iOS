@@ -5,9 +5,15 @@
 //  Created by birdbrain on 4/3/17.
 //  Copyright © 2017 Birdbrain Technologies LLC. All rights reserved.
 //
+//
+// This file provides utility functions for interacting with the Hummingbird
+//
 
 import Foundation
 
+/**
+    Gets a command to set an LED on the hummingbird
+ */
 public func getLEDCommand(_ port: UInt8, intensity: UInt8) -> Data{
     let real_port: UInt8 = getUnicode(port-1)
     let letter: UInt8 = 0x4C
@@ -16,6 +22,9 @@ public func getLEDCommand(_ port: UInt8, intensity: UInt8) -> Data{
     return Data(bytes: UnsafePointer<UInt8>([letter, real_port, real_intensity] as [UInt8]), count: 3)
 }
 
+/**
+ Gets a command to set a tri-LED on the hummingbird
+ */
 public func getTriLEDCommand(_ port: UInt8, red_val: UInt8, green_val: UInt8, blue_val: UInt8) ->Data{
     let real_port: UInt8 = getUnicode(port-1)
     let letter: UInt8 = 0x4F
@@ -28,7 +37,10 @@ public func getTriLEDCommand(_ port: UInt8, red_val: UInt8, green_val: UInt8, bl
     return Data(bytes: UnsafePointer<UInt8>([letter, real_port, real_red, real_green, real_blue] as [UInt8]), count: 5)
 }
 
-//speed should be from -100 to 100
+/**
+    Gets a command to set a motor on the hummingbird
+    Note: speed should range from -100 to 100
+ */
 public func getMotorCommand(_ port: UInt8, speed: Int) -> Data{
     var direction: UInt8 = 0
     let real_port: UInt8 = getUnicode(port-1)
@@ -46,6 +58,9 @@ public func getMotorCommand(_ port: UInt8, speed: Int) -> Data{
     return Data(bytes: UnsafePointer<UInt8>([letter, real_port, real_direction, real_speed] as [UInt8]), count: 4)
 }
 
+/**
+    Gets a command to set a vibration motor on the hummingbird
+ */
 public func getVibrationCommand(_ port: UInt8, intensity: UInt8) -> Data{
     let real_port: UInt8 = getUnicode(port-1)
     let letter: UInt8 = 0x56
@@ -54,7 +69,10 @@ public func getVibrationCommand(_ port: UInt8, intensity: UInt8) -> Data{
     return Data(bytes: UnsafePointer<UInt8>([letter, real_port, real_intensity] as [UInt8]), count: 3)
 }
 
-//angle should be from 0 to 180
+/**
+    Gets a command to set a servo motor on the hummingbird
+    Note: angle should be between 0 and 180
+ */
 public func getServoCommand(_ port: UInt8, angle: UInt8) -> Data{
     let real_port: UInt8 = getUnicode(port-1)
     let letter: UInt8 = 0x53
@@ -63,6 +81,10 @@ public func getServoCommand(_ port: UInt8, angle: UInt8) -> Data{
     return Data(bytes: UnsafePointer<UInt8>([letter, real_port, real_angle] as [UInt8]), count: 3)
 }
 
+/**
+    This gets a command to set all the outputs of a hummingbird
+    As input it takes in arrays from the HummingbirdPeripheral class
+ */
 public func getSetAllCommand(tri: [[UInt8]], leds: [UInt8], servos: [UInt8], motors: [Int], vibs: [UInt8]) -> Data {
     let letter: UInt8 = 0x41
     var adjusted_motors: [UInt8] = [0,0]
@@ -81,33 +103,51 @@ public func getSetAllCommand(tri: [[UInt8]], leds: [UInt8], servos: [UInt8], mot
     return Data(bytes: UnsafePointer<UInt8>(array), count: 19)
 }
 
+/**
+    Gets the command to reset the hummingbird
+ */
 public func getResetCommand() -> Data{
     let letter: UInt8 = 0x52
     return Data(bytes: UnsafePointer<UInt8>([letter] as [UInt8]), count: 1)
 }
 
+/**
+    Gets the command to turn off all the outputs on the hummingbird
+ */
 public func getTurnOffCommand() -> Data{
     let letter: UInt8 = 0x58
     return Data(bytes: UnsafePointer<UInt8>([letter] as [UInt8]), count: 1)
 }
 
+/**
+    Gets the hummingbird ping command.
+ */
 public func getZCommand() -> Data{
     let letter: UInt8 = 0x7A
     return Data(bytes: UnsafePointer<UInt8>([letter] as [UInt8]), count: 1)
 }
 
+/**
+    Gets the command to poll the sensors on the hummingbird once
+ */
 public func getPollSensorsCommand() -> Data{
     let letter: UInt8 = 0x47
     let num: UInt8 = getUnicode(UInt8(3))
     return Data(bytes: UnsafePointer<UInt8>([letter,num] as [UInt8]), count: 2)
 }
 
+/**
+ Gets the command to start the sensor polling on the hummingbird
+ */
 public func getPollStartCommand() -> Data{
     let letter: UInt8 = 0x47
     let num: UInt8 = getUnicode(UInt8(5))
     return Data(bytes: UnsafePointer<UInt8>([letter,num] as [UInt8]), count: 2)
 }
 
+/**
+ Gets the command to stop the sensor polling on the hummingbird
+ */
 public func getPollStopCommand() -> Data{
     let letter: UInt8 = 0x47
     let num: UInt8 = getUnicode(UInt8(6))
