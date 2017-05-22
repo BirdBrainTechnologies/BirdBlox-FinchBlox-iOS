@@ -16,15 +16,9 @@ class PropertiesRequests: NSObject {
 	}
 	
 	func mmFromPoints(p:CGFloat) -> CGFloat {
-		var mmPerPoint : CGFloat = 0.1
-		switch UIDevice.current.userInterfaceIdiom {
-		case UIUserInterfaceIdiom.pad:
-			mmPerPoint = 0.192424
-		case UIUserInterfaceIdiom.phone:
-			mmPerPoint = 0.0779141
-		default:
-			mmPerPoint = 0.1
-		}
+		let mmPerPoint = ThisIDevice.milimetersPerPointFor(deviceModel:
+		ThisIDevice.platformModelString())
+		
 		return p * mmPerPoint
 	}
 	
@@ -38,21 +32,4 @@ class PropertiesRequests: NSObject {
 		return .ok(.text("\(width),\(height)"))
 	}
 	
-	
-	
-	//Function for getting the device model
-	//Modified from https://gist.github.com/kapoorsahil/a9253dd4cb1af882a90e
-	func platformModelString() -> String {
-		if let key = "hw.machine".cString(using: String.Encoding.utf8) {
-			var size: Int = 0
-			sysctlbyname(key, nil, &size, nil, 0)
-			
-			var machine = [CChar](repeating:0, count:Int(size))
-			sysctlbyname(key, &machine, &size, nil, 0)
-			
-			return String(cString: machine)
-		}
-		
-		return "Unknown"
-	}
 }
