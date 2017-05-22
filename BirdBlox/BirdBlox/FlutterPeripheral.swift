@@ -194,12 +194,14 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate {
         let i = port - 1
         let current_time = NSDate().timeIntervalSince1970
         if(trileds[i] == [r,g,b] && (current_time - trileds_time[i]) < cache_timeout){
+			print("triled command not sent because it has been cached.")
             return false
         }
         let command = getFlutterLedCommand(UInt8(port), r: r, g: g, b: b)
         trileds[i] = [r,g,b]
         trileds_time[i] = current_time
         self.sendDataWithoutResponse(data: command)
+		print("triled command sent \(r) \(g) \(b)")
         
         return true
     }

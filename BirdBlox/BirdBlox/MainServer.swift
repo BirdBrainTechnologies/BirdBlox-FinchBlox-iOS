@@ -12,12 +12,15 @@ import Swifter
 class MainServer {
     let port = 22179
     var server: HttpServer
+	
     public let hummingbird_requests: HummingbirdRequests
     public let flutter_requests: FlutterRequests
     let data_requests: DataRequests
     let host_device_requests: HostDeviceRequests
     let sound_requests: SoundRequests
     let settings_requests: SettingsRequests
+	let properties_requests: PropertiesRequests
+	
     let view_controller: UIViewController
     
     init(view_controller: ViewController){
@@ -28,6 +31,7 @@ class MainServer {
         host_device_requests = HostDeviceRequests(view_controller: view_controller)
         sound_requests = SoundRequests()
         settings_requests = SettingsRequests()
+		properties_requests = PropertiesRequests()
         server = HttpServer()
         
         server["/DragAndDrop/:path1"] = handleFrontEndRequest
@@ -39,11 +43,12 @@ class MainServer {
         host_device_requests.loadRequests(server: &server)
         sound_requests.loadRequests(server: &server)
         settings_requests.loadRequests(server: &server)
+		properties_requests.loadRequests(server: &server)
     }
     
     func start() {
         do {
-            try server.start(22179, forceIPv4: true, priority: DispatchQoS.default.qosClass)
+            try server.start(in_port_t(port), forceIPv4: true, priority: DispatchQoS.default.qosClass)
         } catch {
             return
         }
