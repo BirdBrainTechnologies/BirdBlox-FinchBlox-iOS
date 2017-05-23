@@ -16,6 +16,7 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
     
     
     override func viewDidLoad() {
+		print("viewDidLoad")
         super.viewDidLoad()
         let main_server = MainServer(view_controller: self)
         main_server.start()
@@ -25,10 +26,11 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
         self.web_view!.uiDelegate = self
         self.web_view!.contentMode = UIViewContentMode.scaleAspectFit
 		
-		// Should be http://localhost:22179/DragAndDrop/HummingbirdDragAndDrop.html, currently
+		// Should be http://localhost:22179/DragAndDrop/HummingbirdDragAndDrop.html , currently
 		// swapped out for quick javascript developement
+		//http://rawgit.com/TomWildenhain/HummingbirdDragAndDrop-/dev/HummingbirdDragAndDrop.html
 		
-		let urlstr = "http://rawgit.com/TomWildenhain/HummingbirdDragAndDrop-/dev/HummingbirdDragAndDrop.html";
+		let urlstr = "http://localhost:22179/DragAndDrop/HummingbirdDragAndDrop.html";
 		let cleanUrlStr = urlstr.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlFragmentAllowed)!
 		let javascriptPageURL = URL(string: cleanUrlStr)
 		let req = URLRequest(url: javascriptPageURL!,

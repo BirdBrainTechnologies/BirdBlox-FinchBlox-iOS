@@ -7,7 +7,7 @@
 //
 
 import Foundation
-
+import Zip
 
 let documentsPath: URL! = URL(string: NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory, FileManager.SearchPathDomainMask.userDomainMask, true)[0])
 let fileManager = FileManager.default
@@ -128,7 +128,41 @@ public func renameFile(_ start_filename: String, new_filename: String) -> Bool {
     }
 }
 
-//For managing Settings
+//MARK: Downloading new frontend for debug
+//https://github.com/TomWildenhain/HummingbirdDragAndDrop-/archive/dev.zip
+let BBTrepoUrl = URL(string:"https://drive.google.com/uc?export=download&id=0B-MRtceAQ_mDbjBpeENYSkRQc1U")
+let BBTzipPath = documentsPath.appendingPathComponent("temp.zip")
+let BBTunzipPath = documentsPath.appendingPathComponent("DragAndDrop")
+let BBTFrontendPagePath = BBTunzipPath.appendingPathComponent("HummingbirdDragAndDrop.html")
+
+public func BBTDownloadFrontendUpdate() -> Bool{
+	do {
+		let zippedData = try NSData(contentsOf: BBTrepoUrl!, options: [NSData.ReadingOptions.uncached])
+		zippedData.write(toFile: BBTzipPath.path, atomically: true)
+		
+		return true;
+	}
+	catch {
+		return false;
+	}
+}
+
+public func BTTOverwriteFrontendWithDownload() -> Bool {
+	do {
+		try Zip.unzipFile(BBTzipPath,
+		                  destination: BBTunzipPath,
+		                  overwrite: true,
+						   password: nil,
+		                   progress: { (progress) -> () in })
+		
+		return true
+	}
+	catch {
+		return false
+	}
+}
+
+//MARK: managing Settings
 public func getSettingsPath() -> URL {
     return documentsPath.appendingPathComponent("Settings.plist")
 }

@@ -16,6 +16,38 @@ func handleFrontEndRequest(request: HttpRequest) -> HttpResponse {
     let path1: String? = params[":path1"]
     let path2: String? = params[":path2"]
     let path3: String? = params[":path3"]
+	
+	
+	#if DEBUG
+		func addOptionalComponent(comp: String?, toPath path : URL) -> URL {
+			if let strcomp = comp {
+				return path.appendingPathComponent(strcomp)
+			}
+			else {
+				return path
+			}
+		}
+		
+		do {
+			let subDirs = try FileManager.default.contentsOfDirectory(atPath: BBTunzipPath.absoluteString)
+			
+			if subDirs.count == 1 {
+				let dir = URL(string:BBTunzipPath.absoluteString)!.appendingPathComponent(subDirs[0])
+				
+				let dirurl1 = addOptionalComponent(comp: path1, toPath:dir)
+				let dirurl2 = addOptionalComponent(comp: path2, toPath:dirurl1)
+				let dirurl3 = addOptionalComponent(comp: path3, toPath:dirurl2)
+				
+				print("Sharing item from downloaded dev frontend " + dirurl3.absoluteString)
+				
+				return shareFile(dirurl3.absoluteString)(request)
+			}
+		}
+		catch {
+		}
+		print("In DEBUG mode, can't find unzipped dev dir from git, using frontend instead.")
+	#endif
+
     var dir = "Frontend"
     if path3 != nil && path3 != "" {
         dir = dir + "/" + path1! + "/" + path2!

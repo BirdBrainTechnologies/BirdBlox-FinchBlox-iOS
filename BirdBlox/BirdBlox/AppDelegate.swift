@@ -16,6 +16,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+		#if DEBUG
+			print("Running in DEBUG mode. Going to overwrite current frontend from git.")
+			if BBTDownloadFrontendUpdate() {
+				if BTTOverwriteFrontendWithDownload() {
+					print("Successfully downloaded new frontend.")
+				}
+				else {
+					print("Unable to unzip frontend. Frontend might be broken.")
+				}
+			}
+			else {
+				print("Unable to download zip from repo. ")
+			}
+		#else
+			print("Running in a non-DEBUG mode, going to use local frontend.")
+		#endif
         return true
     }
 
