@@ -29,8 +29,10 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
 		// swapped out for quick javascript developement
 		
 		let urlstr = "http://rawgit.com/TomWildenhain/HummingbirdDragAndDrop-/dev/HummingbirdDragAndDrop.html";
-		let javascriptPageURL = URL(string: urlstr.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlFragmentAllowed)!)
-		let req = URLRequest(url: javascriptPageURL!)
+		let cleanUrlStr = urlstr.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlFragmentAllowed)!
+		let javascriptPageURL = URL(string: cleanUrlStr)
+		let req = URLRequest(url: javascriptPageURL!,
+		             cachePolicy: URLRequest.CachePolicy.reloadRevalidatingCacheData)
 		
         self.web_view!.load(req)
         self.view.addSubview(self.web_view!)
@@ -39,7 +41,9 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         NSLog(navigation.description)
     }
-    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+    func webView(_ webView: WKWebView,
+	decidePolicyFor navigationAction: WKNavigationAction,
+	decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         decisionHandler(WKNavigationActionPolicy.allow)
     }
     
@@ -52,7 +56,11 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
     override func motionEnded(_ motion: UIEventSubtype, with event: UIEvent?) {
         if (motion == UIEventSubtype.motionShake){
             wasShaken = true
-            shakenTimer = Timer.scheduledTimer(timeInterval: TimeInterval(5), target: self, selector: #selector(ViewController.expireShake), userInfo: nil, repeats: false)
+            shakenTimer = Timer.scheduledTimer(timeInterval: TimeInterval(5),
+			                                         target: self,
+												   selector: #selector(ViewController.expireShake),
+												   userInfo: nil,
+												    repeats: false)
         }
     }
     func expireShake(){
