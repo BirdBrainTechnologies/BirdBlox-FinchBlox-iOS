@@ -32,7 +32,7 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
 		let cleanUrlStr = urlstr.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlFragmentAllowed)!
 		let javascriptPageURL = URL(string: cleanUrlStr)
 		let req = URLRequest(url: javascriptPageURL!,
-		             cachePolicy: URLRequest.CachePolicy.reloadRevalidatingCacheData)
+		             cachePolicy: URLRequest.CachePolicy.reloadIgnoringLocalCacheData)
 		
         self.web_view!.load(req)
         self.view.addSubview(self.web_view!)
