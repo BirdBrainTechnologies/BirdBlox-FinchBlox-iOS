@@ -11,13 +11,6 @@ import Swifter
 
 class SettingsRequests: NSObject {
     
-    let audio_manager: AudioManager
-    
-    override init(){
-        audio_manager = AudioManager()
-        super.init()
-    }
-    
     func loadRequests(server: inout HttpServer){
         server["/settings/get/:key"] = getSettingRequest(request:)
         server["/settings/set/:key/:value"] = setSettingRequest(request:)
