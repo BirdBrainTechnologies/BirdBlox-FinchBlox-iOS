@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-public struct ThisIDevice {
+public struct BBTThisIDevice {
 	//Function for getting the device model
 	//Modified from https://gist.github.com/kapoorsahil/a9253dd4cb1af882a90e
 	static func platformModelString() -> String {

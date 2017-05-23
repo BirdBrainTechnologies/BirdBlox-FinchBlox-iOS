@@ -27,8 +27,11 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
 		
 		// Should be http://localhost:22179/DragAndDrop/HummingbirdDragAndDrop.html, currently
 		// swapped out for quick javascript developement
-		let req = URLRequest(url: URL(string: "http://htmlpreview.github.io/?https://github.com/TomWildenhain/HummingbirdDragAndDrop-/blob/dev/HummingbirdDragAndDrop.html")!)
-
+		
+		let urlstr = "https://rawgit.com/TomWildenhain/HummingbirdDragAndDrop-/dev/HummingbirdDragAndDrop.html";
+		let javascriptPageURL = URL(string: urlstr.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlFragmentAllowed)!)
+		let req = URLRequest(url: javascriptPageURL!)
+		
         self.web_view!.load(req)
         self.view.addSubview(self.web_view!)
     }

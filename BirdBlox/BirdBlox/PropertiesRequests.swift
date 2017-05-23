@@ -16,8 +16,8 @@ class PropertiesRequests: NSObject {
 	}
 	
 	func mmFromPoints(p:CGFloat) -> CGFloat {
-		let mmPerPoint = ThisIDevice.milimetersPerPointFor(deviceModel:
-		ThisIDevice.platformModelString())
+		let mmPerPoint = BBTThisIDevice.milimetersPerPointFor(deviceModel:
+		BBTThisIDevice.platformModelString())
 		
 		return p * mmPerPoint
 	}
