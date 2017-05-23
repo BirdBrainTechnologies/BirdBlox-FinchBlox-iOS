@@ -5,6 +5,9 @@
 //  Created by birdbrain on 4/3/17.
 //  Copyright © 2017 Birdbrain Technologies LLC. All rights reserved.
 //
+//
+// This file provides utility functions for interacting with the Flutter
+//
 
 import Foundation
 
@@ -15,6 +18,10 @@ let COMMA = getUnicode(",")
 let READ = getUnicode("r")
 let END: UInt8 = 0x0D
 
+/**
+    Gets a command that sets a servo on the flutter
+    Note: angle should be between 0 and 180
+ */
 public func getFlutterServoCommand(_ port: UInt8, angle: UInt8) ->Data {
     let uniPort: UInt8 = getUnicode(port)
     let bounded_angle = bound(angle, min: 0, max: 180)
@@ -22,6 +29,9 @@ public func getFlutterServoCommand(_ port: UInt8, angle: UInt8) ->Data {
     return Data(bytes: bytes, count: 6)
 }
 
+/**
+    Gets a command that sets an LED on the flutter
+ */
 public func getFlutterLedCommand(_ port: UInt8, r: UInt8, g: UInt8, b: UInt8) -> Data {
     let uniPort = getUnicode(port)
     let bounded_r = bound(r, min: 0, max: 100)
@@ -31,12 +41,18 @@ public func getFlutterLedCommand(_ port: UInt8, r: UInt8, g: UInt8, b: UInt8) ->
     return Data(bytes: bytes, count: 10)
 }
 
+/**
+    Gets a command that polls the Flutter's inputs
+ */
 public func getFlutterRead() -> Data {
     let letter: UInt8 = getUnicode("r")
     let end: UInt8 = 0x0D
     return Data(bytes: UnsafePointer<UInt8>([letter, end] as [UInt8]), count: 2)
 }
 
+/**
+    Gets the response character for the Flutter
+ */
 public func getFlutterResponseChar() -> UInt8 {
     return READ
 }
