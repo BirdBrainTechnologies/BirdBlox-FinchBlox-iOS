@@ -9,10 +9,11 @@
 import Foundation
 import Swifter
 
-class PropertiesRequests: NSObject {
+struct PropertiesRequests {
 
 	func loadRequests(server: inout HttpServer){
 		server["/properties/dims"] = self.getPhysicalDims
+		server["/properties/os"] = self.getVersion
 	}
 	
 	func mmFromPoints(p:CGFloat) -> CGFloat {
@@ -23,6 +24,15 @@ class PropertiesRequests: NSObject {
 	}
 	
 	func getPhysicalDims(request: HttpRequest) -> HttpResponse {
+		if request.address == nil || request.address != BBTLocalHostIP{
+			#if DEBUG
+				let address = request.address ?? "unknown"
+				NSLog("Physical Dimesions requested from external address \(address)")
+			#else
+				return .forbidden
+			#endif
+		}
+	
 		let heightInPoints = UIScreen.main.bounds.height
 		let height = mmFromPoints(p: heightInPoints)
 		
@@ -30,6 +40,23 @@ class PropertiesRequests: NSObject {
 		let width = mmFromPoints(p: widthInPoints)
 		
 		return .ok(.text("\(width),\(height)"))
+	}
+	
+	func getVersion(request: HttpRequest) -> HttpResponse {
+		if request.address == nil || request.address != BBTLocalHostIP{
+			#if DEBUG
+				let address = request.address ?? "unknown"
+				NSLog("Version requested from external address \(address)")
+			#else
+				return .forbidden
+			#endif
+		}
+		
+		let os = "iOS"
+		let version = ProcessInfo().operatingSystemVersion
+		
+		return .ok(.text("\(os) " +
+		               "(\(version.majorVersion).\(version.minorVersion).\(version.patchVersion))"))
 	}
 	
 }

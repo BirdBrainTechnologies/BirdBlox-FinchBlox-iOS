@@ -9,6 +9,9 @@
 import Foundation
 import UIKit
 
+
+public let BBTLocalHostIP = "127.0.0.1"
+
 public struct BBTThisIDevice {
 	//Function for getting the device model
 	//Modified from https://gist.github.com/kapoorsahil/a9253dd4cb1af882a90e
