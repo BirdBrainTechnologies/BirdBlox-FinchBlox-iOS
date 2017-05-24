@@ -18,7 +18,7 @@ let COMMA = getUnicode(",")
 let READ = getUnicode("r")
 let BUZZFREQ = getUnicode("f")
 let BUZZVOLU = getUnicode("v")
-let BUZZ = getUnicode("x")
+let BUZZ = getUnicode("z")
 let END: UInt8 = 0x0D
 
 /**
@@ -48,11 +48,13 @@ public func getFlutterLedCommand(_ port: UInt8, r: UInt8, g: UInt8, b: UInt8) ->
 	Gets a command that sets the buzzer on the flutter
 	Volume should be 0 to 100
 */
-public func getFlutterBuzzerCommand(vol: UInt8, freq: UInt8) -> Data {
+public func getFlutterBuzzerCommand(vol: UInt8, freq: UInt16) -> Data {
 	let boundedVol = bound(vol, min: 0, max: 100)
-	let boundedFreq = bound(freq, min: 0, max: 100)
-	let bytes = UnsafePointer<UInt8>([SET, BUZZ, boundedVol, COMMA, boundedFreq, END])
-	return Data(bytes: bytes, count: 6)
+	let boundedFreq = UInt16(bound(Int(freq), min: 0, max: 20000))
+	let boundedFreqLower = UInt8(boundedFreq & 0xFF)
+	let boundedFreqUpper = UInt8((boundedFreq >> 8) & 0xFF)
+	let bytes = UnsafePointer<UInt8>([SET, BUZZ, boundedVol, COMMA, boundedFreqLower, boundedFreqUpper, END])
+	return Data(bytes: bytes, count: 7)
 }
 
 /**

@@ -38,10 +38,10 @@ func handleFrontEndRequest(request: HttpRequest) -> HttpResponse {
 				let dirurl2 = addOptionalComponent(comp: path2, toPath:dirurl1)
 				let dirurl3 = addOptionalComponent(comp: path3, toPath:dirurl2)
 				
-				print("Sharing item from downloaded dev frontend " + dirurl3.absoluteString)
+//				print("Sharing item from downloaded dev frontend " + dirurl3.absoluteString)
+//				
+//                print("File exists: \(FileManager.default.fileExists(atPath: dirurl3.absoluteString))")
 				
-                print("File exists: \(FileManager.default.fileExists(atPath: dirurl3.absoluteString))")
-                
 				return shareFile(dirurl3.absoluteString)(request)
 			}
 		}

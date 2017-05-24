@@ -35,6 +35,7 @@ class FlutterRequests: NSObject {
         
         server["/flutter/:name/out/triled/:port/:red/:green/:blue"] = self.setTriLedRequest
         server["/flutter/:name/out/servo/:port/:angle"] = self.setServoRequest
+		server["/flutter/:name/out/buzzer/:vol/:freq"] = self.setBuzzerRequest
         server["/flutter/:name/in/:sensor/:port"] = self.getInput
 
         
@@ -99,7 +100,9 @@ class FlutterRequests: NSObject {
                 return .ok(.text("0"))
             }
         }
+//		print("Total Status device connected")
         return .ok(.text("1"))
+		
     }
     
     func connectRequest(request: HttpRequest) -> HttpResponse {
@@ -147,7 +150,24 @@ class FlutterRequests: NSObject {
         }
         return .ok(.text("servo not set"))
     }
-    
+	
+	func setBuzzerRequest(request: HttpRequest) -> HttpResponse {
+		print("Set buzzer request from \(request.address)")
+		
+		let name: String = request.params[":name"]!.removingPercentEncoding!
+		let volume: UInt8 = UInt8(request.params[":vol"]!)!
+		let frequency: UInt16 = UInt16(request.params[":freq"]!)!
+		
+		print("Setting buzzer to \(name), \(volume), \(frequency)")
+		
+		if let device = connected_devices[name] {
+			if device.setBuzzer(volume: volume, frequency: frequency) {
+				return .ok(.text("buzzer Set"))
+			}
+		}
+		return .ok(.text("buzzer not set"))
+	}
+	
     func getInput(request: HttpRequest) -> HttpResponse {
         let name: String = request.params[":name"]!.removingPercentEncoding!
         let sensor = request.params[":sensor"]!

@@ -34,6 +34,10 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate {
     fileprivate var servos_time: [Double] = [0,0,0]
     fileprivate var trileds: [[UInt8]] = [[0,0,0],[0,0,0],[0,0,0]]
     fileprivate var trileds_time: [Double] = [0,0,0]
+	fileprivate var buzzerVolume: UInt8 = 0
+	fileprivate var buzzerFrequency: UInt16 = 0
+	fileprivate var buzzerTime: Double = 0
+	
     var last_message_recieved: [UInt8] = [0,0,0]
     let cache_timeout: Double = 15.0 //in seconds
     var was_initialized = false
@@ -183,7 +187,8 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate {
             response = sendDataWithResponse(data: data)
             counter += 1
             if counter >= MAX_RETRY {
-                print("failed to send data: " + String(data: data, encoding: .utf8)!)
+				let dataArray = [UInt8](data)
+                print("failed to send data: \(dataArray)")
                 return
             }
         }
@@ -218,7 +223,26 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate {
         self.sendDataWithoutResponse(data: command)
         return true
     }
-    
+	
+	func setBuzzer(volume: UInt8, frequency: UInt16) -> Bool
+	{
+		let current_time = NSDate().timeIntervalSince1970
+		if(buzzerVolume == volume &&
+		   buzzerFrequency == frequency &&
+		   (current_time - buzzerTime) < cache_timeout){
+			return false
+		}
+		
+		let command: Data = getFlutterBuzzerCommand(vol: volume, freq: frequency)
+		
+		buzzerVolume = volume
+		buzzerFrequency = frequency
+		buzzerTime = current_time
+		
+		self.sendDataWithoutResponse(data: command)
+		return true
+	}
+	
     func getSensor(port: Int, input_type: String) -> UInt8 {
         var response: String = sendDataWithResponse(data: getFlutterRead())
         var values = response.split(",")
@@ -248,5 +272,4 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate {
             return data_percent
         }
     }
-    
 }
