@@ -20,11 +20,11 @@ func handleFrontEndRequest(request: HttpRequest) -> HttpResponse {
 	
 	#if DEBUG
 		func addOptionalComponent(comp: String?, toPath path : URL) -> URL {
-			if let strcomp = comp {
-				return path.appendingPathComponent(strcomp)
+			if comp == nil || comp == ""{
+				return path
 			}
 			else {
-				return path
+				return path.appendingPathComponent(comp!)
 			}
 		}
 		
@@ -40,6 +40,8 @@ func handleFrontEndRequest(request: HttpRequest) -> HttpResponse {
 				
 				print("Sharing item from downloaded dev frontend " + dirurl3.absoluteString)
 				
+                print("File exists: \(FileManager.default.fileExists(atPath: dirurl3.absoluteString))")
+                
 				return shareFile(dirurl3.absoluteString)(request)
 			}
 		}

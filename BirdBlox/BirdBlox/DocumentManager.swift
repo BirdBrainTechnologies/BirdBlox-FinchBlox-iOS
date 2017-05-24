@@ -129,8 +129,9 @@ public func renameFile(_ start_filename: String, new_filename: String) -> Bool {
 }
 
 //MARK: Downloading new frontend for debug
-//https://github.com/TomWildenhain/HummingbirdDragAndDrop-/archive/dev.zip
-let BBTrepoUrl = URL(string:"https://drive.google.com/uc?export=download&id=0B-MRtceAQ_mDbjBpeENYSkRQc1U")
+//From Tom https://github.com/TomWildenhain/HummingbirdDragAndDrop-/archive/dev.zip
+//Semi Stable: https://github.com/BirdBrainTechnologies/HummingbirdDragAndDrop-/archive/dev.zip
+let BBTrepoUrl = URL(string:"https://github.com/BirdBrainTechnologies/HummingbirdDragAndDrop-/archive/dev.zip")
 let BBTzipPath = documentsPath.appendingPathComponent("temp.zip")
 let BBTunzipPath = documentsPath.appendingPathComponent("DragAndDrop")
 let BBTFrontendPagePath = BBTunzipPath.appendingPathComponent("HummingbirdDragAndDrop.html")

@@ -35,6 +35,7 @@ class MainServer {
         server = HttpServer()
         
         server["/DragAndDrop/:path1"] = handleFrontEndRequest
+        server["/DragAndDrop/:path1/:path2/"] = handleFrontEndRequest
         server["/DragAndDrop/:path1/:path2/:path3"] = handleFrontEndRequest
         server["/server/ping"] = {r in return .ok(.text("pong"))}
         hummingbird_requests.loadRequests(server: &server)
