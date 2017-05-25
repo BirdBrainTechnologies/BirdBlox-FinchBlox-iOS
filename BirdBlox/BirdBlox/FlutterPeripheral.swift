@@ -203,9 +203,17 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate {
             return false
         }
         let command = getFlutterLedCommand(UInt8(port), r: r, g: g, b: b)
+        self.sendDataWithoutResponse(data: command)
         trileds[i] = [r,g,b]
         trileds_time[i] = current_time
-        self.sendDataWithoutResponse(data: command)
+
+//		let commandr = getFlutterSingleLedCommand(port: UInt8(port), color: "r", value: r)
+//		let commandg = getFlutterSingleLedCommand(port: UInt8(port), color: "g", value: g)
+//		let commandb = getFlutterSingleLedCommand(port: UInt8(port), color: "b", value: b)
+//		self.sendDataWithoutResponse(data: commandr)
+//		self.sendDataWithoutResponse(data: commandg)
+//		self.sendDataWithoutResponse(data: commandb)
+		
 		print("triled command sent \(r) \(g) \(b)")
         
         return true

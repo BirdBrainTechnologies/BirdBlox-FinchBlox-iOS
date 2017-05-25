@@ -21,6 +21,10 @@ let BUZZVOLU = getUnicode("v")
 let BUZZ = getUnicode("z")
 let END: UInt8 = 0x0D
 
+let set = "s"
+let led = "l"
+let end = "\r"
+
 /**
     Gets a command that sets a servo on the flutter
     Note: angle should be between 0 and 180
@@ -40,8 +44,23 @@ public func getFlutterLedCommand(_ port: UInt8, r: UInt8, g: UInt8, b: UInt8) ->
     let bounded_r = bound(r, min: 0, max: 100)
     let bounded_g = bound(g, min: 0, max: 100)
     let bounded_b = bound(b, min: 0, max: 100)
-    let bytes = UnsafePointer<UInt8>([SET, LED, uniPort, COMMA, bounded_r, COMMA, bounded_g, COMMA, bounded_b, END])
-    return Data(bytes: bytes, count: 10)
+	
+	let rgbHexString = String(format: "%X,%X,%X", bounded_r, bounded_g, bounded_b)
+	let commandString = set + led + "\(port)," + rgbHexString + end
+	print([UInt8](commandString.utf8))
+//    let bytes = UnsafePointer<UInt8>([SET, LED, uniPort, COMMA, bounded_r, COMMA, bounded_g, COMMA, bounded_b, END, 0])
+	return Data(bytes: [UInt8](commandString.utf8), count: commandString.utf8.count)
+}
+
+/**
+	Gets a command that sets a single color in a triled on the flutter.
+	Made to test the problem that certain LEDs have not been sent.
+ */
+public func getFlutterSingleLedCommand(port: UInt8, color: Character, value: UInt8) -> Data {
+	let uniPort = getUnicode(port)
+	let boundedValue = bound(value, min: 0, max: 100)
+	let bytes = UnsafePointer<UInt8>([SET, getUnicode(color), uniPort, COMMA, boundedValue, END])
+	return Data(bytes: bytes, count: 5)
 }
 
 /**
