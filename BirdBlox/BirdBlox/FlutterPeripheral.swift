@@ -34,8 +34,8 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate {
     fileprivate var servos_time: [Double] = [0,0,0]
     fileprivate var trileds: [[UInt8]] = [[0,0,0],[0,0,0],[0,0,0]]
     fileprivate var trileds_time: [Double] = [0,0,0]
-	fileprivate var buzzerVolume: UInt8 = 0
-	fileprivate var buzzerFrequency: UInt16 = 0
+	fileprivate var buzzerVolume: Int = 0
+	fileprivate var buzzerFrequency: Int = 0
 	fileprivate var buzzerTime: Double = 0
 	
     var last_message_recieved: [UInt8] = [0,0,0]
@@ -206,15 +206,8 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate {
         self.sendDataWithoutResponse(data: command)
         trileds[i] = [r,g,b]
         trileds_time[i] = current_time
-
-//		let commandr = getFlutterSingleLedCommand(port: UInt8(port), color: "r", value: r)
-//		let commandg = getFlutterSingleLedCommand(port: UInt8(port), color: "g", value: g)
-//		let commandb = getFlutterSingleLedCommand(port: UInt8(port), color: "b", value: b)
-//		self.sendDataWithoutResponse(data: commandr)
-//		self.sendDataWithoutResponse(data: commandg)
-//		self.sendDataWithoutResponse(data: commandb)
 		
-		print("triled command sent \(r) \(g) \(b)")
+//		print("triled command sent \(r) \(g) \(b)")
         
         return true
     }
@@ -232,7 +225,7 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate {
         return true
     }
 	
-	func setBuzzer(volume: UInt8, frequency: UInt16) -> Bool
+	func setBuzzer(volume: Int, frequency: Int) -> Bool
 	{
 		let current_time = NSDate().timeIntervalSince1970
 		if(buzzerVolume == volume &&

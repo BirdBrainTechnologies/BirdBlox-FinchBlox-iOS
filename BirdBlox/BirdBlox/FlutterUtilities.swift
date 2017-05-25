@@ -12,18 +12,16 @@
 import Foundation
 
 let SET = getUnicode("s")
-let LED = getUnicode("l")
 let SERVO = getUnicode("s")
 let COMMA = getUnicode(",")
 let READ = getUnicode("r")
-let BUZZFREQ = getUnicode("f")
-let BUZZVOLU = getUnicode("v")
-let BUZZ = getUnicode("z")
+
 let END: UInt8 = 0x0D
 
 let set = "s"
 let led = "l"
 let end = "\r"
+let BUZZ = "z"
 
 /**
     Gets a command that sets a servo on the flutter
@@ -40,40 +38,28 @@ public func getFlutterServoCommand(_ port: UInt8, angle: UInt8) ->Data {
     Gets a command that sets an LED on the flutter
  */
 public func getFlutterLedCommand(_ port: UInt8, r: UInt8, g: UInt8, b: UInt8) -> Data {
-    let uniPort = getUnicode(port)
     let bounded_r = bound(r, min: 0, max: 100)
     let bounded_g = bound(g, min: 0, max: 100)
     let bounded_b = bound(b, min: 0, max: 100)
 	
-	let rgbHexString = String(format: "%X,%X,%X", bounded_r, bounded_g, bounded_b)
-	let commandString = set + led + "\(port)," + rgbHexString + end
-	print([UInt8](commandString.utf8))
-//    let bytes = UnsafePointer<UInt8>([SET, LED, uniPort, COMMA, bounded_r, COMMA, bounded_g, COMMA, bounded_b, END, 0])
+	let rgbHexString = String(format: "%x,%x,%x", bounded_r, bounded_g, bounded_b)
+	let commandString = (set + led + "\(port)," + rgbHexString + end)
+	
 	return Data(bytes: [UInt8](commandString.utf8), count: commandString.utf8.count)
-}
-
-/**
-	Gets a command that sets a single color in a triled on the flutter.
-	Made to test the problem that certain LEDs have not been sent.
- */
-public func getFlutterSingleLedCommand(port: UInt8, color: Character, value: UInt8) -> Data {
-	let uniPort = getUnicode(port)
-	let boundedValue = bound(value, min: 0, max: 100)
-	let bytes = UnsafePointer<UInt8>([SET, getUnicode(color), uniPort, COMMA, boundedValue, END])
-	return Data(bytes: bytes, count: 5)
 }
 
 /**
 	Gets a command that sets the buzzer on the flutter
 	Volume should be 0 to 100
 */
-public func getFlutterBuzzerCommand(vol: UInt8, freq: UInt16) -> Data {
+public func getFlutterBuzzerCommand(vol: Int, freq: Int) -> Data {
 	let boundedVol = bound(vol, min: 0, max: 100)
-	let boundedFreq = UInt16(bound(Int(freq), min: 0, max: 20000))
-	let boundedFreqLower = UInt8(boundedFreq & 0xFF)
-	let boundedFreqUpper = UInt8((boundedFreq >> 8) & 0xFF)
-	let bytes = UnsafePointer<UInt8>([SET, BUZZ, boundedVol, COMMA, boundedFreqLower, boundedFreqUpper, END])
-	return Data(bytes: bytes, count: 7)
+	let boundedFreq = UInt16(bound(freq, min: 0, max: 20000))
+	
+	let vfHexString = String(format: "%x,%x", boundedVol, boundedFreq)
+	let commandString = (set + BUZZ + "," + vfHexString + end)
+	
+	return Data(bytes: [UInt8](commandString.utf8), count: commandString.utf8.count)
 }
 
 /**

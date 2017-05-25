@@ -152,13 +152,12 @@ class FlutterRequests: NSObject {
     }
 	
 	func setBuzzerRequest(request: HttpRequest) -> HttpResponse {
-		print("Set buzzer request from \(request.address)")
+		print("\(request.address) \(request.path)")
 		
 		let name: String = request.params[":name"]!.removingPercentEncoding!
-		let volume: UInt8 = UInt8(request.params[":vol"]!)!
-		let frequency: UInt16 = UInt16(request.params[":freq"]!)!
+		let volume: Int = Int(request.params[":vol"]!)!
+		let frequency: Int = Int(request.params[":freq"]!)!
 		
-		print("Setting buzzer to \(name), \(volume), \(frequency)")
 		
 		if let device = connected_devices[name] {
 			if device.setBuzzer(volume: volume, frequency: frequency) {
