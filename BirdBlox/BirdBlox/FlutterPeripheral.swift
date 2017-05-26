@@ -45,7 +45,7 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate {
     
     init(peripheral: CBPeripheral){
         self.peripheral = peripheral
-        self.BLE_Manager = BLECentralManager.getBLEManager()
+        self.BLE_Manager = BLECentralManager.manager
         super.init()
         self.peripheral.delegate = self
         
@@ -65,7 +65,8 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate {
         if let services = peripheral.services{
             for service in services {
                 if(service.uuid == FlutterPeripheral.SERVICE_UUID){
-                    peripheral.discoverCharacteristics([FlutterPeripheral.RX_UUID, FlutterPeripheral.TX_UUID], for: service)
+                    peripheral.discoverCharacteristics([FlutterPeripheral.RX_UUID,
+                                                        FlutterPeripheral.TX_UUID], for: service)
                     return
                 }
             }
@@ -75,7 +76,8 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate {
      * Once we find a characteristic, we check if it is the RX or TX line that was
      * found. Once we have found both, we begin looking for descriptors
      */
-    func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
+    func peripheral(_ peripheral: CBPeripheral,
+                    didDiscoverCharacteristicsFor service: CBService, error: Error?) {
         if (peripheral != self.peripheral || error != nil) {
             //not the right device
             return
@@ -105,7 +107,8 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate {
     /**
      * We want a specific characteristic on the RX line that is used for data
      */
-    func peripheral(_ peripheral: CBPeripheral, didDiscoverDescriptorsFor characteristic: CBCharacteristic, error: Error?) {
+    func peripheral(_ peripheral: CBPeripheral,
+                    didDiscoverDescriptorsFor characteristic: CBCharacteristic, error: Error?) {
         if (peripheral != self.peripheral || error != nil || characteristic != rx_line!) {
             //not the right device
             return
@@ -127,7 +130,8 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate {
     /**
      * Called when a descriptor is updated
      */
-    func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor descriptor: CBDescriptor, error: Error?) {
+    func peripheral(_ peripheral: CBPeripheral,
+                    didUpdateValueFor descriptor: CBDescriptor, error: Error?) {
         if descriptor != rx_config_line {
             return
         }
@@ -139,11 +143,13 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate {
     /**
      * Called when we update a characteristic
      */
-    func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
+    func peripheral(_ peripheral: CBPeripheral,
+                    didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
         
     }
     
-    func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
+    func peripheral(_ peripheral: CBPeripheral,
+                    didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
         if characteristic != tx_line {
             return
         }

@@ -45,6 +45,7 @@ class MainServer {
         sound_requests.loadRequests(server: &server)
         settings_requests.loadRequests(server: &server)
 		properties_requests.loadRequests(server: &server)
+		
     }
     
     func start() {

@@ -28,6 +28,9 @@ struct PropertiesRequests {
 			#if DEBUG
 				let address = request.address ?? "unknown"
 				NSLog("Physical Dimesions requested from external address \(address)")
+				print(request.params)
+				print(request.queryParams)
+				print(request.method)
 			#else
 				return .forbidden
 			#endif

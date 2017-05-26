@@ -39,7 +39,7 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
     
     init(peripheral: CBPeripheral){
         self.peripheral = peripheral
-        self.BLE_Manager = BLECentralManager.getBLEManager()
+        self.BLE_Manager = BLECentralManager.manager
         super.init()
         self.peripheral.delegate = self
         

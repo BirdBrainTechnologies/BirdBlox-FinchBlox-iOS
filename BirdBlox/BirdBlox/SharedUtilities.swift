@@ -137,3 +137,44 @@ public func rawToPercent(_ raw_val: UInt8) -> Int{
 public func percentToRaw(_ percent_val: UInt8) -> Int{
     return Int(floor(Double(percent_val) * 2.55))
 }
+
+/**
+  Converts the boards GAP name to a kid friendly name for the UI to display
+  Returns nil if the input name is malformed
+  */
+public func BBTKidNameFromMacSuffix(_ deviceName: String) -> String? {
+//	let deviceName = deviceNameS.utf8
+	
+	//The name should be seven characters, with the first two identifying the type of device
+	//The last five characters should be from the device's MAC address
+	
+	if deviceName.utf8.count == 7,
+		let namesPath = Bundle.main.path(forResource: "BluetoothDeviceNames", ofType: "plist"),
+		let namesDict = NSDictionary(contentsOfFile: namesPath),
+		let mac = Int(deviceName[deviceName.index(deviceName.startIndex,
+		                                          offsetBy: 2)..<deviceName.endIndex], radix: 16)  {
+		
+		 // grab bits from the MAC address (6 bits, 6 bits, 8 bits => last, middle, first)
+		 // (5 digis of mac address is 20 bits) llllllmmmmmmffffffff
+		 
+		let macNumber = mac
+		let offset = (macNumber & 0xFF) % 16
+		let firstIndex = (macNumber & 0xFF) + offset
+		let middleIndex = ((macNumber >> 8) & 0b111111) + offset
+		let lastIndex = ((macNumber >> (8+6)) & 0b111111) + offset
+		
+		let namesDict = namesDict as! Dictionary<String, Array<String>>
+		let name = namesDict["first_names"]![firstIndex] + " " +
+			namesDict["middle_names"]![middleIndex] + " " +
+			namesDict["last_names"]![lastIndex]
+		
+		print("\(deviceName) \(firstIndex), \(middleIndex), \(lastIndex)")
+	
+		return name
+		
+	}
+	
+	NSLog("Unable to parse GAP Name \"%s\"", deviceName)
+	return nil
+}
+

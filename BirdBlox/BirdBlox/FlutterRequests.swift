@@ -22,8 +22,8 @@ class FlutterRequests: NSObject {
     
     override init(){
         connected_devices = [String: FlutterPeripheral]()
-        BLE_Manager = BLECentralManager.getBLEManager()
-        sendQueue.maxConcurrentOperationCount = 1
+        BLE_Manager = BLECentralManager.manager
+		sendQueue.maxConcurrentOperationCount = 1
         
     }
     func loadRequests(server: inout HttpServer){
@@ -71,23 +71,28 @@ class FlutterRequests: NSObject {
     }
     func startTimerSend(){
         self.allowSend = false
-        if (timerDelaySend == nil){
-            timerDelaySend = Timer.scheduledTimer(timeInterval: sendInterval, target: self, selector: #selector(HummingbirdRequests.timerElapsedSend), userInfo: nil, repeats: false)
+        if timerDelaySend == nil {
+            timerDelaySend = Timer.scheduledTimer(timeInterval: sendInterval, target: self,
+				selector: #selector(HummingbirdRequests.timerElapsedSend),
+				userInfo: nil, repeats: false)
         }
     }
     
     func discoverRequest(request: HttpRequest) -> HttpResponse {
         BLE_Manager.startScan(serviceUUIDs: [FlutterPeripheral.DEVICE_UUID])
-        let devices = BLE_Manager.getDiscovered().keys
-        print("Found Devices: " + devices.joined(separator: ", "))
+        let devices = BLE_Manager.discoveredDevices.keys
+		
+		print("Found Devices: " + devices.joined(separator: ", "))
         return .ok(.text(devices.joined(separator: "\n")))
     }
     
     func forceDiscover(request: HttpRequest) -> HttpResponse {
         BLE_Manager.stopScan()
         BLE_Manager.startScan(serviceUUIDs: [FlutterPeripheral.DEVICE_UUID])
-        let devices = BLE_Manager.getDiscovered().keys
-        print("Found Devices: " + devices.joined(separator: ", "))
+        let devices = BLE_Manager.discoveredDevices.keys
+		
+		print("Found Devices: " + devices.joined(separator: ", "))
+		
         return .ok(.text(devices.joined(separator: "\n")))
     }
     
@@ -107,10 +112,10 @@ class FlutterRequests: NSObject {
     
     func connectRequest(request: HttpRequest) -> HttpResponse {
         let name: String = request.params[":name"]!.removingPercentEncoding!
-        if (!BLE_Manager.getDiscovered().keys.contains(name)) {
+        if (!BLE_Manager.foundDevices.keys.contains(name)) {
             return .ok(.text("Device not found!"))
         }
-        let periph: CBPeripheral = BLE_Manager.getDiscovered()[name]!
+        let periph: CBPeripheral = BLE_Manager.foundDevices[name]!
         connected_devices[name] = BLE_Manager.connectToFlutter(peripheral: periph)
         return .ok(.text("Connected!"))
     }
@@ -152,7 +157,7 @@ class FlutterRequests: NSObject {
     }
 	
 	func setBuzzerRequest(request: HttpRequest) -> HttpResponse {
-		print("\(request.address) \(request.path)")
+		print("\(String(describing: request.address)) \(request.path)")
 		
 		let name: String = request.params[":name"]!.removingPercentEncoding!
 		let volume: Int = Int(request.params[":vol"]!)!

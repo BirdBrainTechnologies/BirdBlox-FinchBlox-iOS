@@ -22,7 +22,7 @@ class HummingbirdRequests: NSObject {
     
     override init(){
         connected_devices = [String: HummingbirdPeripheral]()
-        BLE_Manager = BLECentralManager.getBLEManager()
+        BLE_Manager = BLECentralManager.manager
         sendQueue.maxConcurrentOperationCount = 1
 
     }
@@ -83,7 +83,7 @@ class HummingbirdRequests: NSObject {
     
     func discoverRequest(request: HttpRequest) -> HttpResponse {
         BLE_Manager.startScan(serviceUUIDs: [HummingbirdPeripheral.DEVICE_UUID])
-        let devices = BLE_Manager.getDiscovered().keys
+        let devices = BLE_Manager.foundDevices.keys
         print("Found Devices: " + devices.joined(separator: ", "))
         return .ok(.text(devices.joined(separator: "\n")))
     }
@@ -91,7 +91,7 @@ class HummingbirdRequests: NSObject {
     func forceDiscover(request: HttpRequest) -> HttpResponse {
         BLE_Manager.stopScan()
         BLE_Manager.startScan(serviceUUIDs: [HummingbirdPeripheral.DEVICE_UUID])
-        let devices = BLE_Manager.getDiscovered().keys
+        let devices = BLE_Manager.foundDevices.keys
         print("Found Devices: " + devices.joined(separator: ", "))
         return .ok(.text(devices.joined(separator: "\n")))
     }
@@ -110,10 +110,10 @@ class HummingbirdRequests: NSObject {
     
     func connectRequest(request: HttpRequest) -> HttpResponse {
         let name: String = request.params[":name"]!.removingPercentEncoding!
-        if (!BLE_Manager.getDiscovered().keys.contains(name)) {
+        if (!BLE_Manager.foundDevices.keys.contains(name)) {
             return .ok(.text("Device not found!"))
         }
-        let periph: CBPeripheral = BLE_Manager.getDiscovered()[name]!
+        let periph: CBPeripheral = BLE_Manager.foundDevices[name]!
         connected_devices[name] = BLE_Manager.connectToHummingbird(peripheral: periph)
         return .ok(.text("Connected!"))
     }

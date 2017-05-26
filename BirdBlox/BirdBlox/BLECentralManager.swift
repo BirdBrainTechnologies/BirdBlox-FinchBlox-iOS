@@ -18,33 +18,39 @@ extension CBCentralManager {
     }
 }
 
-private let BLE_Manager = BLECentralManager()
 
 class BLECentralManager: NSObject, CBCentralManagerDelegate {
-    
-    fileprivate var centralManager: CBCentralManager!
-    fileprivate var discoveredDevices = [String: CBPeripheral]()
-    fileprivate var isScanning = false
-    fileprivate var discoverTimer: Timer = Timer()
-    fileprivate var waitingToConnect: [String] = []
 
+	public static let manager: BLECentralManager = BLECentralManager()
+    
+	var centralManager: CBCentralManager!
+	var discoveredDevices: [String: CBPeripheral]
+	var isScanning: Bool
+	var discoverTimer: Timer
+	var waitingToConnect: [String]
     
     override init() {
-        super.init();
+		
+		self.discoveredDevices = [String: CBPeripheral]()
+		self.isScanning = false
+		self.discoverTimer = Timer()
+		self.waitingToConnect = Array()
+		
+		super.init();
+		
         let centralQueue = DispatchQueue(label: "com.BirdBrainTech", attributes: [])
         centralManager = CBCentralManager(delegate: self, queue: centralQueue)
-    }
-    
-    internal static func getBLEManager() -> BLECentralManager {
-        return BLE_Manager
     }
     
     func startScan(serviceUUIDs: [CBUUID]) {
         if !isScanning {
             isScanning = true
-            discoveredDevices = [String: CBPeripheral]()
+            discoveredDevices.removeAll()
             centralManager.scanForPeripherals(withServices: serviceUUIDs, options: nil)
-            discoverTimer = Timer.scheduledTimer(timeInterval: TimeInterval(30), target: self, selector: #selector(BLECentralManager.stopScan), userInfo: nil, repeats: false)
+            discoverTimer = Timer.scheduledTimer(timeInterval: TimeInterval(30), target: self,
+                                                 selector: #selector(BLECentralManager.stopScan),
+												 userInfo: nil, repeats: false)
+			NSLog("Stated bluetooth scan")
         }
     }
     func stopScan() {
@@ -52,19 +58,34 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
             centralManager.stopScan()
             isScanning = false
             discoverTimer.invalidate()
+			NSLog("Stopped bluetooth scan")
         }
     }
-    
-    func getDiscovered() -> [String: CBPeripheral]{
-        return discoveredDevices
-    }
+	
+	var foundDevices: [String: CBPeripheral] {
+		return self.discoveredDevices
+	}
+	
+	func getDeviceNameForGAPName(_ gap: String) -> String {
+		if let kidName = BBTKidNameFromMacSuffix(gap) {
+			return kidName
+		}
+		
+		//TODO: If the GAP name is the default hummingbird name, then grab the MAC address,
+		//set the GAP name to "HB\(last 5 of MAC)", and use that to generate a kid name
+		
+		return gap
+	}
+
+	
     /**
      * If a device is discovered, it is given a unique name and added to our
      * discovered list. If the device was connected in this session and had
      * lost connection, it is automatically connected to again
      */
-    func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
-        discoveredDevices[peripheral.name!] = peripheral
+    func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral,
+                        advertisementData: [String : Any], rssi RSSI: NSNumber) {
+        discoveredDevices[getDeviceNameForGAPName(peripheral.name!)] = peripheral
     }
     
     /**
@@ -83,14 +104,16 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
     /**
      * If we disconnected from a peripheral
      */
-    func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
+    func centralManager(_ central: CBCentralManager,
+                        didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
     
         
     }
     /**
      * We failed to connect to a peripheral, we could notify the user here?
      */
-    func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
+    func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral,
+                        error: Error?) {
 
     }
     
@@ -128,7 +151,9 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
     
     func connectToHummingbird(peripheral: CBPeripheral) -> HummingbirdPeripheral {
         waitingToConnect.append(peripheral.name!)
-        centralManager?.connect(peripheral, options: [CBConnectPeripheralOptionNotifyOnDisconnectionKey: NSNumber(value: true as Bool)])
+        centralManager?.connect(peripheral,
+                                options: [CBConnectPeripheralOptionNotifyOnDisconnectionKey:
+								NSNumber(value: true as Bool)])
         while(waitingToConnect.contains(peripheral.name!)) {
             sched_yield()
         }
@@ -137,7 +162,9 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
     
     func connectToFlutter(peripheral: CBPeripheral) -> FlutterPeripheral {
         waitingToConnect.append(peripheral.name!)
-        centralManager?.connect(peripheral, options: [CBConnectPeripheralOptionNotifyOnDisconnectionKey: NSNumber(value: true as Bool)])
+        centralManager?.connect(peripheral,
+                                options: [CBConnectPeripheralOptionNotifyOnDisconnectionKey:
+								NSNumber(value: true as Bool)])
         while(waitingToConnect.contains(peripheral.name!)) {
             sched_yield()
         }
