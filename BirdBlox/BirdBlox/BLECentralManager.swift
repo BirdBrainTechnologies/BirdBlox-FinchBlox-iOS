@@ -74,6 +74,11 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 		//TODO: If the GAP name is the default hummingbird name, then grab the MAC address,
 		//set the GAP name to "HB\(last 5 of MAC)", and use that to generate a kid name
 		
+		//Enter command mode with +++
+		//Get MAC address with AT+BLEGETADDR
+		//Set name with AT+GAPDEVNAME=BLEFriend
+		//Reset device with ATZ
+		
 		return gap
 	}
 
