@@ -99,6 +99,12 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
         
         server["/tablet/dialog/:title/:question/:holder"] = dialogRequest(request:)
         server["/tablet/choice/:title/:question/:button1/:button2"] = choiceRequest(request:)
+		
+//		// /tablet/dialog?title=x&question=y&holder=z
+//		server["/tablet/dialog"] = self.dialogRequest
+//		
+//		// /tablet/choice?title=x&question=y&button1=z&button2=q
+//		server["/tablet/choice"] = self.choiceRequest
     }
 		
     func shakeRequest(request: HttpRequest) -> HttpResponse {
@@ -163,11 +169,13 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
     
     func dialogRequest(request: HttpRequest) -> HttpResponse {
         self.last_dialog_response = nil
-        let captured = request.params
+        let captured = request.params //let captured = BBTSequentialQueryArrayToDict(request.queryParams)
         let title = (captured[":title"]?.removingPercentEncoding)!
         let question = (captured[":question"]?.removingPercentEncoding)!
         let answerHolder = (captured[":holder"]?.removingPercentEncoding)!
-        let alertController = UIAlertController(title: title, message: question, preferredStyle: UIAlertControllerStyle.alert)
+		
+        let alertController = UIAlertController(title: title, message: question,
+                                                preferredStyle: UIAlertControllerStyle.alert)
         let okayAction = UIAlertAction(title: "Okay", style: UIAlertActionStyle.default){
             (action) -> Void in
             if let textField: AnyObject = alertController.textFields?.first{
@@ -187,19 +195,23 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
         alertController.addAction(okayAction)
         alertController.addAction(cancelAction)
         DispatchQueue.main.async{
-            UIApplication.shared.keyWindow?.rootViewController!.present(alertController, animated: true, completion: nil)
+            UIApplication.shared.keyWindow?.rootViewController!.present(alertController,
+                                                                        animated: true,
+                                                                        completion: nil)
         }
         return .ok(.text("Dialog Presented"))
 
     }
     func choiceRequest(request: HttpRequest) -> HttpResponse {
         self.last_choice_response = 0
-        let captured = request.params
+        let captured = request.params //let captured = BBTSequentialQueryArrayToDict(request.queryParams)
         let title = (captured[":title"]?.removingPercentEncoding)!
         let question = (captured[":question"]?.removingPercentEncoding)!
         let button1Text = (captured[":button1"]?.removingPercentEncoding)!
         let button2Text = (captured[":button2"]?.removingPercentEncoding)!
-        let alertController = UIAlertController(title: title, message: question, preferredStyle: UIAlertControllerStyle.alert)
+		
+        let alertController = UIAlertController(title: title, message: question,
+                                                preferredStyle: UIAlertControllerStyle.alert)
         let button1Action = UIAlertAction(title: button1Text, style: UIAlertActionStyle.default){
             (action) -> Void in
             self.last_choice_response = 1

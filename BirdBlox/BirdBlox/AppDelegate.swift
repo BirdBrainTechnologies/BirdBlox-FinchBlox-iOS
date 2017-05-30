@@ -19,8 +19,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
 		
 		//Setting the tint color
-		//TODO: decide what the tint color should be
-		self.window?.tintColor = UIColor.orange
+		if #available(iOS 10.0, *) {
+			self.window?.tintColor = UIColor(displayP3Red: 1.0, green: 137.0/255.0, blue: 64.0/255,
+			                                 alpha: 1.0)
+		} else {
+			self.window?.tintColor = UIColor(red: 1.0, green: 137.0/255.0, blue: 64.0/255.0,
+			                                 alpha: 1.0)
+		}
 		
 		#if DEBUG
 			print("Running in DEBUG mode. Going to overwrite current frontend from git.")

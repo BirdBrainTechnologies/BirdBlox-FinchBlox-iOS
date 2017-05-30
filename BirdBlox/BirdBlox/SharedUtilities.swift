@@ -178,3 +178,19 @@ public func BBTKidNameFromMacSuffix(_ deviceName: String) -> String? {
 	return nil
 }
 
+/**
+	Converts an array of queries (such as the one we get from swifter) into a dictionary with 
+	the parameters as keys and values as values.
+	There are so few parameters that a parallel version is not worth it.
+  */
+public func BBTSequentialQueryArrayToDict
+(_ queryArray: Array<(String, String)>) -> Dictionary<String, String> {
+	var dict = [String: String]()
+	
+	for (k, v) in queryArray {
+		dict[k] = v
+	}
+	
+	return dict
+}
+

@@ -30,6 +30,11 @@ struct PropertiesManager {
 		let widthInPoints = UIScreen.main.bounds.width
 		let width = mmFromPoints(p: widthInPoints)
 		
+//		print(request.params)
+//		print(request.queryParams)
+//		print(request.method)
+//		print(request.path)
+		
 		return .ok(.text("\(width),\(height)"))
 	}
 	
