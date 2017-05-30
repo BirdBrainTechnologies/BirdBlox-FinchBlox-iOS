@@ -24,19 +24,6 @@ struct PropertiesManager {
 	}
 	
 	func getPhysicalDims(request: HttpRequest) -> HttpResponse {
-		if request.address == nil || request.address != BBTLocalHostIP{
-			#if DEBUG
-				let address = request.address ?? "unknown"
-				NSLog("Physical Dimesions requested from external address \(address)")
-				print(request.params)
-				print(request.queryParams)
-				print(request.method)
-				print(request.path)
-			#else
-				return .forbidden
-			#endif
-		}
-	
 		let heightInPoints = UIScreen.main.bounds.height
 		let height = mmFromPoints(p: heightInPoints)
 		
@@ -47,15 +34,6 @@ struct PropertiesManager {
 	}
 	
 	func getVersion(request: HttpRequest) -> HttpResponse {
-		if request.address == nil || request.address != BBTLocalHostIP{
-			#if DEBUG
-				let address = request.address ?? "unknown"
-				NSLog("Version requested from external address \(address)")
-			#else
-				return .forbidden
-			#endif
-		}
-		
 		let os = "iOS"
 		let version = ProcessInfo().operatingSystemVersion
 		

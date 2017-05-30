@@ -37,24 +37,6 @@ class FlutterManager: NSObject {
         server["/flutter/:name/out/servo/:port/:angle"] = self.setServoRequest
 		server["/flutter/:name/out/buzzer/:vol/:freq"] = self.setBuzzerRequest
         server["/flutter/:name/in/:sensor/:port"] = self.getInput
-
-        
-        //TODO: This is hacky. For some reason, discover and totalStatus don't
-        // want to be pattern matched to properly
-//        let old_handler = server.notFoundHandler
-//        server.notFoundHandler = {
-//            r in
-//            if r.path == "/flutter/discover" {
-//                return self.discoverRequest(request: r)
-//            } else if r.path == "/flutter/totalStatus" {
-//                return self.totalStatusRequest(request: r)
-//            }
-//            if let handler = old_handler{
-//                return handler(r)
-//            } else {
-//                return .notFound
-//            }
-//        }
     }
     
     //functions for timer

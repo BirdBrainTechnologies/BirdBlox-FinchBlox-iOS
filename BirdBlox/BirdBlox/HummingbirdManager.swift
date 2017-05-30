@@ -41,23 +41,6 @@ class HummingbirdManager {
         server["/hummingbird/:name/out/motor/:port/:speed"] = self.setMotorRequest
 
         server["/hummingbird/:name/in/:sensor/:port"] = self.getInput
-        
-        //TODO: This is hacky. For some reason, discover and totalStatus don't
-        // want to be pattern matched to properly
-//        let old_handler = server.notFoundHandler
-//        server.notFoundHandler = {
-//            r in
-//            if r.path == "/hummingbird/discover" {
-//                return self.discoverRequest(request: r)
-//            } else if r.path == "/hummingbird/totalStatus" {
-//                return self.totalStatusRequest(request: r)
-//            }
-//            if let handler = old_handler{
-//                return handler(r)
-//            } else {
-//                return .notFound
-//            }
-//        }
     }
     
     //functions for timer

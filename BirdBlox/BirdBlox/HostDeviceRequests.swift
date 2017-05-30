@@ -99,38 +99,6 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
         
         server["/tablet/dialog/:title/:question/:holder"] = dialogRequest(request:)
         server["/tablet/choice/:title/:question/:button1/:button2"] = choiceRequest(request:)
-
-        
-        //TODO: This is hacky. For some reason, some requests don't
-        // want to be pattern matched to properly
-//        let old_handler = server.notFoundHandler
-//        server.notFoundHandler = {
-//            r in
-//            if r.path == "/tablet/shake" {
-//                return self.shakeRequest(request: r)
-//            } else if r.path == "/tablet/location" {
-//                return self.locationRequest(request: r)
-//            } else if r.path == "/tablet/ssid" {
-//                return self.ssidRequest(request: r)
-//            } else if r.path == "/tablet/pressure" {
-//                return self.pressureRequest(request: r)
-//            } else if r.path == "/tablet/altitude" {
-//                return self.altitudeRequest(request: r)
-//            } else if r.path == "/tablet/orientation" {
-//                return self.orientationRequest(request: r)
-//            } else if r.path == "/tablet/acceleration" {
-//                return self.orientationRequest(request: r)
-//            } else if r.path == "/tablet/dialog_response" {
-//                return self.orientationRequest(request: r)
-//            } else if r.path == "/tablet/choice_response" {
-//                return self.orientationRequest(request: r)
-//            }
-//            if let handler = old_handler{
-//                return handler(r)
-//            } else {
-//                return .notFound
-//            }
-//        }
     }
 		
     func shakeRequest(request: HttpRequest) -> HttpResponse {

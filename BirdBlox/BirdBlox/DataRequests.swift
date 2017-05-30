@@ -26,23 +26,6 @@ class DataManager: NSObject {
         server["/data/rename/:old_filename/:new_filename"] = renameRequest(request:)
         server["/data/delete/:filename/"] = deleteRequest(request:)
         server["/data/export/:filename/"] = exportRequest(request:)
-
-
-    
-        //TODO: This is hacky. For some reason, some requests don't
-        // want to be pattern matched to properly
-//        let old_handler = server.notFoundHandler
-//        server.notFoundHandler = {
-//            r in
-//            if r.path == "/data/files" {
-//                return self.filesRequest(request: r)
-//            }
-//            if let handler = old_handler{
-//                return handler(r)
-//            } else {
-//                return .notFound
-//            }
-//        }
     }
     
     func filesRequest(request: HttpRequest) -> HttpResponse {
