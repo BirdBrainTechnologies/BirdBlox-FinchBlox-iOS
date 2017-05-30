@@ -64,8 +64,13 @@ class FlutterManager: NSObject {
         BLE_Manager.startScan(serviceUUIDs: [FlutterPeripheral.DEVICE_UUID])
         let devices = BLE_Manager.discoveredDevices.keys
 		
-		print("Found Devices: " + devices.joined(separator: ", "))
-        return .ok(.text(devices.joined(separator: "\n")))
+		let array = BLE_Manager.discoveredDevices.map { (key, peripheral) in
+			["id": key, "name": BLE_Manager.getDeviceNameForGAPName(peripheral.name!)]
+		}
+		
+		print("Found Devices: " + array.a.joined(separator: ", "))
+		
+		return .ok(.json(array as AnyObject))
     }
     
     func forceDiscover(request: HttpRequest) -> HttpResponse {

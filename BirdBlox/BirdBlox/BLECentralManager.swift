@@ -85,7 +85,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
      */
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral,
                         advertisementData: [String : Any], rssi RSSI: NSNumber) {
-        discoveredDevices[getDeviceNameForGAPName(peripheral.name!)] = peripheral
+        discoveredDevices[getDeviceNameForGAPName(peripheral.identifier.uuidString)] = peripheral
     }
     
     /**
