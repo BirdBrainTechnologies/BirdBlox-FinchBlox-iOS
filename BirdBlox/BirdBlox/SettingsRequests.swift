@@ -13,10 +13,10 @@ class SettingsManager: NSObject {
     
     func loadRequests(server: BBTBackendServer){
 		//settings/getSetting?key=foo
-        server["/settings/get"] = getSettingRequest(request:)
+        server["/settings/getSetting"] = getSettingRequest(request:)
 		
 		//settings/setSetting?key=foo&value=bar
-        server["/settings/set"] = setSettingRequest(request:)
+        server["/settings/setSetting"] = setSettingRequest(request:)
 
     }
     func getSettingRequest(request: HttpRequest) -> HttpResponse {

@@ -29,6 +29,7 @@ class FlutterManager: NSObject {
     func loadRequests(server: BBTBackendServer){
         server["/flutter/discover"] = self.discoverRequest
         server["/flutter/totalStatus"] = self.totalStatusRequest
+		server["/flutter/stopDiscover"] = self.stopDiscover
         
         server["/flutter/:name/connect"] = self.connectRequest
         server["/flutter/:name/disconnect"] = self.disconnectRequest
@@ -62,7 +63,6 @@ class FlutterManager: NSObject {
     
     func discoverRequest(request: HttpRequest) -> HttpResponse {
         BLE_Manager.startScan(serviceUUIDs: [FlutterPeripheral.DEVICE_UUID])
-        let devices = BLE_Manager.discoveredDevices.keys
 		
 		let array = BLE_Manager.discoveredDevices.map { (key, peripheral) in
 			["id": key, "name": BLE_Manager.getDeviceNameForGAPName(peripheral.name!)]
@@ -82,6 +82,11 @@ class FlutterManager: NSObject {
 		
         return .ok(.text(devices.joined(separator: "\n")))
     }
+	
+	func stopDiscover(request: HttpRequest) -> HttpResponse {
+		BLE_Manager.stopScan()
+		return .ok(.text("Stopped scanning"))
+	}
     
     func totalStatusRequest(request: HttpRequest) -> HttpResponse {
         if (connected_devices.isEmpty) {

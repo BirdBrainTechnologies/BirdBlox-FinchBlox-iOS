@@ -30,6 +30,7 @@ class HummingbirdManager {
     func loadRequests(server: BBTBackendServer){
         server["/hummingbird/discover"] = self.discoverRequest
         server["/hummingbird/totalStatus"] = self.totalStatusRequest
+		server["/hummingbird/stopDiscover"] = self.stopDiscover
         
         server["/hummingbird/:name/connect"] = self.connectRequest
         server["/hummingbird/:name/disconnect"] = self.disconnectRequest
@@ -66,9 +67,14 @@ class HummingbirdManager {
     
     func discoverRequest(request: HttpRequest) -> HttpResponse {
         BLE_Manager.startScan(serviceUUIDs: [HummingbirdPeripheral.DEVICE_UUID])
-        let devices = BLE_Manager.foundDevices.keys
-        print("Found Devices: " + devices.joined(separator: ", "))
-        return .ok(.text(devices.joined(separator: "\n")))
+		
+		let array = BLE_Manager.discoveredDevices.map { (key, peripheral) in
+			["id": key, "name": BLE_Manager.getDeviceNameForGAPName(peripheral.name!)]
+		}
+		
+		print("Found Devices: " + array.map({(d) in d["name"]!}).joined(separator: ", "))
+		
+		return .ok(.json(array as AnyObject))
     }
     
     func forceDiscover(request: HttpRequest) -> HttpResponse {
@@ -78,6 +84,11 @@ class HummingbirdManager {
         print("Found Devices: " + devices.joined(separator: ", "))
         return .ok(.text(devices.joined(separator: "\n")))
     }
+	
+	func stopDiscover(request: HttpRequest) -> HttpResponse {
+		BLE_Manager.stopScan()
+		return .ok(.text("Stopped scanning"))
+	}
     
     func totalStatusRequest(request: HttpRequest) -> HttpResponse {
         if (connected_devices.isEmpty) {
