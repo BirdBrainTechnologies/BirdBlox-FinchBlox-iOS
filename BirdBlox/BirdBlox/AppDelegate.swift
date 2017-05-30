@@ -14,8 +14,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+    func application(_ application: UIApplication,
+		didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool{
         // Override point for customization after application launch.
+		
+		//Setting the tint color
+		//TODO: decide what the tint color should be
+		self.window?.tintColor = UIColor.orange
+		
 		#if DEBUG
 			print("Running in DEBUG mode. Going to overwrite current frontend from git.")
 			if BBTDownloadFrontendUpdate() {

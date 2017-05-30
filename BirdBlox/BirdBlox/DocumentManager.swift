@@ -128,6 +128,7 @@ public func renameFile(_ start_filename: String, new_filename: String) -> Bool {
     }
 }
 
+#if DEBUG
 //MARK: Downloading new frontend for debug
 //From Tom https://github.com/TomWildenhain/HummingbirdDragAndDrop-/archive/dev.zip
 //Semi Stable: https://github.com/BirdBrainTechnologies/HummingbirdDragAndDrop-/archive/dev.zip
@@ -162,6 +163,7 @@ public func BTTOverwriteFrontendWithDownload() -> Bool {
 		return false
 	}
 }
+#endif
 
 //MARK: managing Settings
 public func getSettingsPath() -> URL {

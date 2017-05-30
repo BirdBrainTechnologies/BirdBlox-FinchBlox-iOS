@@ -9,7 +9,7 @@
 import Foundation
 import Swifter
 
-class SoundRequests: NSObject {
+class SoundManager: NSObject {
 
     let audio_manager: AudioManager
     
@@ -18,7 +18,7 @@ class SoundRequests: NSObject {
         super.init()
     }
     
-    func loadRequests(server: inout HttpServer){
+    func loadRequests(server: BBTBackendServer){
         server["/sound/names"] = namesRequest(request:)
         server["/sound/stop_all"] = stopAllRequest(request:)
         server["/sound/stop"] = stopRequest(request:)
@@ -32,22 +32,22 @@ class SoundRequests: NSObject {
         
         //TODO: This is hacky. For some reason, some requests don't
         // want to be pattern matched to properly
-        let old_handler = server.notFoundHandler
-        server.notFoundHandler = {
-            r in
-            if r.path == "/sound/names" {
-                return self.namesRequest(request: r)
-            } else if r.path == "/sound/stop_all" {
-                return self.stopAllRequest(request: r)
-            } else if r.path == "/sound/stop" {
-                return self.stopRequest(request: r)
-            }
-            if let handler = old_handler{
-                return handler(r)
-            } else {
-                return .notFound
-            }
-        }
+//        let old_handler = server.notFoundHandler
+//        server.notFoundHandler = {
+//            r in
+//            if r.path == "/sound/names" {
+//                return self.namesRequest(request: r)
+//            } else if r.path == "/sound/stop_all" {
+//                return self.stopAllRequest(request: r)
+//            } else if r.path == "/sound/stop" {
+//                return self.stopRequest(request: r)
+//            }
+//            if let handler = old_handler{
+//                return handler(r)
+//            } else {
+//                return .notFound
+//            }
+//        }
     }
     
     func namesRequest(request: HttpRequest) -> HttpResponse {

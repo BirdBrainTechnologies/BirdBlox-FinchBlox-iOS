@@ -10,7 +10,7 @@ import Foundation
 import CoreBluetooth
 import Swifter
 
-class HummingbirdRequests: NSObject {
+class HummingbirdManager {
     fileprivate var connected_devices: [String: HummingbirdPeripheral]
     fileprivate let BLE_Manager: BLECentralManager
     
@@ -20,16 +20,14 @@ class HummingbirdRequests: NSObject {
     let readInterval = 0.2
     let sendQueue = OperationQueue()
     
-    override init(){
+	init(){
         connected_devices = [String: HummingbirdPeripheral]()
         BLE_Manager = BLECentralManager.manager
         sendQueue.maxConcurrentOperationCount = 1
 
     }
     
-    func loadRequests(server: inout HttpServer){
-        
-        //server["/hummingbird/*/*/*"] = {request in return .ok(.text(request.path))}
+    func loadRequests(server: BBTBackendServer){
         server["/hummingbird/discover"] = self.discoverRequest
         server["/hummingbird/totalStatus"] = self.totalStatusRequest
         
@@ -46,24 +44,24 @@ class HummingbirdRequests: NSObject {
         
         //TODO: This is hacky. For some reason, discover and totalStatus don't
         // want to be pattern matched to properly
-        let old_handler = server.notFoundHandler
-        server.notFoundHandler = {
-            r in
-            if r.path == "/hummingbird/discover" {
-                return self.discoverRequest(request: r)
-            } else if r.path == "/hummingbird/totalStatus" {
-                return self.totalStatusRequest(request: r)
-            }
-            if let handler = old_handler{
-                return handler(r)
-            } else {
-                return .notFound
-            }
-        }
+//        let old_handler = server.notFoundHandler
+//        server.notFoundHandler = {
+//            r in
+//            if r.path == "/hummingbird/discover" {
+//                return self.discoverRequest(request: r)
+//            } else if r.path == "/hummingbird/totalStatus" {
+//                return self.totalStatusRequest(request: r)
+//            }
+//            if let handler = old_handler{
+//                return handler(r)
+//            } else {
+//                return .notFound
+//            }
+//        }
     }
     
     //functions for timer
-    func timerElapsedSend(){
+    @objc func timerElapsedSend(){
         self.allowSend = true
         self.stopTimerSend()
     }
@@ -77,7 +75,9 @@ class HummingbirdRequests: NSObject {
     func startTimerSend(){
         self.allowSend = false
         if (timerDelaySend == nil){
-            timerDelaySend = Timer.scheduledTimer(timeInterval: sendInterval, target: self, selector: #selector(HummingbirdRequests.timerElapsedSend), userInfo: nil, repeats: false)
+            timerDelaySend = Timer.scheduledTimer(timeInterval: sendInterval, target: self,
+              selector: #selector(HummingbirdManager.timerElapsedSend),
+			  userInfo: nil, repeats: false)
         }
     }
     

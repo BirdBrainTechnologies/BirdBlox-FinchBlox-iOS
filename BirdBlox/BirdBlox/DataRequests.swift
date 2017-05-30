@@ -9,7 +9,7 @@
 import Foundation
 import Swifter
 
-class DataRequests: NSObject {
+class DataManager: NSObject {
     
     let view_controller: ViewController
     
@@ -18,7 +18,7 @@ class DataRequests: NSObject {
         super.init()
     }
     
-    func loadRequests(server: inout HttpServer){
+    func loadRequests(server: BBTBackendServer){
         server["/data/files"] = filesRequest(request:)
         
         server["/data/save/:filename/"] = saveRequest(request:)
@@ -31,18 +31,18 @@ class DataRequests: NSObject {
     
         //TODO: This is hacky. For some reason, some requests don't
         // want to be pattern matched to properly
-        let old_handler = server.notFoundHandler
-        server.notFoundHandler = {
-            r in
-            if r.path == "/data/files" {
-                return self.filesRequest(request: r)
-            }
-            if let handler = old_handler{
-                return handler(r)
-            } else {
-                return .notFound
-            }
-        }
+//        let old_handler = server.notFoundHandler
+//        server.notFoundHandler = {
+//            r in
+//            if r.path == "/data/files" {
+//                return self.filesRequest(request: r)
+//            }
+//            if let handler = old_handler{
+//                return handler(r)
+//            } else {
+//                return .notFound
+//            }
+//        }
     }
     
     func filesRequest(request: HttpRequest) -> HttpResponse {

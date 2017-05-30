@@ -10,7 +10,7 @@ import Foundation
 import CoreBluetooth
 import Swifter
 
-class FlutterRequests: NSObject {
+class FlutterManager: NSObject {
     fileprivate var connected_devices: [String: FlutterPeripheral]
     fileprivate let BLE_Manager: BLECentralManager
     
@@ -26,7 +26,7 @@ class FlutterRequests: NSObject {
 		sendQueue.maxConcurrentOperationCount = 1
         
     }
-    func loadRequests(server: inout HttpServer){
+    func loadRequests(server: BBTBackendServer){
         server["/flutter/discover"] = self.discoverRequest
         server["/flutter/totalStatus"] = self.totalStatusRequest
         
@@ -41,20 +41,20 @@ class FlutterRequests: NSObject {
         
         //TODO: This is hacky. For some reason, discover and totalStatus don't
         // want to be pattern matched to properly
-        let old_handler = server.notFoundHandler
-        server.notFoundHandler = {
-            r in
-            if r.path == "/flutter/discover" {
-                return self.discoverRequest(request: r)
-            } else if r.path == "/flutter/totalStatus" {
-                return self.totalStatusRequest(request: r)
-            }
-            if let handler = old_handler{
-                return handler(r)
-            } else {
-                return .notFound
-            }
-        }
+//        let old_handler = server.notFoundHandler
+//        server.notFoundHandler = {
+//            r in
+//            if r.path == "/flutter/discover" {
+//                return self.discoverRequest(request: r)
+//            } else if r.path == "/flutter/totalStatus" {
+//                return self.totalStatusRequest(request: r)
+//            }
+//            if let handler = old_handler{
+//                return handler(r)
+//            } else {
+//                return .notFound
+//            }
+//        }
     }
     
     //functions for timer
@@ -73,7 +73,7 @@ class FlutterRequests: NSObject {
         self.allowSend = false
         if timerDelaySend == nil {
             timerDelaySend = Timer.scheduledTimer(timeInterval: sendInterval, target: self,
-				selector: #selector(HummingbirdRequests.timerElapsedSend),
+				selector: #selector(HummingbirdManager.timerElapsedSend),
 				userInfo: nil, repeats: false)
         }
     }

@@ -9,9 +9,9 @@
 import Foundation
 import Swifter
 
-class SettingsRequests: NSObject {
+class SettingsManager: NSObject {
     
-    func loadRequests(server: inout HttpServer){
+    func loadRequests(server: BBTBackendServer){
         server["/settings/get/:key"] = getSettingRequest(request:)
         server["/settings/set/:key/:value"] = setSettingRequest(request:)
 

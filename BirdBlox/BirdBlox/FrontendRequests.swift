@@ -9,8 +9,7 @@
 import Foundation
 import Swifter
 
-func handleFrontEndRequest(request: HttpRequest) -> HttpResponse {
-    print(request.params)
+func BBTHandleFrontEndRequest(request: HttpRequest) -> HttpResponse {
     let params = request.params
 
     let path1: String? = params[":path1"]
@@ -42,6 +41,7 @@ func handleFrontEndRequest(request: HttpRequest) -> HttpResponse {
 //				
 //                print("File exists: \(FileManager.default.fileExists(atPath: dirurl3.absoluteString))")
 				
+				NSLog("Serving frontend resource \(dirurl3.absoluteString)")
 				return shareFile(dirurl3.absoluteString)(request)
 			}
 		}
@@ -54,18 +54,18 @@ func handleFrontEndRequest(request: HttpRequest) -> HttpResponse {
     if path3 != nil && path3 != "" {
         dir = dir + "/" + path1! + "/" + path2!
         if let path = getPathOfBundleFile(filename: path3!, directory: dir) {
-            print(path)
+			NSLog("Serving frontend resource \(path)")
             return shareFile(path)(request)
         }
     } else if path2 != nil && path2 != "" {
         dir = dir + "/" + path1!
         if let path = getPathOfBundleFile(filename: path2!, directory: dir){
-            print(path)
+            NSLog("Serving frontend resource \(path)")
             return shareFile(path)(request)
         }
     } else if path1 != nil && path1 != ""{
         if let path = getPathOfBundleFile(filename: path1!, directory: dir) {
-            print(path)
+            NSLog("Serving frontend resource \(path)")
             return shareFile(path)(request)
         }
     }

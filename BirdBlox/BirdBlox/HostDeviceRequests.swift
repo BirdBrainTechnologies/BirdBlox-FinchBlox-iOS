@@ -12,7 +12,7 @@ import CoreLocation
 import CoreMotion
 import SystemConfiguration.CaptiveNetwork
 
-class HostDeviceRequests: NSObject, CLLocationManagerDelegate {
+class HostDeviceManager: NSObject, CLLocationManagerDelegate {
     
     let view_controller: ViewController
     
@@ -86,7 +86,7 @@ class HostDeviceRequests: NSObject, CLLocationManagerDelegate {
     }
     //end ssid
     
-    func loadRequests(server: inout HttpServer){
+    func loadRequests(server: BBTBackendServer){
         server["/tablet/shake"] = shakeRequest(request:)
         server["/tablet/location"] = locationRequest(request:)
         server["/tablet/ssid"] = ssidRequest(request:)
@@ -103,36 +103,36 @@ class HostDeviceRequests: NSObject, CLLocationManagerDelegate {
         
         //TODO: This is hacky. For some reason, some requests don't
         // want to be pattern matched to properly
-        let old_handler = server.notFoundHandler
-        server.notFoundHandler = {
-            r in
-            if r.path == "/tablet/shake" {
-                return self.shakeRequest(request: r)
-            } else if r.path == "/tablet/location" {
-                return self.locationRequest(request: r)
-            } else if r.path == "/tablet/ssid" {
-                return self.ssidRequest(request: r)
-            } else if r.path == "/tablet/pressure" {
-                return self.pressureRequest(request: r)
-            } else if r.path == "/tablet/altitude" {
-                return self.altitudeRequest(request: r)
-            } else if r.path == "/tablet/orientation" {
-                return self.orientationRequest(request: r)
-            } else if r.path == "/tablet/acceleration" {
-                return self.orientationRequest(request: r)
-            } else if r.path == "/tablet/dialog_response" {
-                return self.orientationRequest(request: r)
-            } else if r.path == "/tablet/choice_response" {
-                return self.orientationRequest(request: r)
-            }
-            if let handler = old_handler{
-                return handler(r)
-            } else {
-                return .notFound
-            }
-        }
+//        let old_handler = server.notFoundHandler
+//        server.notFoundHandler = {
+//            r in
+//            if r.path == "/tablet/shake" {
+//                return self.shakeRequest(request: r)
+//            } else if r.path == "/tablet/location" {
+//                return self.locationRequest(request: r)
+//            } else if r.path == "/tablet/ssid" {
+//                return self.ssidRequest(request: r)
+//            } else if r.path == "/tablet/pressure" {
+//                return self.pressureRequest(request: r)
+//            } else if r.path == "/tablet/altitude" {
+//                return self.altitudeRequest(request: r)
+//            } else if r.path == "/tablet/orientation" {
+//                return self.orientationRequest(request: r)
+//            } else if r.path == "/tablet/acceleration" {
+//                return self.orientationRequest(request: r)
+//            } else if r.path == "/tablet/dialog_response" {
+//                return self.orientationRequest(request: r)
+//            } else if r.path == "/tablet/choice_response" {
+//                return self.orientationRequest(request: r)
+//            }
+//            if let handler = old_handler{
+//                return handler(r)
+//            } else {
+//                return .notFound
+//            }
+//        }
     }
-    
+		
     func shakeRequest(request: HttpRequest) -> HttpResponse {
         let checkShake = view_controller.checkShaken()
         if checkShake{

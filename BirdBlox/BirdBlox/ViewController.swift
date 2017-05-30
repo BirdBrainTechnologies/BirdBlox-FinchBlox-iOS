@@ -13,25 +13,27 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
     var web_view: WKWebView?
     var wasShaken: Bool = false
     var shakenTimer: Timer = Timer()
+	let server = BBTBackendServer()
     
-    
+	
     override func viewDidLoad() {
 		print("viewDidLoad")
         super.viewDidLoad()
-        let main_server = MainServer(view_controller: self)
-        main_server.start()
-        
+		
+		//Setup Server
+		self.addHandlersToServer()
+        server.start()
+		
+		
+		//Setup webview
         self.web_view = WKWebView(frame: self.view.frame)
         self.web_view!.navigationDelegate = self
         self.web_view!.uiDelegate = self
         self.web_view!.contentMode = UIViewContentMode.scaleAspectFit
 		
-		// Should be http://localhost:22179/DragAndDrop/HummingbirdDragAndDrop.html , currently
-		// swapped out for quick javascript developement
-		//http://rawgit.com/TomWildenhain/HummingbirdDragAndDrop-/dev/HummingbirdDragAndDrop.html
-		
 		let urlstr = "http://localhost:22179/DragAndDrop/HummingbirdDragAndDrop.html";
-		let cleanUrlStr = urlstr.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlFragmentAllowed)!
+		let cleanUrlStr = urlstr.addingPercentEncoding(withAllowedCharacters:
+														CharacterSet.urlFragmentAllowed)!
 		let javascriptPageURL = URL(string: cleanUrlStr)
 		let req = URLRequest(url: javascriptPageURL!,
 		             cachePolicy: URLRequest.CachePolicy.reloadIgnoringLocalCacheData)
@@ -39,7 +41,42 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
         self.web_view!.load(req)
         self.view.addSubview(self.web_view!)
     }
-
+	
+	//MARK: Setup Sever
+	let hummingbirdManager = HummingbirdManager()
+	let flutterManager = FlutterManager()
+	let soundManager = SoundManager()
+	let settingsManager = SettingsManager()
+	let propertiesManager = PropertiesManager()
+	
+	var dataRequests: DataManager? = nil
+	var hostDeviceManager: HostDeviceManager? = nil
+	
+	func addHandlersToServer() {
+		dataRequests = dataRequests != nil ? dataRequests :  DataManager(view_controller: self)
+		hostDeviceManager = (hostDeviceManager != nil ?
+			hostDeviceManager : HostDeviceManager(view_controller: self))
+	
+		//Requests to load parts of the frontend
+		server["/DragAndDrop/:path1/:path2/:path3"] = BBTHandleFrontEndRequest
+		server["/DragAndDrop/:path1/:path2"] = BBTHandleFrontEndRequest
+		server["/DragAndDrop/:path1"] = BBTHandleFrontEndRequest
+		
+		//Heartbeat
+		server["/server/ping"] = {r in return .ok(.text("pong"))}
+		
+		hummingbirdManager.loadRequests(server: server)
+		flutterManager.loadRequests(server: server)
+		dataRequests!.loadRequests(server: server)
+		hostDeviceManager!.loadRequests(server: server)
+		soundManager.loadRequests(server: server)
+		settingsManager.loadRequests(server: server)
+		propertiesManager.loadRequests(server: server)
+	}
+	
+	
+	
+	//MARK: WebView Delegate
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         NSLog(navigation.description)
     }
@@ -50,7 +87,7 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
     }
     
     
-    //for shake 
+    //MARK: Measure Device Shake
     //Note, this code needs to be here and not in the HostDeviceRequests file
     override var canBecomeFirstResponder : Bool {
         return true
@@ -77,8 +114,8 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
         }
         return false
     }
-    //end shake
-    
+	
+	//MARK: View configuration
     override var prefersStatusBarHidden : Bool {
         return true
     }

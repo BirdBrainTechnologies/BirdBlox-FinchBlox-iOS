@@ -9,9 +9,9 @@
 import Foundation
 import Swifter
 
-struct PropertiesRequests {
+struct PropertiesManager {
 
-	func loadRequests(server: inout HttpServer){
+	func loadRequests(server: BBTBackendServer){
 		server["/properties/dims"] = self.getPhysicalDims
 		server["/properties/os"] = self.getVersion
 	}
@@ -31,6 +31,7 @@ struct PropertiesRequests {
 				print(request.params)
 				print(request.queryParams)
 				print(request.method)
+				print(request.path)
 			#else
 				return .forbidden
 			#endif
