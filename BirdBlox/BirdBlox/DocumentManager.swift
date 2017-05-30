@@ -25,7 +25,7 @@ func getPathOfBundleFile(filename: String, directory: String) -> String? {
 
 public func getSoundPath() -> URL{
     let mainBundle = Bundle.main
-    let path_as_string = mainBundle.bundlePath + "/SoundClips"
+    let path_as_string = mainBundle.bundlePath + "/Frontend/SoundClips"
     return URL(fileURLWithPath: path_as_string)
 }
 
