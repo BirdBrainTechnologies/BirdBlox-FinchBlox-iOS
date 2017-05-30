@@ -13,36 +13,37 @@ class SettingsManager: NSObject {
     
     func loadRequests(server: BBTBackendServer){
 		//settings/getSetting?key=foo
-        server["/settings/get/:key"] = getSettingRequest(request:)
+        server["/settings/get"] = getSettingRequest(request:)
 		
 		//settings/setSetting?key=foo&value=bar
-        server["/settings/set/:key/:value"] = setSettingRequest(request:)
+        server["/settings/set"] = setSettingRequest(request:)
 
     }
     func getSettingRequest(request: HttpRequest) -> HttpResponse {
-//		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
-//		let key = queries["key"]
+		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
-        let key = (request.params[":key"]?.removingPercentEncoding)!
+		if let key = (queries["key"]?.removingPercentEncoding) {
+			let value = getSetting(key)
+			if let nullCheckedValue = value {
+				return .ok(.text(nullCheckedValue))
+			} else {
+				return .ok(.text("Default"))
+			}
+		}
 		
-        let value = getSetting(key)
-        if let nullCheckedValue = value {
-            return .ok(.text(nullCheckedValue))
-        } else {
-            return .ok(.text("Default"))
-        }
+		return .badRequest(.text("Malformed request"))
     }
-    
+	
     func setSettingRequest(request: HttpRequest) -> HttpResponse {
-//        let captured = request.params
-		
 		let captured = BBTSequentialQueryArrayToDict(request.queryParams)
 		
-        let key = (captured[":key"]?.removingPercentEncoding)!
-        let value = (captured[":value"]?.removingPercentEncoding)!
+        if let key = (captured["key"]?.removingPercentEncoding),
+			let value = (captured["value"]?.removingPercentEncoding) {
+			addSetting(key, value: value)
+			return .ok(.text("Setting saved"))
+		}
 		
-        addSetting(key, value: value)
-        return .ok(.text("Setting saved"))
+		return .badRequest(.text("Malformed request"))
     }
 
 }

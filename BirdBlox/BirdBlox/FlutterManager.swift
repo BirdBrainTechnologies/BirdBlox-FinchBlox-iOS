@@ -68,7 +68,7 @@ class FlutterManager: NSObject {
 			["id": key, "name": BLE_Manager.getDeviceNameForGAPName(peripheral.name!)]
 		}
 		
-		print("Found Devices: " + array.a.joined(separator: ", "))
+		print("Found Devices: " + array.map({(d) in d["name"]!}).joined(separator: ", "))
 		
 		return .ok(.json(array as AnyObject))
     }
