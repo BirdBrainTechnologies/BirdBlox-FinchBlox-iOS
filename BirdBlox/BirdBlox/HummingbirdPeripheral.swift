@@ -70,7 +70,8 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
      * found. Once we have found both, we send a notification saying the device
      * is now conencted
      */
-    func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
+    func peripheral(_ peripheral: CBPeripheral,
+                    didDiscoverCharacteristicsFor service: CBService, error: Error?) {
         if (peripheral != self.peripheral || error != nil) {
             //not the right device
             return
@@ -104,7 +105,9 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
         Thread.sleep(forTimeInterval: 0.1)
         sendData(data: getPollStartCommand())
         DispatchQueue.main.async{
-            self.setTimer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(HummingbirdPeripheral.setAll), userInfo: nil, repeats: true)
+            self.setTimer = Timer.scheduledTimer(timeInterval: 0.1, target: self,
+                                                 selector: #selector(HummingbirdPeripheral.setAll),
+												 userInfo: nil, repeats: true)
             self.setTimer.fire()
         }
         was_initialized = true
@@ -126,7 +129,11 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
     /**
      * Called when we update a characteristic
      */
-    func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
+    func peripheral(_ peripheral: CBPeripheral,
+                    didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
+		if let error = error {
+			NSLog("Unable to write to hummingbird due to error \(error)")
+		}
         
     }
     
@@ -143,7 +150,7 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
     }
     
     func sendData(data: Data) {
-        peripheral.writeValue(data, for: tx_line!, type: CBCharacteristicWriteType.withoutResponse)
+        peripheral.writeValue(data, for: tx_line!, type: CBCharacteristicWriteType.withResponse)
     }
     
     
