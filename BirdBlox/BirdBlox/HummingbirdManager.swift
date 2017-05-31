@@ -32,16 +32,16 @@ class HummingbirdManager {
         server["/hummingbird/totalStatus"] = self.totalStatusRequest
 		server["/hummingbird/stopDiscover"] = self.stopDiscover
         
-        server["/hummingbird/:name/connect"] = self.connectRequest
-        server["/hummingbird/:name/disconnect"] = self.disconnectRequest
+        server["/hummingbird/connect"] = self.connectRequest
+        server["/hummingbird/disconnect"] = self.disconnectRequest
         
-        server["/hummingbird/:name/out/led/:port/:intensity"] = self.setLEDRequest
-        server["/hummingbird/:name/out/triled/:port/:red/:green/:blue"] = self.setTriLedRequest
-        server["/hummingbird/:name/out/vibration/:port/:intensity"] = self.setVibrationRequest
-        server["/hummingbird/:name/out/servo/:port/:angle"] = self.setServoRequest
-        server["/hummingbird/:name/out/motor/:port/:speed"] = self.setMotorRequest
+        server["/hummingbird/out/led"] = self.setLEDRequest
+        server["/hummingbird/out/triled"] = self.setTriLedRequest
+        server["/hummingbird/out/vibration"] = self.setVibrationRequest
+        server["/hummingbird/out/servo"] = self.setServoRequest
+        server["/hummingbird/out/motor"] = self.setMotorRequest
 
-        server["/hummingbird/:name/in/:sensor/:port"] = self.getInput
+        server["/hummingbird/in"] = self.getInput
     }
     
     //functions for timer
@@ -103,105 +103,184 @@ class HummingbirdManager {
     }
     
     func connectRequest(request: HttpRequest) -> HttpResponse {
-        let name: String = request.params[":name"]!.removingPercentEncoding!
-        if (!BLE_Manager.foundDevices.keys.contains(name)) {
-            return .ok(.text("Device not found!"))
-        }
-        let periph: CBPeripheral = BLE_Manager.foundDevices[name]!
-        connected_devices[name] = BLE_Manager.connectToHummingbird(peripheral: periph)
-        return .ok(.text("Connected!"))
+		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
+		
+		if let name = queries["name"]?.removingPercentEncoding {
+			if BLE_Manager.foundDevices.keys.contains(name) {
+				let periph: CBPeripheral = BLE_Manager.foundDevices[name]!
+				connected_devices[name] = BLE_Manager.connectToHummingbird(peripheral: periph)
+				return .ok(.text("Connected!"))
+			}
+			else {
+				return .internalServerError
+			}
+		}
+		
+		return .badRequest(.text("Malformed Request"))
     }
     
     func disconnectRequest(request: HttpRequest) -> HttpResponse {
-        let name: String = request.params[":name"]!.removingPercentEncoding!
-        if (!connected_devices.keys.contains(name)) {
-            return .ok(.text("Device not found!"))
-        }
-        connected_devices[name]?.disconnect()
-        connected_devices.removeValue(forKey: name)
-        return .ok(.text("Disconnected!"))
+		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
+		
+		if let name = queries["name"]?.removingPercentEncoding {
+			if connected_devices.keys.contains(name) {
+				connected_devices[name]!.disconnect()
+				connected_devices.removeValue(forKey: name)
+				return .ok(.text("Disconnected!"))
+			} else {
+				return .notFound
+			}
+		}
+		
+		return .badRequest(.text("Malformed Request"))
     }
     
     func setLEDRequest(request: HttpRequest) -> HttpResponse {
-        let name: String = request.params[":name"]!.removingPercentEncoding!
-        let port: Int = Int(request.params[":port"]!)!
-        let intensity: UInt8 = UInt8(request.params[":intensity"]!)!
-        if let device = connected_devices[name] {
-            if device.setLED(port: port, intensity: intensity){
-                return .ok(.text("LED Set"))
-            }
+		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
+		
+		if let name = queries["name"]?.removingPercentEncoding,
+			let portStr = queries["port"],
+			let intensityStr = queries["intensity"],
+			let port = Int(portStr),
+			let intensity = UInt8(intensityStr) {
+		
+			if let device = connected_devices[name] {
+				if device.setLED(port: port, intensity: intensity){
+					return .ok(.text("LED Set"))
+				} else {
+					return .internalServerError
+				}
+			} else {
+				return .notFound
+			}
         }
-        return .ok(.text("LED not set"))
+		
+		return .badRequest(.text("Malformed Request"))
     }
     
     func setTriLedRequest(request: HttpRequest) -> HttpResponse {
-        let name: String = request.params[":name"]!.removingPercentEncoding!
-        let port: Int = Int(request.params[":port"]!)!
-        let red: UInt8 = UInt8(request.params[":red"]!)!
-        let green: UInt8 = UInt8(request.params[":green"]!)!
-        let blue: UInt8 = UInt8(request.params[":blue"]!)!
-        if let device = connected_devices[name] {
-            if device.setTriLed(port: port, r: red, g: green, b: blue) {
-                return .ok(.text("Tri-LED set"))
-            }
-        }
-        return .ok(.text("Tri-LED set not set"))
+		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
+		
+		if let name = queries["name"]?.removingPercentEncoding,
+			let portStr = queries["port"],
+			let redStr = queries["red"],
+			let greenStr = queries["green"],
+			let blueStr = queries["blue"],
+			let port = Int(portStr),
+			let red = UInt8(redStr),
+			let green = UInt8(greenStr),
+			let blue = UInt8(blueStr) {
+			
+			if let device = connected_devices[name] {
+				if device.setTriLed(port: port, r: red, g: green, b: blue) {
+					return .ok(.text("Tri-LED set"))
+				} else {
+					return .internalServerError
+				}
+			} else {
+				return .notFound
+			}
+		}
+		
+		return .badRequest(.text("Malformed Request"))
     }
     
     func setServoRequest(request: HttpRequest) -> HttpResponse {
-        let name: String = request.params[":name"]!.removingPercentEncoding!
-        let port: Int = Int(request.params[":port"]!)!
-        let angle: UInt8 = UInt8(request.params[":angle"]!)!
-        if let device = connected_devices[name] {
-            if device.setServo(port: port, angle: angle){
-                return .ok(.text("servo Set"))
-            }
-        }
-        return .ok(.text("servo not set"))
+		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
+		
+		if let name = queries["name"]?.removingPercentEncoding,
+			let portStr = queries["port"],
+			let angleStr = queries["angle"],
+			let port = Int(portStr),
+			let angle = UInt8(angleStr) {
+			
+			if let device = connected_devices[name] {
+				if device.setServo(port: port, angle: angle){
+					return .ok(.text("servo Set"))
+				} else {
+					return .internalServerError
+				}
+			} else {
+				return .notFound
+			}
+		}
+		
+		return .badRequest(.text("Malformed Request"))
     }
-    
+	
     func setVibrationRequest(request: HttpRequest) -> HttpResponse {
-        let name: String = request.params[":name"]!.removingPercentEncoding!
-        let port: Int = Int(request.params[":port"]!)!
-        let intensity: UInt8 = UInt8(request.params[":intensity"]!)!
-        if let device = connected_devices[name] {
-            if device.setVibration(port: port, intensity: intensity){
-                return .ok(.text("Vibration motor Set"))
-            }
-        }
-        return .ok(.text("Vibration motor not set"))
+		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
+		
+		if let name = queries["name"]?.removingPercentEncoding,
+			let portStr = queries["port"],
+			let intensityStr = queries["intensity"],
+			let port = Int(portStr),
+			let intensity = UInt8(intensityStr) {
+			
+			if let device = connected_devices[name] {
+				if device.setVibration(port: port, intensity: intensity){
+					return .ok(.text("LED Set"))
+				} else {
+					return .internalServerError
+				}
+			} else {
+				return .notFound
+			}
+		}
+		
+		return .badRequest(.text("Malformed Request"))
     }
     
     func setMotorRequest(request: HttpRequest) -> HttpResponse {
-        let name: String = request.params[":name"]!.removingPercentEncoding!
-        let port: Int = Int(request.params[":port"]!)!
-        let speed: Int = Int(request.params[":speed"]!)!
-        if let device = connected_devices[name] {
-            if device.setMotor(port: port, speed: speed){
-                return .ok(.text("Motor Set"))
-            }
-        }
-        return .ok(.text("Motor not set"))
+		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
+		
+		if let name = queries["name"]?.removingPercentEncoding,
+			let portStr = queries["port"],
+			let speedStr = queries["speed"],
+			let port = Int(portStr),
+			let speed = Int(speedStr) {
+			
+			if let device = connected_devices[name] {
+				if device.setMotor(port: port, speed: speed){
+					return .ok(.text("LED Set"))
+				} else {
+					return .internalServerError
+				}
+			} else {
+				return .notFound
+			}
+		}
+		
+		return .badRequest(.text("Malformed Request"))
     }
 
     func getInput(request: HttpRequest) -> HttpResponse {
-        let name: String = request.params[":name"]!.removingPercentEncoding!
-        let sensor = request.params[":sensor"]!
-        let port: Int = Int(request.params[":port"]!)!
-        if let device = connected_devices[name] {
-            print("got device")
-            if let data = device.getData() {
-                print("got data")
-                switch sensor {
-                case "distance":
-                    return .ok(.text(String(rawToDistance(data[port - 1]))))
-                case "temperature":
-                    return .ok(.text(String(rawToTemp(data[port - 1]))))
-                default:
-                    return .ok(.text(String(rawToPercent(data[port - 1]))))
-                }
-            }
-        }
-        return .ok(.text("error"))
-    }
+		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
+		
+		if let name = queries["name"]?.removingPercentEncoding,
+			let portStr = queries["port"],
+			let sensor = queries["sensor"],
+			let port = Int(portStr) {
+			
+			if let device = connected_devices[name] {
+				if let data = device.getData()  {
+					switch sensor {
+					case "distance":
+						return .ok(.text(String(rawToDistance(data[port - 1]))))
+					case "temperature":
+						return .ok(.text(String(rawToTemp(data[port - 1]))))
+					default:
+						return .ok(.text(String(rawToPercent(data[port - 1]))))
+					}
+				} else {
+					return .internalServerError
+				}
+			}
+			else {
+				return .notFound
+			}
+		}
+		
+		return .badRequest(.text("Malformed Request"))
+	}
 }
