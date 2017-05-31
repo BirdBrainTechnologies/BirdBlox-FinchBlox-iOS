@@ -31,13 +31,13 @@ class FlutterManager: NSObject {
         server["/flutter/totalStatus"] = self.totalStatusRequest
 		server["/flutter/stopDiscover"] = self.stopDiscover
         
-        server["/flutter/:name/connect"] = self.connectRequest
-        server["/flutter/:name/disconnect"] = self.disconnectRequest
+        server["/flutter/connect"] = self.connectRequest
+        server["/flutter/disconnect"] = self.disconnectRequest
         
-        server["/flutter/:name/out/triled/:port/:red/:green/:blue"] = self.setTriLedRequest
-        server["/flutter/:name/out/servo/:port/:angle"] = self.setServoRequest
-		server["/flutter/:name/out/buzzer/:vol/:freq"] = self.setBuzzerRequest
-        server["/flutter/:name/in/:sensor/:port"] = self.getInput
+        server["/flutter/out/triled"] = self.setTriLedRequest
+        server["/flutter/out/servo"] = self.setServoRequest
+		server["/flutter/out/buzzer"] = self.setBuzzerRequest
+        server["/flutter/in"] = self.getInput
     }
     
     //functions for timer
@@ -103,74 +103,131 @@ class FlutterManager: NSObject {
     }
     
     func connectRequest(request: HttpRequest) -> HttpResponse {
-        let name: String = request.params[":name"]!.removingPercentEncoding!
-        if (!BLE_Manager.foundDevices.keys.contains(name)) {
-            return .ok(.text("Device not found!"))
-        }
-        let periph: CBPeripheral = BLE_Manager.foundDevices[name]!
-        connected_devices[name] = BLE_Manager.connectToFlutter(peripheral: periph)
-        return .ok(.text("Connected!"))
+		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
+		
+		if let name = queries["name"]?.removingPercentEncoding {
+			if BLE_Manager.foundDevices.keys.contains(name) {
+				let periph: CBPeripheral = BLE_Manager.foundDevices[name]!
+				connected_devices[name] = BLE_Manager.connectToFlutter(peripheral: periph)
+				return .ok(.text("Connected!"))
+			}
+			else {
+				return .internalServerError
+			}
+		}
+		
+		return .badRequest(.text("Malformed Request"))
     }
-    
+	
     func disconnectRequest(request: HttpRequest) -> HttpResponse {
-        let name: String = request.params[":name"]!.removingPercentEncoding!
-        if (!connected_devices.keys.contains(name)) {
-            return .ok(.text("Device not found!"))
-        }
-        connected_devices[name]?.disconnect()
-        connected_devices.removeValue(forKey: name)
-        return .ok(.text("Disconnected!"))
+		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
+		
+        if let name = queries["name"]?.removingPercentEncoding {
+			if connected_devices.keys.contains(name) {
+				connected_devices[name]!.disconnect()
+				connected_devices.removeValue(forKey: name)
+				return .ok(.text("Disconnected!"))
+			} else {
+				return .notFound
+			}
+		}
+		
+		return .badRequest(.text("Malformed Request"))
     }
-    
+	
     func setTriLedRequest(request: HttpRequest) -> HttpResponse {
-        let name: String = request.params[":name"]!.removingPercentEncoding!
-        let port: Int = Int(request.params[":port"]!)!
-        let red: UInt8 = UInt8(request.params[":red"]!)!
-        let green: UInt8 = UInt8(request.params[":green"]!)!
-        let blue: UInt8 = UInt8(request.params[":blue"]!)!
-        if let device = connected_devices[name] {
-            if device.setTriLed(port: port, r: red, g: green, b: blue) {
-                return .ok(.text("Tri-LED set"))
-            }
+		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
+		
+		if let name = queries["name"]?.removingPercentEncoding,
+			let portStr = queries["port"],
+			let redStr = queries["red"],
+			let greenStr = queries["green"],
+			let blueStr = queries["blue"],
+			let port = Int(portStr),
+			let red = UInt8(redStr),
+			let green = UInt8(greenStr),
+			let blue = UInt8(blueStr) {
+	
+			if let device = connected_devices[name] {
+				if device.setTriLed(port: port, r: red, g: green, b: blue) {
+					return .ok(.text("Tri-LED set"))
+				} else {
+					return .internalServerError
+				}
+			} else {
+				return .notFound
+			}
         }
-        return .ok(.text("Tri-LED set not set"))
+		
+		return .badRequest(.text("Malformed Request"))
     }
     
     func setServoRequest(request: HttpRequest) -> HttpResponse {
-        let name: String = request.params[":name"]!.removingPercentEncoding!
-        let port: Int = Int(request.params[":port"]!)!
-        let angle: UInt8 = UInt8(request.params[":angle"]!)!
-        if let device = connected_devices[name] {
-            if device.setServo(port: port, angle: angle){
-                return .ok(.text("servo Set"))
-            }
+		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
+		
+		if let name = queries["name"]?.removingPercentEncoding,
+			let portStr = queries["port"],
+			let angleStr = queries["angle"],
+			let port = Int(portStr),
+			let angle = UInt8(angleStr) {
+			
+			if let device = connected_devices[name] {
+				if device.setServo(port: port, angle: angle){
+					return .ok(.text("servo Set"))
+				} else {
+					return .internalServerError
+				}
+			} else {
+				return .notFound
+			}
         }
-        return .ok(.text("servo not set"))
+		
+		return .badRequest(.text("Malformed Request"))
     }
 	
 	func setBuzzerRequest(request: HttpRequest) -> HttpResponse {
-		print("\(String(describing: request.address)) \(request.path)")
+		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
-		let name: String = request.params[":name"]!.removingPercentEncoding!
-		let volume: Int = Int(request.params[":vol"]!)!
-		let frequency: Int = Int(request.params[":freq"]!)!
+		if let name = queries["name"]?.removingPercentEncoding,
+			let volumeStr = queries["volume"],
+			let frequencyStr = queries["frequency"],
+			let volume = Int(volumeStr),
+			let frequency = Int(frequencyStr) {
 		
-		
-		if let device = connected_devices[name] {
-			if device.setBuzzer(volume: volume, frequency: frequency) {
-				return .ok(.text("buzzer Set"))
+			if let device = connected_devices[name] {
+				if device.setBuzzer(volume: volume, frequency: frequency) {
+					return .ok(.text("buzzer Set"))
+				} else {
+					return .internalServerError
+				}
+			} else {
+				return .notFound
 			}
 		}
-		return .ok(.text("buzzer not set"))
+		
+		return .badRequest(.text("Malformed Request"))
 	}
 	
     func getInput(request: HttpRequest) -> HttpResponse {
-        let name: String = request.params[":name"]!.removingPercentEncoding!
-        let sensor = request.params[":sensor"]!
-        let port: Int = Int(request.params[":port"]!)!
-        if let device = connected_devices[name] {
-            return .ok(.text(String(device.getSensor(port: port, input_type: sensor))))
-        }
-        return .ok(.text("error"))
+		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
+		
+		if let name = queries["name"]?.removingPercentEncoding,
+			let portStr = queries["port"],
+			let sensor = queries["sensor"],
+			let port = Int(portStr) {
+			
+			if let device = connected_devices[name] {
+				if let sensorValue = device.getSensor(port: port, input_type: sensor) {
+					return .ok(.text(String(sensorValue)))
+				} else {
+					return .internalServerError
+				}
+			}
+			else {
+				return .notFound
+			}
+		}
+		
+		return .badRequest(.text("Malformed Request"))
     }
 }

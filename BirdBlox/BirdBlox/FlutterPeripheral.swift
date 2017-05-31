@@ -250,7 +250,7 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate {
 		return true
 	}
 	
-    func getSensor(port: Int, input_type: String) -> UInt8 {
+    func getSensor(port: Int, input_type: String) -> UInt8? {
         var response: String = sendDataWithResponse(data: getFlutterRead())
         var values = response.split(",")
         var counter = 0
@@ -263,7 +263,7 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate {
             counter += 1
             if counter >= MAX_RETRY {
                 print("failed to send read command")
-                return 0
+                return nil
             }
         }
         let data_percent = toUInt8(Int(values[port])!)
