@@ -250,7 +250,7 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate {
 		return true
 	}
 	
-    func getSensor(port: Int, input_type: String) -> UInt8? {
+    func getSensor(port: Int, input_type: String) -> Int? {
         var response: String = sendDataWithResponse(data: getFlutterRead())
         var values = response.split(",")
         var counter = 0
@@ -266,17 +266,19 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate {
                 return nil
             }
         }
-        let data_percent = toUInt8(Int(values[port])!)
-        let data = toUInt8(percentToRaw(data_percent))
+        let data_percent = UInt8(values[port])!
+        let data = percentToRaw(data_percent)
         switch input_type {
         case "distance":
-            return UInt8(rawToDistance(data))
+            return rawToDistance(data)
         case "temperature":
-            return UInt8(rawToTemp(data))
+            print("temp sensor \(data)")
+            print("rtt \(rawToTemp(data))")
+            return rawToTemp(data)
         case "soil":
-            return bound(data_percent, min: 0, max: 90)
+            return bound(Int(data_percent), min: 0, max: 90)
         default:
-            return data_percent
+            return Int(data_percent)
         }
     }
 }

@@ -85,7 +85,9 @@ public func toUInt8(_ value: Int) -> UInt8 {
     Converts a raw value from a robot into a temperature
  */
 public func rawToTemp(_ raw_val: UInt8) -> Int{
+    print("hi")
     let temp: Int = Int(floor(((Double(raw_val) - 127.0)/2.4 + 25) * 100 / 100));
+    print("ho")
     return temp
 }
 
@@ -134,8 +136,8 @@ public func rawToPercent(_ raw_val: UInt8) -> Int{
 /**
  Converts a percentage value into a raw value from a robot
  */
-public func percentToRaw(_ percent_val: UInt8) -> Int{
-    return Int(floor(Double(percent_val) * 2.55))
+public func percentToRaw(_ percent_val: UInt8) -> UInt8{
+    return toUInt8(Int(floor(Double(percent_val) * 2.55)))
 }
 
 /**
