@@ -19,6 +19,7 @@ class SettingsManager: NSObject {
         server["/settings/set"] = self.setSettingRequest
 
     }
+	
     func getSettingRequest(request: HttpRequest) -> HttpResponse {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
@@ -45,5 +46,4 @@ class SettingsManager: NSObject {
 		
 		return .badRequest(.text("Malformed request"))
     }
-
 }

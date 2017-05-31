@@ -29,7 +29,7 @@ public func getSoundPath() -> URL{
     return URL(fileURLWithPath: path_as_string)
 }
 
-public func getSavePath() -> URL{
+public func getSavePath() -> URL {
     return documentsPath.appendingPathComponent("SavedFiles")
 }
 
@@ -64,10 +64,15 @@ fileprivate func getAllFiles() -> [String] {
     
 }
 
-public func getSavedFileURL(_ filename: String) ->URL {
+public func getSavedFileURL(_ filename: String) -> URL? {
     let fullFileName = filename + ".bbx"
     let path = getSavePath().appendingPathComponent(fullFileName)
-    return path
+	
+	if fileManager.fileExists(atPath: path.absoluteString) {
+		return path
+	}
+	
+	return nil
 }
 
 public func getSavedFileNames() -> [String]{
@@ -87,24 +92,25 @@ public func getSavedFileNames() -> [String]{
     }
 }
 
-public func getSavedFileByName(_ filename: String) -> NSString {
+public func getSavedFileByName(_ filename: String) -> NSString? {
     do {
-        let path = getSavedFileURL(filename).path
-        let file: NSString = try NSString(contentsOfFile: path, encoding: String.Encoding.utf8.rawValue)
-        return file
-    } catch {
-        return "File not found"
-    }
+		if let path = getSavedFileURL(filename)?.path {
+			let file: NSString = try NSString(contentsOfFile: path,
+			                                  encoding: String.Encoding.utf8.rawValue)
+			return file
+		}
+	} catch {}
+	return nil
 }
 
 public func deleteFile(_ filename: String) -> Bool {
-    let path = getSavedFileURL(filename).path
     do {
-        try fileManager.removeItem(atPath: path)
-        return true
-    } catch {
-        return false
-    }
+		if let path = getSavedFileURL(filename)?.path {
+			try fileManager.removeItem(atPath: path)
+			return true
+		}
+    } catch {}
+	return false
 }
 
 public func deleteFileAtPath(_ path: String) {
