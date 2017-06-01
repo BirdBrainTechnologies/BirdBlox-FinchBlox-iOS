@@ -144,7 +144,7 @@ public func percentToRaw(_ percent_val: UInt8) -> UInt8{
   Converts the boards GAP name to a kid friendly name for the UI to display
   Returns nil if the input name is malformed
   */
-public func BBTKidNameFromMacSuffix(_ deviceName: String) -> String? {
+public func BBTkidNameFromMacSuffix(_ deviceName: String) -> String? {
 //	let deviceName = deviceNameS.utf8
 	
 	//The name should be seven characters, with the first two identifying the type of device
@@ -171,17 +171,34 @@ public func BBTKidNameFromMacSuffix(_ deviceName: String) -> String? {
 			namesDict["last_names"]![lastIndex]
 		
 		print("\(deviceName) \(firstIndex), \(middleIndex), \(lastIndex)")
-	
+		
 		return name
 		
 	}
 	
-	NSLog("Unable to parse GAP Name \"%s\"", deviceName)
+	NSLog("Unable to parse GAP Name \"\(deviceName)\"")
 	return nil
 }
 
+func BBTgetDeviceNameForGAPName(_ gap: String) -> String {
+	if let kidName = BBTkidNameFromMacSuffix(gap) {
+		return kidName
+	}
+	
+	//TODO: If the GAP name is the default hummingbird name, then grab the MAC address,
+	//set the GAP name to "HB\(last 5 of MAC)", and use that to generate a kid name
+	
+	//Enter command mode with +++
+	//Get MAC address with AT+BLEGETADDR
+	//Set name with AT+GAPDEVNAME=BLEFriend
+	//Reset device with ATZ
+	
+	return gap
+}
+
+
 /**
-	Converts an array of queries (such as the one we get from swifter) into a dictionary with 
+	Converts an array of queries (such as the one we get from swifter) into a dictionary with
 	the parameters as keys and values as values.
 	There are so few parameters that a parallel version is not worth it.
   */

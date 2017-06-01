@@ -65,7 +65,7 @@ class FlutterManager: NSObject {
         BLE_Manager.startScan(serviceUUIDs: [FlutterPeripheral.DEVICE_UUID])
 		
 		let array = BLE_Manager.discoveredDevices.map { (key, peripheral) in
-			["id": key, "name": BLE_Manager.getDeviceNameForGAPName(peripheral.name!)]
+			["id": key, "name": BBTgetDeviceNameForGAPName(peripheral.name!)]
 		}
 		
 		print("Found Devices: " + array.map({(d) in d["name"]!}).joined(separator: ", "))

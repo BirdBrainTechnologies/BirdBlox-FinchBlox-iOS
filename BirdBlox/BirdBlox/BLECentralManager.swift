@@ -65,22 +65,6 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 	var foundDevices: [String: CBPeripheral] {
 		return self.discoveredDevices
 	}
-	
-	func getDeviceNameForGAPName(_ gap: String) -> String {
-		if let kidName = BBTKidNameFromMacSuffix(gap) {
-			return kidName
-		}
-		
-		//TODO: If the GAP name is the default hummingbird name, then grab the MAC address,
-		//set the GAP name to "HB\(last 5 of MAC)", and use that to generate a kid name
-		
-		//Enter command mode with +++
-		//Get MAC address with AT+BLEGETADDR
-		//Set name with AT+GAPDEVNAME=BLEFriend
-		//Reset device with ATZ
-		
-		return gap
-	}
 
 	
     /**
@@ -90,7 +74,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
      */
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral,
                         advertisementData: [String : Any], rssi RSSI: NSNumber) {
-        discoveredDevices[getDeviceNameForGAPName(peripheral.identifier.uuidString)] = peripheral
+        discoveredDevices[peripheral.identifier.uuidString] = peripheral
     }
     
     /**

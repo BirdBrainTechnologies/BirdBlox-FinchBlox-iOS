@@ -34,7 +34,19 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
     var last_message_recieved: [UInt8] = [0,0,0,0]
     let cache_timeout: Double = 15.0 //in seconds
     var was_initialized = false
+	var resettingName = false
+	var gettingMAC = false
+	var commandMode = false
+	var initializing = false
     fileprivate var setTimer: Timer = Timer()
+	
+	static let ADALE_COMMAND_MODE_TOGGLE = "+++"
+	static let ADALE_GET_MAC = "AT+BLEGETADDR"
+	static let ADALE_SET_NAME = "AT+GAPDEVNAME="
+	static let ADALE_RESET = "ATZ"
+	static let NAME_PREFIX = "HB"
+	var macStr: String? = nil
+	let macReplyLen = 17
 
     
     init(peripheral: CBPeripheral){
@@ -59,7 +71,9 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
         if let services = peripheral.services{
             for service in services {
                 if(service.uuid == HummingbirdPeripheral.SERVICE_UUID){
-                    peripheral.discoverCharacteristics([HummingbirdPeripheral.RX_UUID, HummingbirdPeripheral.TX_UUID], for: service)
+                    peripheral.discoverCharacteristics([HummingbirdPeripheral.RX_UUID,
+                                                        HummingbirdPeripheral.TX_UUID],
+														for: service)
                     return
                 }
             }
@@ -91,34 +105,151 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
                     wasRXSet = true
                 }
                 if(wasTXSet && wasRXSet){
-                    initialize()
+                    self.beginInitialization()
                     return
                 }
             }
         }
     }
+	
+	static func nameNeedsReset(_ name: String) -> Bool {
+		let HB_DEFAULT_NAME = "Adafruit Bluefruit LE"
+		if name == HB_DEFAULT_NAME {
+			return true
+		}
+		return false
+	}
     
-    fileprivate func initialize() {
-        sendData(data: getTurnOffCommand())
+    fileprivate func beginInitialization() {
+		self.initializing = true
+		
+		//Get ourselves a fresh slate
+        self.sendData(data: getTurnOffCommand())
         Thread.sleep(forTimeInterval: 0.1)
-        sendData(data: getPollStopCommand())
+        self.sendData(data: getPollStopCommand())
         Thread.sleep(forTimeInterval: 0.1)
-        sendData(data: getPollStartCommand())
-        DispatchQueue.main.async{
-            self.setTimer = Timer.scheduledTimer(timeInterval: 0.1, target: self,
-                                                 selector: #selector(HummingbirdPeripheral.setAll),
-												 userInfo: nil, repeats: true)
-            self.setTimer.fire()
-        }
-        was_initialized = true
+		
+		
+		//Check the name
+		if HummingbirdPeripheral.nameNeedsReset(self.peripheral.name!) {
+			NSLog("Deciding to reset hummingbird name")
+			self.resettingName = true
+			self.enterCommandMode()
+			self.getMAC()
+		}
+		else {
+			self.finishInitialization()
+		}
     }
-    
-    
-    func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
-        if(characteristic.uuid != HummingbirdPeripheral.RX_UUID){
-            return
+	
+	fileprivate func getMAC() {
+		if self.commandMode {
+			//Causes self.macStr to be set when mac address received
+			self.gettingMAC = true
+			self.sendData(data: Data(bytes: Array(HummingbirdPeripheral.ADALE_GET_MAC.utf8)))
+		}
+	}
+	
+	fileprivate func resetNameFromMAC() {
+		if self.commandMode && self.macStr != nil{
+			let name = HummingbirdPeripheral.NAME_PREFIX +
+				String(describing: self.macStr!.utf8.dropFirst(12 - 5))
+			self.sendData(data: Data(bytes: Array((HummingbirdPeripheral.ADALE_SET_NAME + name).utf8)))
+			Thread.sleep(forTimeInterval: 0.1)
+			
+			print("Resetting name to " + name)
+			
+			self.resetHummingBird()
+			
+			if self.initializing {
+				self.finishInitialization()
+			}
+		}
+	}
+	
+	fileprivate func finishInitialization() {
+		self.initializing = false
+		
+		if self.commandMode {
+			self.exitCommandMode()
+		}
+		
+		self.sendData(data: getPollStartCommand())
+		DispatchQueue.main.async{
+			self.setTimer = Timer.scheduledTimer(timeInterval: 0.1, target: self,
+			                                     selector: #selector(HummingbirdPeripheral.setAll),
+			                                     userInfo: nil, repeats: true)
+			self.setTimer.fire()
+		}
+		was_initialized = true
+	}
+	
+	fileprivate func enterCommandMode() {
+		if !self.commandMode {
+			self.commandMode = true
+			self.sendData(data: Data(HummingbirdPeripheral.ADALE_COMMAND_MODE_TOGGLE.utf8))
+			Thread.sleep(forTimeInterval: 0.1)
+		}
+	}
+	
+	fileprivate func exitCommandMode() {
+		if self.commandMode {
+			self.sendData(data: Data(HummingbirdPeripheral.ADALE_COMMAND_MODE_TOGGLE.utf8))
+			Thread.sleep(forTimeInterval: 0.1)
+			self.commandMode = false
+		}
+	}
+	
+	fileprivate func resetHummingBird() {
+		if self.commandMode {
+			self.sendData(data: Data(HummingbirdPeripheral.ADALE_RESET.utf8))
+			Thread.sleep(forTimeInterval: 0.1)
+			self.commandMode = false
+		}
+	}
+	
+	
+    func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic,
+                    error: Error?) {
+		//If we are trying to reset the hummingbird's name, this should be the device's MAC
+		print("Did update characteristic \(characteristic)")
+		
+        if characteristic.uuid != HummingbirdPeripheral.RX_UUID {
+			return
         }
-        if(characteristic.value!.count % 5 != 0){
+		
+		print("Is RX UUID")
+		print("number of bytes \(characteristic.value!.count)")
+		
+		if self.gettingMAC && characteristic.value!.count == self.macReplyLen {
+			
+		objc_sync_enter(self.peripheral)
+		var macBuffer = [UInt8](repeatElement(0, count: self.macReplyLen))
+		(characteristic.value! as NSData).getBytes(&macBuffer, length: self.macReplyLen)
+		objc_sync_exit(self.peripheral)
+		
+			macBuffer = (macBuffer as NSArray).filtered(using: NSPredicate(block: {
+				(byte, bind) in
+				(byte as! UInt8) == 58
+			})) as! [UInt8]
+			
+			self.macStr = NSString(bytes: &macBuffer, length: macBuffer.count,
+								   encoding: String.Encoding.ascii.rawValue)! as String
+			
+			self.gettingMAC = false
+			print("Got mac address \(self.macStr!).")
+			
+			if self.resettingName {
+				self.resetNameFromMAC()
+			}
+			if self.initializing {
+				self.finishInitialization()
+			}
+			
+			return
+		}
+		
+        if characteristic.value!.count % 5 != 0 {
             return
         }
         objc_sync_enter(self.peripheral)
@@ -127,14 +258,14 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
     }
     
     /**
-     * Called when we update a characteristic
+     * Called when we update a characteristic (when we write to the HB)
      */
     func peripheral(_ peripheral: CBPeripheral,
                     didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
 		if let error = error {
 			NSLog("Unable to write to hummingbird due to error \(error)")
 		}
-        
+        print("did write value for characteristic \(characteristic)")
     }
     
     func disconnect() {
@@ -150,7 +281,14 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
     }
     
     func sendData(data: Data) {
-        peripheral.writeValue(data, for: tx_line!, type: CBCharacteristicWriteType.withResponse)
+		if self.isConnected() {
+			peripheral.writeValue(data, for: tx_line!, type: CBCharacteristicWriteType.withResponse)
+			
+			if self.commandMode {
+				print("Sent command: " +
+					(NSString(data: data, encoding: String.Encoding.utf8.rawValue)! as String))
+			}
+		}
     }
     
     
@@ -237,7 +375,8 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
     }
     
     func setAll() {
-        let command = getSetAllCommand(tri: trileds, leds: leds, servos: servos, motors: motors, vibs: vibrations)
+        let command = getSetAllCommand(tri: trileds, leds: leds, servos: servos,
+                                       motors: motors, vibs: vibrations)
         print("Setting All: " + command.description)
         self.sendData(data: command)
     }
