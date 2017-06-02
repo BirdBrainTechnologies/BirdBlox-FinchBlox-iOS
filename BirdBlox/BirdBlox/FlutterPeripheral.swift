@@ -175,7 +175,7 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate {
         data_cond.lock()
         peripheral.writeValue(data, for: tx_line!, type: CBCharacteristicWriteType.withoutResponse)
         //peripheral.writeValue(data, for: rx_config_line!)
-        data_cond.wait()
+		data_cond.wait(until: Data(NSTimeIntervalSinceNow: 0.1))
         data_cond.unlock()
         
         let response = tx_line?.value
