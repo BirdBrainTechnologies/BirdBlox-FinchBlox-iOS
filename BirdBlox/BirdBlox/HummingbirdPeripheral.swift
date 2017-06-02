@@ -40,7 +40,7 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 	var initializing = false
     fileprivate var setTimer: Timer = Timer()
 	
-	static let ADALE_COMMAND_MODE_TOGGLE = "+++\r\n"
+	static let ADALE_COMMAND_MODE_TOGGLE = "+++\n"
 	static let ADALE_GET_MAC = "AT+BLEGETADDR\n"
 	static let ADALE_SET_NAME = "AT+GAPDEVNAME="
 	static let ADALE_RESET = "ATZ\n"
@@ -147,10 +147,16 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 			self.enterCommandMode()
 			
 			DispatchQueue.main.sync {
-				Timer.scheduledTimer(timeInterval: 0.7, target: self,
+				Timer.scheduledTimer(timeInterval: 0.6, target: self,
 					                     selector: #selector(HummingbirdPeripheral.getMAC),
 					                     userInfo: nil, repeats: false)
 			}
+			
+//			DispatchQueue.main.sync {
+//				Timer.scheduledTimer(timeInterval: 1.2, target: self,
+//				                     selector: #selector(HummingbirdPeripheral.exitCommandMode),
+//				                     userInfo: nil, repeats: false)
+//			}
 			
 			DispatchQueue.main.sync {
 				Timer.scheduledTimer(timeInterval: 2.0, target: self,
@@ -184,7 +190,7 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 		if self.commandMode && self.macStr != nil{
 			let name = HummingbirdPeripheral.NAME_PREFIX +
 				String(describing: self.macStr!.utf8.dropFirst(self.macStr!.utf8.count - 5))
-			self.sendData(data: Data(bytes: Array((HummingbirdPeripheral.ADALE_SET_NAME + name + "\r\n").utf8)))
+			self.sendData(data: Data(bytes: Array((HummingbirdPeripheral.ADALE_SET_NAME + name + "\n").utf8)))
 			
 			print("Resetting name to " + name)
 			
@@ -229,11 +235,11 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 			print("Entering command mode")
 			self.commandMode = true
 			self.sendData(data: Data(HummingbirdPeripheral.ADALE_COMMAND_MODE_TOGGLE.utf8))
-			Thread.sleep(forTimeInterval: 0.5)
+			Thread.sleep(forTimeInterval: 0.1)
 		}
 	}
 	
-	fileprivate func exitCommandMode() {
+	@objc fileprivate func exitCommandMode() {
 		if self.commandMode {
 			self.sendData(data: Data(HummingbirdPeripheral.ADALE_COMMAND_MODE_TOGGLE.utf8))
 			Thread.sleep(forTimeInterval: 0.1)
