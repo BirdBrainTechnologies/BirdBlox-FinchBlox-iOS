@@ -147,26 +147,26 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 			self.enterCommandMode()
 			
 			DispatchQueue.main.sync {
-				Timer.scheduledTimer(timeInterval: 0.6, target: self,
+				let _ = Timer.scheduledTimer(timeInterval: 0.6, target: self,
 					                     selector: #selector(HummingbirdPeripheral.getMAC),
 					                     userInfo: nil, repeats: false)
 			}
 			
 //			DispatchQueue.main.sync {
-//				Timer.scheduledTimer(timeInterval: 1.2, target: self,
+//				let _ = Timer.scheduledTimer(timeInterval: 1.2, target: self,
 //				                     selector: #selector(HummingbirdPeripheral.exitCommandMode),
 //				                     userInfo: nil, repeats: false)
 //			}
 			
 			DispatchQueue.main.sync {
-				Timer.scheduledTimer(timeInterval: 2.0, target: self,
+				let _ = Timer.scheduledTimer(timeInterval: 1.2, target: self,
 									 selector: #selector(HummingbirdPeripheral.resetNameFromMAC),
 									 userInfo: nil, repeats: false)
 			}
 			
 			DispatchQueue.main.sync {
-				Timer.scheduledTimer(timeInterval: 3.0, target: self,
-				                     selector: #selector(HummingbirdPeripheral.finishInitialization),
+				let _ = Timer.scheduledTimer(timeInterval: 3.0, target: self,
+				                     selector:#selector(HummingbirdPeripheral.finishInitialization),
 				                     userInfo: nil, repeats: false)
 			}
 		}
@@ -181,6 +181,7 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 			print("Getting MAC")
 			self.gettingMAC = true
 			self.sendData(data: Data(bytes: Array(HummingbirdPeripheral.ADALE_GET_MAC.utf8)))
+			print(Array(HummingbirdPeripheral.ADALE_GET_MAC.utf8))
 			
 			//D748F96DA17C
 		}
@@ -188,11 +189,17 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 	
 	@objc fileprivate func resetNameFromMAC() {
 		if self.commandMode && self.macStr != nil{
-			let name = HummingbirdPeripheral.NAME_PREFIX +
-				String(describing: self.macStr!.utf8.dropFirst(self.macStr!.utf8.count - 5))
-			self.sendData(data: Data(bytes: Array((HummingbirdPeripheral.ADALE_SET_NAME + name + "\n").utf8)))
+			let macStr = self.macStr!
+//			let name = HummingbirdPeripheral.NAME_PREFIX +
+//				String(macStr.characters.dropFirst(macStr.characters.count - 5))
 			
-			print("Resetting name to " + name)
+			
+			self.sendData(data: Data(bytes: Array("AT+GAPDEVNAME=\n".utf8)))
+			
+//			print(Array((HummingbirdPeripheral.ADALE_SET_NAME +
+//				name + "\n").utf8))
+//			
+//			print("Resetting name to " + name)
 			
 //			self.exitCommandMode()
 			print("Setting timer for HB BLE reset")
@@ -256,6 +263,10 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 		}
 	}
 	
+	func peripheralDidUpdateName(_ peripheral: CBPeripheral) {
+		print("Peripheral updated name: " + peripheral.name!)
+	}
+	
 	
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic,
                     error: Error?) {
@@ -280,12 +291,12 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 //			var macBuffer = [UInt8](repeatElement(0, count: self.macReplyLen))
 //			(characteristic.value! as NSData).getBytes(&macBuffer, length: self.macReplyLen)
 //			objc_sync_exit(self.peripheral)
-		
+			
 			macBuffer = (macBuffer as NSArray).filtered(using: NSPredicate(block: {
 				(byte, bind) in
 				(byte as! UInt8) != 58
 			})) as! [UInt8]
-			
+
 			self.macStr = NSString(bytes: &macBuffer, length: self.macLen,
 								   encoding: String.Encoding.ascii.rawValue)! as String
 			
@@ -443,10 +454,11 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
     }
     
     func setAll() {
-		return //TODO: Delete this line
-        let command = getSetAllCommand(tri: trileds, leds: leds, servos: servos,
-                                       motors: motors, vibs: vibrations)
-        print("Setting All: " + command.description)
-        self.sendData(data: command)
+		if self.was_initialized {
+			let command = getSetAllCommand(tri: trileds, leds: leds, servos: servos,
+			                               motors: motors, vibs: vibrations)
+//			print("Setting All: " + command.description)
+			self.sendData(data: command)
+		}
     }
 }
