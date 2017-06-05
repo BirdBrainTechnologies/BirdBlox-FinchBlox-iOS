@@ -144,7 +144,6 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
         }
 		
         return .ok(.text(orientation))
-
     }
 	
 	//Gives us the current acceleration in G's
@@ -165,12 +164,11 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
 	}
 	
     func accelerationRequest(request: HttpRequest) -> HttpResponse {
-		if let accel = self.acceleration {
-			//We convert from G's to ms^-2 by multiplying by 9.81
-			return .ok(.text("\(accel.x * 9.81) \(accel.y * 9.81) \(accel.z * 9.81)"))
-		} else {
+		guard let accel = self.acceleration else {
 			return .internalServerError
 		}
+		//We convert from G's to ms^-2 by multiplying by 9.81
+		return .ok(.text("\(accel.x * 9.81) \(accel.y * 9.81) \(accel.z * 9.81)"))
     }
     func dialogResponseRequest(request: HttpRequest) -> HttpResponse {
         if let response = self.last_dialog_response {
