@@ -14,6 +14,10 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
     var wasShaken: Bool = false
     var shakenTimer: Timer = Timer()
 	let server = BBTBackendServer()
+	
+	var backendServer: BBTBackendServer {
+		return self.server
+	}
     
 	
     override func viewDidLoad() {
@@ -123,6 +127,7 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+		print("Did receive memory warning")
     }
 
 

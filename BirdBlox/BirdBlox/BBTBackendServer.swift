@@ -82,4 +82,8 @@ class BBTBackendServer {
 			return
 		}
 	}
+	
+	func stop() {
+		self.swifterServer.stop()
+	}
 }
