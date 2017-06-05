@@ -220,7 +220,6 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 		
 		
         if characteristic.value!.count % 5 != 0 {
-		
             return
         }
         objc_sync_enter(self.peripheral)
