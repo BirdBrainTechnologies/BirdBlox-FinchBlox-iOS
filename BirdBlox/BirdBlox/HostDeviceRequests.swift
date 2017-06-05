@@ -24,7 +24,6 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
     var currentAltitude: Float = 0 //meters
     var currentPressure: Float = 0 //kPa
     var currentLocation:CLLocationCoordinate2D = CLLocationCoordinate2D()
-    var x: Double = 0, y: Double = 0, z: Double = 0
     
     var last_dialog_response: String?
     var last_choice_response = 0
@@ -33,10 +32,10 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
         self.view_controller = view_controller
         super.init()
         if (CLLocationManager.locationServicesEnabled()){
-            locationManager.delegate = self
-            locationManager.desiredAccuracy = kCLLocationAccuracyBest
-            locationManager.requestWhenInUseAuthorization()
-            locationManager.startUpdatingLocation()
+            self.locationManager.delegate = self
+            self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
+            self.locationManager.requestWhenInUseAuthorization()
+            self.locationManager.startUpdatingLocation()
         }
         
         if(CMAltimeter.isRelativeAltitudeAvailable()){
@@ -47,19 +46,13 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
                 }
             })
         }
-        self.motionManager.accelerometerUpdateInterval = 0.5
-        if(self.motionManager.isAccelerometerAvailable) {
-            self.motionManager.startAccelerometerUpdates(to: OperationQueue(), withHandler: {data, error in
-                DispatchQueue.main.async(execute: {
-                    self.x = data!.acceleration.x
-                    self.y = data!.acceleration.y
-                    self.z = data!.acceleration.z
-                })
-            })
-            
-        }
-    }
-    
+		if self.motionManager.isDeviceMotionAvailable {
+			self.motionManager.startDeviceMotionUpdates()
+		} else if(self.motionManager.isAccelerometerAvailable) {
+			self.motionManager.startAccelerometerUpdates()
+		}
+	}
+	
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         currentLocation = manager.location!.coordinate
     }
@@ -131,25 +124,53 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
         return .ok(.text(String(format: "%f", self.currentAltitude)))
     }
     func orientationRequest(request: HttpRequest) -> HttpResponse {
+		guard let accel = self.acceleration else {
+			return .internalServerError
+		}
+	
         var orientation: String = "In between"
-        if(abs(self.x + 1) < 0.1){
+        if(abs(accel.x + 1) < 0.1){
             orientation = "Landscape: home button on right"
-        } else if(abs(self.x - 1) < 0.15){
+        } else if(abs(accel.x - 1) < 0.15){
             orientation = "Landscape: home button on left"
-        } else if(abs(self.y + 1) < 0.15){
+        } else if(abs(accel.y + 1) < 0.15){
             orientation = "Portrait: home button on bottom"
-        } else if(abs(self.y - 1) < 0.15){
+        } else if(abs(accel.y - 1) < 0.15){
             orientation = "Portrait: home button on top"
-        } else if(abs(self.z + 1) < 0.15){
+        } else if(abs(accel.z + 1) < 0.15){
             orientation = "Faceup"
-        } else if(abs(self.z - 1) < 0.15){
+        } else if(abs(accel.z - 1) < 0.15){
             orientation = "Facedown"
         }
+		
         return .ok(.text(orientation))
 
     }
+	
+	//Gives us the current acceleration in G's
+	fileprivate var acceleration: CMAcceleration! {
+		var currentAccel: CMAcceleration! = nil
+		
+		if self.motionManager.isDeviceMotionActive {
+			if let grav = self.motionManager.deviceMotion?.gravity,
+				let user = self.motionManager.deviceMotion?.userAcceleration {
+				currentAccel = CMAcceleration(x: grav.x + user.x, y: grav.y + user.y,
+				                              z: grav.z + user.z)
+			}
+		} else if self.motionManager.isAccelerometerActive {
+			currentAccel = self.motionManager.accelerometerData?.acceleration
+		}
+		
+		return currentAccel
+	}
+	
     func accelerationRequest(request: HttpRequest) -> HttpResponse {
-        return .ok(.text(String(format: "%f %f %f", self.x, self.y, self.z)))
+		if let accel = self.acceleration {
+			//We convert from G's to ms^-2 by multiplying by 9.81
+			return .ok(.text("\(accel.x * 9.81) \(accel.y * 9.81) \(accel.z * 9.81)"))
+		} else {
+			return .internalServerError
+		}
     }
     func dialogResponseRequest(request: HttpRequest) -> HttpResponse {
         if let response = self.last_dialog_response {
@@ -239,3 +260,4 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
 	
 	
 }
+
