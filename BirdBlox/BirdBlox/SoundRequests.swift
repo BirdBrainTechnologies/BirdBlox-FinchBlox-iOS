@@ -20,13 +20,13 @@ class SoundManager: NSObject {
     
     func loadRequests(server: BBTBackendServer){
         server["/sound/names"] = namesRequest(request:)
-        server["/sound/stop_all"] = stopAllRequest(request:)
+        server["/sound/stopAll"] = stopAllRequest(request:)
         server["/sound/stop"] = stopRequest(request:)
 
         
-        server["/sound/duration/:filename"] = durationRequest(request:)
-        server["/sound/play/:filename"] = playRequest(request:)
-        server["/sound/note/:note_num/:duration"] = noteRequest(request:)
+        server["/sound/duration"] = durationRequest(request:)
+        server["/sound/play"] = playRequest(request:)
+        server["/sound/note"] = noteRequest(request:)
     }
     
     func namesRequest(request: HttpRequest) -> HttpResponse {
@@ -51,20 +51,30 @@ class SoundManager: NSObject {
     }
     
     func durationRequest(request: HttpRequest) -> HttpResponse {
-        let filename = request.params[":filename"]!
+		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
+		guard let filename = queries["filename"] else {
+			return .badRequest(.text("Missing query parameter"))
+		}
         return .ok(.text(String(self.audio_manager.getSoundDuration(filename: filename))))
     }
     
     func playRequest(request: HttpRequest) -> HttpResponse {
-        let filename = request.params[":filename"]!
+		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
+		guard let filename = queries["filename"] else {
+			return .badRequest(.text("Missing query parameter"))
+		}
         self.audio_manager.playSound(filename: filename)
         return .ok(.text("Playing sound"))
     }
     
     func noteRequest(request: HttpRequest) -> HttpResponse {
-        let captured = request.params
-        let note: UInt = UInt(captured[":note_num"]!)!
-        let duration: Int = Int(captured[":duration"]!)!
+		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
+		guard let noteStr = queries["note"],
+			let durStr = queries["duration"],
+			let note = UInt(noteStr),
+			let duration = Int(durStr) else {
+			return .badRequest(.text("Missing query parameter"))
+		}
         self.audio_manager.playNote(noteIndex: note, duration: duration)
         return .ok(.text("Playing Note"))
     }
