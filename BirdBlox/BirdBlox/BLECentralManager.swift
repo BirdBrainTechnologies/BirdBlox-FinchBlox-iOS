@@ -5,7 +5,6 @@
 //  Created by birdbrain on 3/23/17.
 //  Copyright © 2017 Birdbrain Technologies LLC. All rights reserved.
 //
-
 import Foundation
 import CoreBluetooth
 
@@ -19,26 +18,30 @@ extension CBCentralManager {
 }
 
 
-class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
+class BLECentralManager: NSObject, CBCentralManagerDelegate {
+	
+	enum BLECentralManagerScanState {
+		case notScanning
+		case searchingScan
+		case countingScan
+	}
 	
 	public static let manager: BLECentralManager = BLECentralManager()
 	
 	var centralManager: CBCentralManager!
 	var discoveredDevices: [String: CBPeripheral]
-	var isScanning: Bool
+	var scanState: BLECentralManagerScanState
 	var discoverTimer: Timer
 	var waitingToConnect: [String]
-	var scanningServices: [CBUUID]
-	var devicesSeen: UInt
+	var deviceCount: UInt
 	
 	override init() {
 		
 		self.discoveredDevices = [String: CBPeripheral]()
-		self.isScanning = false
+		self.scanState = .notScanning
 		self.discoverTimer = Timer()
 		self.waitingToConnect = Array()
-		self.scanningServices = []
-		self.devicesSeen = 0
+		self.deviceCount = 0
 		
 		super.init();
 		
@@ -46,23 +49,48 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
 		centralManager = CBCentralManager(delegate: self, queue: centralQueue)
 	}
 	
+	var isScanning: Bool {
+		return self.scanState == .searchingScan
+	}
+	
+	var devicesInVicinity: UInt {
+		return self.deviceCount
+	}
+	
 	func startScan(serviceUUIDs: [CBUUID]) {
-		if !self.isScanning && (centralManager.centralManagerState == .poweredOn) {
-			self.isScanning = true
-			self.scanningServices = serviceUUIDs
-			self.devicesSeen = 0
-			self.discoveredDevices.removeAll()
-			self.centralManager.scanForPeripherals(withServices: serviceUUIDs, options: nil)
+		if self.scanState == .countingScan {
+			self.stopScan()
+		}
+		if !self.isScanning && (self.centralManager.centralManagerState == .poweredOn) {
+			discoveredDevices.removeAll()
+			centralManager.scanForPeripherals(withServices: serviceUUIDs, options: nil)
 			discoverTimer = Timer.scheduledTimer(timeInterval: TimeInterval(30), target: self,
 			                                     selector: #selector(BLECentralManager.stopScan),
 			                                     userInfo: nil, repeats: false)
-			NSLog("Started bluetooth scan")
+			self.scanState = .searchingScan
+			NSLog("Stated bluetooth scan")
 		}
 	}
+	
+	func startCountingScan() {
+		self.deviceCount = 0
+		self.centralManager.scanForPeripherals(withServices: nil, options: nil)
+		self.scanState = .countingScan
+		if #available(iOS 10.0, *) {
+			self.discoverTimer = Timer.scheduledTimer(withTimeInterval: 120, repeats: false) {
+				t in self.stopScan()
+			}
+		} else {
+			discoverTimer = Timer.scheduledTimer(timeInterval: TimeInterval(120), target: self,
+			                                     selector: #selector(BLECentralManager.stopScan),
+			                                     userInfo: nil, repeats: false)
+		}
+	}
+	
 	func stopScan() {
 		if isScanning {
 			centralManager.stopScan()
-			isScanning = false
+			self.scanState = .notScanning
 			discoverTimer.invalidate()
 			NSLog("Stopped bluetooth scan")
 		}
@@ -80,25 +108,14 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
 	*/
 	func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral,
 	                    advertisementData: [String : Any], rssi RSSI: NSNumber) {
-		self.devicesSeen += 1
-		
-		peripheral.delegate = self
-		peripheral.discoverServices(self.scanningServices)
-		print("Discovered periphereal \(peripheral.services)")
-	}
-	
-	func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
-		if let error = error {
-			NSLog("Error discovering servies \(error)")
+		switch self.scanState {
+		case .countingScan:
+			self.deviceCount += 1
+		case .searchingScan:
+			self.discoveredDevices[peripheral.identifier.uuidString] = peripheral
+		default:
 			return
 		}
-		print("found peripheral")
-		guard self.scanningServices.contains(peripheral.services![0].uuid) else {
-			print("periphereal not in id")
-			return
-		}
-		discoveredDevices[peripheral.identifier.uuidString] = peripheral
-		
 	}
 	
 	/**
