@@ -68,13 +68,13 @@ class HummingbirdManager {
     func discoverRequest(request: HttpRequest) -> HttpResponse {
         BLE_Manager.startScan(serviceUUIDs: [HummingbirdPeripheral.DEVICE_UUID])
 		
-		let array = BLE_Manager.discoveredDevices.map { (key, peripheral) in
+		let darray = BLE_Manager.discoveredDevices.map { (key, peripheral) in
 			["id": key, "name": BBTgetDeviceNameForGAPName(peripheral.name!)]
 		}
 		
-		print("Found Devices: " + array.map({(d) in d["name"]!}).joined(separator: ", "))
+		print("Found Devices: " + darray.map({(d) in d["name"]!}).joined(separator: ", "))
 		
-		return .ok(.json(array as AnyObject))
+		return .ok(.json(darray as AnyObject))
     }
     
     func forceDiscover(request: HttpRequest) -> HttpResponse {
