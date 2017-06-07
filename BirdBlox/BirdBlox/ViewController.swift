@@ -13,11 +13,6 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
     var web_view: WKWebView?
     var wasShaken: Bool = false
     var shakenTimer: Timer = Timer()
-	let server = BBTBackendServer()
-	
-	var backendServer: BBTBackendServer {
-		return self.server
-	}
     
 	
     override func viewDidLoad() {
@@ -25,8 +20,8 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
         super.viewDidLoad()
 		
 		//Setup Server
-		self.addHandlersToServer()
-        server.start()
+		self.addHandlersToServer((UIApplication.shared.delegate as! AppDelegate).backendServer)
+		(UIApplication.shared.delegate as! AppDelegate).backendServer.start()
 		
 		
 		//Setup webview
@@ -56,7 +51,7 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
 	var dataRequests: DataManager? = nil
 	var hostDeviceManager: HostDeviceManager? = nil
 	
-	func addHandlersToServer() {
+	func addHandlersToServer(_ server: BBTBackendServer) {
 		dataRequests = dataRequests != nil ? dataRequests :  DataManager(view_controller: self)
 		hostDeviceManager = (hostDeviceManager != nil ?
 			hostDeviceManager : HostDeviceManager(view_controller: self))
