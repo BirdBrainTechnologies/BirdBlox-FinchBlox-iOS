@@ -67,10 +67,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 	func application(_ app: UIApplication, open url: URL,
 	                 options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
 		do {
-			try NSLog(String(contentsOf: url))
+			let contents = try String(contentsOf: url)
+			let name = url.lastPathComponent.replacingOccurrences(of: ".bbx", with: "")
+//			guard DataModel.shared.save(bbxString: contents, withName: name) else {
+//				return false
+//			}
+			
+			if let vc = window?.rootViewController as? ViewController {
+				vc.web_view?.evaluateJavaScript("SaveManager.import('\(name)', '\(contents)');",
+				                                completionHandler: { (_, error) in print(error)})
+			}
 		}
 		catch {
 			NSLog("I'm unable to open the file")
+			return false
 		}
 		return true
 	}
