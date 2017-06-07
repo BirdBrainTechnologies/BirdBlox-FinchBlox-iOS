@@ -29,13 +29,11 @@ class DataManager: NSObject {
     }
     
     func filesRequest(request: HttpRequest) -> HttpResponse {
-        let fileList = getSavedFileNames()
-        var files: String = "";
-        fileList.forEach({ (string) in
-            files.append(string)
-            files.append("\n")
-        })
-        return .ok(.text(files))
+        let filenameList = DataModel.shared.savedBBXFiles
+		let nameList = filenameList.map({$0.replacingOccurrences(of: ".bbx", with: "")})
+		let bodyString = nameList.joined(separator: "\n")
+		
+        return .ok(.text(bodyString))
     }
     
     func saveRequest(request: HttpRequest) -> HttpResponse {
@@ -43,28 +41,29 @@ class DataManager: NSObject {
 		
 		print("Save method: \(request.method)")
 		
-        if let filename = queries["filename"]?.removingPercentEncoding,
+        guard let filename = queries["filename"]?.removingPercentEncoding,
 			let fileString = NSString(bytes:request.body, length: request.body.count,
-			                          encoding: String.Encoding.utf8.rawValue) {
-			if saveStringToFile(fileString, filename: filename) {
-				return .raw(201, "Created", ["Location" : "/data/load?filename=\(filename)"]) {
+			                          encoding: String.Encoding.utf8.rawValue) else {
+			return .badRequest(.text("Malformed Request"))
+		}
+		
+		guard DataModel.shared.save(bbxString: fileString as String, withName: filename) else {
+			return .internalServerError
+		}
+		
+		return .raw(201, "Created", ["Location" : "/data/load?filename=\(filename)"]) {
 					(writer) throws -> Void in
 							try writer.write([UInt8]((fileString as String).utf8))
 				}
-			}
-			else {
-				return .internalServerError
-			}
-		}
 		
-        return .badRequest(.text("Malformed Request"))
+		
     }
 	
     func loadRequest(request: HttpRequest) -> HttpResponse {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
 		if let filename = queries["filename"]?.removingPercentEncoding {
-			if let fileContent = getSavedFileByName(filename) {
+			if let fileContent = DataModel.shared.getBBXString(byName: filename) {
 				return .ok(.text(fileContent as (String)))
 			}
 			else {
@@ -78,24 +77,23 @@ class DataManager: NSObject {
     func renameRequest(request: HttpRequest) -> HttpResponse {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
-		if let oldFilename = queries["oldFilename"]?.removingPercentEncoding,
-			let newFilename = queries["newFilename"]?.removingPercentEncoding {
-			if renameFile(oldFilename, new_filename: newFilename) {
-				return .ok(.text("File Renamed"))
-			}
-			else {
-				return .internalServerError
-			}
+		guard let oldFilename = queries["oldFilename"]?.removingPercentEncoding,
+			let newFilename = queries["newFilename"]?.removingPercentEncoding else {
+			return .badRequest(.text("Malformed Request"))
 		}
 		
-		return .badRequest(.text("Malformed Request"))
-    }
+		guard DataModel.shared.renameBBXFile(from: oldFilename, to: newFilename) else {
+			return .internalServerError
+		}
+		
+		return .ok(.text("File Renamed"))
+	}
 	
     func deleteRequest(request: HttpRequest) -> HttpResponse {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
 		if let filename = queries["filename"]?.removingPercentEncoding {
-			if deleteFile(filename) {
+			if DataModel.shared.deleteBBXFile(byName: filename) {
 				return .ok(.text("File Deleted"))
 			}
 			else {
@@ -110,7 +108,8 @@ class DataManager: NSObject {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
 		if let filename = queries["filename"]?.removingPercentEncoding {
-			if let exportedPath = getSavedFileURL(filename) {
+			let exportedPath = DataModel.shared.getBBXFileLoc(byName: filename)
+			if  FileManager.default.fileExists(atPath: exportedPath.absoluteString) {
 				let url = URL(fileURLWithPath: exportedPath.path)
 				let view = UIActivityViewController(activityItems: [url], applicationActivities: nil)
 				view.popoverPresentationController?.sourceView = self.view_controller.view

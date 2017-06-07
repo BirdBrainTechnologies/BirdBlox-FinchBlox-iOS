@@ -27,22 +27,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 			                                 alpha: 1.0)
 		}
 		
-		#if DEBUG
-			print("Running in DEBUG mode. Going to overwrite current frontend from git.")
-			if BBTDownloadFrontendUpdate() {
-				if BTTOverwriteFrontendWithDownload() {
-					print("Successfully downloaded new frontend.")
-				}
-				else {
-					print("Unable to unzip frontend. Frontend might be broken.")
-				}
-			}
-			else {
-				print("Unable to download zip from repo. ")
-			}
-		#else
-			print("Running in a non-DEBUG mode, going to use local frontend.")
-		#endif
+		//Make sure date model is working
+		let _ = DataModel.shared.getSetting("foo")
+		
         return true
     }
 

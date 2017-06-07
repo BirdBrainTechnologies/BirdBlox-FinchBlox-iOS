@@ -68,7 +68,7 @@ class AudioManager: NSObject {
     
     func getSoundDuration(filename: String) -> Int {
         do {
-            let player = try AVAudioPlayer(contentsOf: getSoundPath().appendingPathComponent(filename))
+            let player = try AVAudioPlayer(contentsOf: DataModel.shared.soundsLoc.appendingPathComponent(filename))
             //convert to milliseconds
             let audioDuration: Float64 = player.duration * 1000
             return Int(audioDuration)
@@ -80,7 +80,7 @@ class AudioManager: NSObject {
     
     func playSound(filename: String) {
         do {
-            let player = try AVAudioPlayer(contentsOf: getSoundPath().appendingPathComponent(filename))
+            let player = try AVAudioPlayer(contentsOf: DataModel.shared.soundsLoc.appendingPathComponent(filename))
             player.prepareToPlay()
             player.play()
             players.append(player)
@@ -107,8 +107,8 @@ class AudioManager: NSObject {
     
     public func getSoundNames () -> [String]{
         do {
-            let paths = try FileManager.default.contentsOfDirectory(atPath: getSoundPath().path)
-            let files = paths.filter{ (getSoundPath().appendingPathComponent($0)).pathExtension == "wav" }
+            let paths = try FileManager.default.contentsOfDirectory(atPath: DataModel.shared.soundsLoc.path)
+            let files = paths.filter{ (DataModel.shared.soundsLoc.appendingPathComponent($0)).pathExtension == "wav" }
             return files
         } catch {
             return []
