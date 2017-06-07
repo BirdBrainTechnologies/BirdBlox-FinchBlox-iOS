@@ -256,7 +256,8 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate {
         var counter = 0
         //this just gets the 0th character of values[0] (which should only be 1 
         //character and checks to see if it is the flutter response char
-        while(getUnicode(values[0][values[0].index(values[0].startIndex, offsetBy: 0)]) != getFlutterResponseChar()) {
+        while(getUnicode(values[0][values[0].index(values[0].startIndex, offsetBy: 0)]) !=
+			BBTFlutterResponseCharacter) {
             print("Got invalid response: " + response)
             response = sendDataWithResponse(data: getFlutterRead())
             values = response.split(",")

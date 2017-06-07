@@ -11,15 +11,10 @@
 
 import Foundation
 
-let SET = getUnicode("s")
-let SERVO = getUnicode("s")
-let COMMA = getUnicode(",")
-let READ = getUnicode("r")
-
-let END: UInt8 = 0x0D
-
 let set = "s"
 let led = "l"
+let servo = "s"
+let read = "r"
 let end = "\r"
 let BUZZ = "z"
 
@@ -28,10 +23,10 @@ let BUZZ = "z"
     Note: angle should be between 0 and 180
  */
 public func getFlutterServoCommand(_ port: UInt8, angle: UInt8) ->Data {
-    let uniPort: UInt8 = getUnicode(port)
     let bounded_angle = bound(angle, min: 0, max: 180)
-    let bytes = UnsafePointer<UInt8>([SET, SERVO, uniPort, COMMA, bounded_angle, END])
-    return Data(bytes: bytes, count: 6)
+	let angleHexString = String(format: "%x", bounded_angle)
+	let commandString = (set + servo + "\(port)," + angleHexString + end)
+    return Data(bytes: [UInt8](commandString.utf8), count: commandString.utf8.count)
 }
 
 /**
@@ -66,14 +61,8 @@ public func getFlutterBuzzerCommand(vol: Int, freq: Int) -> Data {
     Gets a command that polls the Flutter's inputs
  */
 public func getFlutterRead() -> Data {
-    let letter: UInt8 = getUnicode("r")
-    let end: UInt8 = 0x0D
-    return Data(bytes: UnsafePointer<UInt8>([letter, end] as [UInt8]), count: 2)
+    let commandString = read + end
+    return Data(bytes: [UInt8](commandString.utf8), count: commandString.utf8.count)
 }
 
-/**
-    Gets the response character for the Flutter
- */
-public func getFlutterResponseChar() -> UInt8 {
-    return READ
-}
+let BBTFlutterResponseCharacter = getUnicode(Character("r"))
