@@ -10,10 +10,10 @@ import UIKit
 import WebKit
 
 class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
-    var web_view: WKWebView?
     var wasShaken: Bool = false
     var shakenTimer: Timer = Timer()
-    
+	var wv: WKWebView? = nil
+	
 	
     override func viewDidLoad() {
 		print("viewDidLoad")
@@ -25,10 +25,12 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
 		
 		
 		//Setup webview
-        self.web_view = WKWebView(frame: self.view.frame)
-        self.web_view!.navigationDelegate = self
-        self.web_view!.uiDelegate = self
-        self.web_view!.contentMode = UIViewContentMode.scaleAspectFit
+		let webView = WKWebView()
+		self.wv = webView
+        webView.navigationDelegate = self
+        webView.uiDelegate = self
+        webView.contentMode = UIViewContentMode.scaleToFill
+		webView.backgroundColor = UIColor.white
 		
 		let urlstr = "http://localhost:22179/DragAndDrop/HummingbirdDragAndDrop.html";
 		let cleanUrlStr = urlstr.addingPercentEncoding(withAllowedCharacters:
@@ -37,8 +39,8 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
 		let req = URLRequest(url: javascriptPageURL!,
 		             cachePolicy: URLRequest.CachePolicy.reloadIgnoringLocalCacheData)
 		
-        self.web_view!.load(req)
-        self.view.addSubview(self.web_view!)
+        webView.load(req)
+		self.view = webView
     }
 	
 	//MARK: Setup Sever
@@ -124,6 +126,13 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
         // Dispose of any resources that can be recreated.
 		print("Did receive memory warning")
     }
+	
+	override func viewWillTransition(to size: CGSize,
+	                                 with coordinator: UIViewControllerTransitionCoordinator) {
+		//TODO: Switch to updateDims
+		self.wv!.evaluateJavaScript("GuiElements.updateZoom()",
+		                                  completionHandler: {print("Error updating dims: \($0)")})
+	}
 
 
 }

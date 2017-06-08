@@ -24,16 +24,15 @@ struct PropertiesManager {
 	}
 	
 	func getPhysicalDims(request: HttpRequest) -> HttpResponse {
-		let heightInPoints = UIScreen.main.bounds.height
+		print("Dims req")
+		
+		let window = UIApplication.shared.delegate?.window
+		let heightInPoints = window??.bounds.height ?? UIScreen.main.bounds.height
 		let height = mmFromPoints(p: heightInPoints)
 		
-		let widthInPoints = UIScreen.main.bounds.width
+		let widthInPoints = window??.bounds.width ?? UIScreen.main.bounds.width
 		let width = mmFromPoints(p: widthInPoints)
 		
-//		print(request.params)
-//		print(request.queryParams)
-//		print(request.method)
-//		print(request.path)
 		
 		return .ok(.text("\(width),\(height)"))
 	}

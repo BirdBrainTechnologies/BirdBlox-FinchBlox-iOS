@@ -75,10 +75,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 			
 			let avname = DataModel.shared.availableName(from: name)!
 			print("av name: " + avname)
-			DataModel.shared.save(bbxString: contents, withName: avname)
+			let _ = DataModel.shared.save(bbxString: contents, withName: avname)
 			
 			if let vc = window?.rootViewController as? ViewController {
-				vc.web_view?.evaluateJavaScript("SaveManager.import('\(name)', '\(contents)');",
+				vc.wv?.evaluateJavaScript("SaveManager.import('\(name)', '\(contents)');",
 				                                completionHandler: { (_, error) in print(error)})
 			}
 		} catch {
