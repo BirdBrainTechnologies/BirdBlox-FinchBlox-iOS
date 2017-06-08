@@ -140,6 +140,54 @@ class DataModel: NSObject {
 		}
 	}
 	
+	public func bbxNameAvailable(_ name: String) -> Bool {
+		return !FileManager.default.fileExists(
+			atPath: self.getBBXFileLoc(byName: name).absoluteString)
+	}
+	
+	private func getNumberSuffix(from name: String) -> UInt? {
+		let chars = name.characters
+		guard chars.last == Character(")") else {
+			return nil
+		}
+		
+		var curIndex = chars.index(before: chars.endIndex)
+		while chars[curIndex] != Character("(") {
+			curIndex = chars.index(before: curIndex)
+		}
+		let intPart = name.substring(with:
+			chars.index(after: curIndex)..<chars.index(before: chars.endIndex))
+		print("Int Part " + intPart)
+		return UInt(intPart)
+	}
+	
+	private func getRootOf(name: String) -> String {
+		let chars = name.characters
+		var curIndex = chars.index(before: chars.endIndex)
+		while chars[curIndex] != Character("(") {
+			curIndex = chars.index(before: curIndex)
+		}
+		return name.substring(to: curIndex)
+	}
+	
+	public func availableName(from name: String) -> String? {
+		if self.bbxNameAvailable(name) {
+			return name
+		}
+		
+		let suffixNumO = self.getNumberSuffix(from: name)
+		var suffixNum: UInt = 2
+		var prefixName = name
+		if let suffixNumO = suffixNumO {
+			suffixNum = suffixNumO + 1
+			prefixName = self.getRootOf(name: name)
+		}
+		
+		print("name: \(name), suffix: \(suffixNum), prefix: \(prefixName)")
+		
+		return availableName(from: "\(prefixName)(\(suffixNum))")
+	}
+	
 	
 	//MARK: Managing Settings
 	private func contentsOfSettingsPlist() -> NSMutableDictionary{

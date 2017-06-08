@@ -73,15 +73,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //				return false
 //			}
 			
+			let avname = DataModel.shared.availableName(from: name)!
+			print("av name: " + avname)
+			DataModel.shared.save(bbxString: contents, withName: avname)
+			
 			if let vc = window?.rootViewController as? ViewController {
 				vc.web_view?.evaluateJavaScript("SaveManager.import('\(name)', '\(contents)');",
 				                                completionHandler: { (_, error) in print(error)})
 			}
-		}
-		catch {
+		} catch {
 			NSLog("I'm unable to open the file")
 			return false
 		}
+		
+		do {
+			try FileManager.default.removeItem(at: url)
+		} catch {
+			NSLog("Unable to delete temp file")
+		}
+		
 		return true
 	}
 
