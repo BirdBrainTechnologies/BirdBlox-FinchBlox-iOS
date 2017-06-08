@@ -24,8 +24,8 @@ class FlutterManager: NSObject {
         connected_devices = [String: FlutterPeripheral]()
         BLE_Manager = BLECentralManager.manager
 		sendQueue.maxConcurrentOperationCount = 1
-        
     }
+	
     func loadRequests(server: BBTBackendServer){
         server["/flutter/discover"] = self.discoverRequest
         server["/flutter/totalStatus"] = self.totalStatusRequest

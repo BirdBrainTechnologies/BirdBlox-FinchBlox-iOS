@@ -222,7 +222,7 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate {
         let i = port - 1
         let current_time = NSDate().timeIntervalSince1970
         if(servos[i] == angle && (current_time - servos_time[i]) < cache_timeout){
-            return false
+            return true //Still successful in getting output to be the right value
         }
         let command: Data = getFlutterServoCommand(UInt8(port), angle: angle)
         servos[i] = angle
@@ -237,7 +237,7 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate {
 		if(buzzerVolume == volume &&
 		   buzzerFrequency == frequency &&
 		   (current_time - buzzerTime) < cache_timeout){
-			return false
+			return true //Still successful in getting output to be the right value
 		}
 		
 		let command: Data = getFlutterBuzzerCommand(vol: volume, freq: frequency)
