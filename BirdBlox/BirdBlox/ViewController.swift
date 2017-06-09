@@ -129,9 +129,24 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
 	
 	override func viewWillTransition(to size: CGSize,
 	                                 with coordinator: UIViewControllerTransitionCoordinator) {
+		print("New size: \(size)")
+		self.wv!.evaluateJavaScript("GuiElements.updateDimsPreview(\(size.width), \(size.height))",
+		                            completionHandler: {print("Updated dims. Error: \($0)")})
+		
+		Timer.scheduledTimer(timeInterval: TimeInterval(0.5), target: self,
+		                     selector: #selector(ViewController.resizePageEnd),
+		                     userInfo: nil, repeats: false)
+
+		//One day, (when we don't support iOS 9) we can schedule timers with blocks. 
+//		Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { timer in
+//			
+//		}
+	}
+	
+	@objc private func resizePageEnd() {
 		//TODO: Switch to updateDims
-		self.wv!.evaluateJavaScript("GuiElements.updateZoom()",
-		                                  completionHandler: {print("Error updating dims: \($0)")})
+		self.wv!.evaluateJavaScript("GuiElements.updateDims()",
+		                            completionHandler: {print("Updated dims. Error: \($0)")})
 	}
 
 
