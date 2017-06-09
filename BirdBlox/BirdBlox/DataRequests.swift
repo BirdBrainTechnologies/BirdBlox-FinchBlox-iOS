@@ -20,6 +20,7 @@ class DataManager: NSObject {
     
     func loadRequests(server: BBTBackendServer){
         server["/data/files"] = filesRequest(request:)
+		server["data/getAvailableName"] = self.availableNameRequest
         
         server["/data/save"] = saveRequest(request:)
         server["/data/load"] = loadRequest(request:)
@@ -27,6 +28,16 @@ class DataManager: NSObject {
         server["/data/delete"] = deleteRequest(request:)
         server["/data/export"] = exportRequest(request:)
     }
+	
+	func availableNameRequest(request: HttpRequest) -> HttpResponse {
+		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
+		
+		guard let name = queries["filename"]?.removingPercentEncoding else {
+			return .badRequest(.text("Malformed Request"))
+		}
+		
+		return .ok(.text(DataModel.shared.availableName(from: name)!))
+	}
     
     func filesRequest(request: HttpRequest) -> HttpResponse {
         let filenameList = DataModel.shared.savedBBXFiles
@@ -39,24 +50,29 @@ class DataManager: NSObject {
     func saveRequest(request: HttpRequest) -> HttpResponse {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
-		print("Save method: \(request.method)")
-		
-        guard let filename = queries["filename"]?.removingPercentEncoding,
+        guard var name = queries["filename"]?.removingPercentEncoding,
 			let fileString = NSString(bytes:request.body, length: request.body.count,
 			                          encoding: String.Encoding.utf8.rawValue) else {
 			return .badRequest(.text("Malformed Request"))
 		}
 		
-		guard DataModel.shared.save(bbxString: fileString as String, withName: filename) else {
+		name = DataModel.sanitizedBBXName(of: name)
+		
+		if queries["options"] == "new" {
+			name = DataModel.shared.availableName(from: name)!
+		}
+		else if queries["options"] == "soft" && !DataModel.shared.bbxNameAvailable(name) {
+			return .raw(409, "Conflict", nil, nil)
+		}
+		
+		guard DataModel.shared.save(bbxString: fileString as String, withName: name) else {
 			return .internalServerError
 		}
 		
-		return .raw(201, "Created", ["Location" : "/data/load?filename=\(filename)"]) {
+		return .raw(201, "Created", ["Location" : "/data/load?filename=\(name)"]) {
 					(writer) throws -> Void in
-							try writer.write([UInt8]((fileString as String).utf8))
+							try writer.write([UInt8](name.utf8))
 				}
-		
-		
     }
 	
     func loadRequest(request: HttpRequest) -> HttpResponse {
@@ -80,6 +96,10 @@ class DataManager: NSObject {
 		guard let oldFilename = queries["oldFilename"]?.removingPercentEncoding,
 			let newFilename = queries["newFilename"]?.removingPercentEncoding else {
 			return .badRequest(.text("Malformed Request"))
+		}
+		
+		if queries["options"] == "soft" && !DataModel.shared.bbxNameAvailable(newFilename) {
+			return .raw(409, "Conflict", nil, nil)
 		}
 		
 		guard DataModel.shared.renameBBXFile(from: oldFilename, to: newFilename) else {

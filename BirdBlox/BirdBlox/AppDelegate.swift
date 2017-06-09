@@ -12,12 +12,18 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
+	var uiLoaded = false
 	
 	public var backendServer: BBTBackendServer
 	
 	override init() {
 		self.backendServer = BBTBackendServer()
 		super.init()
+		
+		self.backendServer["/ui/contentLoaded"] = { request in
+			self.uiLoaded = true
+			return .ok(.text("Hello webpage! I am a server."))
+		}
 	}
 
 
@@ -48,7 +54,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidEnterBackground(_ application: UIApplication) {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+		
+		
 		self.backendServer.stop()
+		
+		guard self.uiLoaded else {
+			return
+		}
+		
+		guard let vc = self.window?.rootViewController as? ViewController else {
+			return
+		}
+		
+		vc.wv?.evaluateJavaScript("SaveManager.currentDoc();") { file, error in
+			if let error = error {
+				NSLog("Error autosaving file on exit \(error)")
+				return
+			}
+			
+			guard let file = file else {
+				NSLog("File to autosave is nil")
+				return
+			}
+			
+			print("file to autosave \(file)")
+		}
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
@@ -62,34 +92,47 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+		NSLog("applicationWillTerminate. Should have called enter background already." +
+			"Please edit AppDelegate.swift.")
     }
 	
 	func application(_ app: UIApplication, open url: URL,
 	                 options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
+		
+		defer {
+			do {
+				try FileManager.default.removeItem(at: url)
+			} catch {
+				NSLog("Unable to delete temp file")
+			}
+		}
+		
 		do {
 			let contents = try String(contentsOf: url)
 			let name = url.lastPathComponent.replacingOccurrences(of: ".bbx", with: "")
-//			guard DataModel.shared.save(bbxString: contents, withName: name) else {
-//				return false
-//			}
 			
-			let avname = DataModel.shared.availableName(from: name)!
-			print("av name: " + avname)
-			let _ = DataModel.shared.save(bbxString: contents, withName: avname)
 			
-			if let vc = window?.rootViewController as? ViewController {
-				vc.wv?.evaluateJavaScript("SaveManager.import('\(name)', '\(contents)');",
-				                                completionHandler: { (_, error) in print(error)})
+			let avname = DataModel.shared.availableName(from: name)! //This also sanitizes the name
+			if DataModel.shared.save(bbxString: contents, withName: avname) == false {
+				return false
+			}
+			
+			guard self.uiLoaded else {
+				DataModel.shared.addSetting("currentDoc", value: avname)
+				return true
+			}
+			
+			if let vc = window?.rootViewController as? ViewController,
+				let safeName = name.addingPercentEncoding(withAllowedCharacters: CharacterSet()) {
+				print(safeName)
+				vc.wv?.evaluateJavaScript("SaveManager.import('\(safeName)');") {
+					(_, error) in
+					print(error ?? "No Error")
+				}
 			}
 		} catch {
 			NSLog("I'm unable to open the file")
 			return false
-		}
-		
-		do {
-			try FileManager.default.removeItem(at: url)
-		} catch {
-			NSLog("Unable to delete temp file")
 		}
 		
 		return true

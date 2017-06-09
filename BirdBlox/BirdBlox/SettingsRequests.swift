@@ -28,7 +28,7 @@ class SettingsManager: NSObject {
 			if let nullCheckedValue = value {
 				return .ok(.text(nullCheckedValue))
 			} else {
-				return .ok(.text("Default"))
+				return .notFound
 			}
 		}
 		

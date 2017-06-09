@@ -140,6 +140,22 @@ class DataModel: NSObject {
 		}
 	}
 	
+	//MARK: bbx file names
+	
+	// Replaces disallowed characters with underscores
+	public static func sanitizedBBXName(of name: String) -> String {
+		let blackList = ["\\", "/", ":", "*", "?", "<", ">", "|", ".", "\n", "\r", "\0", "\"", "$"]
+		let replacement = "_"
+		
+		var sanitizedString = name
+		for bannedChar in blackList {
+			sanitizedString = sanitizedString.replacingOccurrences(of: bannedChar,
+			                                                       with: replacement)
+		}
+		
+		return sanitizedString
+	}
+	
 	public func bbxNameAvailable(_ name: String) -> Bool {
 		return !FileManager.default.fileExists(
 			atPath: self.getBBXFileLoc(byName: name).absoluteString)
@@ -157,7 +173,7 @@ class DataModel: NSObject {
 		}
 		let intPart = name.substring(with:
 			chars.index(after: curIndex)..<chars.index(before: chars.endIndex))
-		print("Int Part " + intPart)
+		
 		return UInt(intPart)
 	}
 	
@@ -171,6 +187,10 @@ class DataModel: NSObject {
 	}
 	
 	public func availableName(from name: String) -> String? {
+		return self.availableNameRecHelper(from: DataModel.sanitizedBBXName(of: name))
+	}
+	
+	func availableNameRecHelper(from name: String) -> String {
 		if self.bbxNameAvailable(name) {
 			return name
 		}
@@ -183,9 +203,7 @@ class DataModel: NSObject {
 			prefixName = self.getRootOf(name: name)
 		}
 		
-		print("name: \(name), suffix: \(suffixNum), prefix: \(prefixName)")
-		
-		return availableName(from: "\(prefixName)(\(suffixNum))")
+		return availableNameRecHelper(from: "\(prefixName)(\(suffixNum))")
 	}
 	
 	

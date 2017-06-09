@@ -14,6 +14,8 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
     var shakenTimer: Timer = Timer()
 	var wv: WKWebView? = nil
 	
+	var webUILoaded = false
+	
 	
     override func viewDidLoad() {
 		print("viewDidLoad")
