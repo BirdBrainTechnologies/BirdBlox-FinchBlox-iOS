@@ -191,8 +191,10 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
         let captured = BBTSequentialQueryArrayToDict(request.queryParams)
 		
         if let title = (captured["title"]?.removingPercentEncoding),
-			let question = (captured["question"]?.removingPercentEncoding),
-			let answerHolder = (captured["holder"]?.removingPercentEncoding) {
+			let question = (captured["question"]?.removingPercentEncoding) {
+			
+			let answerHolder: String? = (captured["placeholder"]?.removingPercentEncoding)
+			let prefillText: String? = captured["prefill"]?.removingPercentEncoding
 			
 			let alertController = UIAlertController(title: title, message: question,
 			                                        preferredStyle: UIAlertControllerStyle.alert)
@@ -211,6 +213,7 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
 			alertController.addTextField{
 				(txtName) -> Void in
 				txtName.placeholder = answerHolder
+				txtName.text = prefillText
 			}
 			alertController.addAction(okayAction)
 			alertController.addAction(cancelAction)
