@@ -36,7 +36,16 @@ class DataManager: NSObject {
 			return .badRequest(.text("Malformed Request"))
 		}
 		
-		return .ok(.text(DataModel.shared.availableName(from: name)!))
+		//To find the reason why a name might be different
+		let sanName = DataModel.sanitizedBBXName(of: name)
+		let alreadySanitized = (sanName == name)
+		let alreadyAvailable = DataModel.shared.bbxNameAvailable(sanName)
+		let availableName = DataModel.shared.availableName(from: name)!
+		
+		let json: [String : Any] = ["availableName" : availableName,
+		                            "alreadySanitized" : alreadySanitized,
+									"alreadyAvailable" : alreadyAvailable]
+		return .ok(.json(json as AnyObject))
 	}
     
     func filesRequest(request: HttpRequest) -> HttpResponse {
