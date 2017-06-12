@@ -59,19 +59,24 @@ class DataManager: NSObject {
     func saveRequest(request: HttpRequest) -> HttpResponse {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
-        guard var name = queries["filename"]?.removingPercentEncoding,
+        guard let rawName = queries["filename"]?.removingPercentEncoding,
 			let fileString = NSString(bytes:request.body, length: request.body.count,
 			                          encoding: String.Encoding.utf8.rawValue) else {
 			return .badRequest(.text("Malformed Request"))
 		}
 		
-		name = DataModel.sanitizedBBXName(of: name)
+		var name = DataModel.sanitizedBBXName(of: rawName)
 		
 		if queries["options"] == "new" {
 			name = DataModel.shared.availableName(from: name)!
 		}
-		else if queries["options"] == "soft" && !DataModel.shared.bbxNameAvailable(name) {
-			return .raw(409, "Conflict", nil, nil)
+		else {
+			if queries["options"] == "soft" && !DataModel.shared.bbxNameAvailable(name) {
+				return .raw(409, "Conflict", nil, nil)
+			}
+			guard rawName == name else {
+				return .badRequest(.text("Illegal Characters in filename"))
+			}
 		}
 		
 		guard DataModel.shared.save(bbxString: fileString as String, withName: name) else {
