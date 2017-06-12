@@ -25,6 +25,7 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
 		self.addHandlersToServer((UIApplication.shared.delegate as! AppDelegate).backendServer)
 		(UIApplication.shared.delegate as! AppDelegate).backendServer.start()
 		
+		self.setNeedsStatusBarAppearanceUpdate()
 		
 		//Setup webview
 		let webView = WKWebView()
@@ -42,8 +43,43 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
 		             cachePolicy: URLRequest.CachePolicy.reloadIgnoringLocalCacheData)
 		
         webView.load(req)
-		self.view = webView
+		
+		self.view.addSubview(webView)
+		
+		
+//		let leading = NSLayoutConstraint(item: webView, attribute: .leading, relatedBy: .equal,
+//		                                 toItem: self.view, attribute: .leading,
+//										 multiplier: 1, constant: 0)
+//		let trailing = NSLayoutConstraint(item: webView, attribute: .trailing, relatedBy: .equal,
+//		                                  toItem: self.view, attribute: .trailing,
+//		                                  multiplier: 1, constant: 0)
+//		let bottom = NSLayoutConstraint(item: webView, attribute: .bottom, relatedBy: .equal,
+//										toItem: self.bottomLayoutGuide, attribute: .top,
+//										multiplier: 1, constant: 0)
+//		let top = NSLayoutConstraint(item: webView, attribute: .top, relatedBy: .equal,
+//		                             toItem: self.topLayoutGuide, attribute: .bottom,
+//		                             multiplier: 1, constant:0 )
+		
+//		let top = NSLayoutConstraint(item: self.view, attribute: .top, relatedBy: .equal,
+//		                             toItem: self.topLayoutGuide, attribute: .bottom,
+//		                             multiplier: 1, constant:0 )
+//		self.view.addConstraints([top])
+		
+		print(self.view.bounds)
+		print(self.wv!.bounds)
+		
+//		let widthCon = NSLayoutConstraint.constraints(withVisualFormat: "V:|-0-[view]-0-|",
+//		                                                              options: [],
+//		                                                              metrics: nil,
+//		                                                              views: ["view": webView])
+//		let heightCon = NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[view]-0-|",
+//		                                                               options: [],
+//		                                                               metrics: nil,
+//		                                                               views: ["view": webView])
+		
+		
     }
+	
 	
 	//MARK: Setup Sever
 	let hummingbirdManager = HummingbirdManager()
@@ -120,8 +156,37 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
 	
 	//MARK: View configuration
     override var prefersStatusBarHidden : Bool {
-        return true
+		if UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.phone {
+			return true
+		}
+		
+		return false
     }
+	
+	override var preferredStatusBarStyle: UIStatusBarStyle {
+		return .lightContent
+	}
+	
+	var statusBarHeight: CGFloat {
+		let barSize: CGSize = UIApplication.shared.statusBarFrame.size
+		return min(barSize.width, barSize.height)
+	}
+	
+	func barRespectingRect(from screenRect: CGRect) -> CGRect {
+		let height = self.statusBarHeight
+		var ss = screenRect
+		ss.size.height -= height
+		ss.origin.y += height
+		return ss
+	}
+	
+	override func viewDidLayoutSubviews() {
+		super.viewDidLayoutSubviews()
+		
+		var frame = self.view.bounds
+		frame = self.barRespectingRect(from: frame)
+		self.wv!.frame = frame
+	}
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -131,8 +196,10 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
 	
 	override func viewWillTransition(to size: CGSize,
 	                                 with coordinator: UIViewControllerTransitionCoordinator) {
-		print("New size: \(size)")
-		self.wv!.evaluateJavaScript("GuiElements.updateDimsPreview(\(size.width), \(size.height))",
+		let nSize = self.barRespectingRect(from: CGRect(origin: CGPoint(x: 0, y: 0),
+		                                                size: size)).size
+		print("New size: \(nSize)")
+		self.wv!.evaluateJavaScript("GuiElements.updateDimsPreview(\(nSize.width), \(nSize.height))",
 		                            completionHandler: {print("Updated dims. Error: \($0)")})
 		
 		Timer.scheduledTimer(timeInterval: TimeInterval(0.5), target: self,
@@ -146,7 +213,6 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
 	}
 	
 	@objc private func resizePageEnd() {
-		//TODO: Switch to updateDims
 		self.wv!.evaluateJavaScript("GuiElements.updateDims()",
 		                            completionHandler: {print("Updated dims. Error: \($0)")})
 	}
