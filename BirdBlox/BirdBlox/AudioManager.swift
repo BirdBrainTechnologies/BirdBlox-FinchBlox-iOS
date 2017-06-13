@@ -11,12 +11,13 @@ import AudioToolbox
 import AVFoundation
 
 
-class AudioManager: NSObject {
+class AudioManager: NSObject, AVAudioRecorderDelegate {
     var audioEngine:AVAudioEngine
     var sampler:AVAudioUnitSampler
     var mixer:AVAudioMixerNode
     var players:[AVAudioPlayer]
 	let sharedAudioSession: AVAudioSession = AVAudioSession.sharedInstance()
+	var recorder: AVAudioRecorder?
     
     override init() {
         //super.init()
@@ -54,23 +55,79 @@ class AudioManager: NSObject {
             NSLog("Failed to start audio player")
         }
     }
-    
-    func playNote(noteIndex: UInt, duration: Int) {
-        var cappedNote = noteIndex
-        if(cappedNote >= UInt(UInt8.max)) {
-            cappedNote = 255
-        }
-        let noteEightBit = UInt8(cappedNote)
-        sampler.startNote(noteEightBit, withVelocity: 127, onChannel: 1)
-        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(duration)) {
-            self.sampler.stopNote(noteEightBit, onChannel: 1)
-        }
-        
-    }
-    
+	
+	
+	
+	//MARK: Recording Audio
+	
+	public func startRecording(saveName: String) -> Bool {
+		//TODO: Use the data modle
+		let location = DataModel.shared.recordingsLoc.appendingPathComponent(saveName + ".m4a")
+		let settings = [
+			AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
+			AVSampleRateKey: 12000,
+			AVNumberOfChannelsKey: 1,
+			AVEncoderAudioQualityKey: AVAudioQuality.medium.rawValue
+		]
+		
+		//Try to get permission if we don't have it
+		guard sharedAudioSession.recordPermission() == .granted else {
+			sharedAudioSession.requestRecordPermission { permissionGranted in
+				return
+			}
+			
+			//The frontend can put up a dialog to tell the user how to give us permission
+			return false
+		}
+		
+		do {
+			self.recorder = try AVAudioRecorder(url: location, settings: settings)
+			self.recorder?.delegate = self
+			self.recorder?.record()
+		} catch {
+			self.finishRecording()
+			return false
+		}
+		
+		return true
+	}
+	
+	func finishRecording() {
+		guard let recorder = self.recorder,
+			recorder.isRecording else {
+			return
+		}
+		
+		recorder.stop()
+		self.recorder = nil
+	}
+	
+	func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
+		self.finishRecording()
+		//TODO: Do something with the flag
+	}
+	
+	
+	//MARK: Playing sounds
+	
+	public func getSoundNames () -> [String]{
+		do {
+			let paths = try FileManager.default.contentsOfDirectory(atPath:
+				DataModel.shared.soundsLoc.path)
+			let files = paths.filter {
+				(DataModel.shared.soundsLoc.appendingPathComponent($0)).pathExtension == "wav"
+			}
+			return files
+		} catch {
+			return []
+		}
+	}
+	
     func getSoundDuration(filename: String) -> Int {
         do {
-            let player = try AVAudioPlayer(contentsOf: DataModel.shared.soundsLoc.appendingPathComponent(filename))
+            let player = try AVAudioPlayer(contentsOf:
+				DataModel.shared.soundsLoc.appendingPathComponent(filename))
+			
             //convert to milliseconds
             let audioDuration: Float64 = player.duration * 1000
             return Int(audioDuration)
@@ -82,7 +139,8 @@ class AudioManager: NSObject {
     
     func playSound(filename: String) {
         do {
-            let player = try AVAudioPlayer(contentsOf: DataModel.shared.soundsLoc.appendingPathComponent(filename))
+            let player = try AVAudioPlayer(contentsOf:
+				DataModel.shared.soundsLoc.appendingPathComponent(filename))
             player.prepareToPlay()
             player.play()
             players.append(player)
@@ -90,7 +148,30 @@ class AudioManager: NSObject {
             NSLog("failed to play: " + filename)
         }
     }
-    
+	
+	func stopSounds() {
+		for player in players {
+			player.stop()
+		}
+		players.removeAll()
+	}
+
+
+	//MARK: Playing Tones/Notes
+	
+	func playNote(noteIndex: UInt, duration: Int) {
+		var cappedNote = noteIndex
+		if(cappedNote >= UInt(UInt8.max)) {
+			cappedNote = 255
+		}
+		let noteEightBit = UInt8(cappedNote)
+		sampler.startNote(noteEightBit, withVelocity: 127, onChannel: 1)
+		DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(duration)) {
+			self.sampler.stopNote(noteEightBit, onChannel: 1)
+		}
+	
+	}
+	
     func stopTones() {
         audioEngine.stop()
         do {
@@ -99,22 +180,4 @@ class AudioManager: NSObject {
             NSLog("Failed to start audio player")
         }
     }
-    
-    func stopSounds() {
-        for player in players {
-            player.stop()
-        }
-        players.removeAll()
-    }
-    
-    public func getSoundNames () -> [String]{
-        do {
-            let paths = try FileManager.default.contentsOfDirectory(atPath: DataModel.shared.soundsLoc.path)
-            let files = paths.filter{ (DataModel.shared.soundsLoc.appendingPathComponent($0)).pathExtension == "wav" }
-            return files
-        } catch {
-            return []
-        }
-    }
-    
 }
