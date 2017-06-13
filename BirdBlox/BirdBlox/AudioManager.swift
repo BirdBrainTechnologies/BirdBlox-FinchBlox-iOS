@@ -16,22 +16,24 @@ class AudioManager: NSObject {
     var sampler:AVAudioUnitSampler
     var mixer:AVAudioMixerNode
     var players:[AVAudioPlayer]
+	let sharedAudioSession: AVAudioSession = AVAudioSession.sharedInstance()
     
     override init() {
         //super.init()
         // Instatiate audio engine
-        audioEngine = AVAudioEngine()
+        self.audioEngine = AVAudioEngine()
+		
         do {
-            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
+            try sharedAudioSession.setCategory(AVAudioSessionCategoryPlayAndRecord)
             do {
-                try AVAudioSession.sharedInstance().setActive(true)
+                try sharedAudioSession.setActive(true)
             }
             catch {
-                NSLog("Failed to set audio session")
+                NSLog("Failed to set audio session as active")
             }
         }
         catch {
-            NSLog("Failed to set audio session")
+            NSLog("Failed to set audio session category")
         }
         // get the reference to the mixer to
         // connect the output of the AVAudio

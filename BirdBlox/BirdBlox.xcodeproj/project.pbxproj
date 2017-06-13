@@ -84,6 +84,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3FA7D5DF1EF026C700FE4882 /* Other Models */ = {
+			isa = PBXGroup;
+			children = (
+				BA81696A1E81B7BC00AAF7A3 /* DataModel.swift */,
+				BA8A75981EB27CF700ECFABC /* AudioManager.swift */,
+			);
+			name = "Other Models";
+			sourceTree = "<group>";
+		};
 		57E3AA007C026CA11E6DC062 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -125,6 +134,7 @@
 			children = (
 				BAE1FD9E1E920A1000304BEE /* utilities */,
 				BAE2EBCD1E8431B300198B19 /* bluetooth */,
+				3FA7D5DF1EF026C700FE4882 /* Other Models */,
 				BA8169621E81AD7C00AAF7A3 /* httpServer */,
 				BA8169501E81A98A00AAF7A3 /* AppDelegate.swift */,
 				BA8169521E81A98A00AAF7A3 /* ViewController.swift */,
@@ -132,9 +142,7 @@
 				BA8169571E81A98A00AAF7A3 /* Assets.xcassets */,
 				BA8169591E81A98A00AAF7A3 /* LaunchScreen.storyboard */,
 				BA81695C1E81A98A00AAF7A3 /* Info.plist */,
-				BA81696A1E81B7BC00AAF7A3 /* DataModel.swift */,
 				BA81696C1E81BC3F00AAF7A3 /* StringExtensions.swift */,
-				BA8A75981EB27CF700ECFABC /* AudioManager.swift */,
 			);
 			path = BirdBlox;
 			sourceTree = "<group>";

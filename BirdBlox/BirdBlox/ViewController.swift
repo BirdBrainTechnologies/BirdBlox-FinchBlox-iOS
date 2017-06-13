@@ -46,38 +46,8 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
 		
 		self.view.addSubview(webView)
 		
-		
-//		let leading = NSLayoutConstraint(item: webView, attribute: .leading, relatedBy: .equal,
-//		                                 toItem: self.view, attribute: .leading,
-//										 multiplier: 1, constant: 0)
-//		let trailing = NSLayoutConstraint(item: webView, attribute: .trailing, relatedBy: .equal,
-//		                                  toItem: self.view, attribute: .trailing,
-//		                                  multiplier: 1, constant: 0)
-//		let bottom = NSLayoutConstraint(item: webView, attribute: .bottom, relatedBy: .equal,
-//										toItem: self.bottomLayoutGuide, attribute: .top,
-//										multiplier: 1, constant: 0)
-//		let top = NSLayoutConstraint(item: webView, attribute: .top, relatedBy: .equal,
-//		                             toItem: self.topLayoutGuide, attribute: .bottom,
-//		                             multiplier: 1, constant:0 )
-		
-//		let top = NSLayoutConstraint(item: self.view, attribute: .top, relatedBy: .equal,
-//		                             toItem: self.topLayoutGuide, attribute: .bottom,
-//		                             multiplier: 1, constant:0 )
-//		self.view.addConstraints([top])
-		
 		print(self.view.bounds)
 		print(self.wv!.bounds)
-		
-//		let widthCon = NSLayoutConstraint.constraints(withVisualFormat: "V:|-0-[view]-0-|",
-//		                                                              options: [],
-//		                                                              metrics: nil,
-//		                                                              views: ["view": webView])
-//		let heightCon = NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[view]-0-|",
-//		                                                               options: [],
-//		                                                               metrics: nil,
-//		                                                               views: ["view": webView])
-		
-		
     }
 	
 	

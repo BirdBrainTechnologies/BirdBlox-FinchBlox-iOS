@@ -126,11 +126,8 @@ class DataModel: NSObject {
 	}
 	
 	public func renameBBXFile(from curName: String, to newName: String) -> Bool {
-		let curFullFileName = curName + ".bbx"
-		let newFullFileName = newName + ".bbx"
-		
-		let curPath = self.getBBXFileLoc(byName: curFullFileName).absoluteString
-		let newPath = self.getBBXFileLoc(byName: newFullFileName).absoluteString
+		let curPath = self.getBBXFileLoc(byName: curName).absoluteString
+		let newPath = self.getBBXFileLoc(byName: newName).absoluteString
 		
 		do {
 			try FileManager.default.moveItem(atPath: curPath, toPath: newPath)
