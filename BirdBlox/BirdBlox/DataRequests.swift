@@ -37,7 +37,7 @@ class DataManager: NSObject {
 		}
 		
 		//To find the reason why a name might be different
-		let sanName = DataModel.sanitizedBBXName(of: name)
+		let sanName = DataModel.sanitizedName(of: name)
 		let alreadySanitized = (sanName == name)
 		let alreadyAvailable = DataModel.shared.bbxNameAvailable(sanName)
 		let availableName = DataModel.shared.availableName(from: name)!
@@ -65,7 +65,7 @@ class DataManager: NSObject {
 			return .badRequest(.text("Malformed Request"))
 		}
 		
-		var name = DataModel.sanitizedBBXName(of: rawName)
+		var name = DataModel.sanitizedName(of: rawName)
 		
 		if queries["options"] == "new" {
 			name = DataModel.shared.availableName(from: name)!

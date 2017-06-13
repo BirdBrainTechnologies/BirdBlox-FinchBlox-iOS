@@ -55,15 +55,37 @@ class DataModel: NSObject {
 	}
 	
 	
-	//MARK: Managing BBX Programs
+	//MARK: Managing User Facing Files
 	
-	public var savedBBXFiles: [String] {
+	public enum BBXFileType {
+		case SoundRecording
+		case BirdBloxProgram
+	}
+	
+	private func folder(of fileType: BBXFileType) -> URL {
+		switch fileType {
+		case .SoundRecording:
+			return self.recordingsLoc
+		case .BirdBloxProgram:
+			return self.bbxSaveLoc
+		}
+	}
+	
+	private func namesOfsavedFiles(ofType type: BBXFileType) -> [String] {
+		let path = self.folder(of: type).absoluteString
 		do {
-			let paths = try FileManager.default.contentsOfDirectory(atPath: self.bbxSaveLoc.absoluteString)
+			let paths = try FileManager.default.contentsOfDirectory(
+				atPath: path)
 			return paths
 		} catch {
 			return []
 		}
+	}
+	
+	//MARK: Managing BBX Programs
+	
+	public var savedBBXFiles: [String] {
+		self.namesOfsavedFiles(ofType: .BirdBloxProgram)
 	}
 	
 	func getBBXFileLoc(byName filename: String) -> URL {
@@ -93,7 +115,8 @@ class DataModel: NSObject {
 		let isDir: UnsafeMutablePointer<ObjCBool>? = nil
 		
 		//Make sure the save directory exists
-		if !FileManager.default.fileExists(atPath: self.bbxSaveLoc.absoluteString, isDirectory: isDir) {
+		if !FileManager.default.fileExists(atPath: self.bbxSaveLoc.absoluteString,
+		                                   isDirectory: isDir) {
 			do {
 				try FileManager.default.createDirectory(atPath: self.bbxSaveLoc.absoluteString,
 				                                        withIntermediateDirectories: false,
@@ -140,7 +163,7 @@ class DataModel: NSObject {
 	//MARK: bbx file names
 	
 	// Replaces disallowed characters with underscores
-	public static func sanitizedBBXName(of name: String) -> String {
+	public static func sanitizedName(of name: String) -> String {
 		let blackList = ["\\", "/", ":", "*", "?", "<", ">", "|", ".", "\n", "\r", "\0", "\"", "$"]
 		let replacement = "_"
 		
@@ -184,7 +207,7 @@ class DataModel: NSObject {
 	}
 	
 	public func availableName(from name: String) -> String? {
-		return self.availableNameRecHelper(from: DataModel.sanitizedBBXName(of: name))
+		return self.availableNameRecHelper(from: DataModel.sanitizedName(of: name))
 	}
 	
 	func availableNameRecHelper(from name: String) -> String {
@@ -242,7 +265,8 @@ class DataModel: NSObject {
 	
 	static private func BBTDownloadFrontendUpdate(from repoUrl: URL, to zipPath: URL) -> Bool{
 		do {
-			let zippedData = try NSData(contentsOf: repoUrl, options: [NSData.ReadingOptions.uncached])
+			let zippedData = try NSData(contentsOf: repoUrl,
+	                                    options: [NSData.ReadingOptions.uncached])
 			zippedData.write(toFile: zipPath.absoluteString, atomically: true)
 			
 			return true;
@@ -252,7 +276,8 @@ class DataModel: NSObject {
 		}
 	}
 	
-	static private func BTTOverwriteFrontendWithDownload(from zipPath: URL, to unzipPath: URL) -> Bool {
+	static private func BTTOverwriteFrontendWithDownload(from zipPath: URL,
+	                                                     to unzipPath: URL) -> Bool {
 		do {
 			try Zip.unzipFile(zipPath,
 			                  destination: unzipPath,
