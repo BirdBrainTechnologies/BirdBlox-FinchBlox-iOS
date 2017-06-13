@@ -195,6 +195,7 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
 			
 			let answerHolder: String? = (captured["placeholder"]?.removingPercentEncoding)
 			let prefillText: String? = captured["prefill"]?.removingPercentEncoding
+			let shouldSelectAll = (captured["selectAll"] == "true") && (prefillText != nil)
 			
 			let alertController = UIAlertController(title: title, message: question,
 			                                        preferredStyle: UIAlertControllerStyle.alert)
@@ -206,21 +207,31 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
 					}
 				}
 			}
+			
 			let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel){
 				(action) -> Void in
 				self.last_dialog_response = "!~<!--CANCELLED-->~!"
 			}
+			
 			alertController.addTextField{
 				(txtName) -> Void in
 				txtName.placeholder = answerHolder
 				txtName.text = prefillText
+				txtName.clearButtonMode = .whileEditing
 			}
+			
 			alertController.addAction(okayAction)
 			alertController.addAction(cancelAction)
+			
 			DispatchQueue.main.async{
 				UIApplication.shared.keyWindow?.rootViewController!.present(alertController,
-				                                                            animated: true,
-				                                                            completion: nil)
+				                                                            animated: true) {
+					if shouldSelectAll {
+						let field = alertController.textFields![0]
+						field.selectedTextRange = field.textRange(from: field.beginningOfDocument,
+																  to: field.endOfDocument)
+					}
+				}
 			}
 			return .ok(.text("Dialog Presented"))
 		}

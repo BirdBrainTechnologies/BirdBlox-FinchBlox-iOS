@@ -123,7 +123,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 			}
 			
 			if let vc = window?.rootViewController as? ViewController,
-				let safeName = name.addingPercentEncoding(withAllowedCharacters: CharacterSet()) {
+				let safeName = avname.addingPercentEncoding(withAllowedCharacters: CharacterSet()) {
 				print(safeName)
 				vc.wv?.evaluateJavaScript("SaveManager.import('\(safeName)');") {
 					(_, error) in
