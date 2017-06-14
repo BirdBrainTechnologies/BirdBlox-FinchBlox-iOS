@@ -95,7 +95,6 @@ class DataManager: NSObject {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
 		if let filename = queries["filename"] {
-			print("opening file: \(filename)")
 			if let fileContent = DataModel.shared.getBBXString(byName: filename) {
 				return .ok(.text(fileContent as (String)))
 			}
@@ -113,6 +112,10 @@ class DataManager: NSObject {
 		guard let oldFilename = queries["oldFilename"],
 			let newFilename = queries["newFilename"] else {
 			return .badRequest(.text("Malformed Request"))
+		}
+		
+		guard DataModel.nameIsSanitary(oldFilename) && DataModel.nameIsSanitary(newFilename) else {
+			return .badRequest(.text("Unsanitary parameter arguments"))
 		}
 		
 		if queries["options"] == "soft" && !DataModel.shared.bbxNameAvailable(newFilename) {

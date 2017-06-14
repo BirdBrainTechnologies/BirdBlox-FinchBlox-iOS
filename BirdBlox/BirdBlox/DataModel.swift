@@ -163,6 +163,10 @@ class DataModel: NSObject {
 	
 	// Replaces disallowed characters with underscores
 	public static func sanitizedName(of name: String) -> String {
+		guard name.characters.count > 0 else {
+			return "_"
+		}
+	
 		let blackList = ["\\", "/", ":", "*", "?", "<", ">", "|", ".", "\n", "\r", "\0", "\"", "$"]
 		let replacement = "_"
 		
@@ -175,7 +179,15 @@ class DataModel: NSObject {
 		return sanitizedString
 	}
 	
+	public static func nameIsSanitary(_ name: String) -> Bool {
+		return name == DataModel.sanitizedName(of: name)
+	}
+	
 	public func bbxNameAvailable(_ name: String) -> Bool {
+		guard DataModel.nameIsSanitary(name) else {
+			return false
+		}
+		
 		return !FileManager.default.fileExists(
 			atPath: self.getBBXFileLoc(byName: name).path)
 	}
