@@ -25,6 +25,40 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 			return .ok(.text("Hello webpage! I am a server."))
 		}
 	}
+    
+    
+    private func autoSave(successCompletion: ((Void) -> Void)? = nil) {
+        guard self.uiLoaded else {
+            return
+        }
+        
+        guard let vc = self.window?.rootViewController as? ViewController else {
+            return
+        }
+        
+        vc.wv?.evaluateJavaScript("SaveManager.currentDoc();") { file, error in
+            if let error = error {
+                NSLog("Error autosaving file on exit \(error)")
+                return
+            }
+            
+            guard let file: Dictionary<String, String> = file as? Dictionary<String, String> else {
+                return
+            }
+            
+            guard let filename = file["filename"],
+                let content = file["data"] else {
+                    NSLog("Autosave Missing filename or data")
+                    return
+            }
+            
+            let suc = DataModel.shared.save(bbxString: content, withName: filename)
+            NSLog("Attempted to auto save " + filename + " on exit with success \(suc).")
+            if suc && successCompletion != nil {
+                successCompletion!()
+            }
+        }
+    }
 
 
     func application(_ application: UIApplication,
@@ -49,6 +83,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
+        self.autoSave()
     }
 
     func applicationDidEnterBackground(_ application: UIApplication) {
@@ -57,28 +92,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 		
 		
 		self.backendServer.stop()
-		
-		guard self.uiLoaded else {
-			return
-		}
-		
-		guard let vc = self.window?.rootViewController as? ViewController else {
-			return
-		}
-		
-		vc.wv?.evaluateJavaScript("SaveManager.currentDoc();") { file, error in
-			if let error = error {
-				NSLog("Error autosaving file on exit \(error)")
-				return
-			}
-			
-			guard let file = file else {
-				NSLog("File to autosave is nil")
-				return
-			}
-			
-			print("file to autosave \(file)")
-		}
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
@@ -92,8 +105,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
-		NSLog("applicationWillTerminate. Should have called enter background already." +
-			"Please edit AppDelegate.swift.")
     }
 	
 	func application(_ app: UIApplication, open url: URL,
