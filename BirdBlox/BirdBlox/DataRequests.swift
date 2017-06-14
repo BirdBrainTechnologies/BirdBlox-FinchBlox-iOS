@@ -53,6 +53,8 @@ class DataManager: NSObject {
 		let nameList = filenameList.map({$0.replacingOccurrences(of: ".bbx", with: "")})
 		let bodyString = nameList.joined(separator: "\n")
 		
+		print(bodyString)
+		
         return .ok(.text(bodyString))
     }
     
@@ -93,6 +95,7 @@ class DataManager: NSObject {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
 		if let filename = queries["filename"] {
+			print("opening file: \(filename)")
 			if let fileContent = DataModel.shared.getBBXString(byName: filename) {
 				return .ok(.text(fileContent as (String)))
 			}
@@ -143,9 +146,10 @@ class DataManager: NSObject {
 		
 		if let filename = queries["filename"] {
 			let exportedPath = DataModel.shared.getBBXFileLoc(byName: filename)
-			if  FileManager.default.fileExists(atPath: exportedPath.absoluteString) {
+			if  FileManager.default.fileExists(atPath: exportedPath.path) {
 				let url = URL(fileURLWithPath: exportedPath.path)
 				let view = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+				
 				view.popoverPresentationController?.sourceView = self.view_controller.view
 				view.excludedActivityTypes = nil
 				DispatchQueue.main.async{

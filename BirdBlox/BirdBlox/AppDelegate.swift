@@ -119,6 +119,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 			
 			guard self.uiLoaded else {
 				DataModel.shared.addSetting("currentDoc", value: avname)
+				DataModel.shared.addSetting("currentDocNamed", value: "true")
 				return true
 			}
 			

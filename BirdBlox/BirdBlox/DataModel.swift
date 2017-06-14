@@ -72,7 +72,7 @@ class DataModel: NSObject {
 	}
 	
 	private func namesOfsavedFiles(ofType type: BBXFileType) -> [String] {
-		let path = self.folder(of: type).absoluteString
+		let path = self.folder(of: type).path
 		do {
 			let paths = try FileManager.default.contentsOfDirectory(
 				atPath: path)
@@ -90,13 +90,13 @@ class DataModel: NSObject {
 	
 	func getBBXFileLoc(byName filename: String) -> URL {
 		let fullFileName = filename + ".bbx"
-		let path = self.bbxSaveLoc.appendingPathComponent(fullFileName)
+		let url = self.bbxSaveLoc.appendingPathComponent(fullFileName)
 		
-		return path
+		return url
 	}
 	
 	public func getBBXString(byName filename: String) -> String? {
-		let path = self.getBBXFileLoc(byName: filename).absoluteString
+		let path = self.getBBXFileLoc(byName: filename).path
 		
 		guard FileManager.default.fileExists(atPath: path) else {
 			return nil
@@ -111,14 +111,13 @@ class DataModel: NSObject {
 	}
 	
 	public func save(bbxString: String, withName filename: String) -> Bool{
-		let fullFileName = filename + ".bbx"
 		let isDir: UnsafeMutablePointer<ObjCBool>? = nil
 		
 		//Make sure the save directory exists
-		if !FileManager.default.fileExists(atPath: self.bbxSaveLoc.absoluteString,
+		if !FileManager.default.fileExists(atPath: self.bbxSaveLoc.path,
 		                                   isDirectory: isDir) {
 			do {
-				try FileManager.default.createDirectory(atPath: self.bbxSaveLoc.absoluteString,
+				try FileManager.default.createDirectory(atPath: self.bbxSaveLoc.path,
 				                                        withIntermediateDirectories: false,
 														attributes: nil)
 			}
@@ -128,7 +127,7 @@ class DataModel: NSObject {
 		}
 		
 		//Write the string to disk
-		let path = self.bbxSaveLoc.appendingPathComponent(fullFileName).absoluteString
+		let path = self.getBBXFileLoc(byName: filename).path
 		do {
 			try bbxString.write(toFile: path, atomically: true, encoding: String.Encoding.utf8)
 			return true
@@ -139,7 +138,7 @@ class DataModel: NSObject {
 	}
 	
 	public func deleteBBXFile(byName filename: String) -> Bool {
-		let path = self.getBBXFileLoc(byName: filename).absoluteString
+		let path = self.getBBXFileLoc(byName: filename).path
 		do {
 			try FileManager.default.removeItem(atPath: path)
 			return true
@@ -149,8 +148,8 @@ class DataModel: NSObject {
 	}
 	
 	public func renameBBXFile(from curName: String, to newName: String) -> Bool {
-		let curPath = self.getBBXFileLoc(byName: curName).absoluteString
-		let newPath = self.getBBXFileLoc(byName: newName).absoluteString
+		let curPath = self.getBBXFileLoc(byName: curName).path
+		let newPath = self.getBBXFileLoc(byName: newName).path
 		
 		do {
 			try FileManager.default.moveItem(atPath: curPath, toPath: newPath)
@@ -178,7 +177,7 @@ class DataModel: NSObject {
 	
 	public func bbxNameAvailable(_ name: String) -> Bool {
 		return !FileManager.default.fileExists(
-			atPath: self.getBBXFileLoc(byName: name).absoluteString)
+			atPath: self.getBBXFileLoc(byName: name).path)
 	}
 	
 	private func getNumberSuffix(from name: String) -> UInt? {
@@ -232,14 +231,14 @@ class DataModel: NSObject {
 	var settingsDict: NSMutableDictionary?
 	
 	private func contentsOfSettingsPlist() -> NSMutableDictionary{
-		if (!FileManager.default.fileExists(atPath: self.settingsPlistLoc.absoluteString)) {
+		if (!FileManager.default.fileExists(atPath: self.settingsPlistLoc.path)) {
 			return NSMutableDictionary()
 		}
-		return NSMutableDictionary(contentsOfFile: self.settingsPlistLoc.absoluteString)!
+		return NSMutableDictionary(contentsOfFile: self.settingsPlistLoc.path)!
 	}
 	
 	private func saveSettingsToPlist(_ settings: NSMutableDictionary) {
-		settings.write(toFile: self.settingsPlistLoc.absoluteString, atomically: true)
+		settings.write(toFile: self.settingsPlistLoc.path, atomically: true)
 	}
 	
 	
@@ -276,7 +275,7 @@ class DataModel: NSObject {
 		do {
 			let zippedData = try NSData(contentsOf: repoUrl,
 	                                    options: [NSData.ReadingOptions.uncached])
-			zippedData.write(toFile: zipPath.absoluteString, atomically: true)
+			zippedData.write(toFile: zipPath.path, atomically: true)
 			
 			return true;
 		}
@@ -319,21 +318,21 @@ class DataModel: NSObject {
 			return nil
 		}
 		guard BTTOverwriteFrontendWithDownload(from: zipPath, to: unzipPath) else {
-			print("Unable to unzip frontend. Frontend might be broken.")
+			NSLog("Unable to unzip frontend. Frontend might be broken.")
 			return nil
 		}
 		
 		NSLog("Successfully downloaded new frontend.")
 	
 		do {
-			let subDirs = try FileManager.default.contentsOfDirectory(atPath: unzipPath.absoluteString)
+			let subDirs = try FileManager.default.contentsOfDirectory(atPath: unzipPath.path)
 			
 			guard subDirs.count == 1 else {
 				return nil
 			}
 	
 			//The frontend folder should be the only folder in the unzip folder
-			return URL(string:unzipPath.appendingPathComponent(subDirs[0]).absoluteString)
+			return URL(string:unzipPath.appendingPathComponent(subDirs[0]).path)
 		} catch {
 			return nil
 		}
