@@ -105,7 +105,7 @@ class HummingbirdManager {
     func connectRequest(request: HttpRequest) -> HttpResponse {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
-		if let name = queries["id"]?.removingPercentEncoding {
+		if let name = queries["id"] {
 			if BLE_Manager.foundDevices.keys.contains(name) {
 				let periph: CBPeripheral = BLE_Manager.foundDevices[name]!
 				connected_devices[name] = BLE_Manager.connectToHummingbird(peripheral: periph)
@@ -122,7 +122,7 @@ class HummingbirdManager {
     func disconnectRequest(request: HttpRequest) -> HttpResponse {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
-		if let name = queries["id"]?.removingPercentEncoding {
+		if let name = queries["id"] {
 			if connected_devices.keys.contains(name) {
 				connected_devices[name]!.disconnect()
 				connected_devices.removeValue(forKey: name)
@@ -138,7 +138,7 @@ class HummingbirdManager {
     func setLEDRequest(request: HttpRequest) -> HttpResponse {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
-		if let name = queries["id"]?.removingPercentEncoding,
+		if let name = queries["id"],
 			let portStr = queries["port"],
 			let intensityStr = queries["intensity"],
 			let port = Int(portStr),
@@ -161,7 +161,7 @@ class HummingbirdManager {
     func setTriLedRequest(request: HttpRequest) -> HttpResponse {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
-		if let name = queries["id"]?.removingPercentEncoding,
+		if let name = queries["id"],
 			let portStr = queries["port"],
 			let redStr = queries["red"],
 			let greenStr = queries["green"],
@@ -188,7 +188,7 @@ class HummingbirdManager {
     func setServoRequest(request: HttpRequest) -> HttpResponse {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
-		if let name = queries["id"]?.removingPercentEncoding,
+		if let name = queries["id"],
 			let portStr = queries["port"],
 			let angleStr = queries["angle"],
 			let port = Int(portStr),
@@ -211,7 +211,7 @@ class HummingbirdManager {
     func setVibrationRequest(request: HttpRequest) -> HttpResponse {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
-		if let name = queries["id"]?.removingPercentEncoding,
+		if let name = queries["id"],
 			let portStr = queries["port"],
 			let intensityStr = queries["intensity"],
 			let port = Int(portStr),
@@ -234,7 +234,7 @@ class HummingbirdManager {
     func setMotorRequest(request: HttpRequest) -> HttpResponse {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
-		if let name = queries["id"]?.removingPercentEncoding,
+		if let name = queries["id"],
 			let portStr = queries["port"],
 			let speedStr = queries["speed"],
 			let port = Int(portStr),
@@ -257,7 +257,7 @@ class HummingbirdManager {
     func getInput(request: HttpRequest) -> HttpResponse {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
-		if let name = queries["id"]?.removingPercentEncoding,
+		if let name = queries["id"],
 			let portStr = queries["port"],
 			let sensor = queries["sensor"],
 			let port = Int(portStr) {

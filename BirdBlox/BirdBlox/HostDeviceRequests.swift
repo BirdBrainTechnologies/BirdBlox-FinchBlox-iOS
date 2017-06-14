@@ -190,11 +190,11 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
         self.last_dialog_response = nil
         let captured = BBTSequentialQueryArrayToDict(request.queryParams)
 		
-        if let title = (captured["title"]?.removingPercentEncoding),
-			let question = (captured["question"]?.removingPercentEncoding) {
+        if let title = (captured["title"]),
+			let question = (captured["question"]) {
 			
-			let answerHolder: String? = (captured["placeholder"]?.removingPercentEncoding)
-			let prefillText: String? = captured["prefill"]?.removingPercentEncoding
+			let answerHolder: String? = (captured["placeholder"])
+			let prefillText: String? = captured["prefill"]
 			let shouldSelectAll = (captured["selectAll"] == "true") && (prefillText != nil)
 			
 			let alertController = UIAlertController(title: title, message: question,
@@ -243,10 +243,10 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
         self.last_choice_response = 0
         let captured = BBTSequentialQueryArrayToDict(request.queryParams)
 		
-        if let title = (captured["title"]?.removingPercentEncoding),
-			let question = (captured["question"]?.removingPercentEncoding),
-			let button1Text = (captured["button1"]?.removingPercentEncoding),
-			let button2Text = (captured["button2"]?.removingPercentEncoding) {
+        if let title = (captured["title"]),
+			let question = (captured["question"]),
+			let button1Text = (captured["button1"]),
+			let button2Text = (captured["button2"]) {
 			
 			let alertController = UIAlertController(title: title, message: question,
 			                                        preferredStyle: UIAlertControllerStyle.alert)

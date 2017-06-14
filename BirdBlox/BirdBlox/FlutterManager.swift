@@ -105,7 +105,7 @@ class FlutterManager: NSObject {
     func connectRequest(request: HttpRequest) -> HttpResponse {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
-		if let name = queries["id"]?.removingPercentEncoding {
+		if let name = queries["id"] {
 			if BLE_Manager.foundDevices.keys.contains(name) {
 				let periph: CBPeripheral = BLE_Manager.foundDevices[name]!
 				connected_devices[name] = BLE_Manager.connectToFlutter(peripheral: periph)
@@ -122,7 +122,7 @@ class FlutterManager: NSObject {
     func disconnectRequest(request: HttpRequest) -> HttpResponse {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
-        if let name = queries["id"]?.removingPercentEncoding {
+        if let name = queries["id"] {
 			if connected_devices.keys.contains(name) {
 				connected_devices[name]!.disconnect()
 				connected_devices.removeValue(forKey: name)
@@ -138,7 +138,7 @@ class FlutterManager: NSObject {
     func setTriLedRequest(request: HttpRequest) -> HttpResponse {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
-		if let name = queries["id"]?.removingPercentEncoding,
+		if let name = queries["id"],
 			let portStr = queries["port"],
 			let redStr = queries["red"],
 			let greenStr = queries["green"],
@@ -165,7 +165,7 @@ class FlutterManager: NSObject {
     func setServoRequest(request: HttpRequest) -> HttpResponse {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
-		if let name = queries["id"]?.removingPercentEncoding,
+		if let name = queries["id"],
 			let portStr = queries["port"],
 			let angleStr = queries["angle"],
 			let port = Int(portStr),
@@ -188,7 +188,7 @@ class FlutterManager: NSObject {
 	func setBuzzerRequest(request: HttpRequest) -> HttpResponse {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
-		if let name = queries["id"]?.removingPercentEncoding,
+		if let name = queries["id"],
 			let volumeStr = queries["volume"],
 			let frequencyStr = queries["frequency"],
 			let volume = Int(volumeStr),
@@ -211,7 +211,7 @@ class FlutterManager: NSObject {
     func getInput(request: HttpRequest) -> HttpResponse {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
-		if let name = queries["id"]?.removingPercentEncoding,
+		if let name = queries["id"],
 			let portStr = queries["port"],
 			let sensor = queries["sensor"],
 			let port = Int(portStr) {

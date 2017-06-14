@@ -85,7 +85,7 @@ class DataModel: NSObject {
 	//MARK: Managing BBX Programs
 	
 	public var savedBBXFiles: [String] {
-		self.namesOfsavedFiles(ofType: .BirdBloxProgram)
+		return self.namesOfsavedFiles(ofType: .BirdBloxProgram)
 	}
 	
 	func getBBXFileLoc(byName filename: String) -> URL {

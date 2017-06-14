@@ -23,7 +23,7 @@ class SettingsManager: NSObject {
     func getSettingRequest(request: HttpRequest) -> HttpResponse {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
-		if let key = (queries["key"]?.removingPercentEncoding) {
+		if let key = (queries["key"]) {
 			let value = DataModel.shared.getSetting(key)
 			if let nullCheckedValue = value {
 				return .ok(.text(nullCheckedValue))
@@ -38,8 +38,8 @@ class SettingsManager: NSObject {
     func setSettingRequest(request: HttpRequest) -> HttpResponse {
 		let captured = BBTSequentialQueryArrayToDict(request.queryParams)
 		
-        if let key = (captured["key"]?.removingPercentEncoding),
-			let value = (captured["value"]?.removingPercentEncoding) {
+        if let key = (captured["key"]),
+			let value = (captured["value"]) {
 			DataModel.shared.addSetting(key, value: value)
 			return .ok(.text("Setting saved"))
 		}
