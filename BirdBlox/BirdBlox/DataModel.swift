@@ -228,6 +228,9 @@ class DataModel: NSObject {
 	
 	
 	//MARK: Managing Settings
+	
+	var settingsDict: NSMutableDictionary?
+	
 	private func contentsOfSettingsPlist() -> NSMutableDictionary{
 		if (!FileManager.default.fileExists(atPath: self.settingsPlistLoc.absoluteString)) {
 			return NSMutableDictionary()
@@ -241,13 +244,19 @@ class DataModel: NSObject {
 	
 	
 	public func addSetting(_ key: String, value: String) {
-		let settings = self.contentsOfSettingsPlist()
-		settings.setValue(value, forKey: key)
-		self.saveSettingsToPlist(settings)
+		if self.settingsDict == nil {
+			self.settingsDict = self.contentsOfSettingsPlist()
+		}
+		
+		self.settingsDict!.setValue(value, forKey: key)
+		self.saveSettingsToPlist(self.settingsDict!)
 	}
 	
 	public func getSetting(_ key: String) -> String? {
-		if let value = self.contentsOfSettingsPlist().value(forKey: key) {
+		if self.settingsDict == nil {
+			self.settingsDict = self.contentsOfSettingsPlist()
+		}
+		if let value = self.settingsDict?.value(forKey: key) {
 			return value as? String
 		}
 		return nil
