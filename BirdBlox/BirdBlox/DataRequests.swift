@@ -95,7 +95,7 @@ class DataManager: NSObject {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
 		if let filename = queries["filename"] {
-			if let fileContent = DataModel.shared.getBBXString(byName: filename) {
+			if let fileContent = DataModel.shared.getBBXContent(byName: filename) {
 				return .ok(.text(fileContent as (String)))
 			}
 			else {

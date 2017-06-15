@@ -57,9 +57,20 @@ class DataModel: NSObject {
 	
 	//MARK: Managing User Facing Files
 	
-	public enum BBXFileType {
+	public enum BBXFileType: String {
 		case SoundRecording
 		case BirdBloxProgram
+		
+		var fileExtension: String {
+			switch self {
+			
+			case .SoundRecording:
+				return ".m4a"
+			
+			case .BirdBloxProgram:
+				return ".bbx"
+			}
+		}
 	}
 	
 	private func folder(of fileType: BBXFileType) -> URL {
@@ -69,6 +80,13 @@ class DataModel: NSObject {
 		case .BirdBloxProgram:
 			return self.bbxSaveLoc
 		}
+	}
+	
+	private func fileLocation(forName name: String, type: BBXFileType) -> URL {
+		let fullFileName = name + type.fileExtension
+		let url = self.folder(of: type).appendingPathComponent(fullFileName)
+		
+		return url
 	}
 	
 	private func namesOfsavedFiles(ofType type: BBXFileType) -> [String] {
@@ -82,63 +100,17 @@ class DataModel: NSObject {
 		}
 	}
 	
-	//MARK: Managing BBX Programs
-	
-	public var savedBBXFiles: [String] {
-		return self.namesOfsavedFiles(ofType: .BirdBloxProgram)
-	}
-	
-	func getBBXFileLoc(byName filename: String) -> URL {
-		let fullFileName = filename + ".bbx"
-		let url = self.bbxSaveLoc.appendingPathComponent(fullFileName)
-		
-		return url
-	}
-	
-	public func getBBXString(byName filename: String) -> String? {
-		let path = self.getBBXFileLoc(byName: filename).path
-		
-		guard FileManager.default.fileExists(atPath: path) else {
-			return nil
-		}
-		
-		do {
-			let file = try String(contentsOfFile: path, encoding: String.Encoding.utf8)
-			return file
-		} catch {
-			return nil
-		}
-	}
-	
-	public func save(bbxString: String, withName filename: String) -> Bool{
-		let isDir: UnsafeMutablePointer<ObjCBool>? = nil
-		
-		//Make sure the save directory exists
-		if !FileManager.default.fileExists(atPath: self.bbxSaveLoc.path,
-		                                   isDirectory: isDir) {
-			do {
-				try FileManager.default.createDirectory(atPath: self.bbxSaveLoc.path,
-				                                        withIntermediateDirectories: false,
-														attributes: nil)
-			}
-			catch {
-				return false
-			}
-		}
-		
-		//Write the string to disk
-		let path = self.getBBXFileLoc(byName: filename).path
-		do {
-			try bbxString.write(toFile: path, atomically: true, encoding: String.Encoding.utf8)
-			return true
-		}
-		catch {
+	private func filenameAvailalbe(name: String, type: BBXFileType) -> Bool {
+		guard DataModel.nameIsSanitary(name) else {
 			return false
 		}
+		
+		return !FileManager.default.fileExists(
+			atPath: self.getBBXFileLoc(byName: name).path)
 	}
 	
-	public func deleteBBXFile(byName filename: String) -> Bool {
-		let path = self.getBBXFileLoc(byName: filename).path
+	private func deleteFile(byName name: String, type: BBXFileType) -> Bool {
+		let path = self.fileLocation(forName: name, type: type).path
 		do {
 			try FileManager.default.removeItem(atPath: path)
 			return true
@@ -147,9 +119,9 @@ class DataModel: NSObject {
 		}
 	}
 	
-	public func renameBBXFile(from curName: String, to newName: String) -> Bool {
-		let curPath = self.getBBXFileLoc(byName: curName).path
-		let newPath = self.getBBXFileLoc(byName: newName).path
+	private func renameFile(from: String, to: String, type: BBXFileType) -> Bool {
+		let curPath = self.fileLocation(forName: from, type: type).path
+		let newPath = self.fileLocation(forName: to, type: type).path
 		
 		do {
 			try FileManager.default.moveItem(atPath: curPath, toPath: newPath)
@@ -159,14 +131,15 @@ class DataModel: NSObject {
 		}
 	}
 	
-	//MARK: bbx file names
+	
+	//MARK: Managing file names
 	
 	// Replaces disallowed characters with underscores
 	public static func sanitizedName(of name: String) -> String {
 		guard name.characters.count > 0 else {
 			return "_"
 		}
-	
+		
 		let blackList = ["\\", "/", ":", "*", "?", "<", ">", "|", ".", "\n", "\r", "\0", "\"", "$"]
 		let replacement = "_"
 		
@@ -181,15 +154,6 @@ class DataModel: NSObject {
 	
 	public static func nameIsSanitary(_ name: String) -> Bool {
 		return name == DataModel.sanitizedName(of: name)
-	}
-	
-	public func bbxNameAvailable(_ name: String) -> Bool {
-		guard DataModel.nameIsSanitary(name) else {
-			return false
-		}
-		
-		return !FileManager.default.fileExists(
-			atPath: self.getBBXFileLoc(byName: name).path)
 	}
 	
 	private func getNumberSuffix(from name: String) -> UInt? {
@@ -235,6 +199,70 @@ class DataModel: NSObject {
 		}
 		
 		return availableNameRecHelper(from: "\(prefixName)(\(suffixNum))")
+	}
+	
+	//MARK: Managing BBX Programs
+	
+	public var savedBBXFiles: [String] {
+		return self.namesOfsavedFiles(ofType: .BirdBloxProgram)
+	}
+	
+	func getBBXFileLoc(byName filename: String) -> URL {
+		return self.fileLocation(forName: filename, type: .BirdBloxProgram)
+	}
+	
+	public func bbxNameAvailable(_ name: String) -> Bool {
+		return self.filenameAvailalbe(name: name, type: .BirdBloxProgram)
+	}
+	
+	public func getBBXContent(byName filename: String) -> String? {
+		let path = self.getBBXFileLoc(byName: filename).path
+		
+		guard FileManager.default.fileExists(atPath: path) else {
+			return nil
+		}
+		
+		do {
+			let file = try String(contentsOfFile: path, encoding: String.Encoding.utf8)
+			return file
+		} catch {
+			return nil
+		}
+	}
+	
+	public func save(bbxString: String, withName filename: String) -> Bool{
+		let isDir: UnsafeMutablePointer<ObjCBool>? = nil
+		
+		//Make sure the save directory exists
+		if !FileManager.default.fileExists(atPath: self.bbxSaveLoc.path,
+		                                   isDirectory: isDir) {
+			do {
+				try FileManager.default.createDirectory(atPath: self.bbxSaveLoc.path,
+				                                        withIntermediateDirectories: false,
+														attributes: nil)
+			}
+			catch {
+				return false
+			}
+		}
+		
+		//Write the string to disk
+		let path = self.getBBXFileLoc(byName: filename).path
+		do {
+			try bbxString.write(toFile: path, atomically: true, encoding: String.Encoding.utf8)
+			return true
+		}
+		catch {
+			return false
+		}
+	}
+	
+	public func deleteBBXFile(byName filename: String) -> Bool {
+		return self.deleteFile(byName: filename, type: .BirdBloxProgram)
+	}
+	
+	public func renameBBXFile(from curName: String, to newName: String) -> Bool {
+		return self.renameFile(from: curName, to: newName, type: .BirdBloxProgram)
 	}
 	
 	
