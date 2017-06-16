@@ -85,22 +85,32 @@ public func getServoCommand(_ port: UInt8, angle: UInt8) -> Data{
     This gets a command to set all the outputs of a hummingbird
     As input it takes in arrays from the HummingbirdPeripheral class
  */
-public func getSetAllCommand(tri: [[UInt8]], leds: [UInt8], servos: [UInt8], motors: [Int], vibs: [UInt8]) -> Data {
+public func getSetAllCommand(tris: ((red: UInt8, green: UInt8, blue: UInt8),
+									(red: UInt8, green: UInt8, blue: UInt8)),
+                             leds: (UInt8, UInt8, UInt8, UInt8),
+                             servos: (UInt8, UInt8, UInt8, UInt8),
+							 motors: (Int8, Int8),
+							 vibs: (UInt8, UInt8)) -> Data {
     let letter: UInt8 = 0x41
+	
     var adjusted_motors: [UInt8] = [0,0]
-    if motors[0] < 0 {
-        adjusted_motors[0] = UInt8(motors[0] * -1 + 128)
+    if motors.0 < 0 {
+        adjusted_motors[0] = UInt8(bound(-(Int)(motors.0), min: -100, max: 100)) + 128
     } else {
-        adjusted_motors[0] = UInt8(motors[0])
+        adjusted_motors[0] = UInt8(motors.0)
     }
-    if motors[1] < 0 {
-        adjusted_motors[1] = UInt8(motors[1] * -1 + 128)
+    if motors.1 < 0 {
+        adjusted_motors[1] = UInt8(bound(-(Int)(motors.1), min: -100, max: 100)) + 128
     } else {
-        adjusted_motors[1] = UInt8(motors[1])
+        adjusted_motors[1] = UInt8(motors.1)
     }
-    var array: [UInt8] = [letter] + tri[0] + tri[1]
-    array = array + leds + servos + vibs + adjusted_motors
-    return Data(bytes: UnsafePointer<UInt8>(array), count: 19)
+	
+    let array: [UInt8] = [letter, tris.0.0, tris.0.1, tris.0.2, tris.1.0, tris.1.1, tris.1.2,
+                          leds.0, leds.1, leds.2, leds.3, servos.0, servos.1, servos.2, servos.3,
+                          vibs.0, vibs.1, adjusted_motors[0], adjusted_motors[1]]
+	assert(array.count == 19)
+	
+	return Data(bytes: UnsafePointer<UInt8>(array), count: array.count)
 }
 
 /**

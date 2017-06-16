@@ -53,8 +53,6 @@ class DataManager: NSObject {
 		let nameList = filenameList.map({$0.replacingOccurrences(of: ".bbx", with: "")})
 		let bodyString = nameList.joined(separator: "\n")
 		
-		print(bodyString)
-		
         return .ok(.text(bodyString))
     }
     

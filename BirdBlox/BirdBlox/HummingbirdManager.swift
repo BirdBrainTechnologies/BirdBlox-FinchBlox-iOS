@@ -241,7 +241,7 @@ class HummingbirdManager {
 			let speed = Int(speedStr) {
 			
 			if let device = connected_devices[name] {
-				if device.setMotor(port: port, speed: speed){
+				if device.setMotor(port: port, speed: Int8(speed)){
 					return .ok(.text("LED Set"))
 				} else {
 					return .internalServerError
