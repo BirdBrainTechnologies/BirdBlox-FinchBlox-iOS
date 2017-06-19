@@ -29,14 +29,18 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 	var commandMode = false
 	var initializing = false
 	
+	var writtenCondition: NSCondition = NSCondition()
+	//MARK: Variables write protected by writtenCondition
 	private var currentOutputState: BBTHummingbirdState
+//	private var writingOutputState: BBTHummingbirdState
 	public var nextOutputState: BBTMutableHummingbirdState
 	var lastWriteWritten: Bool = false
 	var lastWriteStart: DispatchTime = DispatchTime.now()
-	var writtenCondition: NSCondition = NSCondition()
+	//End variables write protected by writtenCondition
     private var syncTimer: Timer = Timer()
 	let syncInterval = 0.03125 //(32Hz)
 	let cacheTimeoutDuration: UInt64 = 1 * 100_000_000 //units
+	let waitRefreshTime = 0.5 //seconds
 	
 	//MARK: Variables for HB renaming
 	static let ADALE_COMMAND_MODE_TOGGLE = "+++\n"
@@ -151,7 +155,7 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic,
                     error: Error?) {
 		//If we are trying to reset the hummingbird's name, this should be the device's MAC
-		print("Did update characteristic \(characteristic)")
+//		print("Did update characteristic \(characteristic)")
 		
         if characteristic.uuid != HummingbirdPeripheral.RX_UUID {
 			return
@@ -179,8 +183,10 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 		self.lastWriteWritten = true
 		self.writtenCondition.signal()
 		
+//		self.currentOutputState = self.nextOutputState.immutableCopy
+		
 		self.writtenCondition.unlock()
-		print(self.lastWriteStart)
+//		print(self.lastWriteStart)
     }
     
     func disconnect() {
@@ -212,52 +218,132 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 			print("Not connected")
 		}
     }
-    
-    
-    //What follows are all the functions for setting outputs and getting inputs
-    //Most of this code has been commented out as we switch to the new method
-    //of setting outputs 
+	
+	
+	private func conditionHelper(condition: NSCondition, holdLock: Bool = true,
+	                             predicate: (() -> Bool), work: (() -> ())) {
+		if holdLock {
+			condition.lock()
+		}
+		
+		while !predicate() {
+			condition.wait(until: Date(timeIntervalSinceNow: self.waitRefreshTime))
+		}
+		
+		work()
+		
+		condition.signal()
+		if holdLock {
+			condition.unlock()
+		}
+	}
+	
     //TODO: add a check for legacy firmware and use set all for only
     //firmwares newer than 2.2.a 
     func setLED(port: Int, intensity: UInt8) -> Bool {
         let i = port - 1
 		
+//		self.nextOutputState.leds[i] = intensity
+//		
+//		return true
+		
+		self.writtenCondition.lock()
+//		print("written: \(self.lastWriteWritten), next: \(self.nextOutputState.leds[i])" +
+//			" cur: \(self.currentOutputState.mutableCopy.leds[i])")
+		
+		while !(self.nextOutputState.leds[i] == self.currentOutputState.mutableCopy.leds[i]) {
+			self.writtenCondition.wait(until: Date(timeIntervalSinceNow: self.waitRefreshTime))
+//			print("waiting. written: \(self.lastWriteWritten), next: \(self.nextOutputState.leds[i])")
+//			print("cur: \(self.currentOutputState.mutableCopy.leds[i])")
+		}
+		
 		self.nextOutputState.leds[i] = intensity
+		
+		self.writtenCondition.signal()
+		self.writtenCondition.unlock()
+		
+		print("exit")
         return true
     }
     
     func setTriLed(port: Int, r: UInt8, g: UInt8, b:UInt8) -> Bool {
         let i = port - 1
 		
-		self.nextOutputState.trileds[i] = (red: r, green: g, blue: b)
-
+		self.writtenCondition.lock()
+		
+		self.conditionHelper(condition: self.writtenCondition, holdLock: false,
+		                     predicate: {
+			self.nextOutputState.trileds[i] == self.currentOutputState.mutableCopy.trileds[i]
+		}, work: {
+			self.nextOutputState.trileds[i] = (red: r, green: g, blue: b)
+		})
+		
+		self.writtenCondition.unlock()
+		
+		print("exit")
         return true
     }
     
     func setVibration(port: Int, intensity: UInt8) -> Bool {
         let i = port - 1
 		
-		self.nextOutputState.vibrators[i] = intensity
+		self.writtenCondition.lock()
+		
+		self.conditionHelper(condition: self.writtenCondition, holdLock: false,
+		                     predicate: {
+			self.nextOutputState.vibrators[i] == self.currentOutputState.mutableCopy.vibrators[i]
+		}, work: {
+			self.nextOutputState.vibrators[i] = intensity
+		})
+		
+		self.writtenCondition.unlock()
+		
+		
         return true
     }
     
     func setMotor(port: Int, speed: Int8) -> Bool {
         let i = port - 1
 		
-        self.nextOutputState.motors[i] = speed
+		self.writtenCondition.lock()
+		
+		self.conditionHelper(condition: self.writtenCondition, holdLock: false,
+		                     predicate: {
+			self.nextOutputState.motors[i] == self.currentOutputState.mutableCopy.motors[i]
+		}, work: {
+			self.nextOutputState.motors[i] = speed
+		})
+		
+		self.writtenCondition.unlock()
+		
+		
         return true
     }
     
     func setServo(port: Int, angle: UInt8) -> Bool {
         let i = port - 1
 		
-        self.nextOutputState.servos[i] = angle
+		self.writtenCondition.lock()
+		
+		let cur = self.currentOutputState.mutableCopy
+		self.conditionHelper(condition: self.writtenCondition, holdLock: false,
+		                     predicate: {
+			self.nextOutputState.servos[i] == cur.servos[i]
+		}, work: {
+			self.nextOutputState.servos[i] = angle
+		})
+		
+		self.writtenCondition.unlock()
+		
+		
         return true
     }
 	
 	
 	func syncronizeOutputs() {
 		self.writtenCondition.lock()
+		
+//		print("s ", separator: "", terminator: "")
 		
 		let nextCopy = self.nextOutputState.immutableCopy
 		
@@ -266,12 +352,11 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 		let shouldSync = changeOccurred ||
 			((currentCPUTime - self.lastWriteStart.uptimeNanoseconds) > self.cacheTimeoutDuration)
 		
-		print("time del \(currentCPUTime - self.lastWriteStart.uptimeNanoseconds), shouldSync \(self.cacheTimeoutDuration)")
 		if self.was_initialized && self.lastWriteWritten  && shouldSync {
 			let command = getSetAllCommand(tris: nextCopy.trileds, leds: nextCopy.leds,
 			                               servos: nextCopy.servos, motors: nextCopy.motors,
 										   vibs: nextCopy.vibrators)
-			print("Lastwritten \(self.lastWriteWritten), shouldSync \(shouldSync)")
+			
 			self.sendData(data: command)
 			self.lastWriteStart = DispatchTime.now()
 			self.lastWriteWritten = false
@@ -282,6 +367,11 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 			let bytes = UnsafeMutableBufferPointer<UInt8>(start: UnsafeMutablePointer<UInt8>.allocate(capacity: 20), count: 19)
 			let _ = command.copyBytes(to: bytes)
 			print("Setting All: \(bytes.map({return $0}))")
+		}
+		else {
+			if !self.lastWriteWritten {
+				print("miss")
+			}
 		}
 		
 		self.writtenCondition.unlock()

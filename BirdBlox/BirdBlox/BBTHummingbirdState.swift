@@ -43,6 +43,16 @@ struct BBTHummingbirdState {
 		self.vibrators = vibrators
 	}
 	
+	var mutableCopy: BBTMutableHummingbirdState {
+		return BBTMutableHummingbirdState(led1: self.leds.0, led2: self.leds.1,
+		                                  led3: self.leds.2, led4: self.leds.3,
+										  triled1: self.trileds.0, triled2: self.trileds.1,
+										  servo1: self.servos.0, servo2: self.servos.1,
+										  servo3: self.servos.2, servo4: self.servos.3,
+										  motor1: self.motors.0, motor2: self.motors.1,
+										  vibrator1: self.vibrators.0, vibrator2: self.vibrators.1)
+	}
+	
 	static func allStopState(from model: BBTHummingbirdState) -> BBTHummingbirdState {
 		return BBTHummingbirdState(servos: model.servos)
 	}
