@@ -31,12 +31,7 @@ class SoundManager: NSObject {
     
     func namesRequest(request: HttpRequest) -> HttpResponse {
         let soundList = audio_manager.getSoundNames()
-        var sounds: String = "";
-        soundList.forEach({ (string) in
-            sounds.append(string)
-            sounds.append("\n")
-        })
-        return .ok(.text(sounds))
+        return .ok(.text(soundList.joined(separator: "\n")))
     }
     
     func stopAllRequest(request: HttpRequest) -> HttpResponse {
