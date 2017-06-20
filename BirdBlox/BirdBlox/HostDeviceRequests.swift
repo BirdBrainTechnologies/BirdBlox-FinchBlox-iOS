@@ -202,15 +202,21 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
 			let okayAction = UIAlertAction(title: "Okay", style: UIAlertActionStyle.default){
 				(action) -> Void in
 				if let textField: AnyObject = alertController.textFields?.first{
-					if let response = (textField as! UITextField).text{
+					let response = (textField as! UITextField).text
+					if let response = response {
 						self.last_dialog_response = response;
 					}
+					
+					let _ = FrontendCallbackCenter.shared.dialogPromptResponded(cancelled: false,
+					                                                            response: response)
 				}
 			}
 			
 			let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel){
 				(action) -> Void in
 				self.last_dialog_response = "!~<!--CANCELLED-->~!"
+				let _ = FrontendCallbackCenter.shared.dialogPromptResponded(cancelled: true,
+				                                                            response: nil)
 			}
 			
 			alertController.addTextField{
@@ -253,10 +259,14 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
 			let button1Action = UIAlertAction(title: button1Text, style: UIAlertActionStyle.default){
 				(action) -> Void in
 				self.last_choice_response = 1
+				let _ = FrontendCallbackCenter.shared.choiceResponded(cancelled: false,
+				                                                      firstSelected: true)
 			}
 			let button2Action = UIAlertAction(title: button2Text, style: UIAlertActionStyle.default){
 				(action) -> Void in
 				self.last_choice_response = 2
+				let _ = FrontendCallbackCenter.shared.choiceResponded(cancelled: false,
+				                                                      firstSelected: false)
 			}
 			alertController.addAction(button1Action)
 			alertController.addAction(button2Action)

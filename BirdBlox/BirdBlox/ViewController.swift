@@ -46,6 +46,9 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
 		
 		self.view.addSubview(webView)
 		
+		//Setup callback center
+		FrontendCallbackCenter.shared.webView = webView
+		
 		print(self.view.bounds)
 		print(self.wv!.bounds)
     }

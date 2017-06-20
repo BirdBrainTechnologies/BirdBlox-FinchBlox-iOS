@@ -138,9 +138,12 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 			let id = peripheral.identifier.uuidString
 			self.connectedFlutters[id] = FlutterPeripheral(peripheral: peripheral)
 			self.connectingFlutters.remove(peripheral)
+			let _ = FrontendCallbackCenter.shared.robotUpdateStatus(id: id, connected: true)
 		}
 		else if let connectedCompletion = self.hbConnectedCompletions[peripheral] {
 			connectedCompletion()
+			let id = peripheral.identifier.uuidString
+			let _ = FrontendCallbackCenter.shared.robotUpdateStatus(id: id, connected: true)
 		}
 		else if !self.connectedFlutters.contains(where:
 			{ (k, v) in v.peripheral.identifier == peripheral.identifier }) {
@@ -161,6 +164,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 		print("error disconnecting \(peripheral),  \(errorStr)")
 		
 	}
+	
 	/**
 	* We failed to connect to a peripheral, we could notify the user here?
 	*/
