@@ -34,6 +34,8 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 	var discoverTimer: Timer
 	var deviceCount: UInt
 	var connectedFlutters: [String: FlutterPeripheral]
+	var connectingFlutters: Set<CBPeripheral>
+	var connectingHummingbirds: Set<CBPeripheral>
 	
 	override init() {
 		
@@ -42,6 +44,8 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 		self.discoverTimer = Timer()
 		self.deviceCount = 0
 		self.connectedFlutters = Dictionary()
+		self.connectingFlutters = Set()
+		self.connectingHummingbirds = Set()
 		
 		super.init();
 		
@@ -126,7 +130,21 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 		if discoveredDevices.keys.contains(peripheral.name!) {
 			discoveredDevices.removeValue(forKey: peripheral.name!)
 		}
-		if !self.connectedFlutters.contains(where: { (k, v) in v.peripheral == peripheral }) {
+		
+		// If we are trying to connect to the flutter, then add it. 
+		// If we are not supposed to be connected to the flutter, then disconnect from it
+		// If we are already connected, do nothing.
+		if self.connectingFlutters.contains(peripheral) {
+			let id = peripheral.identifier.uuidString
+			self.connectedFlutters[id] = FlutterPeripheral(peripheral: peripheral)
+			self.connectingFlutters.remove(peripheral)
+		}
+		else if self.connectingHummingbirds.contains(peripheral) {
+			self.connectingHummingbirds.remove(peripheral)
+		}
+		else if !self.connectedFlutters.contains(where:
+			{ (k, v) in v.peripheral.identifier == peripheral.identifier }) {
+			
 			self.disconnect(peripheral: peripheral)
 		}
 	}
@@ -136,7 +154,11 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 	*/
 	func centralManager(_ central: CBCentralManager,
 	                    didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
-		print("Error disconnecting: \(error)")
+		var errorStr: String = "No error"
+		if let error = error {
+			errorStr = "\(error)"
+		}
+		print("error disconnecting \(peripheral),  \(errorStr)")
 		
 	}
 	/**
@@ -144,7 +166,11 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 	*/
 	func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral,
 	                    error: Error?) {
-		
+		var errorStr: String = "No error"
+		if let error = error {
+			errorStr = "\(error)"
+		}
+		print("Failed to connect to peripheral \(peripheral),  \(errorStr)")
 	}
 	
 	func centralManagerDidUpdateState(_ central: CBCentralManager) {
@@ -172,11 +198,11 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 		case CBCentralManagerState.unsupported:
 			break
 		}
-		
 	}
 	
 	func disconnect(peripheral: CBPeripheral) {
 		self.connectedFlutters.removeValue(forKey: peripheral.identifier.uuidString)
+		self.connectingFlutters.remove(peripheral)
 		centralManager.cancelPeripheralConnection(peripheral)
 	}
 	
@@ -184,19 +210,17 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 		centralManager?.connect(peripheral,
 		                        options: [CBConnectPeripheralOptionNotifyOnDisconnectionKey:
 									NSNumber(value: true as Bool)])
-		
+		self.discoveredDevices.removeValue(forKey: peripheral.identifier.uuidString)
+		self.connectingHummingbirds.insert(peripheral)
 		return HummingbirdPeripheral(peripheral: peripheral)
 	}
 	
-	func connectToFlutter(peripheral: CBPeripheral) -> FlutterPeripheral {
+	func connectToFlutter(peripheral: CBPeripheral) {
 		centralManager?.connect(peripheral,
 		                        options: [CBConnectPeripheralOptionNotifyOnDisconnectionKey:
 									NSNumber(value: true as Bool)])
 		
-		let flutter = FlutterPeripheral(peripheral: peripheral)
-		
-		self.connectedFlutters[peripheral.identifier.uuidString] = flutter
-		
-		return flutter
+		self.discoveredDevices.removeValue(forKey: peripheral.identifier.uuidString)
+		self.connectingFlutters.insert(peripheral)
 	}
 }

@@ -104,10 +104,10 @@ class FlutterManager: NSObject {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
 		if let name = queries["id"] {
-			if BLE_Manager.foundDevices.keys.contains(name) {
-				let periph: CBPeripheral = BLE_Manager.foundDevices[name]!
-				BLE_Manager.connectToFlutter(peripheral: periph)
-				BLE_Manager.discoveredDevices.removeValue(forKey: name)
+			if let periph = BLE_Manager.foundDevices[name] {
+				let _ = BLE_Manager.connectToFlutter(peripheral: periph)
+				
+				print("exiting request")
 				return .ok(.text("Connected!"))
 			}
 			else {

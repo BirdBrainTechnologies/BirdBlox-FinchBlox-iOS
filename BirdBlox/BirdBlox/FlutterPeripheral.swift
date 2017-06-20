@@ -78,7 +78,8 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate {
      */
     func peripheral(_ peripheral: CBPeripheral,
                     didDiscoverCharacteristicsFor service: CBService, error: Error?) {
-        if (peripheral != self.peripheral || error != nil) {
+		print("Peripheral \(peripheral) discovered service \(service)")
+		if (peripheral != self.peripheral || error != nil) {
             //not the right device
             return
         }
@@ -171,14 +172,19 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate {
         return peripheral.state == CBPeripheralState.connected
     }
     
-    func sendDataWithResponse(data: Data) -> String{
+    func sendDataWithResponse(data: Data) -> String {
+		guard let tx_line = self.tx_line else {
+			NSLog("Has not discovered tx line yet.")
+			return FAIL_RESPONSE
+		}
+		
         data_cond.lock()
-        peripheral.writeValue(data, for: tx_line!, type: CBCharacteristicWriteType.withoutResponse)
+        peripheral.writeValue(data, for: tx_line, type: CBCharacteristicWriteType.withoutResponse)
         //peripheral.writeValue(data, for: rx_config_line!)
 		data_cond.wait(until: Date(timeIntervalSinceNow: 0.1))
         data_cond.unlock()
         
-        let response = tx_line?.value
+        let response = tx_line.value
         if let safe_response = response {
             let data_string = String(data: safe_response, encoding: .utf8)
             return data_string!
