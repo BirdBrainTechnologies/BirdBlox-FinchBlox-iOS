@@ -1,3 +1,6 @@
 [submodule "HBDragAndDrop/HummingbirdDragAndDrop-"]
 	path = HBDragAndDrop/HummingbirdDragAndDrop-
 	url = https://github.com/BirdBrainTechnologies/HummingbirdDragAndDrop-.git
+[submodule "BirdBlox/Frontend"]
+	path = BirdBlox/Frontend
+	url = https://github.com/BirdBrainTechnologies/HummingbirdDragAndDrop-.git
