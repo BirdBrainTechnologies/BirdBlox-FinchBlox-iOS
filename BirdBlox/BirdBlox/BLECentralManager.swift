@@ -32,16 +32,16 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 	var discoveredDevices: [String: CBPeripheral]
 	var scanState: BLECentralManagerScanState
 	var discoverTimer: Timer
-	var waitingToConnect: [String]
 	var deviceCount: UInt
+	var connectedFlutters: [String: FlutterPeripheral]
 	
 	override init() {
 		
 		self.discoveredDevices = [String: CBPeripheral]()
 		self.scanState = .notScanning
 		self.discoverTimer = Timer()
-		self.waitingToConnect = Array()
 		self.deviceCount = 0
+		self.connectedFlutters = Dictionary()
 		
 		super.init();
 		
@@ -126,8 +126,8 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 		if discoveredDevices.keys.contains(peripheral.name!) {
 			discoveredDevices.removeValue(forKey: peripheral.name!)
 		}
-		if waitingToConnect.contains(peripheral.name!) {
-			waitingToConnect.remove(at: waitingToConnect.index(of: peripheral.name!)!)
+		if !self.connectedFlutters.contains(where: { (k, v) in v.peripheral == peripheral }) {
+			self.disconnect(peripheral: peripheral)
 		}
 	}
 	
@@ -136,7 +136,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 	*/
 	func centralManager(_ central: CBCentralManager,
 	                    didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
-		
+		print("Error disconnecting: \(error)")
 		
 	}
 	/**
@@ -176,28 +176,27 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 	}
 	
 	func disconnect(peripheral: CBPeripheral) {
+		self.connectedFlutters.removeValue(forKey: peripheral.identifier.uuidString)
 		centralManager.cancelPeripheralConnection(peripheral)
 	}
 	
 	func connectToHummingbird(peripheral: CBPeripheral) -> HummingbirdPeripheral {
-		waitingToConnect.append(peripheral.name!)
 		centralManager?.connect(peripheral,
 		                        options: [CBConnectPeripheralOptionNotifyOnDisconnectionKey:
 									NSNumber(value: true as Bool)])
-		while(waitingToConnect.contains(peripheral.name!)) {
-			sched_yield()
-		}
+		
 		return HummingbirdPeripheral(peripheral: peripheral)
 	}
 	
 	func connectToFlutter(peripheral: CBPeripheral) -> FlutterPeripheral {
-		waitingToConnect.append(peripheral.name!)
 		centralManager?.connect(peripheral,
 		                        options: [CBConnectPeripheralOptionNotifyOnDisconnectionKey:
 									NSNumber(value: true as Bool)])
-		while(waitingToConnect.contains(peripheral.name!)) {
-			sched_yield()
-		}
-		return FlutterPeripheral(peripheral: peripheral)
+		
+		let flutter = FlutterPeripheral(peripheral: peripheral)
+		
+		self.connectedFlutters[peripheral.identifier.uuidString] = flutter
+		
+		return flutter
 	}
 }

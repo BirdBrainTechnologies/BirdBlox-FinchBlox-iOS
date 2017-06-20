@@ -10,7 +10,7 @@ import Foundation
 import CoreBluetooth
 
 class FlutterPeripheral: NSObject, CBPeripheralDelegate {
-    fileprivate var peripheral: CBPeripheral
+	var peripheral: CBPeripheral
     fileprivate let BLE_Manager: BLECentralManager
 
     static let DEVICE_UUID =     CBUUID(string: "BC2F4CC6-AAEF-4351-9034-D66268E328F0")

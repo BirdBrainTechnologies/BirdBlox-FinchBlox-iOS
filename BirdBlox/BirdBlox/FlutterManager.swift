@@ -11,7 +11,6 @@ import CoreBluetooth
 import Swifter
 
 class FlutterManager: NSObject {
-    fileprivate var connected_devices: [String: FlutterPeripheral]
     fileprivate let BLE_Manager: BLECentralManager
     
     var timerDelaySend: Timer?
@@ -21,7 +20,6 @@ class FlutterManager: NSObject {
     let sendQueue = OperationQueue()
     
     override init(){
-        connected_devices = [String: FlutterPeripheral]()
         BLE_Manager = BLECentralManager.manager
 		sendQueue.maxConcurrentOperationCount = 1
     }
@@ -89,10 +87,10 @@ class FlutterManager: NSObject {
 	}
     
     func totalStatusRequest(request: HttpRequest) -> HttpResponse {
-        if (connected_devices.isEmpty) {
+        if (BLE_Manager.connectedFlutters.isEmpty) {
             return .ok(.text("2"))
         }
-        for periph in connected_devices.values {
+        for periph in BLE_Manager.connectedFlutters.values {
             if (!periph.isConnected()) {
                 return .ok(.text("0"))
             }
@@ -108,7 +106,8 @@ class FlutterManager: NSObject {
 		if let name = queries["id"] {
 			if BLE_Manager.foundDevices.keys.contains(name) {
 				let periph: CBPeripheral = BLE_Manager.foundDevices[name]!
-				connected_devices[name] = BLE_Manager.connectToFlutter(peripheral: periph)
+				BLE_Manager.connectToFlutter(peripheral: periph)
+				BLE_Manager.discoveredDevices.removeValue(forKey: name)
 				return .ok(.text("Connected!"))
 			}
 			else {
@@ -123,9 +122,8 @@ class FlutterManager: NSObject {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
         if let name = queries["id"] {
-			if connected_devices.keys.contains(name) {
-				connected_devices[name]!.disconnect()
-				connected_devices.removeValue(forKey: name)
+			if BLE_Manager.connectedFlutters.keys.contains(name) {
+				BLE_Manager.connectedFlutters[name]!.disconnect()
 				return .ok(.text("Disconnected!"))
 			} else {
 				return .notFound
@@ -148,7 +146,7 @@ class FlutterManager: NSObject {
 			let green = UInt8(greenStr),
 			let blue = UInt8(blueStr) {
 	
-			if let device = connected_devices[name] {
+			if let device = BLE_Manager.connectedFlutters[name] {
 				if device.setTriLed(port: port, r: red, g: green, b: blue) {
 					return .ok(.text("Tri-LED set"))
 				} else {
@@ -171,7 +169,7 @@ class FlutterManager: NSObject {
 			let port = Int(portStr),
 			let angle = UInt8(angleStr) {
 			
-			if let device = connected_devices[name] {
+			if let device = BLE_Manager.connectedFlutters[name] {
 				if device.setServo(port: port, angle: angle){
 					return .ok(.text("servo Set"))
 				} else {
@@ -194,7 +192,7 @@ class FlutterManager: NSObject {
 			let volume = Int(volumeStr),
 			let frequency = Int(frequencyStr) {
 		
-			if let device = connected_devices[name] {
+			if let device = BLE_Manager.connectedFlutters[name] {
 				if device.setBuzzer(volume: volume, frequency: frequency) {
 					return .ok(.text("buzzer Set"))
 				} else {
@@ -216,7 +214,7 @@ class FlutterManager: NSObject {
 			let sensor = queries["sensor"],
 			let port = Int(portStr) {
 			
-			if let device = connected_devices[name] {
+			if let device = BLE_Manager.connectedFlutters[name] {
 				if let sensorValue = device.getSensor(port: port, input_type: sensor) {
 					return .ok(.text(String(sensorValue)))
 				} else {
