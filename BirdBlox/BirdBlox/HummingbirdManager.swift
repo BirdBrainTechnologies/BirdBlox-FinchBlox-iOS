@@ -108,7 +108,9 @@ class HummingbirdManager {
 		if let name = queries["id"] {
 			if BLE_Manager.foundDevices.keys.contains(name) {
 				let periph: CBPeripheral = BLE_Manager.foundDevices[name]!
-				connected_devices[name] = BLE_Manager.connectToHummingbird(peripheral: periph)
+				BLE_Manager.connectToHummingbird(peripheral: periph) {
+					self.connected_devices[name] = HummingbirdPeripheral(peripheral: periph)
+				}
 				return .ok(.text("Connected!"))
 			}
 			else {

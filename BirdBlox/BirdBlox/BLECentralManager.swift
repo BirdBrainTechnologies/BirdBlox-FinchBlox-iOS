@@ -35,7 +35,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 	var deviceCount: UInt
 	var connectedFlutters: [String: FlutterPeripheral]
 	var connectingFlutters: Set<CBPeripheral>
-	var connectingHummingbirds: Set<CBPeripheral>
+	var hbConnectedCompletions: [CBPeripheral: (() -> ())]
 	
 	override init() {
 		
@@ -45,7 +45,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 		self.deviceCount = 0
 		self.connectedFlutters = Dictionary()
 		self.connectingFlutters = Set()
-		self.connectingHummingbirds = Set()
+		self.hbConnectedCompletions = Dictionary()
 		
 		super.init();
 		
@@ -139,8 +139,8 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 			self.connectedFlutters[id] = FlutterPeripheral(peripheral: peripheral)
 			self.connectingFlutters.remove(peripheral)
 		}
-		else if self.connectingHummingbirds.contains(peripheral) {
-			self.connectingHummingbirds.remove(peripheral)
+		else if let connectedCompletion = self.hbConnectedCompletions[peripheral] {
+			connectedCompletion()
 		}
 		else if !self.connectedFlutters.contains(where:
 			{ (k, v) in v.peripheral.identifier == peripheral.identifier }) {
@@ -206,13 +206,13 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 		centralManager.cancelPeripheralConnection(peripheral)
 	}
 	
-	func connectToHummingbird(peripheral: CBPeripheral) -> HummingbirdPeripheral {
+	//The completion is a hack to get HBs to work. This code needs to be refactored.
+	func connectToHummingbird(peripheral: CBPeripheral, completion: @escaping (() -> ())) {
 		centralManager?.connect(peripheral,
 		                        options: [CBConnectPeripheralOptionNotifyOnDisconnectionKey:
 									NSNumber(value: true as Bool)])
 		self.discoveredDevices.removeValue(forKey: peripheral.identifier.uuidString)
-		self.connectingHummingbirds.insert(peripheral)
-		return HummingbirdPeripheral(peripheral: peripheral)
+		self.hbConnectedCompletions[peripheral] = completion
 	}
 	
 	func connectToFlutter(peripheral: CBPeripheral) {
