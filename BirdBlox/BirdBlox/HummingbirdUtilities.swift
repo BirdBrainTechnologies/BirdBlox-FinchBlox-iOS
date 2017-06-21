@@ -105,8 +105,15 @@ public func getSetAllCommand(tris: ((red: UInt8, green: UInt8, blue: UInt8),
         adjusted_motors[1] = UInt8(motors.1)
     }
 	
+	
+	let adjustServo: ((UInt8) -> UInt8) = { ($0 > 180) ? 255 : $0 + ($0 >> 2) }
+	
+	let servosFull = (adjustServo(servos.0), adjustServo(servos.1),
+	                  adjustServo(servos.2), adjustServo(servos.3))
+	
     let array: [UInt8] = [letter, tris.0.0, tris.0.1, tris.0.2, tris.1.0, tris.1.1, tris.1.2,
-                          leds.0, leds.1, leds.2, leds.3, servos.0, servos.1, servos.2, servos.3,
+                          leds.0, leds.1, leds.2, leds.3,
+                          servosFull.0, servosFull.1, servosFull.2, servosFull.3,
                           vibs.0, vibs.1, adjusted_motors[0], adjusted_motors[1]]
 	assert(array.count == 19)
 	
