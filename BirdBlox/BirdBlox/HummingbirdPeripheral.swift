@@ -377,6 +377,12 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 		self.writtenCondition.unlock()
 	}
 	
+	func stopEverything() {
+		self.writtenCondition.lock()
+		self.nextOutputState = BBTMutableHummingbirdState()
+		self.writtenCondition.unlock()
+	}
+	
 	
 //MARK: Code for renaming Hummingbirds
 

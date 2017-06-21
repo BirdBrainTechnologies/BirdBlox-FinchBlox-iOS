@@ -34,7 +34,8 @@ class HummingbirdManager {
         
         server["/hummingbird/connect"] = self.connectRequest
         server["/hummingbird/disconnect"] = self.disconnectRequest
-        
+		
+		server["/hummingbird/out/stopEverything"] = self.stopAllRequest
         server["/hummingbird/out/led"] = self.setLEDRequest
         server["/hummingbird/out/triled"] = self.setTriLedRequest
         server["/hummingbird/out/vibration"] = self.setVibrationRequest
@@ -136,6 +137,15 @@ class HummingbirdManager {
 		
 		return .badRequest(.text("Malformed Request"))
     }
+	
+	
+	func stopAllRequest(request: HttpRequest) -> HttpResponse {
+		for hb in connected_devices.values {
+			hb.stopEverything()
+		}
+		
+		return .ok(.text("Issued stop commands to every connected Hummingbird."))
+	}
     
     func setLEDRequest(request: HttpRequest) -> HttpResponse {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)

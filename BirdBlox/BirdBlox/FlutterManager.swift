@@ -18,10 +18,12 @@ class FlutterManager: NSObject {
     let sendInterval = 0.06
     let readInterval = 0.2
     let sendQueue = OperationQueue()
+	var knownPeripherals: [String: CBPeripheral]
     
     override init(){
         BLE_Manager = BLECentralManager.manager
 		sendQueue.maxConcurrentOperationCount = 1
+		self.knownPeripherals = Dictionary()
     }
 	
     func loadRequests(server: BBTBackendServer){
@@ -106,8 +108,7 @@ class FlutterManager: NSObject {
 		if let name = queries["id"] {
 			if let periph = BLE_Manager.foundDevices[name] {
 				let _ = BLE_Manager.connectToFlutter(peripheral: periph)
-				
-				print("exiting request")
+				self.knownPeripherals[name] = periph
 				return .ok(.text("Connected!"))
 			}
 			else {
@@ -121,16 +122,19 @@ class FlutterManager: NSObject {
     func disconnectRequest(request: HttpRequest) -> HttpResponse {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
-        if let name = queries["id"] {
-			if BLE_Manager.connectedFlutters.keys.contains(name) {
-				BLE_Manager.connectedFlutters[name]!.disconnect()
-				return .ok(.text("Disconnected!"))
-			} else {
-				return .notFound
-			}
+		guard let name = queries["id"] else {
+			return .badRequest(.text("Malformed Request"))
 		}
 		
-		return .badRequest(.text("Malformed Request"))
+		if BLE_Manager.connectedFlutters.keys.contains(name) {
+			BLE_Manager.connectedFlutters[name]!.disconnect()
+			return .ok(.text("Disconnected!"))
+		} else if let peripheral = self.knownPeripherals[name] {
+			BLE_Manager.disconnect(peripheral: peripheral)
+			return .ok(.text("Disconnected!"))
+		} else {
+			return .notFound
+		}
     }
 	
     func setTriLedRequest(request: HttpRequest) -> HttpResponse {
