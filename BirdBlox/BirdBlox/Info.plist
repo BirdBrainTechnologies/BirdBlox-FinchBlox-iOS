@@ -88,5 +88,7 @@
 			</dict>
 		</dict>
 	</array>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>BirdBlox needs to use the microphone to make recordings that you can play later using the play recording block.</string>
 </dict>
 </plist>

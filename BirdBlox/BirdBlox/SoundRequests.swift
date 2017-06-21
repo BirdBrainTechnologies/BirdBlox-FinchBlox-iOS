@@ -27,13 +27,46 @@ class SoundManager: NSObject {
         server["/sound/duration"] = durationRequest(request:)
         server["/sound/play"] = playRequest(request:)
         server["/sound/note"] = noteRequest(request:)
+		
+		server["sound/recording/start"] = startRecording(request:)
+		server["sound/recording/stop"] = stopRecording(request:)
     }
 	
 	
 	//MARK: Request Handlers
 	
+	func startRecording(request: HttpRequest) -> HttpResponse {
+		self.audio_manager.startRecording(saveName: Date.init(timeIntervalSinceNow: 0).description)
+		
+		if self.audio_manager.permissionsState == .granted {
+			return .ok(.text("Started"))
+		} else if self.audio_manager.permissionsState == .undetermined {
+			return .ok(.text("Requesting permission"))
+		} else {
+			return .ok(.text("Permission denied"))
+		}
+	}
+	
+	func stopRecording(request: HttpRequest) -> HttpResponse {
+		self.audio_manager.finishRecording()
+		
+		return .ok(.text("finished recording"))
+	}
+	
     func namesRequest(request: HttpRequest) -> HttpResponse {
-        let soundList = audio_manager.getSoundNames()
+		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
+		
+		guard let typeStr = queries["type"],
+			let type = self.soundFileType(fromParameter: typeStr) else {
+				return .badRequest(.text("Missing or invalid query parameter"))
+		}
+		
+		let fsoundList = self.audio_manager.getSoundNames(type: type)
+		
+		let soundList = fsoundList.map {
+			$0.replacingOccurrences(of: type.fileExtension, with: "")
+		}
+		
         return .ok(.text(soundList.joined(separator: "\n")))
     }
     
@@ -50,10 +83,15 @@ class SoundManager: NSObject {
     
     func durationRequest(request: HttpRequest) -> HttpResponse {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
-		guard let filename = queries["filename"] else {
-			return .badRequest(.text("Missing query parameter"))
+		
+		guard let filename = queries["filename"],
+			let typeStr = queries["type"],
+			let type = self.soundFileType(fromParameter: typeStr) else {
+				return .badRequest(.text("Missing or invalid query parameter"))
 		}
-        return .ok(.text(String(self.audio_manager.getSoundDuration(filename: filename))))
+		
+        return .ok(.text(String(self.audio_manager.getSoundDuration(filename: filename,
+                                                                    type: type))))
     }
     
     func playRequest(request: HttpRequest) -> HttpResponse {
@@ -65,7 +103,9 @@ class SoundManager: NSObject {
 			return .badRequest(.text("Missing or invalid query parameter"))
 		}
 		
-		guard self.audio_manager.playSound(filename: filename, type: type) else {
+		let suc = self.audio_manager.playSound(filename: filename, type: type)
+		
+		guard suc else {
 			return .internalServerError
 		}
         return .ok(.text("Playing sound"))

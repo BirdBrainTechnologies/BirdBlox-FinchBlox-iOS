@@ -19,7 +19,7 @@ struct BBTHummingbirdState {
 	
 	init(led1: UInt8 = 0, led2: UInt8 = 0, led3: UInt8 = 0, led4: UInt8 = 0,
 	     triled1: TriLED = (0, 0, 0), triled2: TriLED = (0, 0, 0),
-		 servo1: UInt8 = 0, servo2: UInt8 = 0, servo3: UInt8 = 0, servo4: UInt8 = 0,
+		 servo1: UInt8 = 255, servo2: UInt8 = 255, servo3: UInt8 = 255, servo4: UInt8 = 255,
 		 motor1: Int8 = 0, motor2: Int8 = 0,
 		 vibrator1: UInt8 = 0, vibrator2: UInt8 = 0){
 		
@@ -32,7 +32,7 @@ struct BBTHummingbirdState {
 	
 	init(leds: (UInt8, UInt8, UInt8, UInt8) = (0, 0, 0, 0),
 	     trileds: (TriLED, TriLED) = ((0, 0, 0), (0, 0, 0)),
-	     servos: (UInt8, UInt8, UInt8, UInt8) = (0, 0, 0, 0),
+	     servos: (UInt8, UInt8, UInt8, UInt8) = (255, 255, 255, 255),
 		 motors: (Int8, Int8) = (0, 0),
 	     vibrators: (UInt8, UInt8) = (0, 0)) {
 		
@@ -82,7 +82,7 @@ struct BBTMutableHummingbirdState {
 	
 	init(led1: UInt8 = 0, led2: UInt8 = 0, led3: UInt8 = 0, led4: UInt8 = 0,
 	     triled1: TriLED = (0,0,0), triled2: TriLED = (0,0,0),
-	     servo1: UInt8 = 0, servo2: UInt8 = 0, servo3: UInt8 = 0, servo4: UInt8 = 0,
+	     servo1: UInt8 = 255, servo2: UInt8 = 255, servo3: UInt8 = 255, servo4: UInt8 = 255,
 	     motor1: Int8 = 0, motor2: Int8 = 0,
 	     vibrator1: UInt8 = 0, vibrator2: UInt8 = 0){
 		

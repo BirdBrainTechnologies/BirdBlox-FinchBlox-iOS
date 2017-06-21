@@ -107,26 +107,34 @@ class AudioManager: NSObject, AVAudioRecorderDelegate {
 		//TODO: Do something with the flag
 	}
 	
+	var permissionsState: AVAudioSessionRecordPermission {
+		return sharedAudioSession.recordPermission()
+	}
+	
 	
 	//MARK: Playing sounds
 	
-	public func getSoundNames () -> [String]{
+	public func getSoundNames(type: DataModel.BBXFileType) -> [String]{
 		do {
 			let paths = try FileManager.default.contentsOfDirectory(atPath:
-				DataModel.shared.soundsLoc.path)
-			let files = paths.filter {
-				(DataModel.shared.soundsLoc.appendingPathComponent($0)).pathExtension == "wav"
-			}
+				DataModel.shared.folder(of: type).path)
+//			let files = paths.filter {
+//				(DataModel.shared.soundsLoc.appendingPathComponent($0)).pathExtension == "wav"
+//			}
+			print(type)
+			print(paths)
+			let files = paths
 			return files
 		} catch {
+			NSLog("Listing sounds failed.")
 			return []
 		}
 	}
 	
-    func getSoundDuration(filename: String) -> Int {
+	func getSoundDuration(filename: String, type: DataModel.BBXFileType) -> Int {
         do {
             let player = try AVAudioPlayer(contentsOf:
-				DataModel.shared.soundsLoc.appendingPathComponent(filename))
+				DataModel.shared.fileLocation(forName: filename, type: type))
 			
             //convert to milliseconds
             let audioDuration: Float64 = player.duration * 1000
@@ -138,8 +146,10 @@ class AudioManager: NSObject, AVAudioRecorderDelegate {
     }
     
 	func playSound(filename: String, type: DataModel.BBXFileType) -> Bool {
+		print("play sound")
         do {
 			let loc = DataModel.shared.fileLocation(forName: filename, type: type)
+			print("\(FileManager.default.fileExists(atPath: loc.path))")
             let player = try AVAudioPlayer(contentsOf: loc)
 			
             player.prepareToPlay()

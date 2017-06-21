@@ -54,6 +54,19 @@ class DataModel: NSObject {
 		
 		
 		super.init()
+		
+		//Check the folders exists
+		
+		if !FileManager.default.fileExists(atPath: self.recordingsLoc.path) {
+			do {
+				try FileManager.default.createDirectory(atPath: self.recordingsLoc.path,
+														withIntermediateDirectories: false,
+														attributes: nil)
+			}
+			catch {
+				NSLog("Unable to create recordings directory")
+			}
+		}
 	}
 	
 	
@@ -81,7 +94,7 @@ class DataModel: NSObject {
 		}
 	}
 	
-	private func folder(of fileType: BBXFileType) -> URL {
+	func folder(of fileType: BBXFileType) -> URL {
 		switch fileType {
 		case .SoundRecording:
 			return self.recordingsLoc
