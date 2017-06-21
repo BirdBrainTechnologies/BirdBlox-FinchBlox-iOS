@@ -23,6 +23,7 @@ class DataModel: NSObject {
 	let frontendLoc: URL
 	let frontendPageLoc: URL
 	let soundsLoc: URL
+	let uiSoundsLoc: URL
 	
 	override init() {
 		self.documentLoc = URL(string:
@@ -49,6 +50,7 @@ class DataModel: NSObject {
 		
 		self.frontendPageLoc = self.frontendLoc.appendingPathComponent("HummingbirdDragAndDrop.html")
 		self.soundsLoc = self.frontendLoc.appendingPathComponent("SoundClips")
+		self.uiSoundsLoc = self.frontendLoc.appendingPathComponent("SoundsForUI")
 		
 		
 		super.init()
@@ -60,6 +62,8 @@ class DataModel: NSObject {
 	public enum BBXFileType: String {
 		case SoundRecording
 		case BirdBloxProgram
+		case SoundEffect
+		case SoundUI
 		
 		var fileExtension: String {
 			switch self {
@@ -69,6 +73,10 @@ class DataModel: NSObject {
 			
 			case .BirdBloxProgram:
 				return ".bbx"
+			
+			case .SoundEffect,
+			     .SoundUI:
+				return ".wav"
 			}
 		}
 	}
@@ -79,10 +87,14 @@ class DataModel: NSObject {
 			return self.recordingsLoc
 		case .BirdBloxProgram:
 			return self.bbxSaveLoc
+		case .SoundEffect:
+			return self.soundsLoc
+		case .SoundUI:
+			return self.uiSoundsLoc
 		}
 	}
 	
-	private func fileLocation(forName name: String, type: BBXFileType) -> URL {
+	func fileLocation(forName name: String, type: BBXFileType) -> URL {
 		let fullFileName = name + type.fileExtension
 		let url = self.folder(of: type).appendingPathComponent(fullFileName)
 		

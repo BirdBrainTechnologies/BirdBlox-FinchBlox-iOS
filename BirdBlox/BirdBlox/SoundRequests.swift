@@ -28,7 +28,10 @@ class SoundManager: NSObject {
         server["/sound/play"] = playRequest(request:)
         server["/sound/note"] = noteRequest(request:)
     }
-    
+	
+	
+	//MARK: Request Handlers
+	
     func namesRequest(request: HttpRequest) -> HttpResponse {
         let soundList = audio_manager.getSoundNames()
         return .ok(.text(soundList.joined(separator: "\n")))
@@ -55,10 +58,16 @@ class SoundManager: NSObject {
     
     func playRequest(request: HttpRequest) -> HttpResponse {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
-		guard let filename = queries["filename"] else {
-			return .badRequest(.text("Missing query parameter"))
+		
+		guard let filename = queries["filename"],
+			let typeStr = queries["type"],
+			let type = self.soundFileType(fromParameter: typeStr) else {
+			return .badRequest(.text("Missing or invalid query parameter"))
 		}
-        self.audio_manager.playSound(filename: filename)
+		
+		guard self.audio_manager.playSound(filename: filename, type: type) else {
+			return .internalServerError
+		}
         return .ok(.text("Playing sound"))
     }
     
@@ -73,5 +82,19 @@ class SoundManager: NSObject {
         self.audio_manager.playNote(noteIndex: note, duration: duration)
         return .ok(.text("Playing Note"))
     }
-    
+	
+	
+	//MARK: Supporting functions
+	private func soundFileType(fromParameter: String) -> DataModel.BBXFileType? {
+		switch fromParameter {
+		case "ui":
+			return DataModel.BBXFileType.SoundUI
+		case "recording":
+			return DataModel.BBXFileType.SoundRecording
+		case "effect":
+			return DataModel.BBXFileType.SoundEffect
+		default:
+			return nil
+		}
+	}
 }

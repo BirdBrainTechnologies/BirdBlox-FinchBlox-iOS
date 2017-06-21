@@ -137,16 +137,19 @@ class AudioManager: NSObject, AVAudioRecorderDelegate {
         }
     }
     
-    func playSound(filename: String) {
+	func playSound(filename: String, type: DataModel.BBXFileType) -> Bool {
         do {
-            let player = try AVAudioPlayer(contentsOf:
-				DataModel.shared.soundsLoc.appendingPathComponent(filename))
+			let loc = DataModel.shared.fileLocation(forName: filename, type: type)
+            let player = try AVAudioPlayer(contentsOf: loc)
+			
             player.prepareToPlay()
             player.play()
             players.append(player)
         } catch {
             NSLog("failed to play: " + filename)
+			return false
         }
+		return true
     }
 	
 	func stopSounds() {
