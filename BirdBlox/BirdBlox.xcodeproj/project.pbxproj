@@ -10,6 +10,7 @@
 		3F0E4A731ED37D3900369F70 /* DeviceUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F0E4A721ED37D3900369F70 /* DeviceUtilities.swift */; };
 		3F5F6D291EDDB3A800799277 /* BBTBackendServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F5F6D281EDDB3A800799277 /* BBTBackendServer.swift */; };
 		3F5F6D2B1EDDD73A00799277 /* SeverRequestPaths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F5F6D2A1EDDD73A00799277 /* SeverRequestPaths.swift */; };
+		3FA4F8A71F02F2BB005EB384 /* BBXDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FA4F8A61F02F2BB005EB384 /* BBXDocument.swift */; };
 		3FA7D5E31EF2E65800FE4882 /* BBTHummingbirdState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FA7D5E21EF2E65800FE4882 /* BBTHummingbirdState.swift */; };
 		3FDE24E81ED36910000BC24B /* PropertiesRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FDE24E71ED36910000BC24B /* PropertiesRequests.swift */; };
 		3FE5C65D1ED8974100433262 /* BluetoothDeviceNames.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3FE5C65C1ED8974100433262 /* BluetoothDeviceNames.plist */; };
@@ -44,6 +45,7 @@
 		3F0E4A721ED37D3900369F70 /* DeviceUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceUtilities.swift; sourceTree = "<group>"; };
 		3F5F6D281EDDB3A800799277 /* BBTBackendServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BBTBackendServer.swift; sourceTree = "<group>"; };
 		3F5F6D2A1EDDD73A00799277 /* SeverRequestPaths.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SeverRequestPaths.swift; sourceTree = "<group>"; };
+		3FA4F8A61F02F2BB005EB384 /* BBXDocument.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BBXDocument.swift; sourceTree = "<group>"; };
 		3FA7D5E21EF2E65800FE4882 /* BBTHummingbirdState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BBTHummingbirdState.swift; sourceTree = "<group>"; };
 		3FDE24E71ED36910000BC24B /* PropertiesRequests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PropertiesRequests.swift; sourceTree = "<group>"; };
 		3FE5C65C1ED8974100433262 /* BluetoothDeviceNames.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = BluetoothDeviceNames.plist; sourceTree = "<group>"; };
@@ -93,6 +95,7 @@
 			children = (
 				BA81696A1E81B7BC00AAF7A3 /* DataModel.swift */,
 				BA8A75981EB27CF700ECFABC /* AudioManager.swift */,
+				3FA4F8A61F02F2BB005EB384 /* BBXDocument.swift */,
 				3FA7D5E21EF2E65800FE4882 /* BBTHummingbirdState.swift */,
 			);
 			name = Models;
@@ -325,6 +328,7 @@
 				3F0E4A731ED37D3900369F70 /* DeviceUtilities.swift in Sources */,
 				BAE2EBD51E84550900198B19 /* HummingbirdManager.swift in Sources */,
 				BAE2EBD11E8443CF00198B19 /* HummingbirdPeripheral.swift in Sources */,
+				3FA4F8A71F02F2BB005EB384 /* BBXDocument.swift in Sources */,
 				BAE2EBD31E8451ED00198B19 /* FlutterPeripheral.swift in Sources */,
 				BA8169531E81A98A00AAF7A3 /* ViewController.swift in Sources */,
 				BA8A75991EB27CF700ECFABC /* AudioManager.swift in Sources */,
