@@ -240,6 +240,8 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 	
     //TODO: add a check for legacy firmware and use set all for only
     //firmwares newer than 2.2.a 
+	//From Tom: send the characters 'G' '4' and you will get back the hardware version 
+	//(currently 0x03 0x00) and the firmware version (0x02 0x02 'b'), might be 'a' instead of 'b'
     func setLED(port: Int, intensity: UInt8) -> Bool {
         let i = port - 1
 		
