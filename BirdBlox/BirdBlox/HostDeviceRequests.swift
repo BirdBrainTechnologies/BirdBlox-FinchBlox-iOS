@@ -14,7 +14,7 @@ import SystemConfiguration.CaptiveNetwork
 
 class HostDeviceManager: NSObject, CLLocationManagerDelegate {
     
-    let view_controller: ViewController
+    let view_controller: BBTWebViewController
     
     var pingTimer: Timer = Timer()
     let locationManager = CLLocationManager()
@@ -28,7 +28,7 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
     var last_dialog_response: String?
     var last_choice_response = 0
     
-    init(view_controller: ViewController){
+    init(view_controller: BBTWebViewController){
         self.view_controller = view_controller
         super.init()
         if (CLLocationManager.locationServicesEnabled()){
@@ -99,12 +99,13 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
 //		// /tablet/choice?title=x&question=y&button1=z&button2=q
 //		server["/tablet/choice"] = self.choiceRequest
     }
-		
+	
+	//TODO: Add check shake back into app
     func shakeRequest(request: HttpRequest) -> HttpResponse {
-        let checkShake = view_controller.checkShaken()
-        if checkShake{
-            return .ok(.text(String(1)))
-        }
+//        let checkShake = view_controller.checkShaken()
+//        if checkShake{
+//            return .ok(.text(String(1)))
+//        }
         return .ok(.text(String(0)))
     }
     func locationRequest(request: HttpRequest) -> HttpResponse {

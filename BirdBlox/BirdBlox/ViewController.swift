@@ -9,10 +9,10 @@
 import UIKit
 import WebKit
 
-class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
+class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, BBTWebViewController {
     var wasShaken: Bool = false
     var shakenTimer: Timer = Timer()
-	var wv: WKWebView? = nil
+	var wv: WKWebView = WKWebView()
 	
 	var webUILoaded = false
 	
@@ -28,8 +28,7 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
 		self.setNeedsStatusBarAppearanceUpdate()
 		
 		//Setup webview
-		let webView = WKWebView()
-		self.wv = webView
+		let webView = self.wv
         webView.navigationDelegate = self
         webView.uiDelegate = self
         webView.contentMode = UIViewContentMode.scaleToFill
@@ -50,7 +49,7 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
 		FrontendCallbackCenter.shared.webView = webView
 		
 		print(self.view.bounds)
-		print(self.wv!.bounds)
+		print(self.wv.bounds)
     }
 	
 	
@@ -92,9 +91,11 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         NSLog(navigation.description)
     }
+	
     func webView(_ webView: WKWebView,
 	decidePolicyFor navigationAction: WKNavigationAction,
 	decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+		
         decisionHandler(WKNavigationActionPolicy.allow)
     }
     
@@ -158,7 +159,7 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
 		
 		var frame = self.view.bounds
 		frame = self.barRespectingRect(from: frame)
-		self.wv!.frame = frame
+		self.wv.frame = frame
 	}
     
     override func didReceiveMemoryWarning() {
@@ -172,7 +173,7 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
 		let nSize = self.barRespectingRect(from: CGRect(origin: CGPoint(x: 0, y: 0),
 		                                                size: size)).size
 		print("New size: \(nSize)")
-		self.wv!.evaluateJavaScript("GuiElements.updateDimsPreview(\(nSize.width), \(nSize.height))",
+		self.wv.evaluateJavaScript("GuiElements.updateDimsPreview(\(nSize.width), \(nSize.height))",
 		                            completionHandler: {print("Updated dims. Error: \($0)")})
 		
 		Timer.scheduledTimer(timeInterval: TimeInterval(0.5), target: self,
@@ -186,7 +187,7 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
 	}
 	
 	@objc private func resizePageEnd() {
-		self.wv!.evaluateJavaScript("GuiElements.updateDims()",
+		self.wv.evaluateJavaScript("GuiElements.updateDims()",
 		                            completionHandler: {print("Updated dims. Error: \($0)")})
 	}
 

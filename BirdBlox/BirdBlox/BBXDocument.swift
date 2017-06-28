@@ -35,6 +35,10 @@ class BBXDocument: UIDocument {
 			throw NSError()
 		}
 		
+		print("Contents for type")
+		
 		return (self.currentXML.data(using: .utf8) ?? Data()) as NSData
 	}
+	
+	
 }

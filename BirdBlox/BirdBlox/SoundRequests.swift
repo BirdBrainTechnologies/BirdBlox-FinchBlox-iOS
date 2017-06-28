@@ -36,7 +36,8 @@ class SoundManager: NSObject {
 	//MARK: Request Handlers
 	
 	func startRecording(request: HttpRequest) -> HttpResponse {
-		self.audio_manager.startRecording(saveName: Date.init(timeIntervalSinceNow: 0).description)
+		let name = Date.init(timeIntervalSinceNow: 0).description
+		let _ = self.audio_manager.startRecording(saveName: name)
 		
 		if self.audio_manager.permissionsState == .granted {
 			return .ok(.text("Started"))

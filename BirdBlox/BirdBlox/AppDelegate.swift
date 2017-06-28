@@ -36,7 +36,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             return
         }
         
-        vc.wv?.evaluateJavaScript("SaveManager.currentDoc();") { file, error in
+        vc.wv.evaluateJavaScript("SaveManager.currentDoc();") { file, error in
             if let error = error {
                 NSLog("Error autosaving file on exit \(error)")
                 return
@@ -137,7 +137,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 			if let vc = window?.rootViewController as? ViewController,
 				let safeName = avname.addingPercentEncoding(withAllowedCharacters: CharacterSet()) {
 				print(safeName)
-				vc.wv?.evaluateJavaScript("SaveManager.import('\(safeName)');") {
+				vc.wv.evaluateJavaScript("SaveManager.import('\(safeName)');") {
 					(_, error) in
 					print(error ?? "No Error")
 				}

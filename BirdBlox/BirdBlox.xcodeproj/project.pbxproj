@@ -11,6 +11,7 @@
 		3F5F6D291EDDB3A800799277 /* BBTBackendServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F5F6D281EDDB3A800799277 /* BBTBackendServer.swift */; };
 		3F5F6D2B1EDDD73A00799277 /* SeverRequestPaths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F5F6D2A1EDDD73A00799277 /* SeverRequestPaths.swift */; };
 		3FA4F8A71F02F2BB005EB384 /* BBXDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FA4F8A61F02F2BB005EB384 /* BBXDocument.swift */; };
+		3FA4F8A91F03EE56005EB384 /* BBXDocumentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FA4F8A81F03EE56005EB384 /* BBXDocumentViewController.swift */; };
 		3FA7D5E31EF2E65800FE4882 /* BBTHummingbirdState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FA7D5E21EF2E65800FE4882 /* BBTHummingbirdState.swift */; };
 		3FDE24E81ED36910000BC24B /* PropertiesRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FDE24E71ED36910000BC24B /* PropertiesRequests.swift */; };
 		3FE5C65D1ED8974100433262 /* BluetoothDeviceNames.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3FE5C65C1ED8974100433262 /* BluetoothDeviceNames.plist */; };
@@ -46,6 +47,7 @@
 		3F5F6D281EDDB3A800799277 /* BBTBackendServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BBTBackendServer.swift; sourceTree = "<group>"; };
 		3F5F6D2A1EDDD73A00799277 /* SeverRequestPaths.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SeverRequestPaths.swift; sourceTree = "<group>"; };
 		3FA4F8A61F02F2BB005EB384 /* BBXDocument.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BBXDocument.swift; sourceTree = "<group>"; };
+		3FA4F8A81F03EE56005EB384 /* BBXDocumentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BBXDocumentViewController.swift; sourceTree = "<group>"; };
 		3FA7D5E21EF2E65800FE4882 /* BBTHummingbirdState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BBTHummingbirdState.swift; sourceTree = "<group>"; };
 		3FDE24E71ED36910000BC24B /* PropertiesRequests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PropertiesRequests.swift; sourceTree = "<group>"; };
 		3FE5C65C1ED8974100433262 /* BluetoothDeviceNames.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = BluetoothDeviceNames.plist; sourceTree = "<group>"; };
@@ -146,6 +148,7 @@
 				3FA7D5DF1EF026C700FE4882 /* Models */,
 				BA8169621E81AD7C00AAF7A3 /* httpServer */,
 				BA8169501E81A98A00AAF7A3 /* AppDelegate.swift */,
+				3FA4F8A81F03EE56005EB384 /* BBXDocumentViewController.swift */,
 				BA8169521E81A98A00AAF7A3 /* ViewController.swift */,
 				BA8169541E81A98A00AAF7A3 /* Main.storyboard */,
 				BA8169571E81A98A00AAF7A3 /* Assets.xcassets */,
@@ -345,6 +348,7 @@
 				BA8A75951EB2519200ECFABC /* HostDeviceRequests.swift in Sources */,
 				3FEC5DA41EF987640067C41B /* FrontendCallbackCenter.swift in Sources */,
 				BAE2EBCF1E84417000198B19 /* BLECentralManager.swift in Sources */,
+				3FA4F8A91F03EE56005EB384 /* BBXDocumentViewController.swift in Sources */,
 				BAE1FDA21E920A7500304BEE /* HummingbirdUtilities.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

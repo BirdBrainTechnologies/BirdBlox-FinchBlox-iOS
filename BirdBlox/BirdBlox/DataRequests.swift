@@ -11,16 +11,16 @@ import Swifter
 
 class DataManager: NSObject {
     
-    let view_controller: ViewController
+    let view_controller: BBTWebViewController
     
-    init(view_controller: ViewController){
+    init(view_controller: BBTWebViewController){
         self.view_controller = view_controller
         super.init()
     }
     
     func loadRequests(server: BBTBackendServer){
         server["/data/files"] = filesRequest(request:)
-		server["data/getAvailableName"] = self.availableNameRequest
+		server["/data/getAvailableName"] = self.availableNameRequest
         
         server["/data/save"] = saveRequest(request:)
         server["/data/load"] = loadRequest(request:)
