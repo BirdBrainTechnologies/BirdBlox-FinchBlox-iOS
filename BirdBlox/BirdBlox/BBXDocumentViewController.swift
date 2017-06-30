@@ -18,22 +18,30 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController {
 	
 	let server = BBTBackendServer()
 	
-	var saveTimer = Timer.scheduledTimer(timeInterval: 0.125, target: self,
-										 selector:
-										 #selector(BBXDocumentViewController.saveTimerFired),
-										 userInfo: nil, repeats: true)
+	var saveTimer = Timer()
+	
+	private var realDoc = BBXDocument(fileURL: URL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.documentDirectory,
+	                                                                                                    .userDomainMask, true)[0]).appendingPathComponent("empty.bbx"))
 	
 	var document: BBXDocument {
 		get {
-			return self.document
+			return self.realDoc
 		}
 		
 		set (doc) {
+			self.realDoc.close(completionHandler: nil)
+			
 			if self.webUILoaded {
-				self.webView.evaluateJavaScript("SaveManager.import('')")
+				let eset = CharacterSet()
+				let name = doc.localizedName.addingPercentEncoding(withAllowedCharacters: eset)!
+				let xml = doc.currentXML.addingPercentEncoding(withAllowedCharacters: eset)!
+				let js = "CallbackManager.data.openData ('\(name)', '\(xml)')"
+				self.webView.evaluateJavaScript(js) {
+					print("Import: \($0)")
+				}
 			}
 			
-			self.document = doc
+			self.realDoc = doc
 		}
 	}
 	
@@ -42,7 +50,13 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController {
 		
 		super.viewDidLoad()
 		
+		self.view.backgroundColor = UIColor.black
+		
 		self.setNeedsStatusBarAppearanceUpdate()
+		
+		Timer.scheduledTimer(timeInterval: 0.125, target: self,
+		                     selector: #selector(self.saveTimerFired),
+		                     userInfo: nil, repeats: true)
 		
 		//Setup Server
 		
@@ -50,12 +64,15 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController {
 		
 		self.server["/ui/contentLoaded"] = { request in
 			self.webUILoaded = true
+			print("Web UI loaded")
 			return .ok(.text("Hello webpage! I am a server."))
 		}
 		
+		self.server.start()
+		
 		//Setup webview
-		webView.contentMode = UIViewContentMode.scaleToFill
-		webView.backgroundColor = UIColor.white
+		self.webView.contentMode = UIViewContentMode.scaleToFill
+		self.webView.backgroundColor = UIColor.white
 		
 		let urlstr = "http://localhost:22179/DragAndDrop/HummingbirdDragAndDrop.html";
 		let cleanUrlStr = urlstr.addingPercentEncoding(withAllowedCharacters:
@@ -63,8 +80,7 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController {
 		let javascriptPageURL = URL(string: cleanUrlStr)
 		let req = URLRequest(url: javascriptPageURL!,
 		                     cachePolicy: URLRequest.CachePolicy.reloadIgnoringLocalCacheData)
-		
-		webView.load(req)
+		self.webView.load(req)
 		
 		self.view.addSubview(webView)
 		
@@ -91,6 +107,11 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController {
 				
 				guard let content = file["data"] else {
 					NSLog("Autosave Missing filename or data")
+					return
+				}
+				
+				guard self.document.documentState == .normal else {
+					NSLog("Document state abnormal, abandoned edit. \(self.document.documentState)")
 					return
 				}
 				
@@ -166,6 +187,7 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController {
 	func addHandlersToServer(_ server: BBTBackendServer) {
 		hostDeviceManager = (hostDeviceManager != nil ?
 			hostDeviceManager : HostDeviceManager(view_controller: self))
+		dataRequests = dataRequests != nil ? dataRequests :  DataManager(view_controller: self)
 		
 		//Requests to load parts of the frontend
 		server["/DragAndDrop/:path1/:path2/:path3"] = BBTHandleFrontEndRequest
@@ -183,20 +205,39 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController {
 		settingsManager.loadRequests(server: server)
 		propertiesManager.loadRequests(server: server)
 		
-		dataRequests = dataRequests != nil ? dataRequests :  DataManager(view_controller: self)
-		
 		self.server["/data/load"] = { (request: HttpRequest) -> HttpResponse in
 			let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 			
 			if let name = queries["filename"] {
-				self.document = BBXDocument(fileURL: DataModel.shared.getBBXFileLoc(byName: name))
+//				let fileName = DataModel.shared.availableName(from: name)!
+//				let fileURL = URL(fileURLWithPath: self.docsDir).appendingPathComponent(fileName).appendingPathExtension(".bbx")
+				
+				let fileURL = DataModel.shared.getBBXFileLoc(byName: name)
+				print(fileURL)
+				
+				if FileManager.default.fileExists(atPath: fileURL.path) {
+					let doc = BBXDocument(fileURL: DataModel.shared.getBBXFileLoc(byName: name))
+					doc.open(completionHandler: {suc in
+						print("open handler suc: \(suc)")
+						if suc {
+							self.document = doc
+							print("State 1: \(self.document.documentState)")
+						}
+					})
+					
+					print("State 2: \(self.document.documentState)")
+					print("State 3: \(doc.documentState)")
+				}
+				else {
+					print("File does not exist")
+				}
 			}
 			
-			return self.dataRequests!.loadRequest(request: request)
+			return .ok(.text(""))
 		}
 		
 		self.server["/data/save"] = { (request: HttpRequest) in
-			return HttpResponse.ok(.text("Using UIDocument Autosave"))
+			return HttpResponse.ok(.text("Using UIDocument Autosave instead"))
 		}
 	}
 	

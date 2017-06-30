@@ -29,6 +29,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     private func autoSave(successCompletion: ((Void) -> Void)? = nil) {
         guard self.uiLoaded else {
+			print("UI not loaded so not autosaving")
             return
         }
         
@@ -64,6 +65,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication,
 		didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool{
         // Override point for customization after application launch.
+		
+		NSLog("BBX Did finish launching")
 		
 		//Setting the tint color
 		if #available(iOS 10.0, *) {

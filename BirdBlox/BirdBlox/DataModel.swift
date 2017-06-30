@@ -26,10 +26,9 @@ class DataModel: NSObject {
 	let uiSoundsLoc: URL
 	
 	override init() {
-		self.documentLoc = URL(string:
-			NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory,
-			                                    FileManager.SearchPathDomainMask.userDomainMask,
-			                                    true)[0])!
+		self.documentLoc = URL(fileURLWithPath:
+			NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask,
+			                                    true)[0])
 		self.bundleLoc = URL(string: Bundle.main.bundleURL.path)!
 		
 		self.bbxSaveLoc = self.documentLoc.appendingPathComponent("SavedFiles")
@@ -82,14 +81,14 @@ class DataModel: NSObject {
 			switch self {
 			
 			case .SoundRecording:
-				return ".m4a"
+				return "m4a"
 			
 			case .BirdBloxProgram:
-				return ".bbx"
+				return "bbx"
 			
 			case .SoundEffect,
 			     .SoundUI:
-				return ".wav"
+				return "wav"
 			}
 		}
 	}
@@ -108,8 +107,7 @@ class DataModel: NSObject {
 	}
 	
 	func fileLocation(forName name: String, type: BBXFileType) -> URL {
-		let fullFileName = name + type.fileExtension
-		let url = self.folder(of: type).appendingPathComponent(fullFileName)
+		let url = self.folder(of: type).appendingPathComponent(name).appendingPathExtension(type.fileExtension)
 		
 		return url
 	}

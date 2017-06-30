@@ -12,33 +12,50 @@ import UIKit
 //TODO: Switch from XML file to container with xml and sound recordings
 
 class BBXDocument: UIDocument {
-	var currentXML: String = ""
+	var realCurrentXML: String = ""
+	
+	var currentXML: String {
+		get {
+			return self.realCurrentXML
+		}
+		
+		set (newXML) {
+			if self.realCurrentXML != newXML {
+				print("Change occurred to document")
+				self.realCurrentXML = newXML
+				self.updateChangeCount(.done)
+			}
+		}
+	}
 	
 	override func load(fromContents contents: Any, ofType typeName: String?) throws {
-		guard typeName == "bbx" else {
-			throw NSError()
+		print("load from contents. Type \(typeName ?? "None")")
+		guard typeName == "dyn.ah62d4rv4ge80e2x2" else {
+			throw NSError(domain: "Document Handling", code: -1, userInfo: nil)
 		}
 		
 		guard let contentData = (contents as? Data) else {
-			throw NSError()
+			throw NSError(domain: "Document Handling", code: -2, userInfo: nil)
 		}
 		
 		guard let xml = String(data: contentData, encoding: .utf8) else {
-			throw NSError()
+			throw NSError(domain: "Document Handling", code: -3, userInfo: nil)
 		}
 		
 		self.currentXML = xml
 	}
 	
 	override func contents(forType typeName: String) throws -> Any {
-		guard typeName == "bbx" else {
-			throw NSError()
-		}
+		print("Contents for type: \(typeName)")
 		
-		print("Contents for type")
+		guard typeName == "dyn.ah62d4rv4ge80e2x2" else {
+			throw NSError(domain: "Document Handling", code: -1, userInfo: nil)
+		}
 		
 		return (self.currentXML.data(using: .utf8) ?? Data()) as NSData
 	}
 	
-	
+	override func handleError(_ error: Error, userInteractionPermitted: Bool) {
+		print("Error in BBXDocument: \(error), UI permitted: \(userInteractionPermitted)")
+	}
 }
