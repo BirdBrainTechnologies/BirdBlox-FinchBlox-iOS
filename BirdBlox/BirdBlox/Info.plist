@@ -15,7 +15,7 @@
 			<string>Owner</string>
 			<key>LSItemContentTypes</key>
 			<array>
-				<string>com.$(PRODUCT_BUNDLE_IDENTIFIER).bbx</string>
+				<string>com.birdbraintechnologies.bbx</string>
 			</array>
 		</dict>
 	</array>
@@ -44,6 +44,8 @@
 	<string>Uses BLE to connect to various robots</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Location Blocks need to get location</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>BirdBlox needs to use the microphone to make recordings that you can play later using the play recording block.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -75,7 +77,7 @@
 			<key>UTTypeConformsTo</key>
 			<array>
 				<string>public.data</string>
-				<string>public.xml</string>
+				<string>public.document</string>
 			</array>
 			<key>UTTypeDescription</key>
 			<string>Bird Blox Program</string>
@@ -88,11 +90,11 @@
 					<string>bbx</string>
 				</array>
 				<key>public.mime-type</key>
-				<string>text/xml</string>
+				<array>
+					<string>application/x-birdblox</string>
+				</array>
 			</dict>
 		</dict>
 	</array>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>BirdBlox needs to use the microphone to make recordings that you can play later using the play recording block.</string>
 </dict>
 </plist>

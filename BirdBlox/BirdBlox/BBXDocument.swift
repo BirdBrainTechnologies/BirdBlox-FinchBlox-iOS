@@ -56,6 +56,6 @@ class BBXDocument: UIDocument {
 	}
 	
 	override func handleError(_ error: Error, userInteractionPermitted: Bool) {
-		print("Error in BBXDocument: \(error), UI permitted: \(userInteractionPermitted)")
+		NSLog("Error in BBXDocument: \(error), UI permitted: \(userInteractionPermitted)")
 	}
 }

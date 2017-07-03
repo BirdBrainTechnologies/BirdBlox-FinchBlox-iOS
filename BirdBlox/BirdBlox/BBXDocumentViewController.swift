@@ -20,8 +20,7 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 	
 	var saveTimer = Timer()
 	
-	private var realDoc = BBXDocument(fileURL: URL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.documentDirectory,
-	                                                                                                    .userDomainMask, true)[0]).appendingPathComponent("empty.bbx"))
+	private var realDoc = BBXDocument(fileURL: URL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]).appendingPathComponent("empty.bbx"))
 	
 	var document: BBXDocument {
 		get {
@@ -35,13 +34,25 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 				let eset = CharacterSet()
 				let name = doc.localizedName.addingPercentEncoding(withAllowedCharacters: eset)!
 				let xml = doc.currentXML.addingPercentEncoding(withAllowedCharacters: eset)!
-				let js = "CallbackManager.data.openData ('\(name)', '\(xml)')"
-				self.webView.evaluateJavaScript(js) {
-					print("Import: \($0)")
+				let js = "CallbackManager.data.openData('\(name)', '\(xml)')"
+				self.webView.evaluateJavaScript(js) { succeeded, error in
+					if let error = error {
+						NSLog("JS exception (\(error)) while importing. ")
+						return
+					}
+					
+					// Only set this document as our document if it is valid
+					//Relies on no more requests while the js is still parsing the document
+					if succeeded as! Bool {
+						self.realDoc = doc
+					}
+					else {
+						doc.close(completionHandler: nil)
+					}
 				}
+			} else {
+				self.realDoc = doc
 			}
-			
-			self.realDoc = doc
 		}
 	}
 	
@@ -206,9 +217,13 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 		propertiesManager.loadRequests(server: server)
 		
 		self.server["/data/showCloudPicker"] = { (request: HttpRequest) -> HttpResponse in
-			let picker = UIDocumentPickerViewController(documentTypes: [DataModel.bbxUTI], in: .open)
+			let picker = UIDocumentPickerViewController(documentTypes: [DataModel.bbxUTI, "public.xml"], in: .open)
 			picker.delegate = self
-			self.present(picker, animated: true, completion: nil)
+			
+			DispatchQueue.main.sync {
+				self.present(picker, animated: true, completion: nil)
+			}
+			
 			return .ok(.text("Showing picker"))
 		}
 		
@@ -265,11 +280,19 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 	
 	func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentAt url: URL) {
 		let doc = BBXDocument(fileURL: url)
-		doc.open(completionHandler: {suc in
+		doc.open(completionHandler: { suc in
 			print("open handler suc: \(suc)")
 			if suc {
 				self.document = doc
 				print("State 1 (from picker): \(self.document.documentState)")
+			} else {
+				let docName = url.lastPathComponent
+				let alert = UIAlertController(title: "Unable to Open File",
+				                              message: "\(docName) is not a valid .bbx file",
+											  preferredStyle: .alert)
+				alert.addAction(UIAlertAction(title: "Okay", style: .default))
+				
+				self.present(alert, animated: true, completion: nil)
 			}
 		})
 	}

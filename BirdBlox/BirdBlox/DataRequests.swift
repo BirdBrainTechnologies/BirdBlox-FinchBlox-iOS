@@ -156,6 +156,10 @@ class DataManager: NSObject {
 				DispatchQueue.main.async{
 					self.view_controller.present(view, animated: true, completion: nil)
 				}
+				
+				print(filename)
+				print(exportedPath.path)
+				
 				return .ok(.text("Exported"))
 			}
 			else {
