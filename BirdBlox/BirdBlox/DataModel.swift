@@ -11,6 +11,7 @@ import Zip
 
 
 class DataModel: NSObject {
+	static let bbxUTI = "com.birdbraintechnologies.bbx"
 	static let shared = DataModel()
 	
 	let documentLoc: URL

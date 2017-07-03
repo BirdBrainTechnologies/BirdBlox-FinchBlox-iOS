@@ -12,7 +12,7 @@ import UIKit
 //TODO: Switch from XML file to container with xml and sound recordings
 
 class BBXDocument: UIDocument {
-	var realCurrentXML: String = ""
+	var realCurrentXML: String = "<project><tabs></tabs></project>"
 	
 	var currentXML: String {
 		get {
@@ -21,7 +21,7 @@ class BBXDocument: UIDocument {
 		
 		set (newXML) {
 			if self.realCurrentXML != newXML {
-				print("Change occurred to document")
+//				print("Change occurred to document")
 				self.realCurrentXML = newXML
 				self.updateChangeCount(.done)
 			}
@@ -30,7 +30,7 @@ class BBXDocument: UIDocument {
 	
 	override func load(fromContents contents: Any, ofType typeName: String?) throws {
 		print("load from contents. Type \(typeName ?? "None")")
-		guard typeName == "dyn.ah62d4rv4ge80e2x2" else {
+		guard typeName == DataModel.bbxUTI else {
 			throw NSError(domain: "Document Handling", code: -1, userInfo: nil)
 		}
 		
@@ -48,7 +48,7 @@ class BBXDocument: UIDocument {
 	override func contents(forType typeName: String) throws -> Any {
 		print("Contents for type: \(typeName)")
 		
-		guard typeName == "dyn.ah62d4rv4ge80e2x2" else {
+		guard typeName == DataModel.bbxUTI else {
 			throw NSError(domain: "Document Handling", code: -1, userInfo: nil)
 		}
 		

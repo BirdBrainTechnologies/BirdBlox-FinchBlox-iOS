@@ -74,16 +74,19 @@
 		<dict>
 			<key>UTTypeConformsTo</key>
 			<array>
-				<string>public.bbx</string>
+				<string>public.data</string>
+				<string>public.xml</string>
 			</array>
 			<key>UTTypeDescription</key>
 			<string>Bird Blox Program</string>
 			<key>UTTypeIdentifier</key>
-			<string>com.$(PRODUCT_BUNDLE_IDENTIFIER).bbx</string>
+			<string>com.birdbraintechnologies.bbx</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.filename-extension</key>
-				<string>bbx</string>
+				<array>
+					<string>bbx</string>
+				</array>
 				<key>public.mime-type</key>
 				<string>text/xml</string>
 			</dict>

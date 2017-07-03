@@ -48,6 +48,7 @@
 		3F5F6D2A1EDDD73A00799277 /* SeverRequestPaths.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SeverRequestPaths.swift; sourceTree = "<group>"; };
 		3FA4F8A61F02F2BB005EB384 /* BBXDocument.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BBXDocument.swift; sourceTree = "<group>"; };
 		3FA4F8A81F03EE56005EB384 /* BBXDocumentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BBXDocumentViewController.swift; sourceTree = "<group>"; };
+		3FA4F8AA1F06F602005EB384 /* BirdBlox.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BirdBlox.entitlements; sourceTree = "<group>"; };
 		3FA7D5E21EF2E65800FE4882 /* BBTHummingbirdState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BBTHummingbirdState.swift; sourceTree = "<group>"; };
 		3FDE24E71ED36910000BC24B /* PropertiesRequests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PropertiesRequests.swift; sourceTree = "<group>"; };
 		3FE5C65C1ED8974100433262 /* BluetoothDeviceNames.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = BluetoothDeviceNames.plist; sourceTree = "<group>"; };
@@ -142,6 +143,7 @@
 		BA81694F1E81A98A00AAF7A3 /* BirdBlox */ = {
 			isa = PBXGroup;
 			children = (
+				3FA4F8AA1F06F602005EB384 /* BirdBlox.entitlements */,
 				3FEC5DA31EF987640067C41B /* FrontendCallbackCenter.swift */,
 				BAE1FD9E1E920A1000304BEE /* utilities */,
 				BAE2EBCD1E8431B300198B19 /* bluetooth */,
@@ -235,6 +237,11 @@
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = N6XC9HC8PB;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.iCloud = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -473,6 +480,7 @@
 			baseConfigurationReference = E8B8191F17118ABB8EDC2784 /* Pods-BirdBlox.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = BirdBlox/BirdBlox.entitlements;
 				DEVELOPMENT_TEAM = N6XC9HC8PB;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				INFOPLIST_FILE = BirdBlox/Info.plist;
@@ -489,6 +497,7 @@
 			baseConfigurationReference = 1CBEFB40603958D76A5BFE44 /* Pods-BirdBlox.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = BirdBlox/BirdBlox.entitlements;
 				DEVELOPMENT_TEAM = N6XC9HC8PB;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				INFOPLIST_FILE = BirdBlox/Info.plist;

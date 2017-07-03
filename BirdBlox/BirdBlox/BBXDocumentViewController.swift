@@ -11,7 +11,7 @@ import UIKit
 import WebKit
 import Swifter
 
-class BBXDocumentViewController: UIViewController, BBTWebViewController {
+class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocumentPickerDelegate {
 	
 	let webView = WKWebView()
 	var webUILoaded = false
@@ -205,6 +205,29 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController {
 		settingsManager.loadRequests(server: server)
 		propertiesManager.loadRequests(server: server)
 		
+		self.server["/data/showCloudPicker"] = { (request: HttpRequest) -> HttpResponse in
+			let picker = UIDocumentPickerViewController(documentTypes: [DataModel.bbxUTI], in: .open)
+			picker.delegate = self
+			self.present(picker, animated: true, completion: nil)
+			return .ok(.text("Showing picker"))
+		}
+		
+		self.server["/data/createNewFile"] = { (request: HttpRequest) -> HttpResponse in
+			let name = DataModel.shared.availableName(from: "New Program")!
+			let fileURL = DataModel.shared.getBBXFileLoc(byName: name)
+			let doc = BBXDocument(fileURL: fileURL)
+			doc.save(to: fileURL, for: .forCreating, completionHandler: { succeeded in
+				if succeeded {
+					self.document = doc
+				}
+			})
+			
+			return .raw(201, "Created", ["Location" : "/data/load?filename=\(name)"]) {
+				(writer) throws -> Void in
+				try writer.write([UInt8](name.utf8))
+			}
+		}
+		
 		self.server["/data/load"] = { (request: HttpRequest) -> HttpResponse in
 			let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 			
@@ -213,7 +236,6 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController {
 //				let fileURL = URL(fileURLWithPath: self.docsDir).appendingPathComponent(fileName).appendingPathExtension(".bbx")
 				
 				let fileURL = DataModel.shared.getBBXFileLoc(byName: name)
-				print(fileURL)
 				
 				if FileManager.default.fileExists(atPath: fileURL.path) {
 					let doc = BBXDocument(fileURL: DataModel.shared.getBBXFileLoc(byName: name))
@@ -239,6 +261,17 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController {
 		self.server["/data/save"] = { (request: HttpRequest) in
 			return HttpResponse.ok(.text("Using UIDocument Autosave instead"))
 		}
+	}
+	
+	func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentAt url: URL) {
+		let doc = BBXDocument(fileURL: url)
+		doc.open(completionHandler: {suc in
+			print("open handler suc: \(suc)")
+			if suc {
+				self.document = doc
+				print("State 1 (from picker): \(self.document.documentState)")
+			}
+		})
 	}
 	
 	//BBTWebViewController
