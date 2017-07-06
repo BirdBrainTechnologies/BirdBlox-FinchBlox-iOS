@@ -20,42 +20,6 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 	
 	var saveTimer = Timer()
 	
-	private var realDoc = BBXDocument(fileURL: URL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]).appendingPathComponent("empty.bbx"))
-	
-	var document: BBXDocument {
-		get {
-			return self.realDoc
-		}
-		
-		set (doc) {
-			self.realDoc.close(completionHandler: nil)
-			
-			if self.webUILoaded {
-				let eset = CharacterSet()
-				let name = doc.localizedName.addingPercentEncoding(withAllowedCharacters: eset)!
-				let xml = doc.currentXML.addingPercentEncoding(withAllowedCharacters: eset)!
-				let js = "CallbackManager.data.openData('\(name)', '\(xml)')"
-				self.webView.evaluateJavaScript(js) { succeeded, error in
-					if let error = error {
-						NSLog("JS exception (\(error)) while importing. ")
-						return
-					}
-					
-					// Only set this document as our document if it is valid
-					//Relies on no more requests while the js is still parsing the document
-					if succeeded as! Bool {
-						self.realDoc = doc
-					}
-					else {
-						doc.close(completionHandler: nil)
-					}
-				}
-			} else {
-				self.realDoc = doc
-			}
-		}
-	}
-	
 	override func viewDidLoad() {
 		NSLog("Document View Controller viewDidLoad")
 		
@@ -98,7 +62,6 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 		//Setup callback center
 		FrontendCallbackCenter.shared.webView = webView
 		
-		
 		NSLog("Document View Controller exiting viewDidLoad")
 	}
 	
@@ -128,6 +91,79 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 				
 				self.document.currentXML = content
 			}
+		}
+	}
+	
+	//MARK: Document Handling
+	
+	private var realDoc = BBXDocument(fileURL: URL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]).appendingPathComponent("empty.bbx"))
+	
+	private func updateDisplayFromXML(completion: @escaping ((Bool) -> Void)) {
+		guard self.webUILoaded else {
+			return
+		}
+		
+		let eset = CharacterSet()
+		let name = self.document.localizedName.addingPercentEncoding(withAllowedCharacters: eset)!
+		let xml = self.document.currentXML.addingPercentEncoding(withAllowedCharacters: eset)!
+		let js = "CallbackManager.data.openData('\(name)', '\(xml)')"
+		
+		self.webView.evaluateJavaScript(js) { succeeded, error in
+			if let error = error {
+				NSLog("JS exception (\(error)) while opening data. ")
+				return
+			}
+			
+			if let suc = (succeeded as? Bool) {
+				completion(suc)
+			}
+		}
+	}
+	
+	var document: BBXDocument {
+		get {
+			return self.realDoc
+		}
+		
+		set (doc) {
+			self.realDoc.close(completionHandler: nil)
+			
+			if self.webUILoaded {
+				self.updateDisplayFromXML(completion: { (succeeded: Bool) in
+					// Only set this document as our document if it is valid
+					//Relies on no more requests while the js is still parsing the document
+					if succeeded {
+						self.realDoc = doc
+						let notificationName = NSNotification.Name.UIDocumentStateChanged
+						NotificationCenter.default.addObserver(forName: notificationName,
+						                                       object: self.realDoc, queue: nil,
+						                                       using: { notification in
+																
+							self.handleDocumentStateChangeNotification(notification)
+						})
+					}
+					else {
+						doc.close(completionHandler: nil)
+					}
+				})
+			} else {
+				self.realDoc = doc
+			}
+		}
+	}
+	
+	func handleDocumentStateChangeNotification(_ notification: Notification) {
+		switch self.document.documentState {
+		case UIDocumentState.inConflict:
+			let v = NSFileVersion.unresolvedConflictVersionsOfItem(at: self.document.fileURL)
+			guard let versions = v else {
+				print("Invalid URL")
+				return
+			}
+			print("Conflict. Number of conflict versions \(versions.count)")
+			return
+		default:
+			return
 		}
 	}
 	

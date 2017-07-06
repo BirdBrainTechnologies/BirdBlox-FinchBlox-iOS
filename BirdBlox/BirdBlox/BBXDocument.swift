@@ -14,6 +14,8 @@ import UIKit
 class BBXDocument: UIDocument {
 	var realCurrentXML: String = "<project><tabs></tabs></project>"
 	
+	var recordingsDirectory: URL = DataModel.shared.recordingsLoc
+	
 	var currentXML: String {
 		get {
 			return self.realCurrentXML
@@ -27,6 +29,8 @@ class BBXDocument: UIDocument {
 			}
 		}
 	}
+	
+	
 	
 	override func load(fromContents contents: Any, ofType typeName: String?) throws {
 		print("load from contents. Type \(typeName ?? "None")")
