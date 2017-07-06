@@ -292,43 +292,12 @@ class DataModel: NSObject {
 	
 	//MARK: Managing Settings
 	
-	var settingsDict: NSMutableDictionary?
-	
-	private func contentsOfSettingsPlist() -> NSMutableDictionary{
-		if (!FileManager.default.fileExists(atPath: self.settingsPlistLoc.path)) {
-			return NSMutableDictionary()
-		}
-		return NSMutableDictionary(contentsOfFile: self.settingsPlistLoc.path)!
-	}
-	
-	private func saveSettingsToPlist(_ settings: NSMutableDictionary) {
-		settings.write(toFile: self.settingsPlistLoc.path, atomically: true)
-	}
-	
-	
 	public func addSetting(_ key: String, value: String) {
-		if self.settingsDict == nil {
-			self.settingsDict = self.contentsOfSettingsPlist()
-		}
-		
-		self.settingsDict!.setValue(value, forKey: key)
-		self.saveSettingsToPlist(self.settingsDict!)
+		UserDefaults.standard.set(value, forKey: key)
 	}
 	
 	public func getSetting(_ key: String) -> String? {
-		if self.settingsDict == nil {
-			self.settingsDict = self.contentsOfSettingsPlist()
-		}
-		if let value = self.settingsDict?.value(forKey: key) {
-			return value as? String
-		}
-		return nil
-	}
-	
-	public func removeSetting(_ key: String) {
-		let settings = self.contentsOfSettingsPlist()
-		settings.removeObject(forKey: key)
-		self.saveSettingsToPlist(settings)
+		return UserDefaults.standard.string(forKey: key)
 	}
 	
 	
