@@ -453,7 +453,7 @@ class DataModel: NSObject {
 			                  destination: unzipPath,
 			                  overwrite: true,
 			                  password: nil,
-		                   progress: { (progress) -> () in })
+			                  progress: nil)
 			
 			return true
 		}
@@ -468,18 +468,18 @@ class DataModel: NSObject {
 		//Semi Stable: https://github.com/BirdBrainTechnologies/HummingbirdDragAndDrop-/archive/dev.zip
 		let repoUrl = URL(string:"https://github.com/BirdBrainTechnologies/HummingbirdDragAndDrop-/archive/dev.zip")!
 		
-		let docLoc = URL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.documentDirectory,
-		                                                                      .userDomainMask,
-		                                                                      true)[0])
-		
-		guard let tempLoc = try? FileManager.default.url(for: .itemReplacementDirectory,
-		                                                 in: .userDomainMask, appropriateFor: docLoc,
+		guard let libLoc = try? FileManager.default.url(for: .libraryDirectory,
+		                                                 in: .userDomainMask, appropriateFor: nil,
 		                                                 create: true) else {
 			return nil
 		}
 		
-		let zipPath = tempLoc.appendingPathComponent("temp.zip")
-		let unzipPath = tempLoc.appendingPathComponent("DragAndDrop")
+		let backendLoc = libLoc.appendingPathComponent("DevFrontend")
+		try? FileManager.default.createDirectory(at: backendLoc, withIntermediateDirectories: true,
+		                                         attributes: nil)
+		
+		let zipPath = backendLoc.appendingPathComponent("temp.zip")
+		let unzipPath = backendLoc.appendingPathComponent("DragAndDrop")
 		
 		NSLog("Running in DEBUG mode. Going to overwrite current frontend from git.")
 		guard BBTDownloadFrontendUpdate(from: repoUrl, to: zipPath) else {
