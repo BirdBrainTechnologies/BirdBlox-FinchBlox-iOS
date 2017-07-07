@@ -41,6 +41,7 @@ class DataModel: NSObject {
 			self.documentLoc = URL(fileURLWithPath: docPath)
 		}
 		
+		//We could use .tempoaryDirectory if we didn't support iOS 9
 		do {
 			let docLoc = self.documentLoc
 			let tmpLoc = try FileManager.default.url(for: .itemReplacementDirectory,
@@ -81,12 +82,17 @@ class DataModel: NSObject {
 		super.init()
 		
 		//Check the folders exists
+		self.createDirectories()
 		
+//		FileManager.default.delegate = self
+	}
+	
+	func createDirectories() {
 		if !FileManager.default.fileExists(atPath: self.recordingsLoc.path) {
 			do {
 				try FileManager.default.createDirectory(atPath: self.recordingsLoc.path,
-														withIntermediateDirectories: true,
-														attributes: nil)
+				                                        withIntermediateDirectories: true,
+				                                        attributes: nil)
 			}
 			catch {
 				NSLog("Unable to create recordings directory")
@@ -103,10 +109,33 @@ class DataModel: NSObject {
 				NSLog("Unable to create stagingLoc directory")
 			}
 		}
-		
+	}
+	
+	func clearTempoaryDirectories() {
+		do {
+			try FileManager.default.removeItem(at: self.tmpLoc)
+		} catch {
+			return
+		}
+	}
+	
+	
+	//MARK: Migrate file system
+//	func fileManager(_ fileManager: FileManager,
+//	                 shouldMoveItemAt srcURL: URL, to dstURL: URL) -> Bool {
+//		print("fileManager shouldMoveItem")
+//		return true
+//	}
+//	
+//	func fileManager(_ fileManager: FileManager, shouldProceedAfterError error: Error, movingItemAt srcURL: URL, to dstURL: URL) -> Bool {
+//		print("\(error)")
+//		return false
+//	}
+	
+	func migrateFromOldSystem() {
 		//Change old file structure
-		//TODO: Remove this code once it has been wild for long enoguh to fix the vast majority of 
-		//documents directories. Since the user could be in charge of it and add files or 
+		//TODO: Remove this code once it has been wild for long enoguh to fix the vast majority of
+		//documents directories. Since the user could be in charge of it and add files or
 		//directories to it, we don't want to be silently messing with folders that they want to be
 		//in the documents directory. – Jeremy
 		let settingsPlistLoc = self.documentLoc.appendingPathComponent("Settings.plist")
@@ -117,19 +146,35 @@ class DataModel: NSObject {
 				NSLog("Unable to remove old settings plist.")
 			}
 		}
+		else {
+			print("No old settings plist")
+		}
 		
 		let oldBBXSaveLoc = self.documentLoc.appendingPathComponent("SavedFiles")
 		
 		if let files = try? FileManager.default.contentsOfDirectory(at: oldBBXSaveLoc,
 		                                                            includingPropertiesForKeys: nil,
-																	options: .skipsHiddenFiles) {
+		                                                            options: .skipsHiddenFiles) {
+			var success = true
 			for fileURL in files {
 				do {
-					try FileManager.default.moveItem(at: fileURL, to: self.bbxSaveLoc)
+					let dest = self.bbxSaveLoc.appendingPathComponent(fileURL.lastPathComponent)
+					try FileManager.default.moveItem(at: fileURL, to: dest)
 				} catch {
+					success = false
 					NSLog("Unable to move file from old save location from \(fileURL.path)")
 				}
 			}
+			
+			if success {
+				do {
+					try FileManager.default.removeItem(at: oldBBXSaveLoc)
+				} catch {
+					NSLog("moving files worked, but unable to delete folder.")
+				}
+			}
+		} else {
+			print("No old files")
 		}
 		
 		let oldRecordignsLoc = self.documentLoc.appendingPathComponent("Recordings")
@@ -137,8 +182,10 @@ class DataModel: NSObject {
 			do {
 				try FileManager.default.removeItem(at: oldRecordignsLoc)
 			} catch {
-				NSLog("Unable to remove old recording plist.")
+				NSLog("Unable to remove old recordings.")
 			}
+		} else {
+			print("No old recordings")
 		}
 	}
 	
@@ -362,6 +409,16 @@ class DataModel: NSObject {
 		return self.renameFile(from: curName, to: newName, type: .BirdBloxProgram)
 	}
 	
+	public func emptyCurrentDocument() -> Bool {
+		do {
+			try FileManager.default.removeItem(at: self.currentDocLoc)
+			self.createDirectories()
+		} catch {
+			return false
+		}
+		return true
+	}
+	
 	
 	//MARK: Managing Settings
 	
@@ -411,12 +468,19 @@ class DataModel: NSObject {
 		//From Tom: https://github.com/TomWildenhain/HummingbirdDragAndDrop-/archive/dev.zip
 		//Semi Stable: https://github.com/BirdBrainTechnologies/HummingbirdDragAndDrop-/archive/dev.zip
 		let repoUrl = URL(string:"https://github.com/BirdBrainTechnologies/HummingbirdDragAndDrop-/archive/dev.zip")!
-		let documentLoc = URL(string:
-			NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory,
-			FileManager.SearchPathDomainMask.userDomainMask,
-			true)[0])!
-		let zipPath = documentLoc.appendingPathComponent("temp.zip")
-		let unzipPath = documentLoc.appendingPathComponent("DragAndDrop")
+		
+		let docLoc = URL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.documentDirectory,
+		                                                                      .userDomainMask,
+		                                                                      true)[0])
+		
+		guard let tempLoc = try? FileManager.default.url(for: .itemReplacementDirectory,
+		                                                 in: .userDomainMask, appropriateFor: docLoc,
+		                                                 create: true) else {
+			return nil
+		}
+		
+		let zipPath = tempLoc.appendingPathComponent("temp.zip")
+		let unzipPath = tempLoc.appendingPathComponent("DragAndDrop")
 		
 		NSLog("Running in DEBUG mode. Going to overwrite current frontend from git.")
 		guard BBTDownloadFrontendUpdate(from: repoUrl, to: zipPath) else {

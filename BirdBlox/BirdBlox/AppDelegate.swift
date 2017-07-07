@@ -80,6 +80,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 		//Make sure date model is working
 		let _ = DataModel.shared.getSetting("foo")
 		
+		
+		DataModel.shared.migrateFromOldSystem()
+		
         return true
     }
 
@@ -108,6 +111,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+		NSLog("Will terminate")
+		DataModel.shared.clearTempoaryDirectories()
     }
 	
 	func application(_ app: UIApplication, open url: URL,

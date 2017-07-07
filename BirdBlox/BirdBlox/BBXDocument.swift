@@ -8,11 +8,16 @@
 
 import Foundation
 import UIKit
+import Zip
 
 //TODO: Switch from XML file to container with xml and sound recordings
 
 class BBXDocument: UIDocument {
 	var realCurrentXML: String = "<project><tabs></tabs></project>"
+	let xmlLoc = DataModel.shared.currentDocLoc
+	             .appendingPathComponent("program").appendingPathExtension("xml")
+	let outLoc = DataModel.shared.stagingLoc
+	             .appendingPathComponent("outDoc").appendingPathExtension("zip")
 	
 	var recordingsDirectory: URL = DataModel.shared.recordingsLoc
 	
@@ -42,7 +47,24 @@ class BBXDocument: UIDocument {
 			throw NSError(domain: "Document Handling", code: -2, userInfo: nil)
 		}
 		
-		guard let xml = String(data: contentData, encoding: .utf8) else {
+		let zipPath = DataModel.shared.stagingLoc.appendingPathComponent("inDoc.zip")
+		let unzipPath = DataModel.shared.currentDocLoc
+		try contentData.write(to: zipPath)
+		
+		if ((try? Zip.unzipFile(zipPath, destination: unzipPath, overwrite: true, password: nil,
+		                        progress: nil)) != nil) {
+			//The document is in the correct format
+			//We will open program.xml
+			
+		} else {
+			//Let's hope it's the old format
+			let _ = DataModel.shared.emptyCurrentDocument()
+			try contentData.write(to: self.xmlLoc)
+		}
+		
+		let xmlData = try Data(contentsOf: self.xmlLoc)
+		
+		guard let xml = String(data: xmlData, encoding: .utf8) else {
 			throw NSError(domain: "Document Handling", code: -3, userInfo: nil)
 		}
 		
@@ -56,7 +78,20 @@ class BBXDocument: UIDocument {
 			throw NSError(domain: "Document Handling", code: -1, userInfo: nil)
 		}
 		
-		return (self.currentXML.data(using: .utf8) ?? Data()) as NSData
+		try self.currentXML.write(to: self.xmlLoc, atomically: true, encoding: .utf8)
+		
+		let filesToZip = try FileManager.default
+		                     .contentsOfDirectory(at: DataModel.shared.currentDocLoc,
+								                  includingPropertiesForKeys: nil)
+		print("\(filesToZip)")
+		try Zip.zipFiles(paths: filesToZip, zipFilePath: self.outLoc, password: nil,
+		                 compression: .NoCompression, progress: nil)
+		
+		
+		guard let retData = NSData(contentsOf: self.outLoc) else {
+			throw NSError(domain: "Document Handling", code: -1, userInfo: nil)
+		}
+		return retData
 	}
 	
 	override func handleError(_ error: Error, userInteractionPermitted: Bool) {
