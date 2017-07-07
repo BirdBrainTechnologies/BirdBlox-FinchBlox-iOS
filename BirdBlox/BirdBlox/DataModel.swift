@@ -236,15 +236,14 @@ class DataModel: NSObject {
 	private func namesOfsavedFiles(ofType type: BBXFileType) -> [String] {
 		let path = self.folder(of: type).path
 		do {
-			let paths = try FileManager.default.contentsOfDirectory(
-				atPath: path)
+			let paths = try FileManager.default.contentsOfDirectory(atPath: path)
 			return paths
 		} catch {
 			return []
 		}
 	}
 	
-	private func filenameAvailalbe(name: String, type: BBXFileType) -> Bool {
+	public func filenameAvailalbe(name: String, type: BBXFileType) -> Bool {
 		guard DataModel.nameIsSanitary(name) else {
 			return false
 		}
@@ -253,7 +252,7 @@ class DataModel: NSObject {
 			atPath: self.getBBXFileLoc(byName: name).path)
 	}
 	
-	private func deleteFile(byName name: String, type: BBXFileType) -> Bool {
+	public func deleteFile(byName name: String, type: BBXFileType) -> Bool {
 		let path = self.fileLocation(forName: name, type: type).path
 		do {
 			try FileManager.default.removeItem(atPath: path)
@@ -263,7 +262,7 @@ class DataModel: NSObject {
 		}
 	}
 	
-	private func renameFile(from: String, to: String, type: BBXFileType) -> Bool {
+	public func renameFile(from: String, to: String, type: BBXFileType) -> Bool {
 		let curPath = self.fileLocation(forName: from, type: type).path
 		let newPath = self.fileLocation(forName: to, type: type).path
 		
@@ -325,12 +324,12 @@ class DataModel: NSObject {
 		return name.substring(to: curIndex)
 	}
 	
-	public func availableName(from name: String) -> String? {
-		return self.availableNameRecHelper(from: DataModel.sanitizedName(of: name))
+	public func availableName(from name: String, type: BBXFileType = .BirdBloxProgram) -> String? {
+		return self.availableNameRecHelper(from: DataModel.sanitizedName(of: name), type: type)
 	}
 	
-	func availableNameRecHelper(from name: String) -> String {
-		if self.bbxNameAvailable(name) {
+	func availableNameRecHelper(from name: String, type: BBXFileType) -> String {
+		if self.filenameAvailalbe(name: name, type: type) {
 			return name
 		}
 		
@@ -342,7 +341,7 @@ class DataModel: NSObject {
 			prefixName = self.getRootOf(name: name)
 		}
 		
-		return availableNameRecHelper(from: "\(prefixName)(\(suffixNum))")
+		return availableNameRecHelper(from: "\(prefixName)(\(suffixNum))", type: type)
 	}
 	
 	//MARK: Managing BBX Programs

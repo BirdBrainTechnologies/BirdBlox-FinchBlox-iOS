@@ -36,11 +36,14 @@ class DataManager: NSObject {
 			return .badRequest(.text("Malformed Request"))
 		}
 		
+		let isRecording = (queries["recording"] == "true")
+		let type: DataModel.BBXFileType = isRecording ? .SoundRecording : .BirdBloxProgram
+		
 		//To find the reason why a name might be different
 		let sanName = DataModel.sanitizedName(of: name)
 		let alreadySanitized = (sanName == name)
-		let alreadyAvailable = DataModel.shared.bbxNameAvailable(sanName)
-		let availableName = DataModel.shared.availableName(from: name)!
+		let alreadyAvailable = DataModel.shared.filenameAvailalbe(name: name, type: type)
+		let availableName = DataModel.shared.availableName(from: name, type: type)!
 		
 		let json: [String : Any] = ["availableName" : availableName,
 		                            "alreadySanitized" : alreadySanitized,
@@ -111,16 +114,20 @@ class DataManager: NSObject {
 			let newFilename = queries["newFilename"] else {
 			return .badRequest(.text("Malformed Request"))
 		}
+		let isRecording = (queries["recording"] == "true")
 		
 		guard DataModel.nameIsSanitary(oldFilename) && DataModel.nameIsSanitary(newFilename) else {
 			return .badRequest(.text("Unsanitary parameter arguments"))
 		}
 		
-		if queries["options"] == "soft" && !DataModel.shared.bbxNameAvailable(newFilename) {
+		let type: DataModel.BBXFileType = isRecording ? .SoundRecording : .BirdBloxProgram
+		
+		if queries["options"] == "soft" && !DataModel.shared.filenameAvailalbe(name: newFilename,
+		                                                                       type: type) {
 			return .raw(409, "Conflict", nil, nil)
 		}
 		
-		guard DataModel.shared.renameBBXFile(from: oldFilename, to: newFilename) else {
+		guard DataModel.shared.renameFile(from: oldFilename, to: newFilename, type: type) else {
 			return .internalServerError
 		}
 		
@@ -131,7 +138,10 @@ class DataManager: NSObject {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
 		if let filename = queries["filename"] {
-			if DataModel.shared.deleteBBXFile(byName: filename) {
+			let isRecording = (queries["recording"] == "true")
+			let type: DataModel.BBXFileType = isRecording ? .SoundRecording : .BirdBloxProgram
+			print(filename)
+			if DataModel.shared.deleteFile(byName: filename, type: type) {
 				return .ok(.text("File Deleted"))
 			}
 			else {

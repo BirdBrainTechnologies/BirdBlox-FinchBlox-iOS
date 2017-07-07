@@ -92,13 +92,37 @@ class AudioManager: NSObject, AVAudioRecorderDelegate {
 		return true
 	}
 	
-	func finishRecording() {
+	public func pauseRecording() -> Bool {
+		guard let recorder = self.recorder else {
+			return false
+		}
+		
+		recorder.pause()
+		
+		return true
+	}
+	
+	public func unpauseRecording() -> Bool {
+		guard let recorder = self.recorder else {
+			return false
+		}
+		
+		return recorder.record()
+	}
+	
+	public func finishRecording(deleteRecording: Bool = false) {
 		guard let recorder = self.recorder,
 			recorder.isRecording else {
 			return
 		}
 		
 		recorder.stop()
+		
+		if deleteRecording {
+			recorder.deleteRecording()
+//			try? FileManager.default.removeItem(at: recorder.url)
+		}
+		
 		self.recorder = nil
 	}
 	

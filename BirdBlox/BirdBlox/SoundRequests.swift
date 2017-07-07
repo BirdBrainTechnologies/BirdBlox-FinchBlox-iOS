@@ -28,8 +28,11 @@ class SoundManager: NSObject {
         server["/sound/play"] = playRequest(request:)
         server["/sound/note"] = noteRequest(request:)
 		
-		server["sound/recording/start"] = startRecording(request:)
-		server["sound/recording/stop"] = stopRecording(request:)
+		server["/sound/recording/start"] = startRecording(request:)
+		server["/sound/recording/stop"] = stopRecording(request:)
+		server["/sound/recording/pause"] = self.pauseRecording
+		server["/sound/recording/unpause"] = self.unpauseRecording
+		server["/sound/recording/discard"] = self.discardRecording
     }
 	
 	
@@ -54,6 +57,32 @@ class SoundManager: NSObject {
 		return .ok(.text("finished recording"))
 	}
 	
+	func discardRecording(request: HttpRequest) -> HttpResponse {
+		self.audio_manager.finishRecording(deleteRecording: true)
+		
+		return .ok(.text("Discarded recording"))
+	}
+	
+	func pauseRecording(request: HttpRequest) -> HttpResponse {
+		let suc = self.audio_manager.pauseRecording()
+		
+		if suc {
+			return .ok(.text("paused"))
+		} else {
+			return .raw(428, "Not recording", nil, nil)
+		}
+	}
+	
+	func unpauseRecording(request: HttpRequest) -> HttpResponse {
+		let suc = self.audio_manager.unpauseRecording()
+		
+		if suc {
+			return .ok(.text("paused"))
+		} else {
+			return .raw(428, "Not recording", nil, nil)
+		}
+	}
+	
     func namesRequest(request: HttpRequest) -> HttpResponse {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
@@ -65,7 +94,7 @@ class SoundManager: NSObject {
 		let fsoundList = self.audio_manager.getSoundNames(type: type)
 		
 		let soundList = fsoundList.map {
-			$0.replacingOccurrences(of: type.fileExtension, with: "")
+			$0.replacingOccurrences(of: "." + type.fileExtension, with: "")
 		}
 		
         return .ok(.text(soundList.joined(separator: "\n")))
