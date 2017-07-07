@@ -39,7 +39,8 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
         }
         
         if(CMAltimeter.isRelativeAltitudeAvailable()){
-            altimeter.startRelativeAltitudeUpdates(to: OperationQueue.main, withHandler: {data, error in
+            altimeter.startRelativeAltitudeUpdates(to: OperationQueue.main,
+                                                   withHandler: { data, error in
                 if(error == nil) {
                     self.currentAltitude = Float(data!.relativeAltitude)
                     self.currentPressure = Float(data!.pressure)

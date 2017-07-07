@@ -18,8 +18,11 @@ class DataModel: NSObject {
 	let bundleLoc: URL
 	
 	let bbxSaveLoc: URL
+	
+	let tmpLoc: URL
+	let stagingLoc: URL
+	let currentDocLoc: URL
 	let recordingsLoc: URL
-	let settingsPlistLoc: URL
 	
 	let frontendLoc: URL
 	let frontendPageLoc: URL
@@ -27,14 +30,36 @@ class DataModel: NSObject {
 	let uiSoundsLoc: URL
 	
 	override init() {
-		self.documentLoc = URL(fileURLWithPath:
-			NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask,
-			                                    true)[0])
+		do {
+			let docLoc = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask,
+			                                         appropriateFor: nil, create: true)
+			self.documentLoc = docLoc
+		} catch {
+			NSLog("FileManager.default.url failed")
+			let docPath = NSSearchPathForDirectoriesInDomains(.documentDirectory,
+			                                                  .userDomainMask, true)[0]
+			self.documentLoc = URL(fileURLWithPath: docPath)
+		}
+		
+		do {
+			let docLoc = self.documentLoc
+			let tmpLoc = try FileManager.default.url(for: .itemReplacementDirectory,
+			                                         in: .userDomainMask, appropriateFor: docLoc,
+			                                         create: true)
+			self.tmpLoc = tmpLoc
+		} catch {
+			let tmpPath = NSSearchPathForDirectoriesInDomains(.itemReplacementDirectory,
+			                                                  .userDomainMask, true)[0]
+			self.tmpLoc = URL(fileURLWithPath: tmpPath)
+		}
+		
+		self.stagingLoc = self.tmpLoc.appendingPathComponent("staging")
+		self.currentDocLoc = self.tmpLoc.appendingPathComponent("currentDoc")
+		self.recordingsLoc = self.currentDocLoc.appendingPathComponent("recordings")
+		
 		self.bundleLoc = URL(string: Bundle.main.bundleURL.path)!
 		
-		self.bbxSaveLoc = self.documentLoc.appendingPathComponent("SavedFiles")
-		self.recordingsLoc = self.documentLoc.appendingPathComponent("Recordings")
-		self.settingsPlistLoc = self.documentLoc.appendingPathComponent("Settings.plist")
+		self.bbxSaveLoc = self.documentLoc
 		
 		#if DEBUG
 			if let unzipLoc = DataModel.updateAndGetDevFrontendURL() {
@@ -60,11 +85,59 @@ class DataModel: NSObject {
 		if !FileManager.default.fileExists(atPath: self.recordingsLoc.path) {
 			do {
 				try FileManager.default.createDirectory(atPath: self.recordingsLoc.path,
-														withIntermediateDirectories: false,
+														withIntermediateDirectories: true,
 														attributes: nil)
 			}
 			catch {
 				NSLog("Unable to create recordings directory")
+			}
+		}
+		
+		if !FileManager.default.fileExists(atPath: self.stagingLoc.path) {
+			do {
+				try FileManager.default.createDirectory(atPath: self.stagingLoc.path,
+				                                        withIntermediateDirectories: true,
+				                                        attributes: nil)
+			}
+			catch {
+				NSLog("Unable to create stagingLoc directory")
+			}
+		}
+		
+		//Change old file structure
+		//TODO: Remove this code once it has been wild for long enoguh to fix the vast majority of 
+		//documents directories. Since the user could be in charge of it and add files or 
+		//directories to it, we don't want to be silently messing with folders that they want to be
+		//in the documents directory. – Jeremy
+		let settingsPlistLoc = self.documentLoc.appendingPathComponent("Settings.plist")
+		if FileManager.default.fileExists(atPath: settingsPlistLoc.path) {
+			do {
+				try FileManager.default.removeItem(at: settingsPlistLoc)
+			} catch {
+				NSLog("Unable to remove old settings plist.")
+			}
+		}
+		
+		let oldBBXSaveLoc = self.documentLoc.appendingPathComponent("SavedFiles")
+		
+		if let files = try? FileManager.default.contentsOfDirectory(at: oldBBXSaveLoc,
+		                                                            includingPropertiesForKeys: nil,
+																	options: .skipsHiddenFiles) {
+			for fileURL in files {
+				do {
+					try FileManager.default.moveItem(at: fileURL, to: self.bbxSaveLoc)
+				} catch {
+					NSLog("Unable to move file from old save location from \(fileURL.path)")
+				}
+			}
+		}
+		
+		let oldRecordignsLoc = self.documentLoc.appendingPathComponent("Recordings")
+		if FileManager.default.fileExists(atPath: oldRecordignsLoc.path) {
+			do {
+				try FileManager.default.removeItem(at: oldRecordignsLoc)
+			} catch {
+				NSLog("Unable to remove old recording plist.")
 			}
 		}
 	}

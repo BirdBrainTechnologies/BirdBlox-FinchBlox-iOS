@@ -29,9 +29,7 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 		
 		self.setNeedsStatusBarAppearanceUpdate()
 		
-		Timer.scheduledTimer(timeInterval: 0.125, target: self,
-		                     selector: #selector(self.saveTimerFired),
-		                     userInfo: nil, repeats: true)
+		self.startTimer()
 		
 		//Setup Server
 		
@@ -67,11 +65,17 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 	
 	//MARK: Save Timer
 	
+	func startTimer() {
+		self.saveTimer = Timer.scheduledTimer(timeInterval: 0.125, target: self,
+		                                      selector: #selector(self.saveTimerFired),
+		                                      userInfo: nil, repeats: true)
+	}
+	
 	func saveTimerFired() {
 		if self.webUILoaded {
 			self.webView.evaluateJavaScript("SaveManager.currentDoc()") { file, error in
 				if let error = error {
-					NSLog("Error autosaving file on exit \(error)")
+					NSLog("Error autosaving file \(error)")
 					return
 				}
 				
@@ -103,10 +107,12 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 			return
 		}
 		
+		//For some reason this always opens the last document 
 		let eset = CharacterSet()
 		let name = self.document.localizedName.addingPercentEncoding(withAllowedCharacters: eset)!
 		let xml = self.document.currentXML.addingPercentEncoding(withAllowedCharacters: eset)!
 		let js = "CallbackManager.data.openData('\(name)', '\(xml)')"
+		
 		
 		self.webView.evaluateJavaScript(js) { succeeded, error in
 			if let error = error {
@@ -126,14 +132,17 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 		}
 		
 		set (doc) {
+			self.saveTimer.invalidate()
 			self.realDoc.close(completionHandler: nil)
+			self.realDoc = doc
 			
 			if self.webUILoaded {
 				self.updateDisplayFromXML(completion: { (succeeded: Bool) in
 					// Only set this document as our document if it is valid
 					//Relies on no more requests while the js is still parsing the document
 					if succeeded {
-						self.realDoc = doc
+						self.startTimer()
+						
 						let notificationName = NSNotification.Name.UIDocumentStateChanged
 						NotificationCenter.default.addObserver(forName: notificationName,
 						                                       object: self.realDoc, queue: nil,
@@ -146,8 +155,6 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 						doc.close(completionHandler: nil)
 					}
 				})
-			} else {
-				self.realDoc = doc
 			}
 		}
 	}
@@ -265,11 +272,14 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 		
 		self.server["/data/createNewFile"] = { (request: HttpRequest) -> HttpResponse in
 			let name = DataModel.shared.availableName(from: "New Program")!
+			NSLog("Created file named \(name)")
 			let fileURL = DataModel.shared.getBBXFileLoc(byName: name)
 			let doc = BBXDocument(fileURL: fileURL)
 			doc.save(to: fileURL, for: .forCreating, completionHandler: { succeeded in
 				if succeeded {
 					self.document = doc
+				} else {
+					NSLog("Creating new document failed.")
 				}
 			})
 			
@@ -289,7 +299,7 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 				let fileURL = DataModel.shared.getBBXFileLoc(byName: name)
 				
 				if FileManager.default.fileExists(atPath: fileURL.path) {
-					let doc = BBXDocument(fileURL: DataModel.shared.getBBXFileLoc(byName: name))
+					let doc = BBXDocument(fileURL: fileURL)
 					doc.open(completionHandler: {suc in
 						print("open handler suc: \(suc)")
 						if suc {
