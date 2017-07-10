@@ -111,7 +111,7 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 		let eset = CharacterSet()
 		let name = self.document.localizedName.addingPercentEncoding(withAllowedCharacters: eset)!
 		let xml = self.document.currentXML.addingPercentEncoding(withAllowedCharacters: eset)!
-		let js = "CallbackManager.data.openData('\(name)', '\(xml)')"
+		let js = "CallbackManager.data.open('\(name)', '\(xml)', true)"
 		
 		
 		self.webView.evaluateJavaScript(js) { succeeded, error in
@@ -270,11 +270,23 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 			return .ok(.text("Showing picker"))
 		}
 		
-		self.server["/data/createNewFile"] = { (request: HttpRequest) -> HttpResponse in
+		self.server["/data/close"] = { (request: HttpRequest) -> HttpResponse in
+			self.document.close(completionHandler: nil)
+			
+			return .ok(.text(""))
+		}
+		
+		self.server["/data/new"] = { (request: HttpRequest) -> HttpResponse in
+			guard let xml = String(bytes: request.body, encoding: .utf8) else {
+				return .badRequest(.text("POST body not encoded in utf8."))
+			}
+			
 			let name = DataModel.shared.availableName(from: "New Program")!
 			NSLog("Created file named \(name)")
 			let fileURL = DataModel.shared.getBBXFileLoc(byName: name)
+			
 			let doc = BBXDocument(fileURL: fileURL)
+			doc.currentXML = xml
 			doc.save(to: fileURL, for: .forCreating, completionHandler: { succeeded in
 				if succeeded {
 					self.document = doc
@@ -289,7 +301,7 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 			}
 		}
 		
-		self.server["/data/load"] = { (request: HttpRequest) -> HttpResponse in
+		self.server["/data/open"] = { (request: HttpRequest) -> HttpResponse in
 			let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 			
 			if let name = queries["filename"] {
@@ -321,6 +333,16 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 		
 		self.server["/data/save"] = { (request: HttpRequest) in
 			return HttpResponse.ok(.text("Using UIDocument Autosave instead"))
+		}
+		
+		self.server["/data/autoSave"] = { (request: HttpRequest) -> HttpResponse in
+			guard let xml = String(bytes: request.body, encoding: .utf8) else {
+				return .badRequest(.text("POST body not encoded in utf8."))
+			}
+			
+			self.document.currentXML = xml
+			
+			return .ok(.text("Success"))
 		}
 	}
 	
