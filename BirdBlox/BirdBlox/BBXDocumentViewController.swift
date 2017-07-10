@@ -272,7 +272,8 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 		
 		self.server["/data/close"] = { (request: HttpRequest) -> HttpResponse in
 			self.document.close(completionHandler: nil)
-			
+			DataModel.shared.emptyCurrentDocument()
+			DataModel.shared.deleRecordingsDir()
 			return .ok(.text(""))
 		}
 		

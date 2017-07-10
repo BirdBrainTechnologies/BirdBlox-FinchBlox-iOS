@@ -418,6 +418,14 @@ class DataModel: NSObject {
 		return true
 	}
 	
+	public func deleRecordingsDir() {
+		do {
+			try FileManager.default.removeItem(at: self.recordingsLoc)
+		} catch {
+			NSLog("Unable to delete temp recordings directory.")
+		}
+	}
+	
 	
 	//MARK: Managing Settings
 	
