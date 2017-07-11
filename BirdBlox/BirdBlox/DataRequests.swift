@@ -32,12 +32,14 @@ class DataManager: NSObject {
 	func availableNameRequest(request: HttpRequest) -> HttpResponse {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
-		guard let name = queries["filename"] else {
-			return .badRequest(.text("Malformed Request"))
+		guard let name = queries["filename"],
+			let typeStr = queries["type"] else {
+			return .badRequest(.text("Missing Parameters"))
 		}
 		
-		let isRecording = (queries["recording"] == "true")
-		let type: DataModel.BBXFileType = isRecording ? .SoundRecording : .BirdBloxProgram
+		guard let type = self.fileType(fromParameter: typeStr) else {
+			return .badRequest(.text("Invalid type argument"))
+		}
 		
 		//To find the reason why a name might be different
 		let sanName = DataModel.sanitizedName(of: name)
@@ -111,16 +113,18 @@ class DataManager: NSObject {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
 		guard let oldFilename = queries["oldFilename"],
-			let newFilename = queries["newFilename"] else {
-			return .badRequest(.text("Malformed Request"))
+			let newFilename = queries["newFilename"],
+			let typeStr = queries["type"] else {
+			return .badRequest(.text("Missing Parameters"))
 		}
-		let isRecording = (queries["recording"] == "true")
 		
 		guard DataModel.nameIsSanitary(oldFilename) && DataModel.nameIsSanitary(newFilename) else {
 			return .badRequest(.text("Unsanitary parameter arguments"))
 		}
 		
-		let type: DataModel.BBXFileType = isRecording ? .SoundRecording : .BirdBloxProgram
+		guard let type = self.fileType(fromParameter: typeStr) else {
+			return .badRequest(.text("Invalid type argument"))
+		}
 		
 		if queries["options"] == "soft" && !DataModel.shared.filenameAvailalbe(name: newFilename,
 		                                                                       type: type) {
@@ -137,19 +141,22 @@ class DataManager: NSObject {
     func deleteRequest(request: HttpRequest) -> HttpResponse {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
-		if let filename = queries["filename"] {
-			let isRecording = (queries["recording"] == "true")
-			let type: DataModel.BBXFileType = isRecording ? .SoundRecording : .BirdBloxProgram
-			print(filename)
-			if DataModel.shared.deleteFile(byName: filename, type: type) {
-				return .ok(.text("File Deleted"))
-			}
-			else {
-				return .internalServerError
-			}
+		guard let filename = queries["filename"],
+			  let typeStr = queries["type"] else {
+			return .badRequest(.text("Missing Parameters"))
 		}
 		
-		return .badRequest(.text("Malformed Request"))
+		guard let type = self.fileType(fromParameter: typeStr) else {
+			return .badRequest(.text("Invalid type argument"))
+		}
+		
+		if DataModel.shared.deleteFile(byName: filename, type: type) {
+			return .ok(.text("File Deleted"))
+		} else {
+			return .internalServerError
+		}
+		
+		
     }
 	
     func exportRequest(request: HttpRequest) -> HttpResponse {
@@ -180,5 +187,15 @@ class DataManager: NSObject {
 		return .badRequest(.text("Malformed Request"))
     }
     
-    
+	//MARK: Supporting functions
+	func fileType(fromParameter: String) -> DataModel.BBXFileType? {
+		switch fromParameter {
+		case "recording":
+			return DataModel.BBXFileType.SoundRecording
+		case "file":
+			return DataModel.BBXFileType.BirdBloxProgram
+		default:
+			return nil
+		}
+	}
 }

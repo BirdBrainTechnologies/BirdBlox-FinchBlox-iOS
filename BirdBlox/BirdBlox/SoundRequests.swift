@@ -39,7 +39,11 @@ class SoundManager: NSObject {
 	//MARK: Request Handlers
 	
 	func startRecording(request: HttpRequest) -> HttpResponse {
-		let name = Date.init(timeIntervalSinceNow: 0).description
+		let now = Date(timeIntervalSinceNow: 0)
+		let formatter = DateFormatter()
+		formatter.dateFormat = "yyyy-MM-dd HH`mm`ss ZZ"
+		formatter.timeZone = TimeZone.current
+		let name = DataModel.sanitizedName(of: formatter.string(from: now))
 		let _ = self.audio_manager.startRecording(saveName: name)
 		
 		if self.audio_manager.permissionsState == .granted {

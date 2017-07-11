@@ -37,7 +37,11 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 		
 		self.server["/ui/contentLoaded"] = { request in
 			self.webUILoaded = true
-			print("Web UI loaded")
+			
+			if let name = UserDefaults.standard.string(forKey: self.curDocNameKey) {
+				let _ = self.openProgram(byName: name)
+			}
+			
 			return .ok(.text("Hello webpage! I am a server."))
 		}
 		
@@ -99,6 +103,8 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 	}
 	
 	//MARK: Document Handling
+	let curDocNeedsNameKey = "CurrentDocumentNeedsName"
+	let curDocNameKey = "CurrentDocumentName"
 	
 	private var realDoc = BBXDocument(fileURL: URL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]).appendingPathComponent("empty.bbx"))
 	
@@ -111,7 +117,8 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 		let eset = CharacterSet()
 		let name = self.document.localizedName.addingPercentEncoding(withAllowedCharacters: eset)!
 		let xml = self.document.currentXML.addingPercentEncoding(withAllowedCharacters: eset)!
-		let js = "CallbackManager.data.open('\(name)', '\(xml)', true)"
+		let needsName = UserDefaults.standard.bool(forKey: self.curDocNeedsNameKey)
+		let js = "CallbackManager.data.open('\(name)', '\(xml)', \(!needsName))"
 		
 		
 		self.webView.evaluateJavaScript(js) { succeeded, error in
@@ -172,6 +179,38 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 		default:
 			return
 		}
+	}
+	
+	//Returns false if no program by that name exists
+	private func openProgram(byName name: String, completion: ((Bool) -> Void)? = nil) -> Bool {
+		let fileURL = DataModel.shared.getBBXFileLoc(byName: name)
+		
+		guard FileManager.default.fileExists(atPath: fileURL.path) else {
+			NSLog("Asked to open file that does not exist.")
+			return false
+		}
+		
+		let doc = BBXDocument(fileURL: fileURL)
+		doc.open(completionHandler: {suc in
+			print("open handler suc: \(suc)")
+			if suc {
+				self.document = doc
+			}
+			
+			if let comp = completion {
+				comp(suc)
+			}
+		})
+		
+		return true
+	}
+	
+	private func closeCurrentProgram(completion: ((Bool) -> Void)? = nil) {
+		self.document.close(completionHandler: { suc in
+			if let completion = completion {
+				completion(suc)
+			}
+		})
 	}
 	
 	
@@ -271,9 +310,7 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 		}
 		
 		self.server["/data/close"] = { (request: HttpRequest) -> HttpResponse in
-			self.document.close(completionHandler: nil)
-			DataModel.shared.emptyCurrentDocument()
-			DataModel.shared.deleRecordingsDir()
+			self.closeCurrentProgram()
 			return .ok(.text(""))
 		}
 		
@@ -296,6 +333,9 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 				}
 			})
 			
+			UserDefaults.standard.set(true, forKey: self.curDocNeedsNameKey)
+			UserDefaults.standard.set(name, forKey: self.curDocNameKey)
+			
 			return .raw(201, "Created", ["Location" : "/data/load?filename=\(name)"]) {
 				(writer) throws -> Void in
 				try writer.write([UInt8](name.utf8))
@@ -305,29 +345,19 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 		self.server["/data/open"] = { (request: HttpRequest) -> HttpResponse in
 			let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 			
-			if let name = queries["filename"] {
-//				let fileName = DataModel.shared.availableName(from: name)!
-//				let fileURL = URL(fileURLWithPath: self.docsDir).appendingPathComponent(fileName).appendingPathExtension(".bbx")
-				
-				let fileURL = DataModel.shared.getBBXFileLoc(byName: name)
-				
-				if FileManager.default.fileExists(atPath: fileURL.path) {
-					let doc = BBXDocument(fileURL: fileURL)
-					doc.open(completionHandler: {suc in
-						print("open handler suc: \(suc)")
-						if suc {
-							self.document = doc
-							print("State 1: \(self.document.documentState)")
-						}
-					})
-					
-					print("State 2: \(self.document.documentState)")
-					print("State 3: \(doc.documentState)")
-				}
-				else {
-					print("File does not exist")
-				}
+			guard let name = queries["filename"] else {
+				return .badRequest(.text("Missing Parameters"))
 			}
+			
+			self.closeCurrentProgram()
+			let fileExists = self.openProgram(byName: name)
+			
+			if !fileExists {
+				return .internalServerError
+			}
+			
+			UserDefaults.standard.set(false, forKey: self.curDocNeedsNameKey)
+			UserDefaults.standard.set(name, forKey: self.curDocNameKey)
 			
 			return .ok(.text(""))
 		}
@@ -345,6 +375,49 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 			
 			return .ok(.text("Success"))
 		}
+		
+		let renameHandler = self.dataRequests!.renameRequest
+		self.server["/data/rename"] = { (request: HttpRequest) -> HttpResponse in
+			let queries = BBTSequentialQueryArrayToDict(request.queryParams)
+			
+			guard let typeStr = queries["type"],
+				let newFilename = queries["newFilename"],
+				let oldFilename = queries["oldFilename"] else {
+					return .badRequest(.text("Missing Parameters"))
+			}
+			guard let type = self.dataRequests?.fileType(fromParameter: typeStr) else {
+				return .badRequest(.text("Invalid type argument"))
+			}
+			
+			if type == .BirdBloxProgram && oldFilename == self.document.localizedName {
+				self.closeCurrentProgram(completion: { suc in
+					if !suc {
+						NSLog("Unable to close current document for renaming")
+						return
+					}
+					
+					let resp = renameHandler(request)
+					
+					switch (resp) {
+					case .ok(_):
+						self.webView.evaluateJavaScript("CallbackManager.data.filesChanged()") {
+							result, error in
+							let _ = self.openProgram(byName: newFilename)
+							UserDefaults.standard.set(newFilename, forKey: self.curDocNameKey)
+							UserDefaults.standard.set(false, forKey: self.curDocNeedsNameKey)
+						}
+					default:
+						self.webView.evaluateJavaScript("CallbackManager.data.close()")
+						return
+					}
+				})
+				
+				return .ok(.text("We'll see"))
+			}
+			else {
+				return renameHandler(request)
+			}
+		}
 	}
 	
 	func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentAt url: URL) {
@@ -354,6 +427,9 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 			if suc {
 				self.document = doc
 				print("State 1 (from picker): \(self.document.documentState)")
+				
+				UserDefaults.standard.set(nil, forKey: self.curDocNameKey)
+				UserDefaults.standard.set(nil, forKey: self.curDocNeedsNameKey)
 			} else {
 				let docName = url.lastPathComponent
 				let alert = UIAlertController(title: "Unable to Open File",
@@ -365,6 +441,9 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 			}
 		})
 	}
+	
+	
+	//MARK: Convinience
 	
 	//BBTWebViewController
 	var wv: WKWebView {

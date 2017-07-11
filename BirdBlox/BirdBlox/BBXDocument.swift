@@ -51,16 +51,19 @@ class BBXDocument: UIDocument {
 		let unzipPath = DataModel.shared.currentDocLoc
 		try contentData.write(to: zipPath)
 		
+		let _ = DataModel.shared.emptyCurrentDocument()
+		DataModel.shared.deleRecordingsDir()
 		if ((try? Zip.unzipFile(zipPath, destination: unzipPath, overwrite: true, password: nil,
 		                        progress: nil)) != nil) {
 			//The document is in the correct format
 			//We will open program.xml
-			
+			//Make sure there is a recordings directory
 		} else {
 			//Let's hope it's the old format
 			let _ = DataModel.shared.emptyCurrentDocument()
 			try contentData.write(to: self.xmlLoc)
 		}
+		DataModel.shared.createDirectories()
 		
 		let xmlData = try Data(contentsOf: self.xmlLoc)
 		

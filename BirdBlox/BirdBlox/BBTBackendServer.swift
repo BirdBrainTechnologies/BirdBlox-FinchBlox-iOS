@@ -71,7 +71,7 @@ class BBTBackendServer {
 			}
 			swifterServer[path] = (handler != nil ? guardedHandler : handler)
 		}
-		get{ return nil }
+		get{ return swifterServer[path] }
 	}
 	
 	func start() {
