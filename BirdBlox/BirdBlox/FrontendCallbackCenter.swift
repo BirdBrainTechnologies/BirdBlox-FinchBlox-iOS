@@ -134,4 +134,26 @@ class FrontendCallbackCenter {
 		return true
 	}
 	
+	func documentSetName(name: String) -> Bool {
+		guard let wv = self.webView else {
+			return false
+		}
+		
+		let safeName = FrontendCallbackCenter.safeString(from: name)
+		
+		let function = "CallbackManager.data.setName"
+		let parameters = "('\(safeName)')"
+		let js = function + parameters
+		
+		wv.evaluateJavaScript(js, completionHandler: { ret, error in
+			if let error = error {
+				print("Error running '\(js)': \(error)")
+				return
+			}
+			
+			print("Ran '\(js)', got \(String(describing: ret))")
+		})
+		
+		return true
+	}
 }

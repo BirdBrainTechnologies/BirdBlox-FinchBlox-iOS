@@ -347,7 +347,10 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 			doc.currentXML = xml
 			doc.save(to: fileURL, for: .forCreating, completionHandler: { succeeded in
 				if succeeded {
+//					self.webUILoaded = false
 					self.document = doc
+//					self.webUILoaded = true
+					FrontendCallbackCenter.shared.documentSetName(name: name)
 				} else {
 					NSLog("Creating new document failed.")
 				}
@@ -369,15 +372,18 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 				return .badRequest(.text("Missing Parameters"))
 			}
 			
-			self.closeCurrentProgram()
-			let fileExists = self.openProgram(byName: name)
-			
-			if !fileExists {
-				return .internalServerError
+			self.closeCurrentProgram() { suc in
+				if suc {
+					let fileExists = self.openProgram(byName: name)
+				
+	//				if !fileExists {
+	//					return .internalServerError
+	//				}
+				
+					UserDefaults.standard.set(false, forKey: self.curDocNeedsNameKey)
+					UserDefaults.standard.set(name, forKey: self.curDocNameKey)
+				}
 			}
-			
-			UserDefaults.standard.set(false, forKey: self.curDocNeedsNameKey)
-			UserDefaults.standard.set(name, forKey: self.curDocNameKey)
 			
 			return .ok(.text(""))
 		}
@@ -450,7 +456,8 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 				return .badRequest(.text("Invalid type argument"))
 			}
 			
-			guard (filename != self.document.localizedName || (type != .BirdBloxProgram)) else {
+			guard (filename != self.document.localizedName || (type != .BirdBloxProgram) ||
+				(self.document.documentState == .closed)) else {
 				print("delete open")
 				self.closeCurrentProgram(completion: { suc in
 					if suc {

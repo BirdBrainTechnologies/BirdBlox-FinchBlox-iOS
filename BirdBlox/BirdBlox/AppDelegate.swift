@@ -120,21 +120,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 		
 		defer {
 			do {
+				let inboxLoc = DataModel.shared.documentLoc.appendingPathComponent("Inbox")
+				print("trying to delete \(url)")
 				try FileManager.default.removeItem(at: url)
 			} catch {
 				NSLog("Unable to delete temp file")
 			}
 		}
 		
+		print("Import starting")
+		
 		do {
-			let contents = try String(contentsOf: url)
+			let contents = try Data(contentsOf: url)
 			let name = url.lastPathComponent.replacingOccurrences(of: ".bbx", with: "")
 			
 			
 			let avname = DataModel.shared.availableName(from: name)! //This also sanitizes the name
-			if DataModel.shared.save(bbxString: contents, withName: avname) == false {
-				return false
-			}
+			let toLocation =  DataModel.shared.fileLocation(forName: name, type: .BirdBloxProgram)
+			try contents.write(to: toLocation)
 			
 //			guard self.uiLoaded else {
 //				DataModel.shared.addSetting("currentDoc", value: avname)
@@ -144,11 +147,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 			
 			guard let safeName = avname.addingPercentEncoding(withAllowedCharacters: CharacterSet()) else{
 				return false
-				
 			}
 			print(safeName)
 			let req = "data/open?filename=\(safeName)"
 			let _ = FrontendCallbackCenter.shared.echo(getRequestString: req)
+			
+			DataModel.shared.addSetting("currentDoc", value: avname)
+			DataModel.shared.addSetting("currentDocNamed", value: "true")
 			
 		} catch {
 			NSLog("I'm unable to open the imported file")

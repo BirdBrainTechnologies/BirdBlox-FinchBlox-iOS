@@ -10,7 +10,7 @@ import Foundation
 import Zip
 
 
-class DataModel: NSObject {
+class DataModel: NSObject, FileManagerDelegate {
 	static let bbxUTI = "com.birdbraintechnologies.bbx"
 	static let shared = DataModel()
 	
@@ -78,13 +78,12 @@ class DataModel: NSObject {
 		self.soundsLoc = self.frontendLoc.appendingPathComponent("SoundClips")
 		self.uiSoundsLoc = self.frontendLoc.appendingPathComponent("SoundsForUI")
 		
-		
 		super.init()
 		
 		//Check the folders exists
 		self.createDirectories()
 		
-//		FileManager.default.delegate = self
+		FileManager.default.delegate = self
 	}
 	
 	func createDirectories() {
@@ -127,10 +126,10 @@ class DataModel: NSObject {
 //		return true
 //	}
 //	
-//	func fileManager(_ fileManager: FileManager, shouldProceedAfterError error: Error, movingItemAt srcURL: URL, to dstURL: URL) -> Bool {
-//		print("\(error)")
-//		return false
-//	}
+	func fileManager(_ fileManager: FileManager, shouldProceedAfterError error: Error, movingItemAt srcURL: URL, to dstURL: URL) -> Bool {
+		print("\(error)")
+		return false
+	}
 	
 	func migrateFromOldSystem() {
 		//Change old file structure
@@ -237,7 +236,7 @@ class DataModel: NSObject {
 		let path = self.folder(of: type).path
 		do {
 			let paths = try FileManager.default.contentsOfDirectory(atPath: path)
-			return paths
+			return paths.filter({ s in s.contains(type.fileExtension)})
 		} catch {
 			return []
 		}
@@ -248,8 +247,8 @@ class DataModel: NSObject {
 			return false
 		}
 		
-		return !FileManager.default.fileExists(
-			atPath: self.getBBXFileLoc(byName: name).path)
+		let loc = self.fileLocation(forName: name, type: type)
+		return !FileManager.default.fileExists(atPath: loc.path)
 	}
 	
 	public func deleteFile(byName name: String, type: BBXFileType) -> Bool {

@@ -38,7 +38,7 @@ class BBXDocument: UIDocument {
 	
 	
 	override func load(fromContents contents: Any, ofType typeName: String?) throws {
-		print("load from contents. Type \(typeName ?? "None")")
+		print("load from contents. Type \(typeName ?? "None"), name: \(self.localizedName)")
 		guard typeName == DataModel.bbxUTI else {
 			throw NSError(domain: "Document Handling", code: -1, userInfo: nil)
 		}
@@ -51,7 +51,7 @@ class BBXDocument: UIDocument {
 		let unzipPath = DataModel.shared.currentDocLoc
 		try contentData.write(to: zipPath)
 		
-		let _ = DataModel.shared.emptyCurrentDocument()
+		print("empty: \(DataModel.shared.emptyCurrentDocument())")
 		DataModel.shared.deleRecordingsDir()
 		if ((try? Zip.unzipFile(zipPath, destination: unzipPath, overwrite: true, password: nil,
 		                        progress: nil)) != nil) {
@@ -75,7 +75,7 @@ class BBXDocument: UIDocument {
 	}
 	
 	override func contents(forType typeName: String) throws -> Any {
-		print("Contents for type: \(typeName)")
+		print("Contents for type: \(typeName), name: \(self.localizedName)")
 		
 		guard typeName == DataModel.bbxUTI else {
 			throw NSError(domain: "Document Handling", code: -1, userInfo: nil)
@@ -87,9 +87,11 @@ class BBXDocument: UIDocument {
 		                     .contentsOfDirectory(at: DataModel.shared.currentDocLoc,
 								                  includingPropertiesForKeys: nil)
 		print("\(filesToZip)")
+		
+		print("about to zip")
 		try Zip.zipFiles(paths: filesToZip, zipFilePath: self.outLoc, password: nil,
 		                 compression: .NoCompression, progress: nil)
-		
+		print("finish zip")
 		
 		guard let retData = NSData(contentsOf: self.outLoc) else {
 			throw NSError(domain: "Document Handling", code: -1, userInfo: nil)
