@@ -243,6 +243,10 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 	//From Tom: send the characters 'G' '4' and you will get back the hardware version 
 	//(currently 0x03 0x00) and the firmware version (0x02 0x02 'b'), might be 'a' instead of 'b'
     func setLED(port: Int, intensity: UInt8) -> Bool {
+		guard self.peripheral.state == .connected else {
+			return false
+		}
+	
         let i = port - 1
 		
 //		self.nextOutputState.leds[i] = intensity
@@ -269,6 +273,10 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
     }
     
     func setTriLed(port: Int, r: UInt8, g: UInt8, b:UInt8) -> Bool {
+		guard self.peripheral.state == .connected else {
+			return false
+		}
+		
         let i = port - 1
 		
 		self.writtenCondition.lock()
@@ -287,6 +295,10 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
     }
     
     func setVibration(port: Int, intensity: UInt8) -> Bool {
+		guard self.peripheral.state == .connected else {
+			return false
+		}
+		
         let i = port - 1
 		
 		self.writtenCondition.lock()
@@ -305,6 +317,10 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
     }
     
     func setMotor(port: Int, speed: Int8) -> Bool {
+		guard self.peripheral.state == .connected else {
+			return false
+		}
+		
         let i = port - 1
 		
 		self.writtenCondition.lock()
@@ -323,6 +339,10 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
     }
     
     func setServo(port: Int, angle: UInt8) -> Bool {
+		guard self.peripheral.state == .connected else {
+			return false
+		}
+		
         let i = port - 1
 		
 		self.writtenCondition.lock()

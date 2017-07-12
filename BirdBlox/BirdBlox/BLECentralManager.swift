@@ -163,6 +163,8 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 		}
 		print("error disconnecting \(peripheral),  \(errorStr)")
 		
+		let id = peripheral.identifier.uuidString
+		FrontendCallbackCenter.shared.robotUpdateStatus(id: id, connected: false)
 	}
 	
 	/**

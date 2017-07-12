@@ -37,6 +37,8 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 		
 		self.addHandlersToServer(self.server)
 		
+		(UIApplication.shared.delegate as! AppDelegate).backendServer = self.server
+		
 		self.server["/ui/contentLoaded"] = { request in
 			self.webUILoaded = true
 			
@@ -454,6 +456,7 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 					if suc {
 						let _ = deleteHandler(request)
 						self.wv.evaluateJavaScript("CallbackManager.data.close()")
+						self.wv.evaluateJavaScript("CallbackManager.data.filesChanged()")
 					}
 				})
 				return .ok(.text("We'll see"))
