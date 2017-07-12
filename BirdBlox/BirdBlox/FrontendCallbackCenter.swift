@@ -97,7 +97,7 @@ class FrontendCallbackCenter {
 		
 		let safeResponse = " '\(FrontendCallbackCenter.safeString(from: id))' "
 		
-		let function = "CallbackManager.dialog.updateStatus"
+		let function = "CallbackManager.robot.updateStatus"
 		let parameters = "(\(safeResponse), \(connected))"
 		let js = function + parameters
 		

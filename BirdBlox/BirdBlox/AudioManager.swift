@@ -73,6 +73,11 @@ class AudioManager: NSObject, AVAudioRecorderDelegate {
 		//Try to get permission if we don't have it
 		guard sharedAudioSession.recordPermission() == .granted else {
 			sharedAudioSession.requestRecordPermission { permissionGranted in
+				if permissionGranted {
+//					BBXCallbackManager.current.addAvailableSensor(.Microphone)
+				} else {
+//					BBXCallbackManager.current.removeAvailableSensor(.Microphone)
+				}
 				return
 			}
 			

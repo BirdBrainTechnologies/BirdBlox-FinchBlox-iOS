@@ -33,6 +33,8 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 		
 		//Setup Server
 		
+		FrontendCallbackCenter.shared.webView = webView
+		
 		self.addHandlersToServer(self.server)
 		
 		self.server["/ui/contentLoaded"] = { request in
@@ -267,6 +269,16 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 		})
 	}
 	
+	//Shaken Sensor
+	var timeLastShaken = Date(timeIntervalSince1970: 0)
+	var shakeExpireInterval = TimeInterval(5) //seconds
+	
+	override func motionEnded(_ motion: UIEventSubtype, with event: UIEvent?) {
+		if motion == .motionShake {
+			self.timeLastShaken = Date(timeIntervalSinceNow: 0)
+		}
+	}
+	
 	//MARK: Setup Sever
 	let hummingbirdManager = HummingbirdManager()
 	let flutterManager = FlutterManager()
@@ -297,6 +309,12 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 		soundManager.loadRequests(server: server)
 		settingsManager.loadRequests(server: server)
 		propertiesManager.loadRequests(server: server)
+		
+		self.server["/tablet/shake"] = { (request: HttpRequest) -> HttpResponse in
+			let interval = Date(timeIntervalSinceNow: 0).timeIntervalSince(self.timeLastShaken)
+			let respStr = (interval < self.shakeExpireInterval) ? "1" : "0"
+			return .ok(.text(respStr))
+		}
 		
 		self.server["/data/showCloudPicker"] = { (request: HttpRequest) -> HttpResponse in
 			let picker = UIDocumentPickerViewController(documentTypes: [DataModel.bbxUTI, "public.xml"], in: .open)
@@ -417,6 +435,31 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 			else {
 				return renameHandler(request)
 			}
+		}
+		
+		let deleteHandler = self.dataRequests!.deleteRequest
+		self.server["/data/delete"] = { (request: HttpRequest) -> HttpResponse in
+			let queries = BBTSequentialQueryArrayToDict(request.queryParams)
+			guard let filename = queries["filename"],
+				let typeStr = queries["type"] else {
+					return .badRequest(.text("Missing Parameters"))
+			}
+			guard let type = self.dataRequests?.fileType(fromParameter: typeStr) else {
+				return .badRequest(.text("Invalid type argument"))
+			}
+			
+			guard (filename != self.document.localizedName || (type != .BirdBloxProgram)) else {
+				print("delete open")
+				self.closeCurrentProgram(completion: { suc in
+					if suc {
+						let _ = deleteHandler(request)
+						self.wv.evaluateJavaScript("CallbackManager.data.close()")
+					}
+				})
+				return .ok(.text("We'll see"))
+			}
+			
+			return deleteHandler(request)
 		}
 	}
 	

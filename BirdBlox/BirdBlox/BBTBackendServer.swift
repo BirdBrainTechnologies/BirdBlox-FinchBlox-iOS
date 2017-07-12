@@ -8,6 +8,7 @@
 
 import Foundation
 import Swifter
+import WebKit
 
 class BBTBackendServer {
 	let port = 22179

@@ -81,7 +81,6 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
     //end ssid
     
     func loadRequests(server: BBTBackendServer){
-        server["/tablet/shake"] = shakeRequest(request:)
         server["/tablet/location"] = locationRequest(request:)
         server["/tablet/ssid"] = ssidRequest(request:)
         server["/tablet/pressure"] = pressureRequest(request:)
@@ -93,6 +92,7 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
         
         server["/tablet/dialog"] = dialogRequest(request:)
         server["/tablet/choice"] = choiceRequest(request:)
+		server["/tablet/availableSensors"] = self.sensorAvailabilityRequest
 		
 //		// /tablet/dialog?title=x&question=y&holder=z
 //		server["/tablet/dialog"] = self.dialogRequest
@@ -101,14 +101,21 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
 //		server["/tablet/choice"] = self.choiceRequest
     }
 	
-	//TODO: Add check shake back into app
-    func shakeRequest(request: HttpRequest) -> HttpResponse {
-//        let checkShake = view_controller.checkShaken()
-//        if checkShake{
-//            return .ok(.text(String(1)))
-//        }
-        return .ok(.text(String(0)))
-    }
+	func sensorAvailabilityRequest(request: HttpRequest) -> HttpResponse {
+		let alt = CMAltimeter.isRelativeAltitudeAvailable()
+		var responseString = ""
+		responseString = responseString + BBXCallbackManager.Sensor.Accelerometer.jsString() + "\n"
+		responseString = responseString + BBXCallbackManager.Sensor.GPSReceiver.jsString() + "\n"
+		responseString = responseString + BBXCallbackManager.Sensor.Microphone.jsString() + "\n"
+		if alt {
+			responseString = responseString + BBXCallbackManager.Sensor.Barometer.jsString() + "\n"
+		} else {
+			print("no barometer")
+		}
+		
+		return .ok(.text(responseString))
+	}
+	
     func locationRequest(request: HttpRequest) -> HttpResponse {
         let latitude = Double(self.currentLocation.latitude)
         let longitude = Double(self.currentLocation.longitude)
