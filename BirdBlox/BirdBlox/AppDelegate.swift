@@ -136,22 +136,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 				return false
 			}
 			
-			guard self.uiLoaded else {
-				DataModel.shared.addSetting("currentDoc", value: avname)
-				DataModel.shared.addSetting("currentDocNamed", value: "true")
-				return true
-			}
+//			guard self.uiLoaded else {
+//				DataModel.shared.addSetting("currentDoc", value: avname)
+//				DataModel.shared.addSetting("currentDocNamed", value: "true")
+//				return true
+//			}
 			
-			if let vc = window?.rootViewController as? ViewController,
-				let safeName = avname.addingPercentEncoding(withAllowedCharacters: CharacterSet()) {
-				print(safeName)
-				vc.wv.evaluateJavaScript("SaveManager.import('\(safeName)');") {
-					(_, error) in
-					print(error ?? "No Error")
-				}
+			guard let safeName = avname.addingPercentEncoding(withAllowedCharacters: CharacterSet()) else{
+				return false
+				
 			}
+			print(safeName)
+			let req = "data/open?filename=\(safeName)"
+			let _ = FrontendCallbackCenter.shared.echo(getRequestString: req)
+			
 		} catch {
-			NSLog("I'm unable to open the file")
+			NSLog("I'm unable to open the imported file")
 			return false
 		}
 		

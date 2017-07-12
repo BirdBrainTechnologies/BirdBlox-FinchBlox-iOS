@@ -113,4 +113,25 @@ class FrontendCallbackCenter {
 		return true
 	}
 	
+	func echo(getRequestString: String) -> Bool {
+		guard let wv = self.webView else {
+			return false
+		}
+		
+		let function = "CallbackManager.echo"
+		let parameters = "('\(getRequestString)')"
+		let js = function + parameters
+		
+		wv.evaluateJavaScript(js, completionHandler: { ret, error in
+			if let error = error {
+				print("Error running '\(js)': \(error)")
+				return
+			}
+			
+			print("Ran '\(js)', got \(String(describing: ret))")
+		})
+		
+		return true
+	}
+	
 }

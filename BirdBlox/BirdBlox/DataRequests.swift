@@ -27,6 +27,7 @@ class DataManager: NSObject {
         server["/data/rename"] = renameRequest(request:)
         server["/data/delete"] = deleteRequest(request:)
         server["/data/export"] = exportRequest(request:)
+		server["/data/duplicate"] = self.duplicateRequest
     }
 	
 	func availableNameRequest(request: HttpRequest) -> HttpResponse {
@@ -136,6 +137,26 @@ class DataManager: NSObject {
 		}
 		
 		return .ok(.text("File Renamed"))
+	}
+	
+	func duplicateRequest(request: HttpRequest) -> HttpResponse {
+		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
+		
+		guard let oldFilename = queries["filename"],
+			let newFilename = queries["newFilename"] else {
+				return .badRequest(.text("Missing Parameters"))
+		}
+		guard DataModel.nameIsSanitary(oldFilename) && DataModel.nameIsSanitary(newFilename) else {
+			return .badRequest(.text("Unsanitary parameter arguments"))
+		}
+		
+		let type: DataModel.BBXFileType = .BirdBloxProgram
+		
+		guard DataModel.shared.copyFile(from: oldFilename, to: newFilename, type: type) else {
+			return .internalServerError
+		}
+		
+		return .ok(.text("copied"))
 	}
 	
     func deleteRequest(request: HttpRequest) -> HttpResponse {

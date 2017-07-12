@@ -274,6 +274,18 @@ class DataModel: NSObject {
 		}
 	}
 	
+	public func copyFile(from: String, to: String, type: BBXFileType) -> Bool {
+		let fromLoc = self.fileLocation(forName: from, type: type)
+		let toLoc = self.fileLocation(forName: to, type: type)
+		
+		do {
+			try FileManager.default.copyItem(at: fromLoc, to: toLoc)
+			return true
+		} catch {
+			return false
+		}
+	}
+	
 	
 	//MARK: Managing file names
 	
