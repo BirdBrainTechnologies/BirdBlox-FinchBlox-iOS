@@ -125,7 +125,7 @@ class AudioManager: NSObject, AVAudioRecorderDelegate {
 		
 		if deleteRecording {
 			recorder.deleteRecording()
-//			try? FileManager.default.removeItem(at: recorder.url)
+			try? FileManager.default.removeItem(at: recorder.url)
 		}
 		
 		self.recorder = nil
