@@ -127,9 +127,15 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
         return .ok(.text(ssid))
     }
     func pressureRequest(request: HttpRequest) -> HttpResponse {
+		guard CMAltimeter.isRelativeAltitudeAvailable() else {
+			return .badRequest(.text("No barometer available"))
+		}
         return .ok(.text(String(format: "%f", self.currentPressure)))
     }
     func altitudeRequest(request: HttpRequest) -> HttpResponse {
+		guard CMAltimeter.isRelativeAltitudeAvailable() else {
+			return .badRequest(.text("No barometer available"))
+		}
         return .ok(.text(String(format: "%f", self.currentAltitude)))
     }
     func orientationRequest(request: HttpRequest) -> HttpResponse {

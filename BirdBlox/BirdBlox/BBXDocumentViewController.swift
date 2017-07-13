@@ -350,7 +350,7 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 //					self.webUILoaded = false
 					self.document = doc
 //					self.webUILoaded = true
-					FrontendCallbackCenter.shared.documentSetName(name: name)
+					let _ = FrontendCallbackCenter.shared.documentSetName(name: name)
 				} else {
 					NSLog("Creating new document failed.")
 				}
@@ -372,21 +372,28 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 				return .badRequest(.text("Missing Parameters"))
 			}
 			
-			self.closeCurrentProgram() { suc in
-				if suc {
-					let fileExists = self.openProgram(byName: name)
-				
-	//				if !fileExists {
-	//					return .internalServerError
-	//				}
-				
-					UserDefaults.standard.set(false, forKey: self.curDocNeedsNameKey)
-					UserDefaults.standard.set(name, forKey: self.curDocNameKey)
+			let openBlock = {
+				let _ = self.openProgram(byName: name)
+//				if !fileExists {
+//					return .internalServerError
+//				}
+				UserDefaults.standard.set(false, forKey: self.curDocNeedsNameKey)
+				UserDefaults.standard.set(name, forKey: self.curDocNameKey)
+			}
+			
+			if self.document.documentState == .closed {
+				openBlock()
+			} else {
+				self.closeCurrentProgram() { suc in
+					if suc {
+						openBlock()
+					}
 				}
 			}
 			
-			return .ok(.text(""))
+				return .ok(.text(""))
 		}
+		
 		
 		self.server["/data/save"] = { (request: HttpRequest) in
 			return HttpResponse.ok(.text("Using UIDocument Autosave instead"))

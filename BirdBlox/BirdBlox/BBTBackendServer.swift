@@ -79,12 +79,14 @@ class BBTBackendServer {
 		do {
 			try swifterServer.start(in_port_t(port), forceIPv4: true,
 			                        priority: DispatchQoS.default.qosClass)
+			NSLog("Server started")
 		} catch {
 			return
 		}
 	}
 	
 	func stop() {
+		NSLog("Server stopping")
 		self.swifterServer.stop()
 	}
 }
