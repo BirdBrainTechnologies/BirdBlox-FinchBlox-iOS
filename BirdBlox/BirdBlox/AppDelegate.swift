@@ -131,14 +131,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 		print("Import starting")
 		
 		do {
-			let contents = try Data(contentsOf: url)
 			let name = url.lastPathComponent.replacingOccurrences(of: ".bbx", with: "")
 			
 			
 			let avname = DataModel.shared.availableName(from: name)! //This also sanitizes the name
-			let toLocation =  DataModel.shared.fileLocation(forName: name, type: .BirdBloxProgram)
+			let toLocation =  DataModel.shared.fileLocation(forName: avname, type: .BirdBloxProgram)
 			print("\(toLocation)")
-			try contents.write(to: toLocation)
+			try FileManager.default.copyItem(at: url, to: toLocation)
 			print("location writtent to")
 			
 //			guard self.uiLoaded else {
