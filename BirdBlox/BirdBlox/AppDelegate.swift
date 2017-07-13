@@ -140,11 +140,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 			try FileManager.default.copyItem(at: url, to: toLocation)
 			print("location writtent to")
 			
-//			guard self.uiLoaded else {
-//				DataModel.shared.addSetting("currentDoc", value: avname)
-//				DataModel.shared.addSetting("currentDocNamed", value: "true")
-//				return true
-//			}
+			UserDefaults.standard.set(false, forKey: BBXDocumentViewController.curDocNeedsNameKey)
+			UserDefaults.standard.set(name, forKey: BBXDocumentViewController.curDocNameKey)
 			
 			guard let safeName = avname.addingPercentEncoding(withAllowedCharacters: CharacterSet()) else{
 				return false

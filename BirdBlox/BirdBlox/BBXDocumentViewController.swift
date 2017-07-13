@@ -107,6 +107,8 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 	}
 	
 	//MARK: Document Handling
+	static let curDocNeedsNameKey = "CurrentDocumentNeedsName"
+	static let curDocNameKey = "CurrentDocumentName"
 	let curDocNeedsNameKey = "CurrentDocumentNeedsName"
 	let curDocNameKey = "CurrentDocumentName"
 	
@@ -315,6 +317,7 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 		self.server["/tablet/shake"] = { (request: HttpRequest) -> HttpResponse in
 			let interval = Date(timeIntervalSinceNow: 0).timeIntervalSince(self.timeLastShaken)
 			let respStr = (interval < self.shakeExpireInterval) ? "1" : "0"
+			self.timeLastShaken = Date(timeIntervalSince1970: 0)
 			return .ok(.text(respStr))
 		}
 		
