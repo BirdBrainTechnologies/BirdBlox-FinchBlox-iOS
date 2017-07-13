@@ -137,7 +137,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 			
 			let avname = DataModel.shared.availableName(from: name)! //This also sanitizes the name
 			let toLocation =  DataModel.shared.fileLocation(forName: name, type: .BirdBloxProgram)
+			print("\(toLocation)")
 			try contents.write(to: toLocation)
+			print("location writtent to")
 			
 //			guard self.uiLoaded else {
 //				DataModel.shared.addSetting("currentDoc", value: avname)

@@ -56,6 +56,7 @@ class DataManager: NSObject {
     
     func filesRequest(request: HttpRequest) -> HttpResponse {
         let filenameList = DataModel.shared.savedBBXFiles
+//		print(filenameList)
 		let nameList = filenameList.map({$0.replacingOccurrences(of: ".bbx", with: "")})
 		let bodyString = nameList.joined(separator: "\n")
 		

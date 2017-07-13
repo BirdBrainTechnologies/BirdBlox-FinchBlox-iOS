@@ -374,6 +374,7 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 			
 			let openBlock = {
 				let _ = self.openProgram(byName: name)
+				print(name)
 //				if !fileExists {
 //					return .internalServerError
 //				}

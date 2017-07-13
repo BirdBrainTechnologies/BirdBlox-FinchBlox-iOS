@@ -347,10 +347,9 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 		
 		self.writtenCondition.lock()
 		
-		let cur = self.currentOutputState.mutableCopy
 		self.conditionHelper(condition: self.writtenCondition, holdLock: false,
 		                     predicate: {
-			self.nextOutputState.servos[i] == cur.servos[i]
+			self.nextOutputState.servos[i] == self.currentOutputState.mutableCopy.servos[i]
 		}, work: {
 			self.nextOutputState.servos[i] = angle
 		})

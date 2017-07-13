@@ -236,6 +236,7 @@ class DataModel: NSObject, FileManagerDelegate {
 		let path = self.folder(of: type).path
 		do {
 			let paths = try FileManager.default.contentsOfDirectory(atPath: path)
+//			print(paths)
 			return paths.filter({ s in s.contains(type.fileExtension)})
 		} catch {
 			return []
