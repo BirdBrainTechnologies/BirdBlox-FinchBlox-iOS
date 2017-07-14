@@ -18,7 +18,7 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 	
 	let server = BBTBackendServer()
 	
-	var saveTimer = Timer()
+//	var saveTimer = Timer()
 	
 	override func viewDidLoad() {
 		NSLog("Document View Controller viewDidLoad")
@@ -28,8 +28,6 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 		self.view.backgroundColor = UIColor.black
 		
 		self.setNeedsStatusBarAppearanceUpdate()
-		
-		self.startTimer()
 		
 		//Setup Server
 		
@@ -61,7 +59,9 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 		let javascriptPageURL = URL(string: cleanUrlStr)
 		let req = URLRequest(url: javascriptPageURL!,
 		                     cachePolicy: URLRequest.CachePolicy.reloadIgnoringLocalCacheData)
+		print("pre-req")
 		self.webView.load(req)
+		print("post-req")
 		
 		self.view.addSubview(webView)
 		
@@ -73,7 +73,7 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 	
 	//MARK: Save Timer
 	
-	func startTimer() {
+/*	func startTimer() {
 		self.saveTimer = Timer.scheduledTimer(timeInterval: 0.125, target: self,
 		                                      selector: #selector(self.saveTimerFired),
 		                                      userInfo: nil, repeats: true)
@@ -104,7 +104,7 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 				self.document.currentXML = content
 			}
 		}
-	}
+	} */
 	
 	//MARK: Document Handling
 	static let curDocNeedsNameKey = "CurrentDocumentNeedsName"
@@ -145,7 +145,6 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 		}
 		
 		set (doc) {
-			self.saveTimer.invalidate()
 			self.realDoc.close(completionHandler: nil)
 			self.realDoc = doc
 			
@@ -154,8 +153,6 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 					// Only set this document as our document if it is valid
 					//Relies on no more requests while the js is still parsing the document
 					if succeeded {
-						self.startTimer()
-						
 						let notificationName = NSNotification.Name.UIDocumentStateChanged
 						NotificationCenter.default.addObserver(forName: notificationName,
 						                                       object: self.realDoc, queue: nil,
@@ -439,9 +436,9 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 					case .ok(_):
 						self.webView.evaluateJavaScript("CallbackManager.data.filesChanged()") {
 							result, error in
-							let _ = self.openProgram(byName: newFilename)
 							UserDefaults.standard.set(newFilename, forKey: self.curDocNameKey)
 							UserDefaults.standard.set(false, forKey: self.curDocNeedsNameKey)
+							let _ = self.openProgram(byName: newFilename)
 						}
 					default:
 						self.webView.evaluateJavaScript("CallbackManager.data.close()")
