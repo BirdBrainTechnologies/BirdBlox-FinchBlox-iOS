@@ -343,11 +343,16 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 			NSLog("Created file named \(name)")
 			let fileURL = DataModel.shared.getBBXFileLoc(byName: name)
 			
+			guard DataModel.shared.emptyCurrentDocument() else {
+				return .internalServerError
+			}
+			
 			let doc = BBXDocument(fileURL: fileURL)
 			doc.currentXML = xml
 			doc.save(to: fileURL, for: .forCreating, completionHandler: { succeeded in
 				if succeeded {
 //					self.webUILoaded = false
+					print(doc.documentState)
 					self.document = doc
 //					self.webUILoaded = true
 					let _ = FrontendCallbackCenter.shared.documentSetName(name: name)
