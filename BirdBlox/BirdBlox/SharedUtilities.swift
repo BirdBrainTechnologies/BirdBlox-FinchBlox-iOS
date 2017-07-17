@@ -214,3 +214,28 @@ public func BBTSequentialQueryArrayToDict
 }
 
 
+struct FixedLengthArray<T> {
+	private var array: Array<T>
+	let length: Int
+	
+	init(_ from: Array<T>) {
+		array = from
+		length = from.count
+	}
+	
+	init(length: UInt, repeating: T) {
+		let arr = Array<T>(repeating: repeating, count: Int(length))
+		self.init(arr)
+	}
+	
+	subscript (index: Int) -> T {
+		get {
+			return self.array[index]
+		}
+		
+		set(value) {
+			self.array[index] = value
+		}
+	}
+}
+

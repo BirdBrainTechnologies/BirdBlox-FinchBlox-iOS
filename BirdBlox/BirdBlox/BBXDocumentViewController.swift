@@ -318,7 +318,7 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 			return .ok(.text(respStr))
 		}
 		
-		self.server["/data/showCloudPicker"] = { (request: HttpRequest) -> HttpResponse in
+		self.server["/cloud/showPicker"] = { (request: HttpRequest) -> HttpResponse in
 			let picker = UIDocumentPickerViewController(documentTypes: [DataModel.bbxUTI, "public.xml"], in: .open)
 			picker.delegate = self
 			
@@ -488,6 +488,7 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 	
 	func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentAt url: URL) {
 		let doc = BBXDocument(fileURL: url)
+		FrontendCallbackCenter.shared.markLoadingDocument()
 		doc.open(completionHandler: { suc in
 			print("open handler suc: \(suc)")
 			if suc {

@@ -156,4 +156,30 @@ class FrontendCallbackCenter {
 		
 		return true
 	}
+	
+	func markLoadingDocument() -> Bool {
+		let function = "CallbackManager.data.markLoading"
+		let parameters = "()"
+		
+		return self.runJS(function: function, parameters: parameters)
+	}
+	
+	private func runJS(function: String, parameters: String) -> Bool {
+		guard let wv = self.webView else {
+			return false
+		}
+		
+		let js = function + parameters
+		
+		wv.evaluateJavaScript(js, completionHandler: { ret, error in
+			if let error = error {
+				print("Error running '\(js)': \(error)")
+				return
+			}
+			
+			print("Ran '\(js)', got \(String(describing: ret))")
+		})
+		
+		return true
+	}
 }
