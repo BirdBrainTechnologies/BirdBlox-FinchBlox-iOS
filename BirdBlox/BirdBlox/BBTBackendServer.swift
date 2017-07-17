@@ -48,10 +48,7 @@ class BBTBackendServer {
 			func guardedHandler(request: HttpRequest) -> HttpResponse {
 				let address = request.address ?? "unknown"
 				
-				//TODO Decide if necessary to remove totalStatus commands in
-				if !request.path.contains("totalStatus") { //So output is actually readable
-					NSLog("HTTP Request \(request.path) from address \(address).")
-				}
+				NSLog("HTTP Request \(request.path) from address \(address).")
 				
 				
 				if request.address == nil || request.address != BBTLocalHostIP{

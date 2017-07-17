@@ -36,9 +36,9 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 	
 	var writtenCondition: NSCondition = NSCondition()
 	//MARK: Variables write protected by writtenCondition
-	private var currentOutputState: BBTHummingbirdState
+	private var currentOutputState: BBTHummingbirdOutputState
 //	private var writingOutputState: BBTHummingbirdState
-	public var nextOutputState: BBTMutableHummingbirdState
+	public var nextOutputState: BBTHummingbirdOutputState
 	var lastWriteWritten: Bool = false
 	var lastWriteStart: DispatchTime = DispatchTime.now()
 	//End variables write protected by writtenCondition
@@ -63,8 +63,8 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
         self.peripheral = peripheral
         self.BLE_Manager = BLECentralManager.manager
 		
-		self.currentOutputState = BBTHummingbirdState(led1: 0)
-		self.nextOutputState = BBTMutableHummingbirdState()
+		self.currentOutputState = BBTHummingbirdOutputState()
+		self.nextOutputState = BBTHummingbirdOutputState()
 		
         super.init()
         self.peripheral.delegate = self
@@ -130,9 +130,9 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 		self.initializing = true
 		
 		//Get ourselves a fresh slate
-        self.sendData(data: getTurnOffCommand())
+        self.sendData(data: BBTHummingbirdUtility.getTurnOffCommand())
         Thread.sleep(forTimeInterval: 0.1)
-        self.sendData(data: getPollStopCommand())
+        self.sendData(data: BBTHummingbirdUtility.getPollStopCommand())
         Thread.sleep(forTimeInterval: 0.1)
 		
 		self.finishInitialization()
@@ -145,7 +145,7 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 			self.exitCommandMode()
 		}
 		
-		self.sendData(data: getPollStartCommand())
+		self.sendData(data: BBTHummingbirdUtility.getPollStartCommand())
 		DispatchQueue.main.async{
 			self.syncTimer =
 			Timer.scheduledTimer(timeInterval: self.syncInterval, target: self,
@@ -262,7 +262,7 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 //		print("written: \(self.lastWriteWritten), next: \(self.nextOutputState.leds[i])" +
 //			" cur: \(self.currentOutputState.mutableCopy.leds[i])")
 		
-		while !(self.nextOutputState.leds[i] == self.currentOutputState.mutableCopy.leds[i]) {
+		while !(self.nextOutputState.leds[i] == self.currentOutputState.leds[i]) {
 			self.writtenCondition.wait(until: Date(timeIntervalSinceNow: self.waitRefreshTime))
 //			print("waiting. written: \(self.lastWriteWritten), next: \(self.nextOutputState.leds[i])")
 //			print("cur: \(self.currentOutputState.mutableCopy.leds[i])")
@@ -288,9 +288,9 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 		
 		self.conditionHelper(condition: self.writtenCondition, holdLock: false,
 		                     predicate: {
-			self.nextOutputState.trileds[i] == self.currentOutputState.mutableCopy.trileds[i]
+			self.nextOutputState.trileds[i] == self.currentOutputState.trileds[i]
 		}, work: {
-			self.nextOutputState.trileds[i] = (red: r, green: g, blue: b)
+			self.nextOutputState.trileds[i] = BBTTriLED(red: r, green: g, blue: b)
 		})
 		
 		self.writtenCondition.unlock()
@@ -310,7 +310,7 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 		
 		self.conditionHelper(condition: self.writtenCondition, holdLock: false,
 		                     predicate: {
-			self.nextOutputState.vibrators[i] == self.currentOutputState.mutableCopy.vibrators[i]
+			self.nextOutputState.vibrators[i] == self.currentOutputState.vibrators[i]
 		}, work: {
 			self.nextOutputState.vibrators[i] = intensity
 		})
@@ -332,7 +332,7 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 		
 		self.conditionHelper(condition: self.writtenCondition, holdLock: false,
 		                     predicate: {
-			self.nextOutputState.motors[i] == self.currentOutputState.mutableCopy.motors[i]
+			self.nextOutputState.motors[i] == self.currentOutputState.motors[i]
 		}, work: {
 			self.nextOutputState.motors[i] = speed
 		})
@@ -354,7 +354,7 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 		
 		self.conditionHelper(condition: self.writtenCondition, holdLock: false,
 		                     predicate: {
-			self.nextOutputState.servos[i] == self.currentOutputState.mutableCopy.servos[i]
+			self.nextOutputState.servos[i] == self.currentOutputState.servos[i]
 		}, work: {
 			self.nextOutputState.servos[i] = angle
 		})
@@ -371,7 +371,7 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 		
 //		print("s ", separator: "", terminator: "")
 		
-		let nextCopy = self.nextOutputState.immutableCopy
+		let nextCopy = self.nextOutputState
 		
 		let changeOccurred = !(nextCopy == self.currentOutputState)
 		let currentCPUTime = DispatchTime.now().uptimeNanoseconds
@@ -379,9 +379,18 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 			((currentCPUTime - self.lastWriteStart.uptimeNanoseconds) > self.cacheTimeoutDuration)
 		
 		if self.was_initialized && self.lastWriteWritten  && shouldSync {
-			let command = getSetAllCommand(tris: nextCopy.trileds, leds: nextCopy.leds,
-			                               servos: nextCopy.servos, motors: nextCopy.motors,
-										   vibs: nextCopy.vibrators)
+			let cmdMkr = BBTHummingbirdUtility.getSetAllCommand
+			
+			let tris = nextCopy.trileds
+			let leds = nextCopy.leds
+			let servos = nextCopy.servos
+			let motors = nextCopy.motors
+			let vibrators = nextCopy.vibrators
+			let command = cmdMkr((tris[0].tuple, tris[1].tuple),
+			                     (leds[0], leds[1], leds[2], leds[3]),
+			                     (servos[0], servos[1], servos[2], servos[3]),
+			                     (motors[0], motors[1]),
+			                     (vibrators[0], vibrators[1]))
 			
 			self.sendData(data: command)
 			self.lastWriteStart = DispatchTime.now()
@@ -405,7 +414,7 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 	
 	func stopEverything() {
 		self.writtenCondition.lock()
-		self.nextOutputState = BBTMutableHummingbirdState()
+		self.nextOutputState = BBTHummingbirdOutputState()
 		self.writtenCondition.unlock()
 	}
 	

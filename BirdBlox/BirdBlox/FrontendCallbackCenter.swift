@@ -24,6 +24,30 @@ class FrontendCallbackCenter {
 	var webView: WKWebView? = nil
 	
 	
+	//MARK: Internal Method
+	private func runJS(function: String, parametersStr: String) -> Bool {
+		guard let wv = self.webView else {
+			return false
+		}
+		
+		let js = function + parametersStr
+		
+		wv.evaluateJavaScript(js, completionHandler: { ret, error in
+			if let error = error {
+				NSLog("Error running '\(js)': \(error)")
+				return
+			}
+			
+			#if DEBUG
+				print("Ran '\(js)', got \(String(describing: ret))")
+			#endif
+		})
+		
+		return true
+	}
+	
+	
+	//MARK: Dialog Responses
 	public func dialogPromptResponded(cancelled: Bool, response: String?) -> Bool {
 		guard let wv = self.webView else {
 			return false
@@ -90,6 +114,8 @@ class FrontendCallbackCenter {
 		return true
 	}
 	
+	
+	//MARK: Robot Related
 	public func robotUpdateStatus(id: String, connected: Bool) -> Bool {
 		guard let wv = self.webView else {
 			return false
@@ -113,6 +139,26 @@ class FrontendCallbackCenter {
 		return true
 	}
 	
+	
+	//MARK: Updating UI
+	func documentSetName(name: String) -> Bool {
+		let safeName = FrontendCallbackCenter.safeString(from: name)
+		
+		let function = "CallbackManager.data.setName"
+		let parameters = "('\(safeName)')"
+		
+		return self.runJS(function: function, parametersStr: parameters)
+	}
+	
+	func markLoadingDocument() -> Bool {
+		let function = "CallbackManager.data.markLoading"
+		let parameters = "()"
+		
+		return self.runJS(function: function, parametersStr: parameters)
+	}
+	
+	
+	//MARK: misc., utility
 	func echo(getRequestString: String) -> Bool {
 		guard let wv = self.webView else {
 			return false
@@ -120,55 +166,6 @@ class FrontendCallbackCenter {
 		
 		let function = "CallbackManager.echo"
 		let parameters = "('\(getRequestString)')"
-		let js = function + parameters
-		
-		wv.evaluateJavaScript(js, completionHandler: { ret, error in
-			if let error = error {
-				print("Error running '\(js)': \(error)")
-				return
-			}
-			
-			print("Ran '\(js)', got \(String(describing: ret))")
-		})
-		
-		return true
-	}
-	
-	func documentSetName(name: String) -> Bool {
-		guard let wv = self.webView else {
-			return false
-		}
-		
-		let safeName = FrontendCallbackCenter.safeString(from: name)
-		
-		let function = "CallbackManager.data.setName"
-		let parameters = "('\(safeName)')"
-		let js = function + parameters
-		
-		wv.evaluateJavaScript(js, completionHandler: { ret, error in
-			if let error = error {
-				print("Error running '\(js)': \(error)")
-				return
-			}
-			
-			print("Ran '\(js)', got \(String(describing: ret))")
-		})
-		
-		return true
-	}
-	
-	func markLoadingDocument() -> Bool {
-		let function = "CallbackManager.data.markLoading"
-		let parameters = "()"
-		
-		return self.runJS(function: function, parameters: parameters)
-	}
-	
-	private func runJS(function: String, parameters: String) -> Bool {
-		guard let wv = self.webView else {
-			return false
-		}
-		
 		let js = function + parameters
 		
 		wv.evaluateJavaScript(js, completionHandler: { ret, error in

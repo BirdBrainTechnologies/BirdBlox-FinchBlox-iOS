@@ -214,7 +214,7 @@ public func BBTSequentialQueryArrayToDict
 }
 
 
-struct FixedLengthArray<T> {
+struct FixedLengthArray<T: Equatable>: Equatable {
 	private var array: Array<T>
 	let length: Int
 	
@@ -236,6 +236,10 @@ struct FixedLengthArray<T> {
 		set(value) {
 			self.array[index] = value
 		}
+	}
+	
+	static func ==(inLeft: FixedLengthArray, inRight: FixedLengthArray) -> Bool {
+		return (inLeft.length == inRight.length) && (inLeft.array == inRight.array)
 	}
 }
 

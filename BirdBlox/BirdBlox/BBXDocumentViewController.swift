@@ -488,7 +488,7 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 	
 	func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentAt url: URL) {
 		let doc = BBXDocument(fileURL: url)
-		FrontendCallbackCenter.shared.markLoadingDocument()
+		let _ = FrontendCallbackCenter.shared.markLoadingDocument()
 		doc.open(completionHandler: { suc in
 			print("open handler suc: \(suc)")
 			if suc {
