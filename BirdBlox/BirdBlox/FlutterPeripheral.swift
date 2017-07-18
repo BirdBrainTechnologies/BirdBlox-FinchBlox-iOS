@@ -9,24 +9,31 @@
 import Foundation
 import CoreBluetooth
 
-class FlutterPeripheral: NSObject, CBPeripheralDelegate {
-	var peripheral: CBPeripheral
-    fileprivate let BLE_Manager: BLECentralManager
-
-    static let DEVICE_UUID =     CBUUID(string: "BC2F4CC6-AAEF-4351-9034-D66268E328F0")
-    static let SERVICE_UUID =    CBUUID(string: "BC2F4CC6-AAEF-4351-9034-D66268E328F0")
-    static let TX_UUID =         CBUUID(string: "06D1E5E7-79AD-4A71-8FAA-373789F7D93C")
-    static let RX_UUID =         CBUUID(string: "818AE306-9C5B-448D-B51A-7ADD6A5D314D")
-    static let RX_CONFIG_UUID =  CBUUID(string: "00002902-0000-1000-8000-00805f9b34fb")
-    
-    let OK_RESPONSE = "OK"
-    let FAIL_RESPONSE = "FAIL"
-    let MAX_RETRY = 50
+class FlutterPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripheral {
+	public static let deviceUUID = CBUUID(string: "BC2F4CC6-AAEF-4351-9034-D66268E328F0")
+    static let SERVICE_UUID =      CBUUID(string: "BC2F4CC6-AAEF-4351-9034-D66268E328F0")
+    static let TX_UUID =           CBUUID(string: "06D1E5E7-79AD-4A71-8FAA-373789F7D93C")
+    static let RX_UUID =           CBUUID(string: "818AE306-9C5B-448D-B51A-7ADD6A5D314D")
+    static let RX_CONFIG_UUID =    CBUUID(string: "00002902-0000-1000-8000-00805f9b34fb")
+	
+	
+	public let peripheral: CBPeripheral
+	
+	public var id: String {
+		return self.peripheral.identifier.uuidString
+	}
+	
+	public static let type: BBTRobotType = .Flutter
+	
+	private let BLE_Manager: BLECentralManager
+	
+	private var _initialized: Bool = false
+	public var initialized: Bool {
+		return self._initialized
+	}
     
     var rx_line, tx_line: CBCharacteristic?
     var rx_config_line: CBDescriptor?
-    
-    var last_message_sent: Data = Data()
     
     var data_cond: NSCondition = NSCondition()
     
@@ -38,9 +45,11 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate {
 	fileprivate var buzzerFrequency: Int = 0
 	fileprivate var buzzerTime: Double = 0
 	
-    var last_message_recieved: [UInt8] = [0,0,0]
+	let OK_RESPONSE = "OK"
+	let FAIL_RESPONSE = "FAIL"
+	let MAX_RETRY = 50
+	
     let cache_timeout: Double = 15.0 //in seconds
-    var was_initialized = false
     
     
     init(peripheral: CBPeripheral){
@@ -159,16 +168,21 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate {
         data_cond.unlock()
     }
     
-    fileprivate func initialize() {
-        was_initialized = true
-        print("init")
+    private func initialize() {
+        self._initialized = true
+        print("flutter initialized")
     }
-    
+	
+	//TODO: Delete
     func disconnect() {
         BLE_Manager.disconnect(peripheral: peripheral)
     }
+	
+	public func endOfLifeCleanup() -> Bool {
+		return true
+	}
     
-    func isConnected () -> Bool {
+	public var connected: Bool {
         return peripheral.state == CBPeripheralState.connected
     }
     
@@ -207,14 +221,15 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate {
     }
     
     //What follows are all the functions for setting outputs and getting inputs
-    func setTriLed(port: Int, r: UInt8, g: UInt8, b:UInt8) -> Bool {
-        let i = port - 1
+    func setTriLED(port: UInt, intensities: BBTTriLED) -> Bool {
+        let i = Int(port - 1)
+		let (r, g, b) = (intensities.red, intensities.green, intensities.blue)
         let current_time = NSDate().timeIntervalSince1970
         if(trileds[i] == [r,g,b] && (current_time - trileds_time[i]) < cache_timeout){
 			print("triled command not sent because it has been cached.")
             return true //Still successful in getting LED to be the right value
         }
-        let command = getFlutterLedCommand(UInt8(port), r: r, g: g, b: b)
+		let command = BBTFlutterUtility.ledCommand(UInt8(port), r: r, g: g, b: b)
         self.sendDataWithoutResponse(data: command)
         trileds[i] = [r,g,b]
         trileds_time[i] = current_time
@@ -224,13 +239,13 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate {
         return true
     }
     
-    func setServo(port: Int, angle: UInt8) -> Bool {
-        let i = port - 1
+    func setServo(port: UInt, angle: UInt8) -> Bool {
+        let i = Int(port - 1)
         let current_time = NSDate().timeIntervalSince1970
         if(servos[i] == angle && (current_time - servos_time[i]) < cache_timeout){
             return true //Still successful in getting output to be the right value
         }
-        let command: Data = getFlutterServoCommand(UInt8(port), angle: angle)
+        let command: Data = BBTFlutterUtility.servoCommand(UInt8(port), angle: angle)
         servos[i] = angle
         servos_time[i] = current_time
         self.sendDataWithoutResponse(data: command)
@@ -246,7 +261,7 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate {
 			return true //Still successful in getting output to be the right value
 		}
 		
-		let command: Data = getFlutterBuzzerCommand(vol: volume, freq: frequency)
+		let command: Data = BBTFlutterUtility.buzzerCommand(vol: volume, freq: frequency)
 		
 		buzzerVolume = volume
 		buzzerFrequency = frequency
@@ -256,36 +271,70 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate {
 		return true
 	}
 	
+	public func setAllOutputsToOff() -> Bool {
+		//The order of output to shut off are: buzzer, servos, LEDs
+		//Beware of shortcuts in boolean logic
+		
+		var suc = true
+		suc = self.setBuzzer(volume: 0, frequency: 0) && suc
+		for i in UInt(1)...3 {
+			suc = self.setServo(port: i, angle: BBTFlutterUtility.servoOffAngle) && suc
+		}
+		for i in UInt(1)...3 {
+			suc = self.setTriLED(port: i, intensities: BBTTriLED(0, 0, 0)) && suc
+		}
+		
+		return suc
+	}
+	
+	public var sensorValues: [UInt8] {
+		var response: String = sendDataWithResponse(data: BBTFlutterUtility.readCommand)
+		var values = response.split(",")
+		var counter = 0
+		//this just gets the 0th character of values[0] (which should only be 1
+		//character and checks to see if it is the flutter response char
+		while(getUnicode(values[0][values[0].index(values[0].startIndex, offsetBy: 0)]) !=
+			BBTFlutterUtility.responseCharacter) {
+				print("Got invalid response: " + response)
+				response = sendDataWithResponse(data: BBTFlutterUtility.readCommand)
+				values = response.split(",")
+				counter += 1
+				if counter >= MAX_RETRY {
+					print("failed to send read command")
+					break
+				}
+		}
+		
+		let sp1 = UInt8(values[1])
+		let sp2 = UInt8(values[2])
+		let sp3 = UInt8(values[3])
+		
+		guard let sensorPercent1 = sp1,
+			let sensorPercent2 = sp2,
+			let sensorPercent3 = sp3 else {
+				return [0, 0, 0]
+		}
+		
+		return [sensorPercent1, sensorPercent2, sensorPercent3]
+	}
+	
+	
     func getSensor(port: Int, input_type: String) -> Int? {
-        var response: String = sendDataWithResponse(data: getFlutterRead())
-        var values = response.split(",")
-        var counter = 0
-        //this just gets the 0th character of values[0] (which should only be 1 
-        //character and checks to see if it is the flutter response char
-        while(getUnicode(values[0][values[0].index(values[0].startIndex, offsetBy: 0)]) !=
-			BBTFlutterResponseCharacter) {
-            print("Got invalid response: " + response)
-            response = sendDataWithResponse(data: getFlutterRead())
-            values = response.split(",")
-            counter += 1
-            if counter >= MAX_RETRY {
-                print("failed to send read command")
-                return nil
-            }
-        }
-        let data_percent = UInt8(values[port])!
-        let data = percentToRaw(data_percent)
+		let percent = self.sensorValues[port - 1]
+		
+        let value = percentToRaw(percent)
+		
         switch input_type {
         case "distance":
-            return rawToDistance(data)
+            return rawToDistance(value)
         case "temperature":
-            print("temp sensor \(data)")
-            print("rtt \(rawToTemp(data))")
-            return rawToTemp(data)
+            print("temp sensor \(value)")
+            print("rtt \(rawToTemp(value))")
+            return rawToTemp(value)
         case "soil":
-            return bound(Int(data_percent), min: 0, max: 90)
+            return bound(Int(percent), min: 0, max: 90)
         default:
-            return Int(data_percent)
+            return Int(percent)
         }
     }
 }

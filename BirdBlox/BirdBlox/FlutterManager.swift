@@ -62,7 +62,7 @@ class FlutterManager: NSObject {
     }
     
     func discoverRequest(request: HttpRequest) -> HttpResponse {
-        BLE_Manager.startScan(serviceUUIDs: [FlutterPeripheral.DEVICE_UUID])
+        BLE_Manager.startScan(serviceUUIDs: [FlutterPeripheral.deviceUUID])
 		
 		let array = BLE_Manager.discoveredDevices.map { (key, peripheral) in
 			["id": key, "name": BBTgetDeviceNameForGAPName(peripheral.name!)]
@@ -75,7 +75,7 @@ class FlutterManager: NSObject {
     
     func forceDiscover(request: HttpRequest) -> HttpResponse {
         BLE_Manager.stopScan()
-        BLE_Manager.startScan(serviceUUIDs: [FlutterPeripheral.DEVICE_UUID])
+        BLE_Manager.startScan(serviceUUIDs: [FlutterPeripheral.deviceUUID])
         let devices = BLE_Manager.discoveredDevices.keys
 		
 		print("Found Devices: " + devices.joined(separator: ", "))
@@ -93,7 +93,7 @@ class FlutterManager: NSObject {
             return .ok(.text("2"))
         }
         for periph in BLE_Manager.connectedFlutters.values {
-            if (!periph.isConnected()) {
+            if (!periph.connected) {
                 return .ok(.text("0"))
             }
         }
@@ -145,13 +145,13 @@ class FlutterManager: NSObject {
 			let redStr = queries["red"],
 			let greenStr = queries["green"],
 			let blueStr = queries["blue"],
-			let port = Int(portStr),
+			let port = UInt(portStr),
 			let red = UInt8(redStr),
 			let green = UInt8(greenStr),
 			let blue = UInt8(blueStr) {
 	
 			if let device = BLE_Manager.connectedFlutters[name] {
-				if device.setTriLed(port: port, r: red, g: green, b: blue) {
+				if device.setTriLED(port: port, intensities: BBTTriLED(red, green, blue)) {
 					return .ok(.text("Tri-LED set"))
 				} else {
 					return .internalServerError
@@ -170,7 +170,7 @@ class FlutterManager: NSObject {
 		if let name = queries["id"],
 			let portStr = queries["port"],
 			let angleStr = queries["angle"],
-			let port = Int(portStr),
+			let port = UInt(portStr),
 			let angle = UInt8(angleStr) {
 			
 			if let device = BLE_Manager.connectedFlutters[name] {

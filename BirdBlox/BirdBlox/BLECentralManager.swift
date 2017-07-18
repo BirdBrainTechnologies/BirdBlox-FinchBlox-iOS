@@ -49,7 +49,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 		
 		super.init();
 		
-		let centralQueue = DispatchQueue(label: "com.BirdBrainTech", attributes: [])
+		let centralQueue = DispatchQueue(label: "com.BirdBrainTech.BLE", attributes: [])
 		centralManager = CBCentralManager(delegate: self, queue: centralQueue)
 	}
 	

@@ -9,12 +9,18 @@
 import Foundation
 import CoreBluetooth
 
-class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
-    fileprivate var peripheral: CBPeripheral
-    fileprivate let BLE_Manager: BLECentralManager
+class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripheral {
+	public let peripheral: CBPeripheral
+	public var id: String {
+		return peripheral.identifier.uuidString
+	}
+	
+	public static let type: BBTRobotType = .Hummingbird
+	
+    private let BLE_Manager: BLECentralManager
 	
 	//BLE adapter
-    static let DEVICE_UUID    = CBUUID(string: "6E400001-B5A3-F393-E0A9-E50E24DCCA9E")
+	public static let deviceUUID    = CBUUID(string: "6E400001-B5A3-F393-E0A9-E50E24DCCA9E")
 	//UART Service
     static let SERVICE_UUID   = CBUUID(string: "6E400001-B5A3-F393-E0A9-E50E24DCCA9E")
 	//sending
@@ -23,21 +29,24 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 	static let RX_UUID        = CBUUID(string: "6E400003-B5A3-F393-E0A9-E50E24DCCA9E")
     static let RX_CONFIG_UUID = CBUUID(string: "00002902-0000-1000-8000-00805f9b34fb")
     var rx_line, tx_line: CBCharacteristic?
-    
-    var last_message_sent: Data = Data()
 	
-    var last_message_recieved: [UInt8] = [0,0,0,0]
-    let cache_timeout: Double = 15.0 //in seconds
-    var was_initialized = false
-	var resettingName = false
-	var gettingMAC = false
-	var commandMode = false
-	var initializing = false
+	static let sensorByteCount = 4
+	private var lastSensorUpdate: [UInt8] = Array<UInt8>(repeating: 0, count: sensorByteCount)
+	var sensorValues: [UInt8] {
+		return lastSensorUpdate
+	}
 	
+	private var _initialized = false
+	public var initialized: Bool {
+		return self._initialized
+	}
+	
+	
+	//MARK: Variables to coordinate set all
 	var writtenCondition: NSCondition = NSCondition()
+	
 	//MARK: Variables write protected by writtenCondition
 	private var currentOutputState: BBTHummingbirdOutputState
-//	private var writingOutputState: BBTHummingbirdState
 	public var nextOutputState: BBTHummingbirdOutputState
 	var lastWriteWritten: Bool = false
 	var lastWriteStart: DispatchTime = DispatchTime.now()
@@ -57,6 +66,9 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 	let macReplyLen = 17
 	let macLen = 12
 	var oneOffTimer: Timer = Timer()
+	var resettingName = false
+	var gettingMAC = false
+	var commandMode = false
 
     
     init(peripheral: CBPeripheral){
@@ -126,9 +138,7 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
         }
     }
     
-    fileprivate func beginInitialization() {
-		self.initializing = true
-		
+    private func beginInitialization() {
 		//Get ourselves a fresh slate
         self.sendData(data: BBTHummingbirdUtility.getTurnOffCommand())
         Thread.sleep(forTimeInterval: 0.1)
@@ -138,9 +148,7 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 		self.finishInitialization()
     }
 	
-	@objc fileprivate func finishInitialization() {
-		self.initializing = false
-		
+	@objc private func finishInitialization() {
 		if self.commandMode {
 			self.exitCommandMode()
 		}
@@ -153,7 +161,7 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 			                     userInfo: nil, repeats: true)
 			self.syncTimer.fire()
 		}
-		self.was_initialized = true
+		self._initialized = true
 	}
 	
 	
@@ -166,12 +174,16 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 			return
         }
 		
+		guard let inData = characteristic.value else {
+			return
+		}
+		
         if characteristic.value!.count % 5 != 0 {
             return
         }
-        objc_sync_enter(self.peripheral)
-        (characteristic.value! as NSData).getBytes(&self.last_message_recieved, length: 4)
-        objc_sync_exit(self.peripheral)
+		
+		//
+        inData.copyBytes(to: &self.lastSensorUpdate, count: HummingbirdPeripheral.sensorByteCount)
     }
     
     /**
@@ -193,22 +205,24 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 		self.writtenCondition.unlock()
 //		print(self.lastWriteStart)
     }
-    
+	
+	//TODO: delete
     func disconnect() {
         BLE_Manager.disconnect(peripheral: peripheral)
 		self.syncTimer.invalidate()
     }
-    
-    func isConnected () -> Bool {
+	
+	public func endOfLifeCleanup() -> Bool{
+		self.syncTimer.invalidate()
+		return true
+	}
+	
+	public var connected: Bool {
         return peripheral.state == CBPeripheralState.connected
     }
     
-    func getData() -> [UInt8]? {
-        return self.last_message_recieved
-    }
-    
-    func sendData(data: Data) {
-		if self.isConnected() {
+    private func sendData(data: Data) {
+		if self.connected {
 			peripheral.writeValue(data, for: tx_line!, type: .withResponse)
 			
 			if self.commandMode {
@@ -277,12 +291,13 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
         return true
     }
     
-    func setTriLed(port: Int, r: UInt8, g: UInt8, b:UInt8) -> Bool {
+	func setTriLED(port: UInt, intensities: BBTTriLED) -> Bool {
 		guard self.peripheral.state == .connected else {
 			return false
 		}
 		
-        let i = port - 1
+        let i = Int(port - 1)
+		let (r, g, b) = (intensities.red, intensities.green, intensities.blue)
 		
 		self.writtenCondition.lock()
 		
@@ -343,12 +358,12 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
         return true
     }
     
-    func setServo(port: Int, angle: UInt8) -> Bool {
+    func setServo(port: UInt, angle: UInt8) -> Bool {
 		guard self.peripheral.state == .connected else {
 			return false
 		}
 		
-        let i = port - 1
+        let i = Int(port - 1)
 		
 		self.writtenCondition.lock()
 		
@@ -378,7 +393,7 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 		let shouldSync = changeOccurred ||
 			((currentCPUTime - self.lastWriteStart.uptimeNanoseconds) > self.cacheTimeoutDuration)
 		
-		if self.was_initialized && self.lastWriteWritten  && shouldSync {
+		if self.initialized && self.lastWriteWritten  && shouldSync {
 			let cmdMkr = BBTHummingbirdUtility.getSetAllCommand
 			
 			let tris = nextCopy.trileds
@@ -412,10 +427,12 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 		self.writtenCondition.unlock()
 	}
 	
-	func stopEverything() {
+	func setAllOutputsToOff() -> Bool {
 		self.writtenCondition.lock()
 		self.nextOutputState = BBTHummingbirdOutputState()
 		self.writtenCondition.unlock()
+		
+		return true
 	}
 	
 	
@@ -487,7 +504,7 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate {
 			//			Thread.sleep(forTimeInterval: 1.0)
 			//			self.disconnect()
 			
-			if self.initializing {
+			if self.initialized {
 				//				self.finishInitialization()
 			}
 		}

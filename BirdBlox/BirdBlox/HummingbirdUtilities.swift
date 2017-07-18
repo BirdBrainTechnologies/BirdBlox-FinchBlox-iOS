@@ -171,4 +171,6 @@ class BBTHummingbirdUtility {
 		let num: UInt8 = getUnicode(UInt8(6))
 		return Data(bytes: UnsafePointer<UInt8>([letter,num] as [UInt8]), count: 2)
 	}
+	
+	static let servoOffAngle: UInt8 = 255
 }

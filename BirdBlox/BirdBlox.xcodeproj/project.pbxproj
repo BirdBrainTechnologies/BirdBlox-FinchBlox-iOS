@@ -17,6 +17,7 @@
 		3FE5C65D1ED8974100433262 /* BluetoothDeviceNames.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3FE5C65C1ED8974100433262 /* BluetoothDeviceNames.plist */; };
 		3FEC5DA41EF987640067C41B /* FrontendCallbackCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FEC5DA31EF987640067C41B /* FrontendCallbackCenter.swift */; };
 		3FF13C061F15692F00D1F358 /* CallbackManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FF13C051F15692F00D1F358 /* CallbackManager.swift */; };
+		3FFA170F1F1D492B0085CE71 /* BBTRobotBLEPeripheral.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FFA170E1F1D492B0085CE71 /* BBTRobotBLEPeripheral.swift */; };
 		BA8169511E81A98A00AAF7A3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8169501E81A98A00AAF7A3 /* AppDelegate.swift */; };
 		BA8169531E81A98A00AAF7A3 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8169521E81A98A00AAF7A3 /* ViewController.swift */; };
 		BA8169561E81A98A00AAF7A3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BA8169541E81A98A00AAF7A3 /* Main.storyboard */; };
@@ -55,6 +56,7 @@
 		3FE5C65C1ED8974100433262 /* BluetoothDeviceNames.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = BluetoothDeviceNames.plist; sourceTree = "<group>"; };
 		3FEC5DA31EF987640067C41B /* FrontendCallbackCenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FrontendCallbackCenter.swift; sourceTree = "<group>"; };
 		3FF13C051F15692F00D1F358 /* CallbackManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallbackManager.swift; sourceTree = "<group>"; };
+		3FFA170E1F1D492B0085CE71 /* BBTRobotBLEPeripheral.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BBTRobotBLEPeripheral.swift; sourceTree = "<group>"; };
 		4B9CF54964A1E1D488464E38 /* Pods_BirdBlox.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BirdBlox.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA81694D1E81A98A00AAF7A3 /* BirdBlox.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BirdBlox.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA8169501E81A98A00AAF7A3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -197,6 +199,7 @@
 			isa = PBXGroup;
 			children = (
 				BAE2EBCE1E84417000198B19 /* BLECentralManager.swift */,
+				3FFA170E1F1D492B0085CE71 /* BBTRobotBLEPeripheral.swift */,
 				BAE2EBD01E8443CF00198B19 /* HummingbirdPeripheral.swift */,
 				BAE2EBD21E8451ED00198B19 /* FlutterPeripheral.swift */,
 			);
@@ -337,6 +340,7 @@
 				3F5F6D291EDDB3A800799277 /* BBTBackendServer.swift in Sources */,
 				BAE1FDA41E920A8D00304BEE /* FlutterUtilities.swift in Sources */,
 				BAE1FDA01E920A6600304BEE /* SharedUtilities.swift in Sources */,
+				3FFA170F1F1D492B0085CE71 /* BBTRobotBLEPeripheral.swift in Sources */,
 				3FA7D5E31EF2E65800FE4882 /* BBTRobotState.swift in Sources */,
 				3F0E4A731ED37D3900369F70 /* DeviceUtilities.swift in Sources */,
 				BAE2EBD51E84550900198B19 /* HummingbirdManager.swift in Sources */,

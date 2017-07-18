@@ -29,7 +29,6 @@ class HummingbirdManager {
     
     func loadRequests(server: BBTBackendServer){
         server["/hummingbird/discover"] = self.discoverRequest
-        server["/hummingbird/totalStatus"] = self.totalStatusRequest
 		server["/hummingbird/stopDiscover"] = self.stopDiscover
         
         server["/hummingbird/connect"] = self.connectRequest
@@ -67,7 +66,7 @@ class HummingbirdManager {
     }
     
     func discoverRequest(request: HttpRequest) -> HttpResponse {
-        BLE_Manager.startScan(serviceUUIDs: [HummingbirdPeripheral.DEVICE_UUID])
+        BLE_Manager.startScan(serviceUUIDs: [HummingbirdPeripheral.deviceUUID])
 		
 		let darray = BLE_Manager.discoveredDevices.map { (key, peripheral) in
 			["id": key, "name": BBTgetDeviceNameForGAPName(peripheral.name!)]
@@ -80,7 +79,7 @@ class HummingbirdManager {
     
     func forceDiscover(request: HttpRequest) -> HttpResponse {
         BLE_Manager.stopScan()
-        BLE_Manager.startScan(serviceUUIDs: [HummingbirdPeripheral.DEVICE_UUID])
+        BLE_Manager.startScan(serviceUUIDs: [HummingbirdPeripheral.deviceUUID])
         let devices = BLE_Manager.foundDevices.keys
         print("Found Devices: " + devices.joined(separator: ", "))
         return .ok(.text(devices.joined(separator: "\n")))
@@ -90,18 +89,6 @@ class HummingbirdManager {
 		BLE_Manager.stopScan()
 		return .ok(.text("Stopped scanning"))
 	}
-    
-    func totalStatusRequest(request: HttpRequest) -> HttpResponse {
-        if (connected_devices.isEmpty) {
-            return .ok(.text("2"))
-        }
-        for periph in connected_devices.values {
-            if (!periph.isConnected()) {
-                return .ok(.text("0"))
-            }
-        }
-        return .ok(.text("1"))
-    }
     
     func connectRequest(request: HttpRequest) -> HttpResponse {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
@@ -141,7 +128,7 @@ class HummingbirdManager {
 	
 	func stopAllRequest(request: HttpRequest) -> HttpResponse {
 		for hb in connected_devices.values {
-			hb.stopEverything()
+			let _ = hb.setAllOutputsToOff()
 		}
 		
 		return .ok(.text("Issued stop commands to every connected Hummingbird."))
@@ -178,13 +165,13 @@ class HummingbirdManager {
 			let redStr = queries["red"],
 			let greenStr = queries["green"],
 			let blueStr = queries["blue"],
-			let port = Int(portStr),
+			let port = UInt(portStr),
 			let red = UInt8(redStr),
 			let green = UInt8(greenStr),
 			let blue = UInt8(blueStr) {
 			
 			if let device = connected_devices[name] {
-				if device.setTriLed(port: port, r: red, g: green, b: blue) {
+				if device.setTriLED(port: port, intensities: BBTTriLED(red, green, blue)) {
 					return .ok(.text("Tri-LED set"))
 				} else {
 					return .internalServerError
@@ -203,7 +190,7 @@ class HummingbirdManager {
 		if let name = queries["id"],
 			let portStr = queries["port"],
 			let angleStr = queries["angle"],
-			let port = Int(portStr),
+			let port = UInt(portStr),
 			let angle = UInt8(angleStr) {
 			
 			if let device = connected_devices[name] {
@@ -275,17 +262,14 @@ class HummingbirdManager {
 			let port = Int(portStr) {
 			
 			if let device = connected_devices[name] {
-				if let data = device.getData()  {
-					switch sensor {
-					case "distance":
-						return .ok(.text(String(rawToDistance(data[port - 1]))))
-					case "temperature":
-						return .ok(.text(String(rawToTemp(data[port - 1]))))
-					default:
-						return .ok(.text(String(rawToPercent(data[port - 1]))))
-					}
-				} else {
-					return .internalServerError
+				let data = device.sensorValues
+				switch sensor {
+				case "distance":
+					return .ok(.text(String(rawToDistance(data[port - 1]))))
+				case "temperature":
+					return .ok(.text(String(rawToTemp(data[port - 1]))))
+				default:
+					return .ok(.text(String(rawToPercent(data[port - 1]))))
 				}
 			}
 			else {
