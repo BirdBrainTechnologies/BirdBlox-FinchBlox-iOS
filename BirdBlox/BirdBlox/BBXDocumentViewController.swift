@@ -53,7 +53,16 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 		self.webView.contentMode = UIViewContentMode.scaleToFill
 		self.webView.backgroundColor = UIColor.white
 		
-		let urlstr = "http://localhost:22179/DragAndDrop/HummingbirdDragAndDrop.html";
+		var urlstr = "http://localhost:22179/DragAndDrop/HummingbirdDragAndDrop.html"
+		
+		if #available(iOS 10.0.0, *) {
+			urlstr = "http://localhost:22179/DragAndDrop/HummingbirdDragAndDrop.html";
+		} else {
+			urlstr = "http://localhost:22179/DragAndDrop/HummingbirdDragAndDropiOS9.html";
+		}
+		
+		print(urlstr)
+		
 		let cleanUrlStr = urlstr.addingPercentEncoding(withAllowedCharacters:
 			CharacterSet.urlFragmentAllowed)!
 		let javascriptPageURL = URL(string: cleanUrlStr)
