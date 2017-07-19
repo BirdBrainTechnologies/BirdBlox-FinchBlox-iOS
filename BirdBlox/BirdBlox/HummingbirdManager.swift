@@ -22,7 +22,7 @@ class HummingbirdManager {
     
 	init(){
         connected_devices = [String: HummingbirdPeripheral]()
-        BLE_Manager = BLECentralManager.manager
+        BLE_Manager = BLECentralManager.shared
         sendQueue.maxConcurrentOperationCount = 1
 
     }
@@ -68,8 +68,10 @@ class HummingbirdManager {
     func discoverRequest(request: HttpRequest) -> HttpResponse {
         BLE_Manager.startScan(serviceUUIDs: [HummingbirdPeripheral.deviceUUID])
 		
-		let darray = BLE_Manager.discoveredDevices.map { (key, peripheral) in
-			["id": key, "name": BBTgetDeviceNameForGAPName(peripheral.name!)]
+		let altName = "Fetching name..."
+		
+		let darray = BLE_Manager.foundDevices.map { (key, peripheral) in
+			["id": key, "name": BBTgetDeviceNameForGAPName(peripheral.name ?? altName)]
 		}
 		
 		print("Found Devices: " + darray.map({(d) in d["name"]!}).joined(separator: ", "))

@@ -25,8 +25,6 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripheral {
 	
 	public static let type: BBTRobotType = .Flutter
 	
-	private let BLE_Manager: BLECentralManager
-	
 	private var _initialized: Bool = false
 	public var initialized: Bool {
 		return self._initialized
@@ -54,7 +52,7 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripheral {
     
     init(peripheral: CBPeripheral){
         self.peripheral = peripheral
-        self.BLE_Manager = BLECentralManager.manager
+		
         super.init()
         self.peripheral.delegate = self
         
@@ -171,11 +169,6 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripheral {
     private func initialize() {
         self._initialized = true
         print("flutter initialized")
-    }
-	
-	//TODO: Delete
-    func disconnect() {
-        BLE_Manager.disconnect(peripheral: peripheral)
     }
 	
 	public func endOfLifeCleanup() -> Bool {

@@ -11,6 +11,17 @@ import CoreBluetooth
 
 enum BBTRobotType {
 	case Hummingbird, Flutter, Finch
+	
+	var scanningUUID: CBUUID {
+		switch self {
+		case .Hummingbird:
+			return HummingbirdPeripheral.deviceUUID
+		case .Flutter:
+			return FlutterPeripheral.deviceUUID
+		default:
+			return CBUUID()
+		}
+	}
 }
 
 protocol BBTRobotBLEPeripheral {

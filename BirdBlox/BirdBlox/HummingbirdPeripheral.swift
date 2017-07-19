@@ -73,7 +73,7 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
     
     init(peripheral: CBPeripheral){
         self.peripheral = peripheral
-        self.BLE_Manager = BLECentralManager.manager
+        self.BLE_Manager = BLECentralManager.shared
 		
 		self.currentOutputState = BBTHummingbirdOutputState()
 		self.nextOutputState = BBTHummingbirdOutputState()
