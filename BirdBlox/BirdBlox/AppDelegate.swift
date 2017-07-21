@@ -26,7 +26,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 		}
 	}
     
-    
+	/*
     private func autoSave(successCompletion: ((Void) -> Void)? = nil) {
         guard self.uiLoaded else {
 			print("UI not loaded so not autosaving")
@@ -60,6 +60,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
     }
+	*/
 
 
     func application(_ application: UIApplication,

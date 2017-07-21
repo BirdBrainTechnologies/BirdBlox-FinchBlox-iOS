@@ -28,10 +28,11 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 	
 	public static let shared: BLECentralManager = BLECentralManager()
 	
-	private let centralManager: CBCentralManager
+	private var centralManager: CBCentralManager
 	
 	public var scanState: BLECentralManagerScanState
 	
+	private var _discoveredPeripheralsSeqeuntial: [CBPeripheral]
 	private var discoveredPeripherals: [String: CBPeripheral]
 	private var connectedPeripherals: [String: CBPeripheral]
 	private var connectedRobots: [String: BBTRobotBLEPeripheral]
@@ -39,6 +40,8 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 	
 	private var discoverTimer: Timer
 	private static let scanDuration = TimeInterval(30) //seconds
+	
+	private var currentlyConnecting: Any
 	
 	
 	var deviceCount: UInt
@@ -52,13 +55,20 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 		
 		self.connectedRobots = Dictionary()
 		self.connectedPeripherals = Dictionary()
+		self._discoveredPeripheralsSeqeuntial = Array()
+		self.oughtToBeConnected = Dictionary()
 		
 		let centralQueue = DispatchQueue(label: "com.BirdBrainTech.BLE", attributes: [])
-		self.centralManager = CBCentralManager(delegate: self, queue: centralQueue)
+		self.centralManager = CBCentralManager(delegate: nil, queue: centralQueue)
 		
-		super.init();
+		self.currentlyConnecting = 5
+		
+		super.init()
+		
+		self.centralManager.delegate = self
 	}
 	
+	//MARK: Scanning
 	public var isScanning: Bool {
 		return self.scanState == .searchingScan
 	}
@@ -67,20 +77,33 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 		return self.deviceCount
 	}
 	
-	public func startScan(serviceUUIDs: [CBUUID]) {
+	private var scanStoppedBlock: (() -> Void)? = nil
+	private var robotDiscoveredBlock: (([CBPeripheral]) -> Void)? = nil
+	
+	public func startScan(serviceUUIDs: [CBUUID],
+	                      updateDiscovered: (([CBPeripheral]) -> Void)? = nil,
+	                      scanEnded: (() -> Void)? = nil) {
+		
 		if self.scanState == .countingScan {
 			self.stopScan()
 		}
-		if !self.isScanning && (self.centralManager.centralManagerState == .poweredOn) {
-			self.discoveredPeripherals.removeAll()
-			centralManager.scanForPeripherals(withServices: serviceUUIDs, options: nil)
-			discoverTimer = Timer.scheduledTimer(timeInterval: BLECentralManager.scanDuration,
-			                                     target: self,
-			                                     selector: #selector(BLECentralManager.stopScan),
-			                                     userInfo: nil, repeats: false)
-			self.scanState = .searchingScan
-			NSLog("Stated bluetooth scan")
+		guard !self.isScanning && (self.centralManager.centralManagerState == .poweredOn) else {
+			return
 		}
+		
+		self.discoveredPeripherals.removeAll()
+		self._discoveredPeripheralsSeqeuntial = []
+		
+		self.robotDiscoveredBlock = updateDiscovered
+		self.scanStoppedBlock = scanEnded
+		
+		centralManager.scanForPeripherals(withServices: serviceUUIDs, options: nil)
+		discoverTimer = Timer.scheduledTimer(timeInterval: BLECentralManager.scanDuration,
+		                                     target: self,
+		                                     selector: #selector(BLECentralManager.stopScan),
+		                                     userInfo: nil, repeats: false)
+		self.scanState = .searchingScan
+		NSLog("Stated bluetooth scan")
 	}
 	
 	public func startCountingScan() {
@@ -104,11 +127,30 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 			self.scanState = .notScanning
 			discoverTimer.invalidate()
 			NSLog("Stopped bluetooth scan")
+			
+			if let se = self.scanStoppedBlock {
+				se()
+			}
 		}
 	}
 	
-	public var foundDevices: [String: CBPeripheral] {
-		return self.discoveredPeripherals
+	public var foundDevices: [CBPeripheral] {
+		return self._discoveredPeripheralsSeqeuntial
+	}
+	
+	//MARK: Connected robots
+	public func isRobotWithIDConnected(_ id: String) -> Bool {
+		return self.connectedRobots.keys.contains(id) && self.connectedRobots[id]!.connected
+	}
+	
+	public func robotForID(_ id: String) -> BBTRobotBLEPeripheral? {
+		return self.connectedRobots[id]
+	}
+	
+	public func forEachConnectedRobots(do action: ((BBTRobotBLEPeripheral) -> Void)) {
+		for robot in self.connectedRobots.values {
+			action(robot)
+		}
 	}
 	
 	
@@ -123,40 +165,51 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 		case .countingScan:
 			self.deviceCount += 1
 		case .searchingScan:
-			self.discoveredPeripherals[peripheral.identifier.uuidString] = peripheral
+			let id = peripheral.identifier.uuidString
+			self.discoveredPeripherals[id] = peripheral
+			self._discoveredPeripheralsSeqeuntial.append(peripheral)
+			
+			if let type = self.oughtToBeConnected[id]?.type {
+				let _ = self.connectToRobot(byID: id, ofType: type)
+			}
+			
+			if let rd = self.robotDiscoveredBlock {
+				rd(self.foundDevices)
+			}
+			
 		default:
 			return
 		}
 	}
 	
 	/**
-	* If we connected to a peripheral, we add it to our services and stop
-	* discovering new devices
+	* If we connected to a peripheral, we add it to our list and begin initializing it's robot
 	*/
 	func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
-		if self.discoveredPeripherals.keys.contains(peripheral.name!) {
-			self.discoveredPeripherals.removeValue(forKey: peripheral.name!)
+		let id = peripheral.identifier.uuidString
+		self.connectedPeripherals[id] = peripheral
+		
+		guard let type = self.oughtToBeConnected[id]?.type else {
+			print("Peripheral that ought not to be connected was connected")
+			self.disconnect(byID: id)
+			return
 		}
 		
-		// If we are trying to connect to the flutter, then add it. 
-		// If we are not supposed to be connected to the flutter, then disconnect from it
-		// If we are already connected, do nothing.
-		if self.connectingFlutters.contains(peripheral) {
-			let id = peripheral.identifier.uuidString
-			self.connectedFlutters[id] = FlutterPeripheral(peripheral: peripheral)
-			self.connectingFlutters.remove(peripheral)
+		var robotInit: (CBPeripheral, ((BBTRobotBLEPeripheral) -> Void)?) -> BBTRobotBLEPeripheral
+		switch type {
+		case .Hummingbird:
+			robotInit = HummingbirdPeripheral.init
+		case .Flutter:
+			robotInit = FlutterPeripheral.init
+		default:
+			robotInit = HummingbirdPeripheral.init
+		}
+		
+		self.currentlyConnecting = robotInit(peripheral, {rbt in
+			self.connectedRobots[id] = rbt
 			let _ = FrontendCallbackCenter.shared.robotUpdateStatus(id: id, connected: true)
-		}
-		else if let connectedCompletion = self.hbConnectedCompletions[peripheral] {
-			connectedCompletion()
-			let id = peripheral.identifier.uuidString
-			let _ = FrontendCallbackCenter.shared.robotUpdateStatus(id: id, connected: true)
-		}
-		else if !self.connectedFlutters.contains(where:
-			{ (k, v) in v.peripheral.identifier == peripheral.identifier }) {
-			
-			self.disconnect(peripheral: peripheral)
-		}
+			self.currentlyConnecting = 5
+		})
 	}
 	
 	/**
@@ -215,17 +268,40 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 		}
 	}
 	
-	func disconnect(peripheral: CBPeripheral) {
-		self.oughtToBeConnected.removeValue(forKey: peripheral.identifier.uuidString)
+	func disconnect(byID id: String) {
+		guard self.oughtToBeConnected.keys.contains(id) ||
+			self.connectedPeripherals.keys.contains(id) else {
+			return
+		}
+		
+		self.oughtToBeConnected.removeValue(forKey: id)
+		let peripheral = self.connectedPeripherals[id]!
+		
 		centralManager.cancelPeripheralConnection(peripheral)
+		self.currentlyConnecting = 5
+		
+		if let robot = self.connectedRobots[id] {
+			let _ = robot.endOfLifeCleanup()
+		}
 	}
 	
-	func connectTo(peripheral: CBPeripheral, ofType type: BBTRobotType) {
-		let options = [CBConnectPeripheralOptionNotifyOnDisconnectionKey: NSNumber(value: true)]
-		self.centralManager.connect(peripheral, options: options)
+	//Returns false if no robot with id is in the discovered list
+	//Implicitly stops the scan
+	func connectToRobot(byID id: String, ofType type: BBTRobotType) -> Bool {
+		guard let peripheral = self.discoveredPeripherals[id] else {
+			return false
+		}
 		
 		let idString = peripheral.identifier.uuidString
 		self.discoveredPeripherals.removeValue(forKey: idString)
 		self.oughtToBeConnected[idString] = (peripheral: peripheral, type: type)
+		self.connectedPeripherals[idString] = peripheral
+		
+		let options = [CBConnectPeripheralOptionNotifyOnDisconnectionKey: NSNumber(value: true)]
+		self.centralManager.connect(peripheral, options: options)
+		
+		self.stopScan()
+		
+		return true
 	}
 }

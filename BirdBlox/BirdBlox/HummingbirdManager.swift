@@ -6,25 +6,16 @@
 //  Copyright © 2017 Birdbrain Technologies LLC. All rights reserved.
 //
 
+/*
 import Foundation
 import CoreBluetooth
 import Swifter
 
 class HummingbirdManager {
-    fileprivate var connected_devices: [String: HummingbirdPeripheral]
     fileprivate let BLE_Manager: BLECentralManager
     
-    var timerDelaySend: Timer?
-    var allowSend = true
-    let sendInterval = 0.06
-    let readInterval = 0.2
-    let sendQueue = OperationQueue()
-    
 	init(){
-        connected_devices = [String: HummingbirdPeripheral]()
         BLE_Manager = BLECentralManager.shared
-        sendQueue.maxConcurrentOperationCount = 1
-
     }
     
     func loadRequests(server: BBTBackendServer){
@@ -44,47 +35,20 @@ class HummingbirdManager {
         server["/hummingbird/in"] = self.getInput
     }
     
-    //functions for timer
-    @objc func timerElapsedSend(){
-        self.allowSend = true
-        self.stopTimerSend()
-    }
-    func stopTimerSend(){
-        if self.timerDelaySend == nil{
-            return
-        }
-        timerDelaySend?.invalidate()
-        self.timerDelaySend = nil
-    }
-    func startTimerSend(){
-        self.allowSend = false
-        if (timerDelaySend == nil){
-            timerDelaySend = Timer.scheduledTimer(timeInterval: sendInterval, target: self,
-              selector: #selector(HummingbirdManager.timerElapsedSend),
-			  userInfo: nil, repeats: false)
-        }
-    }
-    
     func discoverRequest(request: HttpRequest) -> HttpResponse {
+		//Really should only do this
         BLE_Manager.startScan(serviceUUIDs: [HummingbirdPeripheral.deviceUUID])
 		
 		let altName = "Fetching name..."
 		
-		let darray = BLE_Manager.foundDevices.map { (key, peripheral) in
-			["id": key, "name": BBTgetDeviceNameForGAPName(peripheral.name ?? altName)]
+		let darray = BLE_Manager.foundDevices.map { (peripheral) in
+			["id": peripheral.identifier.uuidString,
+			 "name": BBTgetDeviceNameForGAPName(peripheral.name ?? altName)]
 		}
 		
 		print("Found Devices: " + darray.map({(d) in d["name"]!}).joined(separator: ", "))
 		
 		return .ok(.json(darray as AnyObject))
-    }
-    
-    func forceDiscover(request: HttpRequest) -> HttpResponse {
-        BLE_Manager.stopScan()
-        BLE_Manager.startScan(serviceUUIDs: [HummingbirdPeripheral.deviceUUID])
-        let devices = BLE_Manager.foundDevices.keys
-        print("Found Devices: " + devices.joined(separator: ", "))
-        return .ok(.text(devices.joined(separator: "\n")))
     }
 	
 	func stopDiscover(request: HttpRequest) -> HttpResponse {
@@ -95,36 +59,32 @@ class HummingbirdManager {
     func connectRequest(request: HttpRequest) -> HttpResponse {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
-		if let name = queries["id"] {
-			if BLE_Manager.foundDevices.keys.contains(name) {
-				let periph: CBPeripheral = BLE_Manager.foundDevices[name]!
-				BLE_Manager.connectToHummingbird(peripheral: periph) {
-					self.connected_devices[name] = HummingbirdPeripheral(peripheral: periph)
-				}
-				return .ok(.text("Connected!"))
-			}
-			else {
-				return .internalServerError
-			}
+		guard let idStr = queries["id"] else {
+			return .badRequest(.text("Missing parameter"))
 		}
 		
-		return .badRequest(.text("Malformed Request"))
+		let idExists = BLE_Manager.connectToRobot(byID: idStr, ofType: .Hummingbird)
+		
+		if idExists == false {
+			return .notFound
+		}
+		
+		return .ok(.text("Connected!"))
     }
     
     func disconnectRequest(request: HttpRequest) -> HttpResponse {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
-		if let name = queries["id"] {
-			if connected_devices.keys.contains(name) {
-				connected_devices[name]!.disconnect()
-				connected_devices.removeValue(forKey: name)
-				return .ok(.text("Disconnected!"))
-			} else {
-				return .notFound
-			}
+		guard let name = queries["id"] else {
+			return .badRequest(.text("Missing Parameter"))
+		}
+		guard BLE_Manager.isRobotWithIDConnected(name) else {
+			return .notFound
 		}
 		
-		return .badRequest(.text("Malformed Request"))
+		BLE_Manager.stopScan()
+		
+		return .ok(.text("Disconnected"))
     }
 	
 	
@@ -282,3 +242,4 @@ class HummingbirdManager {
 		return .badRequest(.text("Malformed Request"))
 	}
 }
+*/

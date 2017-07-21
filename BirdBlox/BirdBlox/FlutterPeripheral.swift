@@ -25,6 +25,7 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripheral {
 	
 	public static let type: BBTRobotType = .Flutter
 	
+	private let initializationCompletion: ((BBTRobotBLEPeripheral) -> Void)?
 	private var _initialized: Bool = false
 	public var initialized: Bool {
 		return self._initialized
@@ -33,15 +34,15 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripheral {
     var rx_line, tx_line: CBCharacteristic?
     var rx_config_line: CBDescriptor?
     
-    var data_cond: NSCondition = NSCondition()
+    private var data_cond: NSCondition = NSCondition()
     
-    fileprivate var servos: [UInt8] = [0,0,0]
-    fileprivate var servos_time: [Double] = [0,0,0]
-    fileprivate var trileds: [[UInt8]] = [[0,0,0],[0,0,0],[0,0,0]]
-    fileprivate var trileds_time: [Double] = [0,0,0]
-	fileprivate var buzzerVolume: Int = 0
-	fileprivate var buzzerFrequency: Int = 0
-	fileprivate var buzzerTime: Double = 0
+    private var servos: [UInt8] = [0,0,0]
+    private var servos_time: [Double] = [0,0,0]
+    private var trileds: [[UInt8]] = [[0,0,0],[0,0,0],[0,0,0]]
+    private var trileds_time: [Double] = [0,0,0]
+	private var buzzerVolume: Int = 0
+	private var buzzerFrequency: Int = 0
+	private var buzzerTime: Double = 0
 	
 	let OK_RESPONSE = "OK"
 	let FAIL_RESPONSE = "FAIL"
@@ -50,8 +51,9 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripheral {
     let cache_timeout: Double = 15.0 //in seconds
     
     
-    init(peripheral: CBPeripheral){
+	required init(peripheral: CBPeripheral, completion: ((BBTRobotBLEPeripheral) -> Void)? = nil){
         self.peripheral = peripheral
+		self.initializationCompletion = completion
 		
         super.init()
         self.peripheral.delegate = self
@@ -126,7 +128,7 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripheral {
                 if descriptor.uuid == FlutterPeripheral.RX_CONFIG_UUID {
                     rx_config_line = descriptor
                     peripheral.setNotifyValue(true, for: rx_line!)
-                    initialize()
+                    self.initialize()
                     return
                 }
             }
@@ -169,6 +171,9 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripheral {
     private func initialize() {
         self._initialized = true
         print("flutter initialized")
+		if let completion = self.initializationCompletion {
+			completion(self)
+		}
     }
 	
 	public func endOfLifeCleanup() -> Bool {
@@ -267,6 +272,7 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripheral {
 	public func setAllOutputsToOff() -> Bool {
 		//The order of output to shut off are: buzzer, servos, LEDs
 		//Beware of shortcuts in boolean logic
+		//Sending an ASCII capital X should do the same thing
 		
 		var suc = true
 		suc = self.setBuzzer(volume: 0, frequency: 0) && suc

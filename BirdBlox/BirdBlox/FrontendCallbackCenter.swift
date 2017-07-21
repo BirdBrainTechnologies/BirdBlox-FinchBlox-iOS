@@ -21,14 +21,25 @@ class FrontendCallbackCenter {
 		return from.addingPercentEncoding(withAllowedCharacters: CharacterSet())!
 	}
 	
+	public static func jsonString(from: Any) -> String? {
+		do {
+			let data = try JSONSerialization.data(withJSONObject: from, options: [.prettyPrinted])
+			return String(data: data, encoding: .utf8)
+		} catch {
+			return nil
+		}
+	}
+	
 	var webView: WKWebView? = nil
 	
 	
 	//MARK: Internal Method
-	private func runJS(function: String, parametersStr: String) -> Bool {
+	private func runJS(function: String, parameters: [String]) -> Bool {
 		guard let wv = self.webView else {
 			return false
 		}
+		
+		let parametersStr = "(" + parameters.map({"'\($0)'"}).joined(separator: ", ") + ")"
 		
 		let js = function + parametersStr
 		
@@ -139,22 +150,45 @@ class FrontendCallbackCenter {
 		return true
 	}
 	
+	public func scanHasStopped(typeStr: String) -> Bool {
+		let safeType = FrontendCallbackCenter.safeString(from: typeStr)
+		
+		let function = "CallbackManager.robot.stopDiscover"
+		let parameters = [safeType]
+		
+		return self.runJS(function: function, parameters: parameters)
+	}
+	
+	public func updateDiscoveredRobotList(typeStr: String, robotList: [[String: String]]) -> Bool {
+		let safeType = FrontendCallbackCenter.safeString(from: typeStr)
+		
+		guard let jsonList = FrontendCallbackCenter.jsonString(from: robotList) else {
+			return false
+		}
+		let safeList = FrontendCallbackCenter.safeString(from: jsonList)
+		
+		let function = "CallbackManager.robot.discovered"
+		let parameters = [safeType, safeList]
+		
+		return self.runJS(function: function, parameters: parameters)
+	}
+	
 	
 	//MARK: Updating UI
 	func documentSetName(name: String) -> Bool {
 		let safeName = FrontendCallbackCenter.safeString(from: name)
 		
 		let function = "CallbackManager.data.setName"
-		let parameters = "('\(safeName)')"
+		let parameters = [safeName]
 		
-		return self.runJS(function: function, parametersStr: parameters)
+		return self.runJS(function: function, parameters: parameters)
 	}
 	
 	func markLoadingDocument() -> Bool {
 		let function = "CallbackManager.data.markLoading"
-		let parameters = "()"
+		let parameters: [String] = []
 		
-		return self.runJS(function: function, parametersStr: parameters)
+		return self.runJS(function: function, parameters: parameters)
 	}
 	
 	

@@ -9,6 +9,8 @@
 import UIKit
 import WebKit
 
+/*
+
 class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, BBTWebViewController {
     var wasShaken: Bool = false
     var shakenTimer: Timer = Timer()
@@ -194,3 +196,4 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, BBTW
 
 }
 
+*/

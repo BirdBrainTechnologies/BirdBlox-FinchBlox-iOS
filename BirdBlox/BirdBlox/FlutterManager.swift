@@ -6,6 +6,7 @@
 //  Copyright © 2017 Birdbrain Technologies LLC. All rights reserved.
 //
 
+/*
 import Foundation
 import CoreBluetooth
 import Swifter
@@ -233,3 +234,4 @@ class FlutterManager: NSObject {
 		return .badRequest(.text("Malformed Request"))
     }
 }
+*/

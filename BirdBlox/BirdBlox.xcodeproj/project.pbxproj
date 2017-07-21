@@ -10,6 +10,7 @@
 		3F0E4A731ED37D3900369F70 /* DeviceUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F0E4A721ED37D3900369F70 /* DeviceUtilities.swift */; };
 		3F5F6D291EDDB3A800799277 /* BBTBackendServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F5F6D281EDDB3A800799277 /* BBTBackendServer.swift */; };
 		3F5F6D2B1EDDD73A00799277 /* SeverRequestPaths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F5F6D2A1EDDD73A00799277 /* SeverRequestPaths.swift */; };
+		3F9F72471F223D2000C29FEB /* RobotRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9F72461F223D2000C29FEB /* RobotRequests.swift */; };
 		3FA4F8A71F02F2BB005EB384 /* BBXDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FA4F8A61F02F2BB005EB384 /* BBXDocument.swift */; };
 		3FA4F8A91F03EE56005EB384 /* BBXDocumentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FA4F8A81F03EE56005EB384 /* BBXDocumentViewController.swift */; };
 		3FA7D5E31EF2E65800FE4882 /* BBTRobotState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FA7D5E21EF2E65800FE4882 /* BBTRobotState.swift */; };
@@ -48,6 +49,7 @@
 		3F0E4A721ED37D3900369F70 /* DeviceUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceUtilities.swift; sourceTree = "<group>"; };
 		3F5F6D281EDDB3A800799277 /* BBTBackendServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BBTBackendServer.swift; sourceTree = "<group>"; };
 		3F5F6D2A1EDDD73A00799277 /* SeverRequestPaths.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SeverRequestPaths.swift; sourceTree = "<group>"; };
+		3F9F72461F223D2000C29FEB /* RobotRequests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RobotRequests.swift; sourceTree = "<group>"; };
 		3FA4F8A61F02F2BB005EB384 /* BBXDocument.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BBXDocument.swift; sourceTree = "<group>"; };
 		3FA4F8A81F03EE56005EB384 /* BBXDocumentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BBXDocumentViewController.swift; sourceTree = "<group>"; };
 		3FA4F8AA1F06F602005EB384 /* BirdBlox.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BirdBlox.entitlements; sourceTree = "<group>"; };
@@ -173,6 +175,7 @@
 				3F5F6D2A1EDDD73A00799277 /* SeverRequestPaths.swift */,
 				BA8169671E81B72D00AAF7A3 /* FrontendRequests.swift */,
 				BAE2EBD41E84550900198B19 /* HummingbirdManager.swift */,
+				3F9F72461F223D2000C29FEB /* RobotRequests.swift */,
 				BA8A75901EA7192000ECFABC /* FlutterManager.swift */,
 				BA8A75921EB2481F00ECFABC /* DataRequests.swift */,
 				BA8A75941EB2519200ECFABC /* HostDeviceRequests.swift */,
@@ -359,6 +362,7 @@
 				BA8A75911EA7192000ECFABC /* FlutterManager.swift in Sources */,
 				BA8A75971EB27A8C00ECFABC /* SoundRequests.swift in Sources */,
 				BA8A75931EB2481F00ECFABC /* DataRequests.swift in Sources */,
+				3F9F72471F223D2000C29FEB /* RobotRequests.swift in Sources */,
 				BA8A75951EB2519200ECFABC /* HostDeviceRequests.swift in Sources */,
 				3FEC5DA41EF987640067C41B /* FrontendCallbackCenter.swift in Sources */,
 				3FF13C061F15692F00D1F358 /* CallbackManager.swift in Sources */,

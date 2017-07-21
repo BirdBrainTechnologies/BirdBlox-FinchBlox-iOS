@@ -281,8 +281,9 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 	}
 	
 	//MARK: Setup Sever
-	let hummingbirdManager = HummingbirdManager()
-	let flutterManager = FlutterManager()
+//	let hummingbirdManager = HummingbirdManager()
+//	let flutterManager = FlutterManager()
+	let robotRequests = RobotRequests()
 	let soundManager = SoundManager()
 	let settingsManager = SettingsManager()
 	let propertiesManager = PropertiesManager()
@@ -303,8 +304,9 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 		//Heartbeat
 		server["/server/ping"] = {r in return .ok(.text("pong"))}
 		
-		hummingbirdManager.loadRequests(server: server)
-		flutterManager.loadRequests(server: server)
+//		hummingbirdManager.loadRequests(server: server)
+//		flutterManager.loadRequests(server: server)
+		robotRequests.loadRequests(server: server)
 		dataRequests!.loadRequests(server: server)
 		hostDeviceManager!.loadRequests(server: server)
 		soundManager.loadRequests(server: server)

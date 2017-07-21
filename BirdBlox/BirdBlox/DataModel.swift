@@ -211,6 +211,17 @@ class DataModel: NSObject, FileManagerDelegate {
 				return "wav"
 			}
 		}
+		
+		static func fromString(_ s: String) -> BBXFileType? {
+			switch s {
+			case "file": return .BirdBloxProgram
+			case "ui": return .SoundUI
+			case "recording": return .SoundRecording
+			case "effect": return .SoundEffect
+			default:
+				return nil
+			}
+		}
 	}
 	
 	func folder(of fileType: BBXFileType) -> URL {
@@ -486,7 +497,7 @@ class DataModel: NSObject, FileManagerDelegate {
 		//TomWildenhain, BirdBrainTechnologies
 		//From Tom: https://github.com/TomWildenhain/HummingbirdDragAndDrop-/archive/dev.zip
 		//Semi Stable: https://github.com/BirdBrainTechnologies/HummingbirdDragAndDrop-/archive/dev.zip
-		let repoUrl = URL(string:"https://github.com/BirdBrainTechnologies/HummingbirdDragAndDrop-/archive/dev.zip")!
+		let repoUrl = URL(string:"https://github.com/TomWildenhain/HummingbirdDragAndDrop-/archive/dev.zip")!
 		
 		guard let libLoc = try? FileManager.default.url(for: .libraryDirectory,
 		                                                 in: .userDomainMask, appropriateFor: nil,

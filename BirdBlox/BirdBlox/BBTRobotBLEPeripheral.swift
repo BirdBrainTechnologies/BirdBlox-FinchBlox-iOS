@@ -22,6 +22,26 @@ enum BBTRobotType {
 			return CBUUID()
 		}
 	}
+	
+	static func fromString(_ s: String) -> BBTRobotType? {
+		switch s {
+		case "hummingbird",
+		     "Hummingbird",
+			 "HB",
+			 "HM":
+			return .Hummingbird
+		case "Flutter",
+		     "flutter",
+		     "FL",
+		     "fl":
+			return .Flutter
+		case "Finch",
+		     "finch":
+			return .Finch
+		default:
+			return nil
+		}
+	}
 }
 
 protocol BBTRobotBLEPeripheral {
@@ -44,4 +64,9 @@ protocol BBTRobotBLEPeripheral {
 	func setAllOutputsToOff() -> Bool
 	
 	func endOfLifeCleanup() -> Bool
+	
+	//The completion will be called once the peripheral has been completely initialized and 
+	//is ready to send and receive commands. 
+	//This is not guaranteed to occur immediately after the init returns.
+	init(peripheral: CBPeripheral, completion: ((BBTRobotBLEPeripheral) -> Void)?)
 }
