@@ -44,7 +44,7 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
 	
 	
 	//MARK: Variables to coordinate set all
-	var writtenCondition: NSCondition = NSCondition()
+	private var writtenCondition: NSCondition = NSCondition()
 	
 	//MARK: Variables write protected by writtenCondition
 	private var currentOutputState: BBTHummingbirdOutputState
@@ -56,6 +56,10 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
 	let syncInterval = 0.03125 //(32Hz)
 	let cacheTimeoutDuration: UInt64 = 1 * 100_000_000 //units
 	let waitRefreshTime = 0.5 //seconds
+	
+	
+	private var initializingCondition = NSCondition()
+	private var lineIn: [UInt8] = [0, 0, 0, 0, 0, 0, 0, 0]
 	
 	//MARK: Variables for HB renaming
 //	static let ADALE_COMMAND_MODE_TOGGLE = "+++\n"
@@ -134,7 +138,9 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
                     wasRXSet = true
                 }
                 if(wasTXSet && wasRXSet){
-                    self.initialize()
+					DispatchQueue.main.async {
+						self.initialize()
+					}
                     return
                 }
             }
@@ -142,20 +148,33 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
     }
     
     private func initialize() {
+		print("start init")
 		//Get ourselves a fresh slate
-        self.sendData(data: BBTHummingbirdUtility.getTurnOffCommand())
-        Thread.sleep(forTimeInterval: 0.1)
         self.sendData(data: BBTHummingbirdUtility.getPollStopCommand())
+		Thread.sleep(forTimeInterval: 0.5) //
+		
+		self.initializingCondition.lock()
+		let oldLineIn = self.lineIn
+		peripheral.writeValue("G4".data(using: .utf8)!, for: tx_line!, type: .withResponse)
+		while (self.lineIn == oldLineIn) {
+			self.initializingCondition.wait(until: Date(timeIntervalSinceNow: 1))
+		}
+		let line = self.lineIn
+		print(line)
+		print("end hi")
+		self.initializingCondition.unlock()
+		
+		
         Thread.sleep(forTimeInterval: 0.1)
 		self.sendData(data: BBTHummingbirdUtility.getPollStartCommand())
-		
-		DispatchQueue.main.async{
-			self.syncTimer =
-			Timer.scheduledTimer(timeInterval: self.syncInterval, target: self,
-			                     selector: #selector(HummingbirdPeripheral.syncronizeOutputs),
-			                     userInfo: nil, repeats: true)
-			self.syncTimer.fire()
-		}
+//
+//		DispatchQueue.main.async{
+//			self.syncTimer =
+//			Timer.scheduledTimer(timeInterval: self.syncInterval, target: self,
+//			                     selector: #selector(HummingbirdPeripheral.syncronizeOutputs),
+//			                     userInfo: nil, repeats: true)
+//			self.syncTimer.fire()
+//		}
 		
 		self._initialized = true
 		print("Hummingbird initialized")
@@ -168,13 +187,23 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic,
                     error: Error?) {
 		//If we are trying to reset the hummingbird's name, this should be the device's MAC
-//		print("Did update characteristic \(characteristic)")
+		print("Did update characteristic \(characteristic)")
 		
         if characteristic.uuid != HummingbirdPeripheral.RX_UUID {
 			return
         }
 		
 		guard let inData = characteristic.value else {
+			return
+		}
+		
+		guard self.initialized else {
+			self.initializingCondition.lock()
+			print("hi")
+			print(inData.debugDescription)
+			inData.copyBytes(to: &self.lineIn, count: self.lineIn.count)
+			self.initializingCondition.signal()
+			self.initializingCondition.unlock()
 			return
 		}
 		
@@ -195,6 +224,8 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
 			NSLog("Unable to write to hummingbird due to error \(error)")
 		}
 		
+		print("did write")
+		
 		//We successfully sent a command
 		self.writtenCondition.lock()
 		self.lastWriteWritten = true
@@ -208,6 +239,7 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
 	
 	
 	public func endOfLifeCleanup() -> Bool{
+//		self.sendData(data: BBTHummingbirdUtility.getPollStopCommand())
 		self.syncTimer.invalidate()
 		return true
 	}

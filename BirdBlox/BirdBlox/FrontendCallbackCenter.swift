@@ -87,7 +87,7 @@ class FrontendCallbackCenter {
 			return false
 		}
 	
-		let function = "CallbackManager.dialog.promptResponded"
+		let function = "CallbackManager.dialog.choiceResponded"
 		let parameters = "(\(cancelled), \(firstSelected))"
 		let js = function + parameters
 		
@@ -102,29 +102,6 @@ class FrontendCallbackCenter {
 		
 		return true
 	}
-	
-	
-	func choiceResponded() -> Bool {
-		guard let wv = self.webView else {
-			return false
-		}
-		
-		let function = "CallbackManager.dialog.alertResponded"
-		let parameters = "()"
-		let js = function + parameters
-		
-		wv.evaluateJavaScript(js, completionHandler: { ret, error in
-			if let error = error {
-				print("Error running '\(js)': \(error)")
-				return
-			}
-			
-			print("Ran '\(js)', got \(String(describing: ret))")
-		})
-		
-		return true
-	}
-	
 	
 	//MARK: Robot Related
 	public func robotUpdateStatus(id: String, connected: Bool) -> Bool {

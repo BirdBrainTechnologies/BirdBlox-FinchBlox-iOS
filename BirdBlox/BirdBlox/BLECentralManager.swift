@@ -290,15 +290,15 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 			peripheral = self.connectedPeripherals[id]!
 		}
 		
+		if let robot = self.connectedRobots[id] {
+			let _ = robot.endOfLifeCleanup()
+		}
+		
 		self.oughtToBeConnected.removeValue(forKey: id)
 		
 		
 		centralManager.cancelPeripheralConnection(peripheral)
 		self.currentlyConnecting = 5
-		
-		if let robot = self.connectedRobots[id] {
-			let _ = robot.endOfLifeCleanup()
-		}
 		
 		print("disconnect running")
 	}

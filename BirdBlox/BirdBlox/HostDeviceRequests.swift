@@ -266,8 +266,7 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
 		
         if let title = (captured["title"]),
 			let question = (captured["question"]),
-			let button1Text = (captured["button1"]),
-			let button2Text = (captured["button2"]) {
+			let button1Text = (captured["button1"]){
 			
 			let alertController = UIAlertController(title: title, message: question,
 			                                        preferredStyle: UIAlertControllerStyle.alert)
@@ -277,16 +276,22 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
 				let _ = FrontendCallbackCenter.shared.choiceResponded(cancelled: false,
 				                                                      firstSelected: true)
 			}
-			let button2Action = UIAlertAction(title: button2Text, style: UIAlertActionStyle.default){
-				(action) -> Void in
-				self.last_choice_response = 2
-				let _ = FrontendCallbackCenter.shared.choiceResponded(cancelled: false,
-				                                                      firstSelected: false)
-			}
 			alertController.addAction(button1Action)
-			alertController.addAction(button2Action)
+			
+			if let button2Text = captured["button2"] {
+				let button2Action = UIAlertAction(title: button2Text, style: UIAlertActionStyle.default){
+					(action) -> Void in
+					self.last_choice_response = 2
+					let _ = FrontendCallbackCenter.shared.choiceResponded(cancelled: false,
+																		  firstSelected: false)
+				}
+				alertController.addAction(button2Action)
+			}
+			
 			DispatchQueue.main.async{
-				UIApplication.shared.keyWindow?.rootViewController!.present(alertController, animated: true, completion: nil)
+				UIApplication.shared.keyWindow?.rootViewController!.present(alertController,
+				                                                            animated: true,
+																			completion: nil)
 			}
 			return .ok(.text("Choice Dialog Presented"))
 		}
