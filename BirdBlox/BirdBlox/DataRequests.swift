@@ -196,11 +196,13 @@ class DataManager: NSObject {
 		
 		//Configure activity view controller and popover
 		let view = UIActivityViewController(activityItems: [url], applicationActivities: nil)
-		view.popoverPresentationController?.sourceView = self.view_controller.view
+		view.popoverPresentationController?.sourceView = self.view_controller.wv
 		if let tlx = Double(queries["tlx"] ?? "not an int"),
 			let tly = Double(queries["tly"] ?? "not an int"),
 			let brx = Double(queries["brx"] ?? "not an int"),
 			let bry = Double(queries["bry"] ?? "not an int") {
+			
+//			let yOffset = Double(self.view_controller.view.frame.origin.y)
 			
 			let origin = CGPoint(x: tlx, y: tly)
 			let size = CGSize(width: brx - tlx, height: bry - tly)

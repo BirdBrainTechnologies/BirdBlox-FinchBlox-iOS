@@ -31,8 +31,6 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 		
 		//Setup Server
 		
-		FrontendCallbackCenter.shared.webView = webView
-		
 		self.addHandlersToServer(self.server)
 		
 		(UIApplication.shared.delegate as! AppDelegate).backendServer = self.server
@@ -63,7 +61,7 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 		self.webView.load(req)
 		print("post-req")
 		
-		self.view.addSubview(webView)
+		self.view.addSubview(self.webView)
 		
 		//Setup callback center
 		FrontendCallbackCenter.shared.webView = webView

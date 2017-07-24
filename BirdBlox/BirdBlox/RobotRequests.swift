@@ -113,9 +113,10 @@ class RobotRequests {
 		guard let id = queries["id"] else {
 			return .badRequest(.text("Missing Parameter"))
 		}
-		guard bleCenter.isRobotWithIDConnected(id) else {
-			return .notFound
-		}
+		//Disconnect even if the robot is still initializing
+//		guard bleCenter.isRobotWithIDConnected(id) else {
+//			return .notFound
+//		}
 		
 		bleCenter.disconnect(byID: id)
 		return .ok(.text("Disconnected"))
