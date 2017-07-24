@@ -215,7 +215,7 @@ class RobotRequests {
 		}
 		
 		let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
-		                                                 acceptTypes: [.Flutter])
+		                                                 acceptTypes: [.Flutter, .Hummingbird])
 		guard let robot = roboto else {
 			return requesto!
 		}

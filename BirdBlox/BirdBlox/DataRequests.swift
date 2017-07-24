@@ -185,29 +185,36 @@ class DataManager: NSObject {
     func exportRequest(request: HttpRequest) -> HttpResponse {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
-		if let filename = queries["filename"] {
-			let exportedPath = DataModel.shared.getBBXFileLoc(byName: filename)
-			if  FileManager.default.fileExists(atPath: exportedPath.path) {
-				let url = URL(fileURLWithPath: exportedPath.path)
-				let view = UIActivityViewController(activityItems: [url], applicationActivities: nil)
-				
-				view.popoverPresentationController?.sourceView = self.view_controller.view
-				view.excludedActivityTypes = nil
-				DispatchQueue.main.async{
-					self.view_controller.present(view, animated: true, completion: nil)
-				}
-				
-				print(filename)
-				print(exportedPath.path)
-				
-				return .ok(.text("Exported"))
-			}
-			else {
-				return .internalServerError
-			}
-        }
+		guard let filename = queries["filename"] else {
+			return .badRequest(.text("Missing Parameter"))
+		}
 		
-		return .badRequest(.text("Malformed Request"))
+		let url = DataModel.shared.getBBXFileLoc(byName: filename)
+		guard  FileManager.default.fileExists(atPath: url.path) else {
+			return .internalServerError
+		}
+		
+		//Configure activity view controller and popover
+		let view = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+		view.popoverPresentationController?.sourceView = self.view_controller.view
+		if let tlx = Double(queries["tlx"] ?? "not an int"),
+			let tly = Double(queries["tly"] ?? "not an int"),
+			let brx = Double(queries["brx"] ?? "not an int"),
+			let bry = Double(queries["bry"] ?? "not an int") {
+			
+			let origin = CGPoint(x: tlx, y: tly)
+			let size = CGSize(width: brx - tlx, height: bry - tly)
+			view.popoverPresentationController?.sourceRect = CGRect(origin: origin, size: size)
+		}
+		
+		view.excludedActivityTypes = nil
+		DispatchQueue.main.async{
+			self.view_controller.present(view, animated: true, completion: nil)
+		}
+		
+		print("Exporting \(filename) at \(url.path)")
+		
+		return .ok(.text("Exported"))
     }
     
 	//MARK: Supporting functions

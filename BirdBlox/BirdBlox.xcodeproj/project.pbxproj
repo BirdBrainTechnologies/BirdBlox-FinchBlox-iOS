@@ -239,7 +239,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0820;
-				LastUpgradeCheck = 0820;
+				LastUpgradeCheck = 0830;
 				ORGANIZATIONNAME = "Birdbrain Technologies LLC.";
 				TargetAttributes = {
 					BA81694C1E81A98A00AAF7A3 = {
@@ -491,6 +491,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E8B8191F17118ABB8EDC2784 /* Pods-BirdBlox.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = BirdBlox/BirdBlox.entitlements;
 				DEVELOPMENT_TEAM = N6XC9HC8PB;
@@ -508,6 +509,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1CBEFB40603958D76A5BFE44 /* Pods-BirdBlox.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = BirdBlox/BirdBlox.entitlements;
 				DEVELOPMENT_TEAM = N6XC9HC8PB;
