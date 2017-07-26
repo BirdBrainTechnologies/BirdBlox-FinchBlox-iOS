@@ -25,9 +25,6 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
     var currentPressure: Float = 0 //kPa
     var currentLocation:CLLocationCoordinate2D = CLLocationCoordinate2D()
     
-    var last_dialog_response: String?
-    var last_choice_response = 0
-    
     init(view_controller: BBTWebViewController){
         self.view_controller = view_controller
         super.init()
@@ -87,8 +84,6 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
         server["/tablet/altitude"] = altitudeRequest(request:)
         server["/tablet/orientation"] = orientationRequest(request:)
         server["/tablet/acceleration"] = accelerationRequest(request:)
-        server["/tablet/dialog_response"] = dialogResponseRequest(request:)
-        server["/tablet/choice_response"] = choiceResponseRequest(request:)
         
         server["/tablet/dialog"] = dialogRequest(request:)
         server["/tablet/choice"] = choiceRequest(request:)
@@ -185,24 +180,9 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
 		//We convert from G's to ms^-2 by multiplying by 9.81
 		return .ok(.text("\(accel.x * 9.81) \(accel.y * 9.81) \(accel.z * 9.81)"))
     }
-    func dialogResponseRequest(request: HttpRequest) -> HttpResponse {
-        if let response = self.last_dialog_response {
-            if (response == "!~<!--CANCELLED-->~!") {
-                return .ok(.text("Cancelled"))
-            } else {
-                return .ok(.text("\'" + response + "\'"))
-            }
-        }
-        else {
-            return .ok(.text("No Response"))
-        }
-    }
-    func choiceResponseRequest(request: HttpRequest) -> HttpResponse {
-        return .ok(.text(String(self.last_choice_response)))
-    }
+	
     
     func dialogRequest(request: HttpRequest) -> HttpResponse {
-        self.last_dialog_response = nil
         let captured = BBTSequentialQueryArrayToDict(request.queryParams)
 		
         if let title = (captured["title"]),
@@ -219,17 +199,14 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
 				if let textField: AnyObject = alertController.textFields?.first{
 					let response = (textField as! UITextField).text
 					if let response = response {
-						self.last_dialog_response = response;
+						let pr = FrontendCallbackCenter.shared.dialogPromptResponded
+						let _ = pr(false, response)
 					}
-					
-					let _ = FrontendCallbackCenter.shared.dialogPromptResponded(cancelled: false,
-					                                                            response: response)
 				}
 			}
 			
 			let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel){
 				(action) -> Void in
-				self.last_dialog_response = "!~<!--CANCELLED-->~!"
 				let _ = FrontendCallbackCenter.shared.dialogPromptResponded(cancelled: true,
 				                                                            response: nil)
 			}
@@ -261,7 +238,6 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
     }
 	
     func choiceRequest(request: HttpRequest) -> HttpResponse {
-        self.last_choice_response = 0
         let captured = BBTSequentialQueryArrayToDict(request.queryParams)
 		
         if let title = (captured["title"]),
@@ -272,7 +248,6 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
 			                                        preferredStyle: UIAlertControllerStyle.alert)
 			let button1Action = UIAlertAction(title: button1Text, style: UIAlertActionStyle.default){
 				(action) -> Void in
-				self.last_choice_response = 1
 				let _ = FrontendCallbackCenter.shared.choiceResponded(cancelled: false,
 				                                                      firstSelected: true)
 			}
@@ -281,7 +256,6 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
 			if let button2Text = captured["button2"] {
 				let button2Action = UIAlertAction(title: button2Text, style: UIAlertActionStyle.default){
 					(action) -> Void in
-					self.last_choice_response = 2
 					let _ = FrontendCallbackCenter.shared.choiceResponded(cancelled: false,
 																		  firstSelected: false)
 				}

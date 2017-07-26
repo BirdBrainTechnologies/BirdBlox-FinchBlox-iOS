@@ -168,6 +168,13 @@ class FrontendCallbackCenter {
 		return self.runJS(function: function, parameters: parameters)
 	}
 	
+	func recordingEnded() -> Bool {
+		let function = "CallbackManager.sounds.recordingEnded"
+		let parameters: Array<String> = []
+		
+		return self.runJS(function: function, parameters: parameters)
+	}
+	
 	
 	//MARK: misc., utility
 	func echo(getRequestString: String) -> Bool {

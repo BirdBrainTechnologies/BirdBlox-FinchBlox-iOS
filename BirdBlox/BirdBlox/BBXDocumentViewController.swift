@@ -207,6 +207,7 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 	}
 	
 	private func closeCurrentProgram(completion: ((Bool) -> Void)? = nil) {
+		UserDefaults.standard.set(nil, forKey: self.curDocNameKey)
 		self.document.close(completionHandler: { suc in
 			if let completion = completion {
 				completion(suc)
@@ -483,6 +484,11 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 			}
 			
 			return deleteHandler(request)
+		}
+		
+		server["/data/markAsNamed"] = { request in
+			UserDefaults.standard.set(false, forKey: self.curDocNeedsNameKey)
+			return .ok(.text("set"))
 		}
 	}
 	

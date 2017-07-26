@@ -187,7 +187,7 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic,
                     error: Error?) {
 		//If we are trying to reset the hummingbird's name, this should be the device's MAC
-		print("Did update characteristic \(characteristic)")
+//		print("Did update characteristic \(characteristic)")
 		
         if characteristic.uuid != HummingbirdPeripheral.RX_UUID {
 			return

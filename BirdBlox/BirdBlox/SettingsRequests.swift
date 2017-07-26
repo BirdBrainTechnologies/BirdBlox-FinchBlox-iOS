@@ -17,7 +17,6 @@ class SettingsManager: NSObject {
 		
 		//settings/setSetting?key=foo&value=bar
         server["/settings/set"] = self.setSettingRequest
-
     }
 	
     func getSettingRequest(request: HttpRequest) -> HttpResponse {

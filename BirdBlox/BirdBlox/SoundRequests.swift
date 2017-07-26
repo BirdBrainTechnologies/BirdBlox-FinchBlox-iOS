@@ -12,6 +12,8 @@ import Swifter
 class SoundManager: NSObject {
 
     let audio_manager: AudioManager
+	
+	var timer = Timer()
     
     override init(){
         audio_manager = AudioManager()
@@ -45,6 +47,17 @@ class SoundManager: NSObject {
 		formatter.timeZone = TimeZone.current
 		let name = DataModel.sanitizedName(of: formatter.string(from: now))
 		let _ = self.audio_manager.startRecording(saveName: name)
+		
+		let fiveMin = TimeInterval(300) //in seconds
+		if #available(iOS 10.0.0, *) {
+			timer = Timer.scheduledTimer(withTimeInterval: fiveMin, repeats: false, block: {_ in 
+				let _=FrontendCallbackCenter.shared.echo(getRequestString: "/sound/recording/stop")
+			})
+		} else {
+			timer = Timer.scheduledTimer(timeInterval: fiveMin, target: self.audio_manager,
+			                             selector: #selector(AudioManager.finishRecording),
+			                             userInfo: nil, repeats: false)
+		}
 		
 		if self.audio_manager.permissionsState == .granted {
 			return .ok(.text("Started"))

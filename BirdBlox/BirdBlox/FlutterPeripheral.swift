@@ -275,13 +275,15 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripheral {
 		//Sending an ASCII capital X should do the same thing
 		
 		var suc = true
-		suc = self.setBuzzer(volume: 0, frequency: 0) && suc
-		for i in UInt(1)...3 {
-			suc = self.setServo(port: i, angle: BBTFlutterUtility.servoOffAngle) && suc
-		}
-		for i in UInt(1)...3 {
-			suc = self.setTriLED(port: i, intensities: BBTTriLED(0, 0, 0)) && suc
-		}
+//		suc = self.setBuzzer(volume: 0, frequency: 0) && suc
+//		for i in UInt(1)...3 {
+//			suc = self.setServo(port: i, angle: BBTFlutterUtility.servoOffAngle) && suc
+//		}
+//		for i in UInt(1)...3 {
+//			suc = self.setTriLED(port: i, intensities: BBTTriLED(0, 0, 0)) && suc
+//		}
+		
+		self.sendDataWithoutResponse(data: BBTFlutterUtility.turnOffCommand)
 		
 		return suc
 	}

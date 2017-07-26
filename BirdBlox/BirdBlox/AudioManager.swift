@@ -129,11 +129,12 @@ class AudioManager: NSObject, AVAudioRecorderDelegate {
 		}
 		
 		self.recorder = nil
+		
+		let _ = FrontendCallbackCenter.shared.recordingEnded()
 	}
 	
 	func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
-		self.finishRecording()
-		//TODO: Do something with the flag
+		self.finishRecording(deleteRecording: !flag)
 	}
 	
 	var permissionsState: AVAudioSessionRecordPermission {

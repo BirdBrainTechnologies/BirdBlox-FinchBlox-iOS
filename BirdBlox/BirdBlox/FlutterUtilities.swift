@@ -66,6 +66,10 @@ class BBTFlutterUtility {
 		let commandString = read + end
 		return Data(bytes: [UInt8](commandString.utf8), count: commandString.utf8.count)
 	}
+	
+	public static var turnOffCommand: Data {
+		return BBTHummingbirdUtility.getTurnOffCommand()
+	}
 
 	static let responseCharacter = getUnicode(Character("r"))
 	
