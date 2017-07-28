@@ -10,6 +10,9 @@ import Foundation
 import WebKit
 
 
+/*
+A central location for all the javascript callbacks.
+ */
 class FrontendCallbackCenter {
 	private static let singleton: FrontendCallbackCenter = FrontendCallbackCenter()
 	

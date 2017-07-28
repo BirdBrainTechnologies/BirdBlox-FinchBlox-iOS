@@ -12,6 +12,14 @@ import WebKit
 import Swifter
 import SafariServices
 
+
+/*
+BBXDocumentViewController
+A view controller meant to display a BBXDocument to the user.
+Repurposed as the root view controller for versions of iOS before iOS 11. 
+So the design is intentionally similar to ViewController.swift.
+ */
+
 class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocumentPickerDelegate,
 SFSafariViewControllerDelegate {
 	
@@ -20,7 +28,7 @@ SFSafariViewControllerDelegate {
 	
 	let server = BBTBackendServer()
 	
-//	var saveTimer = Timer()
+	var reloadTimer = Timer()
 	
 	override func viewDidLoad() {
 		NSLog("Document View Controller viewDidLoad")
@@ -38,6 +46,8 @@ SFSafariViewControllerDelegate {
 		(UIApplication.shared.delegate as! AppDelegate).backendServer = self.server
 		
 		self.server["/ui/contentLoaded"] = { request in
+			self.reloadTimer.invalidate()
+			
 			self.webUILoaded = true
 			
 			if let name = UserDefaults.standard.string(forKey: self.curDocNameKey) {
@@ -63,6 +73,17 @@ SFSafariViewControllerDelegate {
 		self.webView.load(req)
 		print("post-req")
 		
+		if #available(iOS 10, *) {
+			self.reloadTimer = Timer.scheduledTimer(withTimeInterval: TimeInterval(5),
+													repeats: false, block: { _ in
+				print("Reload timer fired")
+				if !self.webUILoaded {
+					print("Reloading")
+					self.webView.reload()
+				}
+			})
+		}
+		
 		self.view.addSubview(self.webView)
 		
 		//Setup callback center
@@ -70,41 +91,6 @@ SFSafariViewControllerDelegate {
 		
 		NSLog("Document View Controller exiting viewDidLoad")
 	}
-	
-	//MARK: Save Timer
-	
-/*	func startTimer() {
-		self.saveTimer = Timer.scheduledTimer(timeInterval: 0.125, target: self,
-		                                      selector: #selector(self.saveTimerFired),
-		                                      userInfo: nil, repeats: true)
-	}
-	
-	func saveTimerFired() {
-		if self.webUILoaded {
-			self.webView.evaluateJavaScript("SaveManager.currentDoc()") { file, error in
-				if let error = error {
-					NSLog("Error autosaving file \(error)")
-					return
-				}
-				
-				guard let file: Dictionary<String, String> = file as? Dictionary<String, String> else {
-					return
-				}
-				
-				guard let content = file["data"] else {
-					NSLog("Autosave Missing filename or data")
-					return
-				}
-				
-				guard self.document.documentState == .normal else {
-					NSLog("Document state abnormal, abandoned edit. \(self.document.documentState)")
-					return
-				}
-				
-				self.document.currentXML = content
-			}
-		}
-	} */
 	
 	//MARK: Document Handling
 	static let curDocNeedsNameKey = "CurrentDocumentNeedsName"
@@ -322,7 +308,8 @@ SFSafariViewControllerDelegate {
 		}
 		
 		self.server["/cloud/showPicker"] = { (request: HttpRequest) -> HttpResponse in
-			let picker = UIDocumentPickerViewController(documentTypes: [DataModel.bbxUTI, "public.xml"], in: .open)
+			let docTypes = [DataModel.bbxUTI, "public.xml"]
+			let picker = UIDocumentPickerViewController(documentTypes: docTypes, in: .open)
 			picker.delegate = self
 			
 			DispatchQueue.main.sync {
@@ -505,6 +492,9 @@ SFSafariViewControllerDelegate {
 		}
 	}
 	
+	
+	//MARK: UIDocumentPickerDelegate
+	
 	func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentAt url: URL) {
 		let doc = BBXDocument(fileURL: url)
 		let _ = FrontendCallbackCenter.shared.markLoadingDocument()
@@ -528,9 +518,6 @@ SFSafariViewControllerDelegate {
 		})
 	}
 	
-	
-	//MARK: Convinience
-	
 	//MARK: SFSafariViewControllerDelegate
 	func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
 		controller.dismiss(animated: true, completion: nil)
@@ -541,6 +528,11 @@ SFSafariViewControllerDelegate {
 		return self.webView
 	}
 }
+
+/*
+Created to make switching to BBXDocumentView Controller easier. 
+Some of the older request handlers still need access to the view
+ */
 
 protocol BBTWebViewController {
 	var wv: WKWebView { get }

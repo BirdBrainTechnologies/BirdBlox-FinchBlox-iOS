@@ -9,7 +9,9 @@
 import Foundation
 import Zip
 
-
+/*
+The singleton that manages all reading and writing on disk.
+ */
 class DataModel: NSObject, FileManagerDelegate {
 	static let bbxUTI = "com.birdbraintechnologies.bbx"
 	static let shared = DataModel()
@@ -23,12 +25,14 @@ class DataModel: NSObject, FileManagerDelegate {
 	let stagingLoc: URL
 	let currentDocLoc: URL
 	let recordingsLoc: URL
+	let logLoc: URL
 	
 	let frontendLoc: URL
 	let frontendPageLoc: URL
 	let soundsLoc: URL
 	let uiSoundsLoc: URL
 	
+	//If we don't have access to these directories the app will crash
 	override init() {
 		do {
 			let docLoc = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask,
@@ -53,6 +57,11 @@ class DataModel: NSObject, FileManagerDelegate {
 			                                                  .userDomainMask, true)[0]
 			self.tmpLoc = URL(fileURLWithPath: tmpPath)
 		}
+		
+		let libLoc = FileManager.default.urls(for: .libraryDirectory,
+		                                     in: .userDomainMask).first!
+		self.logLoc = libLoc.appendingPathComponent("JavaScript Error Log")
+							.appendingPathExtension("txt")
 		
 		self.stagingLoc = self.tmpLoc.appendingPathComponent("staging")
 		self.currentDocLoc = self.tmpLoc.appendingPathComponent("currentDoc")
@@ -458,6 +467,51 @@ class DataModel: NSObject, FileManagerDelegate {
 	
 	public func getSetting(_ key: String) -> String? {
 		return UserDefaults.standard.string(forKey: key)
+	}
+	
+	
+	//MARK: Managing Javascript Log File
+	
+	static let maxLogSize: UInt64 = 50000 //bytes
+	static let truncLogSize = 25000
+	
+	private func shouldTruncateLogFile() -> Bool {
+		do {
+			let attrs = try FileManager.default.attributesOfItem(atPath: self.logLoc.path)
+			let size = (attrs as NSDictionary).fileSize()
+			
+			if size  > DataModel.maxLogSize {
+				return true
+			} else {
+				return false
+			}
+		} catch {
+			return false
+		}
+	}
+	
+	public func appendStringToLog(_ nakedMessage: String) {
+		let nowString = Date().description(with: nil) + "\n"
+		let message = nowString + nakedMessage + "\n\n"
+		
+		guard !self.shouldTruncateLogFile(),
+			  let file = try? FileHandle(forWritingTo: self.logLoc),
+			  let data = message.data(using: .utf8) else {
+			
+			let oldLogs = (try? String(contentsOf: self.logLoc)) ?? ""
+			
+			var logChars = oldLogs.characters
+			if logChars.count > DataModel.truncLogSize {
+				logChars = logChars.dropFirst(logChars.count - 25000)
+			}
+			
+			let log = String(logChars) + message
+			let _ = try? log.write(to: self.logLoc, atomically: true, encoding: .utf8)
+			return
+		}
+		
+		file.seekToEndOfFile()
+		file.write(data)
 	}
 	
 	
