@@ -61,6 +61,8 @@ class RobotRequests {
 			RobotRequests.handler(fromIDAndTypeHandler: self.setBuzzerRequest)
 		
 		server["/robot/in"] = RobotRequests.handler(fromIDAndTypeHandler: self.inputRequest)
+		
+		server["/robot/showInfo"] = RobotRequests.handler(fromIDAndTypeHandler: self.infoRequest)
 	}
 	
 	private func discoverRequest(request: HttpRequest) -> HttpResponse {
@@ -120,6 +122,27 @@ class RobotRequests {
 		
 		bleCenter.disconnect(byID: id)
 		return .ok(.text("Disconnected"))
+	}
+	
+	
+	private func infoRequest(id: String, type: BBTRobotType,
+	                         request: HttpRequest) -> HttpResponse {
+		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
+		
+		guard let id = queries["id"] else {
+			return .badRequest(.text("Missing Parameter"))
+		}
+		guard let robot = bleCenter.robotForID(id) else {
+			return .notFound
+		}
+		
+		let text = FrontendCallbackCenter.safeString(from: robot.description)
+		
+		let _ = FrontendCallbackCenter.shared.echo(getRequestString:
+			"/tablet/choice?question=\(text)&button1=dismiss")
+		
+		
+		return .ok(.text("Info shown"))
 	}
 	
 	

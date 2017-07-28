@@ -127,6 +127,16 @@ class FrontendCallbackCenter {
 		return true
 	}
 	
+	public func robotFirmwareIncompatible(id: String, firmware: String) -> Bool {
+		let safeID = FrontendCallbackCenter.safeString(from: id)
+		let safeFirmware = FrontendCallbackCenter.safeString(from: firmware)
+		
+		let function = "CallbackManager.robot.disconnectIncompatible"
+		let parameters = [safeID, safeFirmware, HummingbirdPeripheral.minimumFirmware]
+		
+		return self.runJS(function: function, parameters: parameters)
+	}
+	
 	public func scanHasStopped(typeStr: String) -> Bool {
 		let safeType = FrontendCallbackCenter.safeString(from: typeStr)
 		
@@ -183,7 +193,7 @@ class FrontendCallbackCenter {
 		}
 		
 		let function = "CallbackManager.echo"
-		let parameters = "('\(getRequestString)')"
+		let parameters = "('\(FrontendCallbackCenter.safeString(from: getRequestString))')"
 		let js = function + parameters
 		
 		wv.evaluateJavaScript(js, completionHandler: { ret, error in

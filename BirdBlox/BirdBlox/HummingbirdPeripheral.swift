@@ -19,6 +19,9 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
 	
     private let BLE_Manager: BLECentralManager
 	
+	public static let minimumFirmware = "2.2a"
+	public static let latestFirmware = "2.2b"
+	
 	//BLE adapter
 	public static let deviceUUID    = CBUUID(string: "6E400001-B5A3-F393-E0A9-E50E24DCCA9E")
 	//UART Service
@@ -60,6 +63,8 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
 	
 	private var initializingCondition = NSCondition()
 	private var lineIn: [UInt8] = [0, 0, 0, 0, 0, 0, 0, 0]
+	private var hardwareString = ""
+	private var firmwareVersionString = ""
 	
 	//MARK: Variables for HB renaming
 //	static let ADALE_COMMAND_MODE_TOGGLE = "+++\n"
@@ -68,13 +73,25 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
 //	static let ADALE_RESET = "ATZ\n"
 //	static let NAME_PREFIX = "HB"
 //	var macStr: String? = nil
-//	let macReplyLen = 17
+//	let macReplyLen = 17e
 //	let macLen = 12
 //	var oneOffTimer: Timer = Timer()
 //	var resettingName = false
 //	var gettingMAC = false
 //	var commandMode = false
 
+	
+	override public var description: String {
+		let gapName = self.peripheral.name ?? "Unknown"
+		let name = BBTgetDeviceNameForGAPName(gapName)
+		return
+			"Hummingbird Peripheral\n" +
+			"Name: \(name)\n" +
+			"Bluetooth Name: \(gapName)\n" +
+			"Hardware Version: \(self.hardwareString)\n" +
+			"Firmware Version: \(self.firmwareVersionString)"
+	}
+	
     
 	required init(peripheral: CBPeripheral, completion: ((BBTRobotBLEPeripheral) -> Void)? = nil){
         self.peripheral = peripheral
@@ -153,16 +170,36 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
         self.sendData(data: BBTHummingbirdUtility.getPollStopCommand())
 		Thread.sleep(forTimeInterval: 0.5) //
 		
+		let timeoutTime = Date(timeIntervalSinceNow: TimeInterval(7)) //seconds
+		
 		self.initializingCondition.lock()
 		let oldLineIn = self.lineIn
 		peripheral.writeValue("G4".data(using: .utf8)!, for: tx_line!, type: .withResponse)
-		while (self.lineIn == oldLineIn) {
+		
+		//Wait until we get a response or until we timeout.
+		//If we time out the verion will be 0.0, which is invalid.
+		while (self.lineIn == oldLineIn && (Date().timeIntervalSince(timeoutTime) < 0)) {
 			self.initializingCondition.wait(until: Date(timeIntervalSinceNow: 1))
 		}
-		let line = self.lineIn
-		print(line)
+		let versionArray = self.lineIn
+		
+		
+		self.hardwareString = String(versionArray[0]) + "." + String(versionArray[1])
+		self.firmwareVersionString = String(versionArray[2]) + "." + String(versionArray[3]) +
+			(String(bytes: [versionArray[4]], encoding: .ascii) ?? "")
+		
+		print(versionArray)
 		print("end hi")
 		self.initializingCondition.unlock()
+		
+		//If the firmware version is too low, then disconnect and inform the user.
+		guard versionArray[3] >= 2 && (versionArray[4] >= 2) else {
+			let _ = FrontendCallbackCenter.shared
+				.robotFirmwareIncompatible(id: self.id, firmware: self.firmwareVersionString)
+			
+			BLE_Manager.disconnect(byID: self.id)
+			return
+		}
 		
 		
         Thread.sleep(forTimeInterval: 0.1)

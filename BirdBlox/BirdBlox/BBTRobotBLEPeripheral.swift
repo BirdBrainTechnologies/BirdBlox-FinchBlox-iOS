@@ -69,4 +69,6 @@ protocol BBTRobotBLEPeripheral {
 	//is ready to send and receive commands. 
 	//This is not guaranteed to occur immediately after the init returns.
 	init(peripheral: CBPeripheral, completion: ((BBTRobotBLEPeripheral) -> Void)?)
+	
+	var description: String { get }
 }

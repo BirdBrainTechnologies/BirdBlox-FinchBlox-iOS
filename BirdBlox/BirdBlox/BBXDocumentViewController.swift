@@ -10,8 +10,10 @@ import Foundation
 import UIKit
 import WebKit
 import Swifter
+import SafariServices
 
-class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocumentPickerDelegate {
+class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocumentPickerDelegate,
+SFSafariViewControllerDelegate {
 	
 	let webView = WKWebView()
 	var webUILoaded = false
@@ -490,6 +492,17 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 			UserDefaults.standard.set(false, forKey: self.curDocNeedsNameKey)
 			return .ok(.text("set"))
 		}
+		
+		server["/robot/showUpdateInstructions"] = { request in
+			DispatchQueue.main.sync {
+				let str =  "http://www.hummingbirdkit.com/learning/installing-birdblox#BurnFirmware"
+				let url = URL(string:str)!
+				let websiteVC = SFSafariViewController(url: url)
+				self.present(websiteVC, animated: true, completion: nil)
+				websiteVC.delegate = self
+			}
+			return .ok(.text("Presenting webpage"))
+		}
 	}
 	
 	func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentAt url: URL) {
@@ -518,7 +531,12 @@ class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocum
 	
 	//MARK: Convinience
 	
-	//BBTWebViewController
+	//MARK: SFSafariViewControllerDelegate
+	func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
+		controller.dismiss(animated: true, completion: nil)
+	}
+	
+	//MARK: BBTWebViewController
 	var wv: WKWebView {
 		return self.webView
 	}

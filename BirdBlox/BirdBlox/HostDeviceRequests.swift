@@ -240,8 +240,9 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
     func choiceRequest(request: HttpRequest) -> HttpResponse {
         let captured = BBTSequentialQueryArrayToDict(request.queryParams)
 		
-        if let title = (captured["title"]),
-			let question = (captured["question"]),
+		let title = captured["title"] ?? ""
+		
+        if let question = (captured["question"]),
 			let button1Text = (captured["button1"]){
 			
 			let alertController = UIAlertController(title: title, message: question,
