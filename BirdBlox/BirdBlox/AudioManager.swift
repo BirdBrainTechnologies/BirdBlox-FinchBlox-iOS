@@ -167,6 +167,7 @@ class AudioManager: NSObject, AVAudioRecorderDelegate {
 				DataModel.shared.fileLocation(forName: filename, type: type))
 			
             //convert to milliseconds
+			print("\(player.duration) secs")
             let audioDuration: Float64 = player.duration * 1000
             return Int(audioDuration)
         } catch {

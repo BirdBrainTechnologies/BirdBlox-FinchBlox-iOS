@@ -145,6 +145,7 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripheral {
         if descriptor != rx_config_line {
             return
         }
+		print((descriptor.value as! Data?) ?? "nil update flutter")
         data_cond.lock()
         data_cond.signal()
         data_cond.unlock()
@@ -170,6 +171,7 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripheral {
     
     private func initialize() {
         self._initialized = true
+//		print(self.sendDataWithResponse(data: "G4".data(using: .ascii)!))
         print("flutter initialized")
 		if let completion = self.initializationCompletion {
 			completion(self)
@@ -191,15 +193,15 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripheral {
 		}
 		
         data_cond.lock()
-        peripheral.writeValue(data, for: tx_line, type: CBCharacteristicWriteType.withoutResponse)
+        peripheral.writeValue(data, for: tx_line, type: .withResponse)
         //peripheral.writeValue(data, for: rx_config_line!)
-		data_cond.wait(until: Date(timeIntervalSinceNow: 0.1))
+		data_cond.wait(until: Date(timeIntervalSinceNow: 0.2))
         data_cond.unlock()
         
         let response = tx_line.value
-        if let safe_response = response {
-            let data_string = String(data: safe_response, encoding: .utf8)
-            return data_string!
+        if let safe_response = response,
+			let data_string = String(data: safe_response, encoding: .utf8) {
+            return data_string
         }
         return FAIL_RESPONSE
     }
@@ -274,7 +276,7 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripheral {
 		//Beware of shortcuts in boolean logic
 		//Sending an ASCII capital X should do the same thing
 		
-		var suc = true
+//		var suc = true
 //		suc = self.setBuzzer(volume: 0, frequency: 0) && suc
 //		for i in UInt(1)...3 {
 //			suc = self.setServo(port: i, angle: BBTFlutterUtility.servoOffAngle) && suc
@@ -285,7 +287,7 @@ class FlutterPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripheral {
 		
 		self.sendDataWithoutResponse(data: BBTFlutterUtility.turnOffCommand)
 		
-		return suc
+		return true
 	}
 	
 	public var sensorValues: [UInt8] {

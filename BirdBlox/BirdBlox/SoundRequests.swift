@@ -48,12 +48,10 @@ class SoundManager: NSObject {
 		let name = DataModel.sanitizedName(of: formatter.string(from: now))
 		let _ = self.audio_manager.startRecording(saveName: name)
 		
+		timer.invalidate()
+		
 		let fiveMin = TimeInterval(300) //in seconds
-		if #available(iOS 10.0.0, *) {
-			timer = Timer.scheduledTimer(withTimeInterval: fiveMin, repeats: false, block: {_ in 
-				let _=FrontendCallbackCenter.shared.echo(getRequestString: "/sound/recording/stop")
-			})
-		} else {
+		DispatchQueue.main.sync {
 			timer = Timer.scheduledTimer(timeInterval: fiveMin, target: self.audio_manager,
 			                             selector: #selector(AudioManager.finishRecording),
 			                             userInfo: nil, repeats: false)

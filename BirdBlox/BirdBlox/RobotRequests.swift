@@ -139,7 +139,7 @@ class RobotRequests {
 		let text = FrontendCallbackCenter.safeString(from: robot.description)
 		
 		let _ = FrontendCallbackCenter.shared.echo(getRequestString:
-			"/tablet/choice?question=\(text)&button1=dismiss")
+			"/tablet/choice?question=\(text)&button1=Dismiss")
 		
 		
 		return .ok(.text("Info shown"))
