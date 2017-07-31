@@ -204,13 +204,13 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
 		
         Thread.sleep(forTimeInterval: 0.1)
 		self.sendData(data: BBTHummingbirdUtility.getPollStartCommand())
-//
+
 //		DispatchQueue.main.async{
-//			self.syncTimer =
-//			Timer.scheduledTimer(timeInterval: self.syncInterval, target: self,
-//			                     selector: #selector(HummingbirdPeripheral.syncronizeOutputs),
-//			                     userInfo: nil, repeats: true)
-//			self.syncTimer.fire()
+			self.syncTimer =
+			Timer.scheduledTimer(timeInterval: self.syncInterval, target: self,
+			                     selector: #selector(HummingbirdPeripheral.syncronizeOutputs),
+			                     userInfo: nil, repeats: true)
+			self.syncTimer.fire()
 //		}
 		
 		self._initialized = true
@@ -332,23 +332,15 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
 	
         let i = port - 1
 		
-//		self.nextOutputState.leds[i] = intensity
-//		
-//		return true
-		
 		self.writtenCondition.lock()
-//		print("written: \(self.lastWriteWritten), next: \(self.nextOutputState.leds[i])" +
-//			" cur: \(self.currentOutputState.mutableCopy.leds[i])")
 		
-		while !(self.nextOutputState.leds[i] == self.currentOutputState.leds[i]) {
-			self.writtenCondition.wait(until: Date(timeIntervalSinceNow: self.waitRefreshTime))
-//			print("waiting. written: \(self.lastWriteWritten), next: \(self.nextOutputState.leds[i])")
-//			print("cur: \(self.currentOutputState.mutableCopy.leds[i])")
-		}
+		self.conditionHelper(condition: self.writtenCondition, holdLock: false,
+		                     predicate: {
+								self.nextOutputState.leds[i] == self.currentOutputState.leds[i]
+		}, work: {
+			self.nextOutputState.leds[i] = intensity
+		})
 		
-		self.nextOutputState.leds[i] = intensity
-		
-		self.writtenCondition.signal()
 		self.writtenCondition.unlock()
 		
 		print("exit")

@@ -23,7 +23,7 @@ So the design is intentionally similar to ViewController.swift.
 class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocumentPickerDelegate,
 SFSafariViewControllerDelegate {
 	
-	let webView = WKWebView()
+	var webView = WKWebView()
 	var webUILoaded = false
 	
 	let server = BBTBackendServer()
@@ -60,17 +60,24 @@ SFSafariViewControllerDelegate {
 		self.server.start()
 		
 		//Setup webview
-		self.webView.contentMode = UIViewContentMode.scaleToFill
-		self.webView.backgroundColor = UIColor.white
+		//Connect native calls
 		
-		let urlstr = "http://localhost:22179/DragAndDrop/HummingbirdDragAndDrop.html";
-		let cleanUrlStr = urlstr.addingPercentEncoding(withAllowedCharacters:
-			CharacterSet.urlFragmentAllowed)!
-		let javascriptPageURL = URL(string: cleanUrlStr)
-		let req = URLRequest(url: javascriptPageURL!,
-		                     cachePolicy: URLRequest.CachePolicy.reloadIgnoringLocalCacheData)
+		let config = WKWebViewConfiguration()
+		let contentController = WKUserContentController()
+		contentController.add(self.server, name: "serverSubstitute")
+		config.userContentController = contentController
+		
+		self.webView = WKWebView(frame: self.barRespectingRect(from: self.view.bounds),
+		                         configuration: config)
+		
+		self.webView.contentMode = UIViewContentMode.scaleToFill
+		self.webView.backgroundColor = UIColor.gray
+		
+		let htmlLoc = DataModel.shared.frontendPageLoc
+		let frontLoc = DataModel.shared.frontendLoc
+		
 		print("pre-req")
-		self.webView.load(req)
+		self.webView.loadFileURL(htmlLoc, allowingReadAccessTo: frontLoc)
 		print("post-req")
 		
 		if #available(iOS 10, *) {
@@ -487,6 +494,15 @@ SFSafariViewControllerDelegate {
 				let websiteVC = SFSafariViewController(url: url)
 				self.present(websiteVC, animated: true, completion: nil)
 				websiteVC.delegate = self
+				
+				
+				if #available(iOS 10.0, *) {
+					if let dele = UIApplication.shared.delegate as? AppDelegate {
+						let tint = dele.tintColor
+//						websiteVC.preferredBarTintColor = tint
+						websiteVC.preferredControlTintColor = tint
+				}
+				}
 			}
 			return .ok(.text("Presenting webpage"))
 		}

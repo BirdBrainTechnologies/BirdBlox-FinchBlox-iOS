@@ -210,4 +210,12 @@ class FrontendCallbackCenter {
 		
 		return true
 	}
+	
+	func sendFauxHTTPResponse(id: String, status: Int, obody: String?) -> Bool {
+		let body = obody ?? ""
+		let function = "CallbackManager.httpResponse"
+		let parameters = [id, status.description, FrontendCallbackCenter.safeString(from: body)]
+		
+		return self.runJS(function: function, parameters: parameters)
+	}
 }

@@ -73,7 +73,7 @@ class DataModel: NSObject, FileManagerDelegate {
 		
 		#if DEBUG
 			if let unzipLoc = DataModel.updateAndGetDevFrontendURL() {
-				self.frontendLoc = unzipLoc
+				self.frontendLoc = URL(fileURLWithPath: unzipLoc.path)
 			}
 			else {
 				self.frontendLoc = bundleLoc.appendingPathComponent("Frontend")

@@ -14,6 +14,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 	var uiLoaded = false
 	
+	public let tintColor = UIColor(red: 1.0, green: 137.0/255.0, blue: 64.0/255.0, alpha: 1.0)
+	
 	public var backendServer: BBTBackendServer
 	
 	override init() {

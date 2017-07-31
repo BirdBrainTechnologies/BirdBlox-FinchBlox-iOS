@@ -29,6 +29,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 	public static let shared: BLECentralManager = BLECentralManager()
 	
 	private var centralManager: CBCentralManager
+	private let centralQueue: DispatchQueue
 	
 	public var scanState: BLECentralManagerScanState
 	
@@ -58,7 +59,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 		self._discoveredPeripheralsSeqeuntial = Array()
 		self.oughtToBeConnected = Dictionary()
 		
-		let centralQueue = DispatchQueue(label: "com.BirdBrainTech.BLE", attributes: [])
+		self.centralQueue = DispatchQueue.global(qos: .background) //DispatchQueue(label: "com.BirdBrainTech.BLE", attributes: [])
 		self.centralManager = CBCentralManager(delegate: nil, queue: centralQueue)
 		
 		self.currentlyConnecting = 5
