@@ -221,10 +221,15 @@ class DataManager: NSObject {
     }
 	
 	func appendLogRequest(request: HttpRequest) -> HttpResponse {
-		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
+//		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
-		guard let message = queries["msg"] else {
-			return .badRequest(.text("Missing Parameter"))
+//		guard let message = queries["msg"] else {
+//			return .badRequest(.text("Missing Parameter"))
+//		}
+		
+		let data = Data(bytes: request.body)
+		guard let message = String(data: data, encoding: .utf8) else {
+			return .badRequest(.text("Invalid body"))
 		}
 		
 		DataModel.shared.appendStringToLog(message)

@@ -13,33 +13,41 @@ import WebKit
 class BBTBackendServer: NSObject, WKScriptMessageHandler {
 	var pathDict: Dictionary<String, ((HttpRequest) -> HttpResponse)>
 	
-	let uiQueue = DispatchQueue(label: "Blox UI Work", qos: .userInteractive,
-	                            attributes: .concurrent)
-	let regularQueue = DispatchQueue(label: "Blox Work", qos: .default,
+	let backgroundQueue = DispatchQueue(label: "background", qos: .background,
+	                                    attributes: .concurrent)
+	let regularQueue = DispatchQueue(label: "birdblox", qos: .userInitiated,
 	                                 attributes: .concurrent)
-//	let regularQueue = DispatchQueue.global(qos: .background)
+//	let regularQueue = DispatchQueue.global(qos: .userInteractive)
+//	let backgroundQueue = DispatchQueue.global(qos: .background)
 	
 	let router = HttpRouter()
+	
+	private var clearingRegularQueue = false
+	let queueClearingLock = NSCondition()
+	
+	let backgroundQueueBlockCountLock = NSCondition()
+	var backgroundQueueBlockCount = 0
+	let maxBackgroundQueueBlockCount = 30
 	
 	override init() {
 		pathDict = Dictionary()
 	}
 	
 	private func notFoundHandler(request: HttpRequest) -> HttpResponse {
-		if request.address == nil || request.address != BBTLocalHostIP{
+		if request.address == nil || request.address != BBTLocalHostIP {
 			#if DEBUG
 			#else
 				return .forbidden
 			#endif
 		}
-
+		
 		if let handler = pathDict[request.path] {
 			return handler(request)
 		}
-
+		
 		let address = request.address ?? "unknown"
 		NSLog("Unable to find handler for Request \(request.path) from address \(address).")
-
+		
 		return .notFound
 	}
 	
@@ -76,8 +84,9 @@ class BBTBackendServer: NSObject, WKScriptMessageHandler {
 		get{ return pathDict[path] }
 	}
 	
-	public func handleNativeCall(responseID: String, requestStr: String, body: String?) {
-		self.regularQueue.async {
+	public func handleNativeCall(responseID: String, requestStr: String, body: String?,
+	                             background: String = "true") {
+		let nativeCallBlock = {
 			let request = HttpRequest()
 			request.address = BBTLocalHostIP
 			request.path = requestStr
@@ -86,7 +95,9 @@ class BBTBackendServer: NSObject, WKScriptMessageHandler {
 				request.body = [UInt8](bodyBytes)
 			}
 			
-			let (params, handler) = self.router.route(nil, path: request.path) ?? ([:], self.notFoundHandler)
+			let (params, handler) =
+			self.router.route(nil, path: request.path) ?? ([:], self.notFoundHandler)
+			
 			request.params = params
 			
 			let resp = handler(request)
@@ -111,8 +122,42 @@ class BBTBackendServer: NSObject, WKScriptMessageHandler {
 			}
 			
 			let _ = FrontendCallbackCenter.shared
-			.sendFauxHTTPResponse(id: responseID, status: code, obody: bodyStr)
+				.sendFauxHTTPResponse(id: responseID, status: code, obody: bodyStr)
 		}
+		
+		if background == "false" {
+			self.regularQueue.async(execute: nativeCallBlock)
+		}
+		else if self.backgroundQueueBlockCount < self.maxBackgroundQueueBlockCount {
+			self.backgroundQueueBlockCountLock.lock()
+			self.backgroundQueueBlockCount += 1
+			self.backgroundQueueBlockCountLock.unlock()
+			
+			let cancellableBlock = {
+				if !self.clearingRegularQueue {
+					nativeCallBlock()
+				}
+				self.backgroundQueueBlockCountLock.lock()
+				self.backgroundQueueBlockCount -= 1
+				self.backgroundQueueBlockCountLock.unlock()
+			}
+			self.backgroundQueue.async(execute: cancellableBlock)
+		} else {
+			NSLog("Dropped request because max background queue size exceeded. \(requestStr)")
+		}
+	}
+	
+	//Only one instance of this function can be run at a time
+	//Swift does not have a native way to do a mutex lock yet.
+	public func clearBackgroundQueue() {
+		self.queueClearingLock.lock()
+		
+		self.clearingRegularQueue = true
+		self.backgroundQueue.async {
+			self.clearingRegularQueue = false
+		}
+		
+		self.queueClearingLock.unlock()
 	}
 	
 	//MARK: WKScriptMessageHandler
@@ -125,19 +170,23 @@ class BBTBackendServer: NSObject, WKScriptMessageHandler {
 	@available(iOS 8.0, *)
 	func userContentController(_ userContentController: WKUserContentController,
 	                           didReceive message: WKScriptMessage) {
-		NSLog("Sever get webkit message: \(message.name)")
+//		NSLog("Sever get webkit message: \(message.name)")
 //		print(message.body)
 		
 		guard message.name == "serverSubstitute",
 			let obj = message.body as? NSDictionary,
 			let requestStr = obj["request"] as? String,
 			let body = obj["body"] as? String,
-			let id = obj["id"] as? String else {
+			let id = obj["id"] as? String,
+			let background = obj["inBackground"] as? String else {
 			print("Unable to repsond")
 			return
 		}
 		
-		self.handleNativeCall(responseID: id, requestStr: requestStr, body: body)
+		NSLog("bg \(background) faux req \(requestStr)")
+		
+		self.handleNativeCall(responseID: id, requestStr: requestStr, body: body,
+		                      background: background)
 	}
 	
 	

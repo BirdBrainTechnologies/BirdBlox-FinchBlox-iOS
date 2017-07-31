@@ -482,6 +482,12 @@ SFSafariViewControllerDelegate {
 			return deleteHandler(request)
 		}
 		
+		let stopAll = server["/robot/stopAll"]!
+		server["/robot/stopAll"] = {
+			server.clearBackgroundQueue()
+			return stopAll($0)
+		}
+		
 		server["/data/markAsNamed"] = { request in
 			UserDefaults.standard.set(false, forKey: self.curDocNeedsNameKey)
 			return .ok(.text("set"))

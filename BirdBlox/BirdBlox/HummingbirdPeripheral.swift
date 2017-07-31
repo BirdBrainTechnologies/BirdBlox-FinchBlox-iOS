@@ -248,7 +248,7 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
             return
         }
 		
-		//
+		//Assume it's sensor in data
         inData.copyBytes(to: &self.lastSensorUpdate, count: HummingbirdPeripheral.sensorByteCount)
     }
     
@@ -446,10 +446,12 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
 		
 		let changeOccurred = !(nextCopy == self.currentOutputState)
 		let currentCPUTime = DispatchTime.now().uptimeNanoseconds
-		let shouldSync = changeOccurred ||
-			((currentCPUTime - self.lastWriteStart.uptimeNanoseconds) > self.cacheTimeoutDuration)
+		let timeout = ((currentCPUTime - self.lastWriteStart.uptimeNanoseconds) >
+						self.cacheTimeoutDuration)
+		let shouldSync = changeOccurred || timeout
 		
-		if self.initialized && self.lastWriteWritten  && shouldSync {
+		
+		if self.initialized && (self.lastWriteWritten || timeout)  && shouldSync {
 			let cmdMkr = BBTHummingbirdUtility.getSetAllCommand
 			
 			let tris = nextCopy.trileds
@@ -476,7 +478,7 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
 		}
 		else {
 			if !self.lastWriteWritten {
-				print("miss")
+//				print("miss")
 			}
 		}
 		

@@ -59,7 +59,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 		self._discoveredPeripheralsSeqeuntial = Array()
 		self.oughtToBeConnected = Dictionary()
 		
-		self.centralQueue = DispatchQueue.global(qos: .background) //DispatchQueue(label: "com.BirdBrainTech.BLE", attributes: [])
+		self.centralQueue = DispatchQueue(label: "ble", attributes: [])
 		self.centralManager = CBCentralManager(delegate: nil, queue: centralQueue)
 		
 		self.currentlyConnecting = 5
