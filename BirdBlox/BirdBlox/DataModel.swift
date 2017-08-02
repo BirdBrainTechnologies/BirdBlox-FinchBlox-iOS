@@ -76,11 +76,11 @@ class DataModel: NSObject, FileManagerDelegate {
 				self.frontendLoc = URL(fileURLWithPath: unzipLoc.path)
 			}
 			else {
-				self.frontendLoc = bundleLoc.appendingPathComponent("Frontend")
+				self.frontendLoc = URL(fileURLWithPath: bundleLoc.appendingPathComponent("Frontend").path)
 			}
 		#else
 			NSLog("Running in a non-DEBUG mode, going to use local frontend.")
-			self.frontendLoc = bundleLoc.appendingPathComponent("Frontend")
+			self.frontendLoc = URL(fileURLWithPath: bundleLoc.appendingPathComponent("Frontend").path)
 		#endif
 		
 		self.frontendPageLoc = self.frontendLoc.appendingPathComponent("HummingbirdDragAndDrop.html")
@@ -551,7 +551,7 @@ class DataModel: NSObject, FileManagerDelegate {
 		//TomWildenhain, BirdBrainTechnologies
 		//From Tom: https://github.com/TomWildenhain/HummingbirdDragAndDrop-/archive/dev.zip
 		//Semi Stable: https://github.com/BirdBrainTechnologies/HummingbirdDragAndDrop-/archive/dev.zip
-		let repoUrl = URL(string:"https://github.com/TomWildenhain/HummingbirdDragAndDrop-/archive/dev.zip")!
+		let repoUrl = URL(string:"https://github.com/BirdBrainTechnologies/HummingbirdDragAndDrop-/archive/dev.zip")!
 		
 		guard let libLoc = try? FileManager.default.url(for: .libraryDirectory,
 		                                                 in: .userDomainMask, appropriateFor: nil,

@@ -332,11 +332,15 @@ SFSafariViewControllerDelegate {
 		}
 		
 		self.server["/data/new"] = { (request: HttpRequest) -> HttpResponse in
+			let queries = BBTSequentialQueryArrayToDict(request.queryParams)
+			
 			guard let xml = String(bytes: request.body, encoding: .utf8) else {
 				return .badRequest(.text("POST body not encoded in utf8."))
 			}
 			
-			let name = DataModel.shared.availableName(from: "New Program")!
+			let reqName = queries["filename"] ?? "New Program"
+			
+			let name = DataModel.shared.availableName(from: reqName)!
 			NSLog("Created file named \(name)")
 			let fileURL = DataModel.shared.getBBXFileLoc(byName: name)
 			
@@ -394,7 +398,7 @@ SFSafariViewControllerDelegate {
 				}
 			}
 			
-				return .ok(.text(""))
+			return .ok(.text(""))
 		}
 		
 		

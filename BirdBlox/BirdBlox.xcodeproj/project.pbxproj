@@ -11,6 +11,7 @@
 		3F5F6D291EDDB3A800799277 /* BBTBackendServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F5F6D281EDDB3A800799277 /* BBTBackendServer.swift */; };
 		3F5F6D2B1EDDD73A00799277 /* SeverRequestPaths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F5F6D2A1EDDD73A00799277 /* SeverRequestPaths.swift */; };
 		3F9F72471F223D2000C29FEB /* RobotRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9F72461F223D2000C29FEB /* RobotRequests.swift */; };
+		3FA108771F32200A00F6F213 /* FinchPeripheral.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FA108761F32200A00F6F213 /* FinchPeripheral.swift */; };
 		3FA4F8A71F02F2BB005EB384 /* BBXDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FA4F8A61F02F2BB005EB384 /* BBXDocument.swift */; };
 		3FA4F8A91F03EE56005EB384 /* BBXDocumentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FA4F8A81F03EE56005EB384 /* BBXDocumentViewController.swift */; };
 		3FA7D5E31EF2E65800FE4882 /* BBTRobotState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FA7D5E21EF2E65800FE4882 /* BBTRobotState.swift */; };
@@ -50,6 +51,7 @@
 		3F5F6D281EDDB3A800799277 /* BBTBackendServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BBTBackendServer.swift; sourceTree = "<group>"; };
 		3F5F6D2A1EDDD73A00799277 /* SeverRequestPaths.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SeverRequestPaths.swift; sourceTree = "<group>"; };
 		3F9F72461F223D2000C29FEB /* RobotRequests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RobotRequests.swift; sourceTree = "<group>"; };
+		3FA108761F32200A00F6F213 /* FinchPeripheral.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FinchPeripheral.swift; sourceTree = "<group>"; };
 		3FA4F8A61F02F2BB005EB384 /* BBXDocument.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BBXDocument.swift; sourceTree = "<group>"; };
 		3FA4F8A81F03EE56005EB384 /* BBXDocumentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BBXDocumentViewController.swift; sourceTree = "<group>"; };
 		3FA4F8AA1F06F602005EB384 /* BirdBlox.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BirdBlox.entitlements; sourceTree = "<group>"; };
@@ -204,6 +206,7 @@
 				BAE2EBCE1E84417000198B19 /* BLECentralManager.swift */,
 				3FFA170E1F1D492B0085CE71 /* BBTRobotBLEPeripheral.swift */,
 				BAE2EBD01E8443CF00198B19 /* HummingbirdPeripheral.swift */,
+				3FA108761F32200A00F6F213 /* FinchPeripheral.swift */,
 				BAE2EBD21E8451ED00198B19 /* FlutterPeripheral.swift */,
 			);
 			name = bluetooth;
@@ -348,6 +351,7 @@
 				3F0E4A731ED37D3900369F70 /* DeviceUtilities.swift in Sources */,
 				BAE2EBD51E84550900198B19 /* HummingbirdManager.swift in Sources */,
 				BAE2EBD11E8443CF00198B19 /* HummingbirdPeripheral.swift in Sources */,
+				3FA108771F32200A00F6F213 /* FinchPeripheral.swift in Sources */,
 				3FA4F8A71F02F2BB005EB384 /* BBXDocument.swift in Sources */,
 				BAE2EBD31E8451ED00198B19 /* FlutterPeripheral.swift in Sources */,
 				BA8169531E81A98A00AAF7A3 /* ViewController.swift in Sources */,

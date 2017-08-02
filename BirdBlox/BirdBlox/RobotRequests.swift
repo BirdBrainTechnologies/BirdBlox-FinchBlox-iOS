@@ -63,6 +63,9 @@ class RobotRequests {
 		server["/robot/in"] = RobotRequests.handler(fromIDAndTypeHandler: self.inputRequest)
 		
 		server["/robot/showInfo"] = RobotRequests.handler(fromIDAndTypeHandler: self.infoRequest)
+		
+		//TODO: Delete
+		server["/robot/out/setAll"] = RobotRequests.handler(fromIDAndTypeHandler: self.setAll)
 	}
 	
 	private func discoverRequest(request: HttpRequest) -> HttpResponse {
@@ -374,5 +377,27 @@ class RobotRequests {
 		} else {
 			return .internalServerError
 		}
+	}
+	
+	//MARK: Finch Outputs
+	//TODO: Delete
+	private func setAll(id: String, type: BBTRobotType,
+	                    request: HttpRequest) -> HttpResponse{
+		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
+		
+		guard let dataStr = queries["data"] else {
+			return .badRequest(.text("Missing Parameter"))
+		}
+		
+		let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
+		                                                 acceptTypes: [.Finch])
+		guard let robot = roboto else {
+			return requesto!
+		}
+		
+		let resps = (robot as! FinchPeripheral).setAll(str: dataStr)
+		let ss = resps.map({String($0)})
+		
+		return .ok(.text(ss.joined(separator: ",")))
 	}
 }

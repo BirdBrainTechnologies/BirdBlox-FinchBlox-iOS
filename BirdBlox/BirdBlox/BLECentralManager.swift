@@ -205,6 +205,8 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 			robotInit = HummingbirdPeripheral.init
 		case .Flutter:
 			robotInit = FlutterPeripheral.init
+		case .Finch:
+			robotInit = FinchPeripheral.init
 		default:
 			robotInit = HummingbirdPeripheral.init
 		}
