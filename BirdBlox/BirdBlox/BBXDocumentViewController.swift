@@ -120,14 +120,16 @@ SFSafariViewControllerDelegate {
 		let js = "CallbackManager.data.open('\(name)', '\(xml)', \(!needsName))"
 		
 		
-		self.webView.evaluateJavaScript(js) { succeeded, error in
-			if let error = error {
-				NSLog("JS exception (\(error)) while opening data. ")
-				return
-			}
-			
-			if let suc = (succeeded as? Bool) {
-				completion(suc)
+		DispatchQueue.main.sync {
+			self.webView.evaluateJavaScript(js) { succeeded, error in
+				if let error = error {
+					NSLog("JS exception (\(error)) while opening data. ")
+					return
+				}
+				
+				if let suc = (succeeded as? Bool) {
+					completion(suc)
+				}
 			}
 		}
 	}

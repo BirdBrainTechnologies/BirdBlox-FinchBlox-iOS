@@ -551,7 +551,7 @@ class DataModel: NSObject, FileManagerDelegate {
 		//TomWildenhain, BirdBrainTechnologies
 		//From Tom: https://github.com/TomWildenhain/HummingbirdDragAndDrop-/archive/dev.zip
 		//Semi Stable: https://github.com/BirdBrainTechnologies/HummingbirdDragAndDrop-/archive/dev.zip
-		let repoUrl = URL(string:"https://github.com/BirdBrainTechnologies/HummingbirdDragAndDrop-/archive/dev.zip")!
+		let repoUrl = URL(string:"https://github.com/TomWildenhain/HummingbirdDragAndDrop-/archive/dev.zip")!
 		
 		guard let libLoc = try? FileManager.default.url(for: .libraryDirectory,
 		                                                 in: .userDomainMask, appropriateFor: nil,

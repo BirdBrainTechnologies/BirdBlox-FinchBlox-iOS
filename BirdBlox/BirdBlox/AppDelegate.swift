@@ -144,7 +144,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 			print("location writtent to")
 			
 			UserDefaults.standard.set(false, forKey: BBXDocumentViewController.curDocNeedsNameKey)
-			UserDefaults.standard.set(name, forKey: BBXDocumentViewController.curDocNameKey)
+			UserDefaults.standard.set(avname, forKey: BBXDocumentViewController.curDocNameKey)
 			
 			guard let safeName = avname.addingPercentEncoding(withAllowedCharacters: CharacterSet()) else{
 				return false

@@ -166,9 +166,9 @@ public func BBTkidNameFromMacSuffix(_ deviceName: String) -> String? {
 		let lastIndex = ((macNumber >> (8+6)) & 0b111111) + offset
 		
 		let namesDict = namesDict as! Dictionary<String, Array<String>>
-		let name = namesDict["first_names"]![firstIndex] + " " +
-			namesDict["middle_names"]![middleIndex] + " " +
-			namesDict["last_names"]![lastIndex]
+		let preName = namesDict["first_names"]![firstIndex] + " " +
+			namesDict["middle_names"]![middleIndex]
+		let name = preName + " " + namesDict["last_names"]![lastIndex]
 		
 		print("\(deviceName) \(firstIndex), \(middleIndex), \(lastIndex)")
 		
