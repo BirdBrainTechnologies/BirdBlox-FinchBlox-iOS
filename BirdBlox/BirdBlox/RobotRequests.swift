@@ -254,8 +254,15 @@ class RobotRequests {
 			return .badRequest(.text("Port is out of bounds"))
 		}
 		
-		let percent = values[port]
-		let value = percentToRaw(percent)
+		var percent = values[port]
+		var value = percentToRaw(percent)
+		var realPercent = Double(percent)
+		//HB returns raw values from sensors, while FL returns percentages.
+		if type(of: robot).type == .Hummingbird {
+			value = values[port]
+			percent = UInt8(rawToPercent(value))
+			realPercent = Double(value) / 2.55
+		}
 		
 		var sensorValue: Int
 		
@@ -267,7 +274,7 @@ class RobotRequests {
 		case "soil":
 			sensorValue = bound(Int(percent), min: 0, max: 90)
 		default:
-			sensorValue = Int(percent)
+			return .ok(.text(String(realPercent)))
 		}
 		
 		return .ok(.text(String(sensorValue)))
