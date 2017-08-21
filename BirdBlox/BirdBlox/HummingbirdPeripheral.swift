@@ -47,6 +47,7 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
 	
 	
 	//MARK: Variables to coordinate set all
+	private var useSetall = true
 	private var writtenCondition: NSCondition = NSCondition()
 	
 	//MARK: Variables write protected by writtenCondition
@@ -83,12 +84,21 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
 	override public var description: String {
 		let gapName = self.peripheral.name ?? "Unknown"
 		let name = BBTgetDeviceNameForGAPName(gapName)
+		
+		var updateDesc = ""
+		if !self.useSetall {
+			updateDesc = "\n\nThis Hummingbird needs to be updated. " +
+				"See the link below: \n" +
+				"http://www.hummingbirdkit.com/learning/installing-birdblox#BurnFirmware "
+		}
+		
 		return
 			"Hummingbird Peripheral\n" +
 			"Name: \(name)\n" +
 			"Bluetooth Name: \(gapName)\n" +
 			"Hardware Version: \(self.hardwareString)\n" +
-			"Firmware Version: \(self.firmwareVersionString)"
+			"Firmware Version: \(self.firmwareVersionString)" +
+			updateDesc
 	}
 	
     
@@ -167,13 +177,14 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
 		print("start init")
 		//Get ourselves a fresh slate
         self.sendData(data: BBTHummingbirdUtility.getPollStopCommand())
-		Thread.sleep(forTimeInterval: 0.5) //
+		Thread.sleep(forTimeInterval: 4) //make sure that the HB is booted up
+		//Worked 4 of 5 times when at 3 seconds.
 		
 		let timeoutTime = Date(timeIntervalSinceNow: TimeInterval(7)) //seconds
 		
 		self.initializingCondition.lock()
 		let oldLineIn = self.lineIn
-		peripheral.writeValue("G4".data(using: .utf8)!, for: tx_line!, type: .withResponse)
+		self.sendData(data: "G4".data(using: .utf8)!)
 		
 		//Wait until we get a response or until we timeout.
 		//If we time out the verion will be 0.0, which is invalid.
@@ -191,8 +202,16 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
 		print("end hi")
 		self.initializingCondition.unlock()
 		
+		
+		guard self.connected else {
+			BLE_Manager.disconnect(byID: self.id)
+			return
+		}
+		
 		//If the firmware version is too low, then disconnect and inform the user.
-		guard versionArray[3] >= 2 && (versionArray[4] >= 2) else {
+		//Must be higher than 2.2b OR be 2.1i
+		guard versionArray[2] >= 2 &&
+				((versionArray[3] >= 2) || (versionArray[3] == 1 && versionArray[4] >= 105)) else {
 			let _ = FrontendCallbackCenter.shared
 				.robotFirmwareIncompatible(id: self.id, firmware: self.firmwareVersionString)
 			
@@ -200,16 +219,24 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
 			return
 		}
 		
+		//Old firmware, but still compatible
+		if versionArray[3] == 1 && versionArray[4] >= 105 {
+			let _ = FrontendCallbackCenter.shared.robotFirmwareStatus(id: self.id, status: "old")
+			self.useSetall = false
+		}
+		
 		
         Thread.sleep(forTimeInterval: 0.1)
 		self.sendData(data: BBTHummingbirdUtility.getPollStartCommand())
 
 //		DispatchQueue.main.async{
+		if self.useSetall {
 			self.syncTimer =
 			Timer.scheduledTimer(timeInterval: self.syncInterval, target: self,
 			                     selector: #selector(HummingbirdPeripheral.syncronizeOutputs),
 			                     userInfo: nil, repeats: true)
 			self.syncTimer.fire()
+		}
 //		}
 		
 		self._initialized = true
@@ -328,6 +355,11 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
 		guard self.peripheral.state == .connected else {
 			return false
 		}
+		guard self.useSetall else {
+			self.sendData(data: BBTHummingbirdUtility.getLEDCommand(UInt8(port),
+																	intensity: intensity))
+			return true
+		}
 	
         let i = port - 1
 		
@@ -349,6 +381,14 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
 	func setTriLED(port: UInt, intensities: BBTTriLED) -> Bool {
 		guard self.peripheral.state == .connected else {
 			return false
+		}
+		guard self.useSetall else {
+			let command = BBTHummingbirdUtility.getTriLEDCommand(UInt8(port),
+			                                                     red_val: intensities.red,
+			                                                     green_val: intensities.green,
+			                                                     blue_val: intensities.blue)
+			self.sendData(data: command)
+			return true
 		}
 		
         let i = Int(port - 1)
@@ -373,6 +413,12 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
 		guard self.peripheral.state == .connected else {
 			return false
 		}
+		guard self.useSetall else {
+			let command = BBTHummingbirdUtility.getVibrationCommand(UInt8(port),
+																	intensity: intensity)
+			self.sendData(data: command)
+			return true
+		}
 		
         let i = port - 1
 		
@@ -395,6 +441,12 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
 		guard self.peripheral.state == .connected else {
 			return false
 		}
+		guard self.useSetall else {
+			let command = BBTHummingbirdUtility.getMotorCommand(UInt8(port),
+			                                                        speed: Int(speed))
+			self.sendData(data: command)
+			return true
+		}
 		
         let i = port - 1
 		
@@ -416,6 +468,12 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
     func setServo(port: UInt, angle: UInt8) -> Bool {
 		guard self.peripheral.state == .connected else {
 			return false
+		}
+		guard self.useSetall else {
+			let command = BBTHummingbirdUtility.getServoCommand(UInt8(port),
+			                                                        angle: angle)
+			self.sendData(data: command)
+			return true
 		}
 		
         let i = Int(port - 1)
@@ -472,7 +530,8 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
 			
 			//For debugging
 			#if DEBUG
-			let bytes = UnsafeMutableBufferPointer<UInt8>(start: UnsafeMutablePointer<UInt8>.allocate(capacity: 20), count: 19)
+			let bytes = UnsafeMutableBufferPointer<UInt8>(
+				start: UnsafeMutablePointer<UInt8>.allocate(capacity: 20), count: 19)
 			let _ = command.copyBytes(to: bytes)
 			print("Setting All: \(bytes.map({return $0}))")
 			#endif
@@ -496,157 +555,4 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
 		
 		return true
 	}
-	
-	
-//MARK: Code for renaming Hummingbirds
-
-//	fileprivate func enterCommandMode() {
-//		if !self.commandMode {
-//			print("Entering command mode")
-//			self.commandMode = true
-//			self.sendData(data: Data(HummingbirdPeripheral.ADALE_COMMAND_MODE_TOGGLE.utf8))
-//			Thread.sleep(forTimeInterval: 0.1)
-//		}
-//	}
-//	
-//	@objc fileprivate func exitCommandMode() {
-//		if self.commandMode {
-//			self.sendData(data: Data(HummingbirdPeripheral.ADALE_COMMAND_MODE_TOGGLE.utf8))
-//			Thread.sleep(forTimeInterval: 0.1)
-//			self.commandMode = false
-//			print("Exited command mode")
-//		}
-//	}
-//	
-//	@objc fileprivate func resetHummingBird() {
-//		if self.commandMode {
-//			self.sendData(data: Data(HummingbirdPeripheral.ADALE_RESET.utf8))
-//			Thread.sleep(forTimeInterval: 0.1)
-//			self.commandMode = false
-//		}
-//	}
-//	
-//	func peripheralDidUpdateName(_ peripheral: CBPeripheral) {
-//		print("Peripheral updated name: " + peripheral.name!)
-//	}
-//	
-//	@objc fileprivate func getMAC() {
-//		if self.commandMode {
-//			//Causes self.macStr to be set when mac address received
-//			print("Getting MAC")
-//			self.gettingMAC = true
-//			self.sendData(data: Data(bytes: Array(HummingbirdPeripheral.ADALE_GET_MAC.utf8)))
-//			print(Array(HummingbirdPeripheral.ADALE_GET_MAC.utf8))
-//			
-//			//D748F96DA17C
-//		}
-//	}
-//	
-//	@objc fileprivate func resetNameFromMAC() {
-//		if self.commandMode && self.macStr != nil{
-////			let macStr = self.macStr!
-////			let name = HummingbirdPeripheral.NAME_PREFIX +
-////							String(macStr.characters.dropFirst(macStr.characters.count - 5))
-//			
-//			
-//			self.sendData(data: Data(bytes: Array("AT+GAPDEVNAME=menche\n".utf8)))
-//			
-//			//			print(Array((HummingbirdPeripheral.ADALE_SET_NAME +
-//			//				name + "\n").utf8))
-//			//
-//			//			print("Resetting name to " + name)
-//			
-//			//			self.exitCommandMode()
-//			print("Setting timer for HB BLE reset")
-//			//			DispatchQueue.main.sync{
-//			//				Timer.scheduledTimer(timeInterval: 1.0, target: self,
-//			//									 selector: #selector(HummingbirdPeripheral.resetHummingBird),
-//			//									 userInfo: nil, repeats: false)
-//			//			}
-//			//			Thread.sleep(forTimeInterval: 1.0)
-//			//			self.disconnect()
-//			
-//			if self.initialized {
-//				//				self.finishInitialization()
-//			}
-//		}
-//		else {
-//			print("not resetting name anymore")
-//		}
-//	}
-//	
-//	static func nameNeedsReset(_ name: String) -> Bool {
-//		let HB_DEFAULT_NAME = "Adafruit Bluefruit LE"
-//		if name == HB_DEFAULT_NAME {
-//			return true
-//		}
-//		return false
-//	}
-//}
-
-//For HB renaming in beginInitialization
-//		//Check the name
-//		if HummingbirdPeripheral.nameNeedsReset(self.peripheral.name!) {
-//			NSLog("Deciding to reset hummingbird name")
-//			self.resettingName = true
-//			self.enterCommandMode()
-//
-//			DispatchQueue.main.sync {
-//				let _ = Timer.scheduledTimer(timeInterval: 0.6, target: self,
-//					                     selector: #selector(HummingbirdPeripheral.getMAC),
-//					                     userInfo: nil, repeats: false)
-//			}
-//
-//			DispatchQueue.main.sync {
-//				let _ = Timer.scheduledTimer(timeInterval: 2.0, target: self,
-//									 selector: #selector(HummingbirdPeripheral.resetNameFromMAC),
-//									 userInfo: nil, repeats: false)
-//			}
-//
-//			DispatchQueue.main.sync {
-//				let _ = Timer.scheduledTimer(timeInterval: 3.0, target: self,
-//				                     selector:#selector(HummingbirdPeripheral.finishInitialization),
-//				                     userInfo: nil, repeats: false)
-//			}
-//		}
-//		else {
-//			self.finishInitialization()
-//		}
-
-
-//For HB renaming in peripheral didUpdateValue
-//		if self.gettingMAC && characteristic.value!.count >= self.macReplyLen {
-//
-//			objc_sync_enter(self.peripheral)
-//			var macBuffer = [UInt8](repeatElement(0, count: self.macReplyLen))
-//			(characteristic.value! as NSData).getBytes(&macBuffer, length: self.macReplyLen)
-//			objc_sync_exit(self.peripheral)
-//
-//			macBuffer = (macBuffer as NSArray).filtered(using: NSPredicate(block: {
-//				(byte, bind) in
-//				(byte as! UInt8) != 58
-//			})) as! [UInt8]
-//
-//			self.macStr = NSString(bytes: &macBuffer, length: self.macLen,
-//								   encoding: String.Encoding.ascii.rawValue)! as String
-//
-//			self.gettingMAC = false
-//			print("Got mac address `\(self.macStr!)`")
-//
-////			if self.resettingName {
-////				//Wait for the HB to finish sending its reply, or it will ignore our commands.
-////				print("Setting timer")
-////				DispatchQueue.main.sync {
-////					self.oneOffTimer =
-////					Timer.scheduledTimer(timeInterval: 0.5, target: self,
-////										 selector: #selector(HummingbirdPeripheral.resetNameFromMAC),
-////										 userInfo: nil, repeats: false)
-////				}
-////			}
-////			if self.initializing {
-////				self.finishInitialization()
-////			}
-//
-//			return
-//		}
 }

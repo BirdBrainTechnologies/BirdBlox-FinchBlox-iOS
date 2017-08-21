@@ -113,6 +113,16 @@ class FrontendCallbackCenter {
 		return self.runJS(function: function, parameters: parameters)
 	}
 	
+	public func robotFirmwareStatus(id: String, status: String) -> Bool {
+		let safeID = FrontendCallbackCenter.safeString(from: id)
+		let safeSatus = FrontendCallbackCenter.safeString(from: status)
+		
+		let function = "CallbackManager.robot.updateFirmwareStatus"
+		let parameters = [safeID, safeSatus]
+		
+		return self.runJS(function: function, parameters: parameters)
+	}
+	
 	public func scanHasStopped(typeStr: String) -> Bool {
 		let safeType = FrontendCallbackCenter.safeString(from: typeStr)
 		

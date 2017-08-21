@@ -107,7 +107,11 @@ SFSafariViewControllerDelegate {
 	let curDocNeedsNameKey = "CurrentDocumentNeedsName"
 	let curDocNameKey = "CurrentDocumentName"
 	
-	private var realDoc = BBXDocument(fileURL: URL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]).appendingPathComponent("empty.bbx"))
+	private var realDoc = BBXDocument(fileURL: URL(
+		fileURLWithPath: NSSearchPathForDirectoriesInDomains(.documentDirectory,
+		                                                     .userDomainMask,
+		                                                     true)[0])
+		.appendingPathComponent("empty.bbx"))
 	
 	private func updateDisplayFromXML(completion: @escaping ((Bool) -> Void)) {
 		guard self.webUILoaded else {
@@ -421,6 +425,9 @@ SFSafariViewControllerDelegate {
 			return .ok(.text("Success"))
 		}
 		
+		//TOOD: Add a file closed callback so we can get rid of these wrappers.
+		// Once there is a file closed callback, no delete or rename command will happen to
+		// an open file.
 		let renameHandler = self.dataRequests!.renameRequest
 		self.server["/data/rename"] = { (request: HttpRequest) -> HttpResponse in
 			let queries = BBTSequentialQueryArrayToDict(request.queryParams)
@@ -505,7 +512,9 @@ SFSafariViewControllerDelegate {
 			//they wake from sleep (when they are waiting to write out). Then delete this timer.
 			if #available(iOS 10.0, *) {
 				DispatchQueue.main.sync {
-					self.stopTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { t in
+					self.stopTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: false) {
+						t in
+						
 						let _ = stopAll(req)
 						print("stopping again")
 					}
