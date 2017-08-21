@@ -211,17 +211,17 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
 				                                                            response: nil)
 			}
 			
-			alertController.addTextField{
-				(txtName) -> Void in
-				txtName.placeholder = answerHolder
-				txtName.text = prefillText
-				txtName.clearButtonMode = .whileEditing
-			}
-			
-			alertController.addAction(okayAction)
-			alertController.addAction(cancelAction)
-			
 			DispatchQueue.main.async{
+				alertController.addTextField {
+					(txtName) -> Void in
+					txtName.placeholder = answerHolder
+					txtName.text = prefillText
+					txtName.clearButtonMode = .whileEditing
+				}
+				
+				alertController.addAction(okayAction)
+				alertController.addAction(cancelAction)
+				
 				UIApplication.shared.keyWindow?.rootViewController!.present(alertController,
 				                                                            animated: true) {
 					if shouldSelectAll {

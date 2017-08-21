@@ -150,7 +150,7 @@ class BBTBackendServer: NSObject, WKScriptMessageHandler {
 	//Only one instance of this function can be run at a time
 	//Swift does not have a native way to do a mutex lock yet.
 	//Not much point anymore because queue is unlikely to have backlog.
-	public func clearBackgroundQueue() {
+	public func clearBackgroundQueue(completion: (() -> Void)? = nil) {
 		self.queueClearingLock.lock()
 		
 		self.clearingRegularQueue = true
@@ -159,6 +159,10 @@ class BBTBackendServer: NSObject, WKScriptMessageHandler {
 		}
 		
 		self.queueClearingLock.unlock()
+		
+		if let comp = completion {
+			comp()
+		}
 	}
 	
 	//MARK: WKScriptMessageHandler

@@ -260,7 +260,7 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
 			NSLog("Unable to write to hummingbird due to error \(error)")
 		}
 		
-		print("did write")
+//		print("did write")
 		
 		//We successfully sent a command
 		self.writtenCondition.lock()
@@ -471,9 +471,11 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
 			self.currentOutputState = nextCopy
 			
 			//For debugging
+			#if DEBUG
 			let bytes = UnsafeMutableBufferPointer<UInt8>(start: UnsafeMutablePointer<UInt8>.allocate(capacity: 20), count: 19)
 			let _ = command.copyBytes(to: bytes)
 			print("Setting All: \(bytes.map({return $0}))")
+			#endif
 		}
 		else {
 			if !self.lastWriteWritten {

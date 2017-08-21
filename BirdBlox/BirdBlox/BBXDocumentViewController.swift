@@ -28,7 +28,9 @@ SFSafariViewControllerDelegate {
 	
 	let server = BBTBackendServer()
 	
-	var reloadTimer = Timer()
+	//This is unecessary since the server will definitely be started by the time the page is loaded
+//	var reloadTimer = Timer()
+	var stopTimer = Timer()
 	
 	override func viewDidLoad() {
 		NSLog("Document View Controller viewDidLoad")
@@ -46,7 +48,7 @@ SFSafariViewControllerDelegate {
 		(UIApplication.shared.delegate as! AppDelegate).backendServer = self.server
 		
 		self.server["/ui/contentLoaded"] = { request in
-			self.reloadTimer.invalidate()
+//			self.reloadTimer.invalidate()
 			
 			self.webUILoaded = true
 			
@@ -80,16 +82,16 @@ SFSafariViewControllerDelegate {
 		self.webView.loadFileURL(htmlLoc, allowingReadAccessTo: frontLoc)
 		print("post-req")
 		
-		if #available(iOS 10, *) {
-			self.reloadTimer = Timer.scheduledTimer(withTimeInterval: TimeInterval(5),
-													repeats: false, block: { _ in
-				print("Reload timer fired")
-				if !self.webUILoaded {
-					print("Reloading")
-					self.webView.reload()
-				}
-			})
-		}
+//		if #available(iOS 10, *) {
+//			self.reloadTimer = Timer.scheduledTimer(withTimeInterval: TimeInterval(5),
+//													repeats: false, block: { _ in
+//				print("Reload timer fired")
+//				if !self.webUILoaded {
+//					print("Reloading")
+//					self.webView.reload()
+//				}
+//			})
+//		}
 		
 		self.view.addSubview(self.webView)
 		
@@ -120,13 +122,14 @@ SFSafariViewControllerDelegate {
 		let js = "CallbackManager.data.open('\(name)', '\(xml)', \(!needsName))"
 		
 		
-		DispatchQueue.main.sync {
+		DispatchQueue.main.async {
 			self.webView.evaluateJavaScript(js) { succeeded, error in
 				if let error = error {
 					NSLog("JS exception (\(error)) while opening data. ")
 					return
 				}
 				
+				NSLog("ran JS update XML")
 				if let suc = (succeeded as? Bool) {
 					completion(suc)
 				}
@@ -204,8 +207,8 @@ SFSafariViewControllerDelegate {
 	}
 	
 	private func closeCurrentProgram(completion: ((Bool) -> Void)? = nil) {
-		UserDefaults.standard.set(nil, forKey: self.curDocNameKey)
 		self.document.close(completionHandler: { suc in
+			UserDefaults.standard.set(nil, forKey: self.curDocNameKey)
 			if let completion = completion {
 				completion(suc)
 			}
@@ -431,7 +434,8 @@ SFSafariViewControllerDelegate {
 				return .badRequest(.text("Invalid type argument"))
 			}
 			
-			if type == .BirdBloxProgram && oldFilename == self.document.localizedName {
+			let curDocName = DataModel.shared.getSetting(self.curDocNameKey)
+			if type == .BirdBloxProgram && oldFilename == curDocName {
 				self.closeCurrentProgram(completion: { suc in
 					if !suc {
 						NSLog("Unable to close current document for renaming")
@@ -472,7 +476,8 @@ SFSafariViewControllerDelegate {
 				return .badRequest(.text("Invalid type argument"))
 			}
 			
-			guard (filename != self.document.localizedName || (type != .BirdBloxProgram) ||
+			let curDocName = DataModel.shared.getSetting(self.curDocNameKey)
+			guard (filename != curDocName || (type != .BirdBloxProgram) ||
 				(self.document.documentState == .closed)) else {
 				print("delete open")
 				self.closeCurrentProgram(completion: { suc in
@@ -489,9 +494,26 @@ SFSafariViewControllerDelegate {
 		}
 		
 		let stopAll = server["/robot/stopAll"]!
-		server["/robot/stopAll"] = {
-			server.clearBackgroundQueue()
-			return stopAll($0)
+		server["/robot/stopAll"] = { req in
+//			server.clearBackgroundQueue(completion: {
+//				server.backgroundQueue.async {
+//					let _ = stopAll(req)
+//				}
+//			}) //This won't help much because there are still ≤30 threads settings outputs
+			
+			//TODO: Add ability for output threads to abort based on a check to a boolean whenever
+			//they wake from sleep (when they are waiting to write out). Then delete this timer.
+			if #available(iOS 10.0, *) {
+				DispatchQueue.main.sync {
+					self.stopTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { t in
+						let _ = stopAll(req)
+						print("stopping again")
+					}
+				}
+			}
+			
+			
+			return stopAll(req)
 		}
 		
 		server["/data/markAsNamed"] = { request in

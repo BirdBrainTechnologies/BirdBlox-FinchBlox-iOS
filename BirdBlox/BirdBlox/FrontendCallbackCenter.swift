@@ -50,13 +50,16 @@ class FrontendCallbackCenter {
 		
 //		self.wvLock.lock()
 		
-		DispatchQueue.main.sync {
+		//This might get run from the main thread. Might will crash if main.sync is called from
+		//the main thread.
+		DispatchQueue.main.async {
 			wv.evaluateJavaScript(js, completionHandler: { ret, error in
 				if let error = error {
 					NSLog("Error running '\(js)': \(error)")
 					return
 				}
 				
+				print("Ran '\(js)', got \(String(describing: ret))")
 				#if DEBUG
 					print("Ran '\(js)', got \(String(describing: ret))")
 				#endif
@@ -70,28 +73,32 @@ class FrontendCallbackCenter {
 	
 	
 	//MARK: Dialog Responses
+	private func boolToJSString(_ b: Bool) -> String {
+		return b ? "true" : "" //empty string evaluates to false in Javascript
+	}
+	
 	public func dialogPromptResponded(cancelled: Bool, response: String?) -> Bool {
-		let safeResponse = " '\(FrontendCallbackCenter.safeString(from: response ?? ""))' "
+		let safeResponse = FrontendCallbackCenter.safeString(from: response ?? "")
 		
 		let function = "CallbackManager.dialog.promptResponded"
-		let parameters = [String(cancelled), safeResponse]
+		let parameters = [boolToJSString(cancelled), safeResponse]
 		
 		return self.runJS(function: function, parameters: parameters)
 	}
 	
 	func choiceResponded(cancelled: Bool, firstSelected: Bool) -> Bool {
 		let function = "CallbackManager.dialog.choiceResponded"
-		let parameters = [String(cancelled), String(firstSelected)]
+		let parameters = [boolToJSString(cancelled), boolToJSString(firstSelected)]
 		
 		return self.runJS(function: function, parameters: parameters)
 	}
 	
 	//MARK: Robot Related
 	public func robotUpdateStatus(id: String, connected: Bool) -> Bool {
-		let safeResponse = " '\(FrontendCallbackCenter.safeString(from: id))' "
+		let safeResponse = FrontendCallbackCenter.safeString(from: id)
 		
 		let function = "CallbackManager.robot.updateStatus"
-		let parameters = [safeResponse, String(connected)]
+		let parameters = [safeResponse, boolToJSString(connected)]
 		
 		return self.runJS(function: function, parameters: parameters)
 	}

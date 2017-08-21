@@ -9,8 +9,10 @@
 import Foundation
 import Swifter
 
-struct PropertiesManager {
-
+class PropertiesManager {
+	var heightInPoints: CGFloat = 300.0
+	var widthInPoints: CGFloat = 300.0
+	
 	func loadRequests(server: BBTBackendServer){
 		server["/properties/dims"] = self.getPhysicalDims
 		server["/properties/os"] = self.getVersion
@@ -26,12 +28,17 @@ struct PropertiesManager {
 	func getPhysicalDims(request: HttpRequest) -> HttpResponse {
 		print("Dims req")
 		
-		let window = UIApplication.shared.delegate?.window
-		let heightInPoints = window??.bounds.height ?? UIScreen.main.bounds.height
-		let height = mmFromPoints(p: heightInPoints)
+		DispatchQueue.main.sync {
+			let window = UIApplication.shared.delegate?.window
+			let heightInPoints = window??.bounds.height ?? UIScreen.main.bounds.height
+			let widthInPoints = window??.bounds.width ?? UIScreen.main.bounds.width
+			self.heightInPoints = heightInPoints
+			self.widthInPoints = widthInPoints
+		}
 		
-		let widthInPoints = window??.bounds.width ?? UIScreen.main.bounds.width
-		let width = mmFromPoints(p: widthInPoints)
+		let height = mmFromPoints(p: self.heightInPoints)
+		
+		let width = mmFromPoints(p: self.widthInPoints)
 		
 		
 		return .ok(.text("\(width),\(height)"))
