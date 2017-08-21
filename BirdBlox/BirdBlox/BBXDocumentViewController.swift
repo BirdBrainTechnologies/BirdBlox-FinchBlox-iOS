@@ -31,6 +31,7 @@ SFSafariViewControllerDelegate {
 	//This is unecessary since the server will definitely be started by the time the page is loaded
 //	var reloadTimer = Timer()
 	var stopTimer = Timer()
+	var utilTimer = Timer()
 	
 	override func viewDidLoad() {
 		NSLog("Document View Controller viewDidLoad")
@@ -200,11 +201,28 @@ SFSafariViewControllerDelegate {
 			print("open handler suc: \(suc)")
 			if suc {
 				self.document = doc
+				if let comp = completion {
+					comp(suc)
+				}
 			}
+//			else {
+//				//Wait a bit and try once more
+//				//TODO: make each document create and destroy its own temp directory so a document
+//				Thread.sleep(forTimeInterval: 0.3)
+//				doc.open(completionHandler: { (suc2) in
+//					if suc2 {
+//						self.document = doc
+//					}
+//					if let comp = completion {
+//						comp(suc2)
+//					}
+//				})
+//			}
 			
-			if let comp = completion {
-				comp(suc)
-			}
+			//Uncomment (see above)
+//			if let comp = completion {
+//				comp(suc)
+//			}
 		})
 		
 		return true
@@ -382,6 +400,7 @@ SFSafariViewControllerDelegate {
 		
 		self.server["/data/open"] = { (request: HttpRequest) -> HttpResponse in
 			let queries = BBTSequentialQueryArrayToDict(request.queryParams)
+			print("Open request")
 			
 			guard let name = queries["filename"] else {
 				return .badRequest(.text("Missing Parameters"))
@@ -398,11 +417,20 @@ SFSafariViewControllerDelegate {
 			}
 			
 			if self.document.documentState == .closed {
+				print("Running open block now!")
 				openBlock()
 			} else {
-				self.closeCurrentProgram() { suc in
-					if suc {
-						openBlock()
+				if #available(iOS 10.0, *) {
+					DispatchQueue.main.sync {
+						self.utilTimer = Timer.scheduledTimer(withTimeInterval: 0.75,
+						                                      repeats: false,
+						                                      block: { t in
+							if self.document.documentState == .closed {
+								openBlock()
+							} else {
+								NSLog("Unable to open file.")
+							}
+						})
 					}
 				}
 			}
