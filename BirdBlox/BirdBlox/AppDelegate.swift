@@ -86,6 +86,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 		
 		DataModel.shared.migrateFromOldSystem()
 		
+		//Already opens documents when closed without this.
+//		if let los = launchOptions,
+//			let url = los[.url] as? URL {
+//			return self.application(application, open: url)
+//		}
+		
         return true
     }
 
