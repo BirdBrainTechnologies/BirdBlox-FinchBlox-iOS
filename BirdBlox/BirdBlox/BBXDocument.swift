@@ -10,8 +10,6 @@ import Foundation
 import UIKit
 import Zip
 
-//TODO: Switch from XML file to container with xml and sound recordings
-
 class BBXDocument: UIDocument {
 	var realCurrentXML: String = "<project><tabs></tabs></project>"
 	let xmlLoc = DataModel.shared.currentDocLoc

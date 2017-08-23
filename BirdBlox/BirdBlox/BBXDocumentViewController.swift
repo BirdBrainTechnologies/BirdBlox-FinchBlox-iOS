@@ -83,17 +83,6 @@ SFSafariViewControllerDelegate {
 		self.webView.loadFileURL(htmlLoc, allowingReadAccessTo: frontLoc)
 		print("post-req")
 		
-//		if #available(iOS 10, *) {
-//			self.reloadTimer = Timer.scheduledTimer(withTimeInterval: TimeInterval(5),
-//													repeats: false, block: { _ in
-//				print("Reload timer fired")
-//				if !self.webUILoaded {
-//					print("Reloading")
-//					self.webView.reload()
-//				}
-//			})
-//		}
-		
 		self.view.addSubview(self.webView)
 		
 		//Setup callback center

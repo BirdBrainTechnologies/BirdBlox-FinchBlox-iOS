@@ -6,6 +6,11 @@
 //  Copyright © 2017年 Birdbrain Technologies LLC. All rights reserved.
 //
 
+/* IMPORTANT
+	This is a slightly modified version of the HB code in order to test the finch firmware.
+	This is not acutual code for the Finch.
+*/
+
 import Foundation
 
 import CoreBluetooth

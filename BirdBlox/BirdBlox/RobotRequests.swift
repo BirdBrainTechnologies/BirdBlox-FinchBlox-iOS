@@ -64,7 +64,7 @@ class RobotRequests {
 		
 		server["/robot/showInfo"] = RobotRequests.handler(fromIDAndTypeHandler: self.infoRequest)
 		
-		//TODO: Delete
+		//TODO: Delete (just for finch testing)
 		server["/robot/out/setAll"] = RobotRequests.handler(fromIDAndTypeHandler: self.setAll)
 	}
 	

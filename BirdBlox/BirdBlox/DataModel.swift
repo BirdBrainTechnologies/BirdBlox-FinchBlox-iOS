@@ -83,7 +83,11 @@ class DataModel: NSObject, FileManagerDelegate {
 			self.frontendLoc = URL(fileURLWithPath: bundleLoc.appendingPathComponent("Frontend").path)
 		#endif
 		
-		self.frontendPageLoc = self.frontendLoc.appendingPathComponent("HummingbirdDragAndDrop.html")
+		if #available(iOS 10.0, *) {
+			self.frontendPageLoc = self.frontendLoc.appendingPathComponent("HummingbirdDragAndDrop.html")
+		} else {
+			self.frontendPageLoc = self.frontendLoc.appendingPathComponent("HummingbirdDragAndDropiOS9.html")
+		}
 		self.soundsLoc = self.frontendLoc.appendingPathComponent("SoundClips")
 		self.uiSoundsLoc = self.frontendLoc.appendingPathComponent("SoundsForUI")
 		

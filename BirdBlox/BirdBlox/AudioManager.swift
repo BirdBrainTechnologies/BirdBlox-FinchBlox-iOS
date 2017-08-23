@@ -61,7 +61,7 @@ class AudioManager: NSObject, AVAudioRecorderDelegate {
 	//MARK: Recording Audio
 	
 	public func startRecording(saveName: String) -> Bool {
-		//TODO: Use the data modle
+		//TODO: Use the data model
 		let location = DataModel.shared.recordingsLoc.appendingPathComponent(saveName + ".m4a")
 		let settings = [
 			AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
