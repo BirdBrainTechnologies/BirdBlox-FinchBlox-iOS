@@ -235,6 +235,9 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 		print("error disconnecting \(peripheral),  \(errorStr)")
 		
 		let id = peripheral.identifier.uuidString
+		if let robot = self.connectedRobots[id] {
+			let _ = robot.endOfLifeCleanup()
+		}
 		self.connectedPeripherals.removeValue(forKey: id)
 		self.connectedRobots.removeValue(forKey: id)
 		let _ = FrontendCallbackCenter.shared.robotUpdateStatus(id: id, connected: false)
@@ -291,10 +294,6 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 			peripheral = self.oughtToBeConnected[id]!.peripheral
 		} else {
 			peripheral = self.connectedPeripherals[id]!
-		}
-		
-		if let robot = self.connectedRobots[id] {
-			let _ = robot.endOfLifeCleanup()
 		}
 		
 		self.oughtToBeConnected.removeValue(forKey: id)

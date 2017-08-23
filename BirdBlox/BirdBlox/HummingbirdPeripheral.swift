@@ -58,8 +58,10 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
 	//End variables write protected by writtenCondition
     private var syncTimer: Timer = Timer()
 	let syncInterval = 0.03125 //(32Hz)
-	let cacheTimeoutDuration: UInt64 = 1 * 100_000_000 //units
+	let cacheTimeoutDuration: UInt64 = 1 * 1_000_000_000 //nanoseconds
 	let waitRefreshTime = 0.5 //seconds
+	
+	let creationTime = DispatchTime.now()
 	
 	
 	private var initializingCondition = NSCondition()
@@ -205,6 +207,7 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
 		
 		guard self.connected else {
 			BLE_Manager.disconnect(byID: self.id)
+			NSLog("Initialization failed because HB got disconnected.")
 			return
 		}
 		
@@ -216,6 +219,7 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
 				.robotFirmwareIncompatible(id: self.id, firmware: self.firmwareVersionString)
 			
 			BLE_Manager.disconnect(byID: self.id)
+			NSLog("Initialization failed due to incompatible firmware.")
 			return
 		}
 		
@@ -347,10 +351,7 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
 		}
 	}
 	
-    //TODO: add a check for legacy firmware and use set all for only
-    //firmwares newer than 2.2.a 
-	//From Tom: send the characters 'G' '4' and you will get back the hardware version 
-	//(currently 0x03 0x00) and the firmware version (0x02 0x02 'b'), might be 'a' instead of 'b'
+	//MAKR: Robot outputs
     func setLED(port: Int, intensity: UInt8) -> Bool {
 		guard self.peripheral.state == .connected else {
 			return false
@@ -358,6 +359,7 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
 		guard self.useSetall else {
 			self.sendData(data: BBTHummingbirdUtility.getLEDCommand(UInt8(port),
 																	intensity: intensity))
+			Thread.sleep(forTimeInterval: 0.1)
 			return true
 		}
 	
@@ -388,6 +390,7 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
 			                                                     green_val: intensities.green,
 			                                                     blue_val: intensities.blue)
 			self.sendData(data: command)
+			Thread.sleep(forTimeInterval: 0.1)
 			return true
 		}
 		
@@ -417,6 +420,7 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
 			let command = BBTHummingbirdUtility.getVibrationCommand(UInt8(port),
 																	intensity: intensity)
 			self.sendData(data: command)
+			Thread.sleep(forTimeInterval: 0.1)
 			return true
 		}
 		
@@ -445,6 +449,7 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
 			let command = BBTHummingbirdUtility.getMotorCommand(UInt8(port),
 			                                                        speed: Int(speed))
 			self.sendData(data: command)
+			Thread.sleep(forTimeInterval: 0.1)
 			return true
 		}
 		
@@ -473,6 +478,7 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
 			let command = BBTHummingbirdUtility.getServoCommand(UInt8(port),
 			                                                        angle: angle)
 			self.sendData(data: command)
+			Thread.sleep(forTimeInterval: 0.1)
 			return true
 		}
 		
@@ -507,7 +513,6 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
 						self.cacheTimeoutDuration)
 		let shouldSync = changeOccurred || timeout
 		
-		
 		if self.initialized && (self.lastWriteWritten || timeout)  && shouldSync {
 			let cmdMkr = BBTHummingbirdUtility.getSetAllCommand
 			
@@ -533,6 +538,7 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
 			let bytes = UnsafeMutableBufferPointer<UInt8>(
 				start: UnsafeMutablePointer<UInt8>.allocate(capacity: 20), count: 19)
 			let _ = command.copyBytes(to: bytes)
+			print("\(self.creationTime)")
 			print("Setting All: \(bytes.map({return $0}))")
 			#endif
 		}
