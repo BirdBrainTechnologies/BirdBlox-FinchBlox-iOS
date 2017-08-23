@@ -312,6 +312,8 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 			return false
 		}
 		
+		Thread.sleep(forTimeInterval: 3.0) //make sure that the HB is booted up
+		
 		let idString = peripheral.identifier.uuidString
 		self.discoveredPeripherals.removeValue(forKey: idString)
 		self.oughtToBeConnected[idString] = (peripheral: peripheral, type: type)

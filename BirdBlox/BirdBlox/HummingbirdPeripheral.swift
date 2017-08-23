@@ -179,7 +179,7 @@ class HummingbirdPeripheral: NSObject, CBPeripheralDelegate, BBTRobotBLEPeripher
 		print("start init")
 		//Get ourselves a fresh slate
         self.sendData(data: BBTHummingbirdUtility.getPollStopCommand())
-		Thread.sleep(forTimeInterval: 4) //make sure that the HB is booted up
+//		Thread.sleep(forTimeInterval: 4) //make sure that the HB is booted up
 		//Worked 4 of 5 times when at 3 seconds.
 		
 		let timeoutTime = Date(timeIntervalSinceNow: TimeInterval(7)) //seconds
