@@ -117,7 +117,7 @@ class AudioManager: NSObject, AVAudioRecorderDelegate {
 	
 	public func finishRecording(deleteRecording: Bool = false) {
 		guard let recorder = self.recorder,
-			recorder.isRecording else {
+			recorder.currentTime != 0 else {
 			return
 		}
 		
