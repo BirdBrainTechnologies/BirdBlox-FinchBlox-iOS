@@ -7,11 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		31686092209A615C008D92AF /* BBTRobotType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31686091209A615C008D92AF /* BBTRobotType.swift */; };
+		31686094209B5DC6008D92AF /* HummingbirdBitUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31686093209B5DC6008D92AF /* HummingbirdBitUtilities.swift */; };
 		3F0E4A731ED37D3900369F70 /* DeviceUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F0E4A721ED37D3900369F70 /* DeviceUtilities.swift */; };
 		3F5F6D291EDDB3A800799277 /* BBTBackendServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F5F6D281EDDB3A800799277 /* BBTBackendServer.swift */; };
 		3F5F6D2B1EDDD73A00799277 /* SeverRequestPaths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F5F6D2A1EDDD73A00799277 /* SeverRequestPaths.swift */; };
 		3F9F72471F223D2000C29FEB /* RobotRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9F72461F223D2000C29FEB /* RobotRequests.swift */; };
-		3FA108771F32200A00F6F213 /* FinchPeripheral.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FA108761F32200A00F6F213 /* FinchPeripheral.swift */; };
 		3FA4F8A71F02F2BB005EB384 /* BBXDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FA4F8A61F02F2BB005EB384 /* BBXDocument.swift */; };
 		3FA4F8A91F03EE56005EB384 /* BBXDocumentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FA4F8A81F03EE56005EB384 /* BBXDocumentViewController.swift */; };
 		3FA7D5E31EF2E65800FE4882 /* BBTRobotState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FA7D5E21EF2E65800FE4882 /* BBTRobotState.swift */; };
@@ -39,19 +40,18 @@
 		BAE1FDA21E920A7500304BEE /* HummingbirdUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAE1FDA11E920A7500304BEE /* HummingbirdUtilities.swift */; };
 		BAE1FDA41E920A8D00304BEE /* FlutterUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAE1FDA31E920A8D00304BEE /* FlutterUtilities.swift */; };
 		BAE2EBCF1E84417000198B19 /* BLECentralManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAE2EBCE1E84417000198B19 /* BLECentralManager.swift */; };
-		BAE2EBD11E8443CF00198B19 /* HummingbirdPeripheral.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAE2EBD01E8443CF00198B19 /* HummingbirdPeripheral.swift */; };
-		BAE2EBD31E8451ED00198B19 /* FlutterPeripheral.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAE2EBD21E8451ED00198B19 /* FlutterPeripheral.swift */; };
 		BAE2EBD51E84550900198B19 /* HummingbirdManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAE2EBD41E84550900198B19 /* HummingbirdManager.swift */; };
 		DB4B601313BCF127ED80CC5E /* Pods_BirdBlox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B9CF54964A1E1D488464E38 /* Pods_BirdBlox.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		1CBEFB40603958D76A5BFE44 /* Pods-BirdBlox.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BirdBlox.release.xcconfig"; path = "Pods/Target Support Files/Pods-BirdBlox/Pods-BirdBlox.release.xcconfig"; sourceTree = "<group>"; };
+		31686091209A615C008D92AF /* BBTRobotType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBTRobotType.swift; sourceTree = "<group>"; };
+		31686093209B5DC6008D92AF /* HummingbirdBitUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HummingbirdBitUtilities.swift; sourceTree = "<group>"; };
 		3F0E4A721ED37D3900369F70 /* DeviceUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceUtilities.swift; sourceTree = "<group>"; };
 		3F5F6D281EDDB3A800799277 /* BBTBackendServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BBTBackendServer.swift; sourceTree = "<group>"; };
 		3F5F6D2A1EDDD73A00799277 /* SeverRequestPaths.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SeverRequestPaths.swift; sourceTree = "<group>"; };
 		3F9F72461F223D2000C29FEB /* RobotRequests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RobotRequests.swift; sourceTree = "<group>"; };
-		3FA108761F32200A00F6F213 /* FinchPeripheral.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FinchPeripheral.swift; sourceTree = "<group>"; };
 		3FA4F8A61F02F2BB005EB384 /* BBXDocument.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BBXDocument.swift; sourceTree = "<group>"; };
 		3FA4F8A81F03EE56005EB384 /* BBXDocumentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BBXDocumentViewController.swift; sourceTree = "<group>"; };
 		3FA4F8AA1F06F602005EB384 /* BirdBlox.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BirdBlox.entitlements; sourceTree = "<group>"; };
@@ -83,8 +83,6 @@
 		BAE1FDA11E920A7500304BEE /* HummingbirdUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HummingbirdUtilities.swift; sourceTree = "<group>"; };
 		BAE1FDA31E920A8D00304BEE /* FlutterUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlutterUtilities.swift; sourceTree = "<group>"; };
 		BAE2EBCE1E84417000198B19 /* BLECentralManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BLECentralManager.swift; sourceTree = "<group>"; };
-		BAE2EBD01E8443CF00198B19 /* HummingbirdPeripheral.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HummingbirdPeripheral.swift; sourceTree = "<group>"; };
-		BAE2EBD21E8451ED00198B19 /* FlutterPeripheral.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlutterPeripheral.swift; sourceTree = "<group>"; };
 		BAE2EBD41E84550900198B19 /* HummingbirdManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HummingbirdManager.swift; sourceTree = "<group>"; };
 		E8B8191F17118ABB8EDC2784 /* Pods-BirdBlox.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BirdBlox.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BirdBlox/Pods-BirdBlox.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -194,6 +192,7 @@
 				BAE1FD9F1E920A6600304BEE /* SharedUtilities.swift */,
 				3F0E4A721ED37D3900369F70 /* DeviceUtilities.swift */,
 				BAE1FDA11E920A7500304BEE /* HummingbirdUtilities.swift */,
+				31686093209B5DC6008D92AF /* HummingbirdBitUtilities.swift */,
 				BAE1FDA31E920A8D00304BEE /* FlutterUtilities.swift */,
 				3FE5C65C1ED8974100433262 /* BluetoothDeviceNames.plist */,
 			);
@@ -205,9 +204,7 @@
 			children = (
 				BAE2EBCE1E84417000198B19 /* BLECentralManager.swift */,
 				3FFA170E1F1D492B0085CE71 /* BBTRobotBLEPeripheral.swift */,
-				BAE2EBD01E8443CF00198B19 /* HummingbirdPeripheral.swift */,
-				3FA108761F32200A00F6F213 /* FinchPeripheral.swift */,
-				BAE2EBD21E8451ED00198B19 /* FlutterPeripheral.swift */,
+				31686091209A615C008D92AF /* BBTRobotType.swift */,
 			);
 			name = bluetooth;
 			sourceTree = "<group>";
@@ -344,16 +341,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				3F5F6D291EDDB3A800799277 /* BBTBackendServer.swift in Sources */,
+				31686094209B5DC6008D92AF /* HummingbirdBitUtilities.swift in Sources */,
 				BAE1FDA41E920A8D00304BEE /* FlutterUtilities.swift in Sources */,
 				BAE1FDA01E920A6600304BEE /* SharedUtilities.swift in Sources */,
 				3FFA170F1F1D492B0085CE71 /* BBTRobotBLEPeripheral.swift in Sources */,
 				3FA7D5E31EF2E65800FE4882 /* BBTRobotState.swift in Sources */,
+				31686092209A615C008D92AF /* BBTRobotType.swift in Sources */,
 				3F0E4A731ED37D3900369F70 /* DeviceUtilities.swift in Sources */,
 				BAE2EBD51E84550900198B19 /* HummingbirdManager.swift in Sources */,
-				BAE2EBD11E8443CF00198B19 /* HummingbirdPeripheral.swift in Sources */,
-				3FA108771F32200A00F6F213 /* FinchPeripheral.swift in Sources */,
 				3FA4F8A71F02F2BB005EB384 /* BBXDocument.swift in Sources */,
-				BAE2EBD31E8451ED00198B19 /* FlutterPeripheral.swift in Sources */,
 				BA8169531E81A98A00AAF7A3 /* ViewController.swift in Sources */,
 				BA8A75991EB27CF700ECFABC /* AudioManager.swift in Sources */,
 				BA8A759B1EB2817E00ECFABC /* SettingsRequests.swift in Sources */,

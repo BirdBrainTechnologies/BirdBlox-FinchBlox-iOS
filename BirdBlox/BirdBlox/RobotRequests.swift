@@ -26,7 +26,6 @@ class RobotRequests {
 				let typeStr = queries[RobotRequests.robotTypeKey] else {
 					return .badRequest(.text("Missing parameter"))
 			}
-			
 			guard let type = BBTRobotType.fromString(typeStr) else {
 				return .badRequest(.text("Invalid robot type: \(typeStr)"))
 			}
@@ -165,11 +164,11 @@ class RobotRequests {
 			return (nil, .notFound)
 		}
 		
-		guard type(of: robot).type == type else {
+		guard robot.type == type else {
 			return (nil,.badRequest(.text("Type of robot does not match type passed in parameter")))
 		}
 		
-		guard acceptTypes.contains(type(of: robot).type) else {
+		guard acceptTypes.contains(robot.type) else {
 			return (nil, .badRequest(.text("Operation not supported by type")))
 		}
 		
@@ -193,7 +192,7 @@ class RobotRequests {
 		}
 		
 		let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
-		                                                 acceptTypes: [.Hummingbird, .Flutter])
+		                                                 acceptTypes: [.Hummingbird, .HummingbirdBit, .Finch, .Flutter])
 		guard let robot = roboto else {
 			return requesto!
 		}
@@ -218,7 +217,7 @@ class RobotRequests {
 		}
 		
 		let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
-		                                                 acceptTypes: [.Hummingbird, .Flutter])
+		                                                 acceptTypes: [.Hummingbird, .HummingbirdBit, .Flutter])
 		guard let robot = roboto else {
 			return requesto!
 		}
@@ -242,7 +241,7 @@ class RobotRequests {
 		}
 		
 		let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
-		                                                 acceptTypes: [.Flutter, .Hummingbird])
+		                                                 acceptTypes: [.Flutter, .Hummingbird, .HummingbirdBit, .Finch])
 		guard let robot = roboto else {
 			return requesto!
 		}
@@ -258,7 +257,9 @@ class RobotRequests {
 		var value = percentToRaw(percent)
 		var realPercent = Double(percent)
 		//HB returns raw values from sensors, while FL returns percentages.
-		if type(of: robot).type == .Hummingbird {
+        switch type {
+        case .Flutter: ()
+        case .Hummingbird, .HummingbirdBit, .Finch, .MicroBit:
 			value = values[port]
 			percent = UInt8(rawToPercent(value))
 			realPercent = Double(value) / 2.55
@@ -296,12 +297,12 @@ class RobotRequests {
 		}
 		
 		let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
-		                                                 acceptTypes: [.Hummingbird])
+		                                                 acceptTypes: [.Hummingbird, .HummingbirdBit])
 		guard let robot = roboto else {
 			return requesto!
 		}
 		
-		if (robot as! HummingbirdPeripheral).setLED(port: port, intensity: intensity) {
+		if robot.setLED(port: port, intensity: intensity) {
 			return .ok(.text("set"))
 		} else {
 			return .internalServerError
@@ -326,7 +327,7 @@ class RobotRequests {
 			return requesto!
 		}
 		
-		if (robot as! HummingbirdPeripheral).setVibration(port: port, intensity: intensity) {
+		if robot.setVibration(port: port, intensity: intensity) {
 			return .ok(.text("set"))
 		} else {
 			return .internalServerError
@@ -346,12 +347,12 @@ class RobotRequests {
 		}
 		
 		let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
-		                                                 acceptTypes: [.Hummingbird])
+		                                                 acceptTypes: [.Hummingbird, .Finch])
 		guard let robot = roboto else {
 			return requesto!
 		}
 		
-		if (robot as! HummingbirdPeripheral).setMotor(port: port, speed: Int8(speed)) {
+		if robot.setMotor(port: port, speed: Int8(speed)) {
 			return .ok(.text("set"))
 		} else {
 			return .internalServerError
@@ -374,12 +375,12 @@ class RobotRequests {
 		}
 		
 		let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
-		                                                 acceptTypes: [.Flutter])
+		                                                 acceptTypes: [.Flutter, .Finch, .HummingbirdBit])
 		guard let robot = roboto else {
 			return requesto!
 		}
 		
-		if (robot as! FlutterPeripheral).setBuzzer(volume: volume, frequency: frequency) {
+		if robot.setBuzzer(volume: volume, frequency: frequency) {
 			return .ok(.text("set"))
 		} else {
 			return .internalServerError
@@ -402,7 +403,7 @@ class RobotRequests {
 			return requesto!
 		}
 		
-		let resps = (robot as! FinchPeripheral).setAll(str: dataStr)
+		let resps = robot.setAll(str: dataStr)
 		let ss = resps.map({String($0)})
 		
 		return .ok(.text(ss.joined(separator: ",")))

@@ -103,12 +103,13 @@ class FrontendCallbackCenter {
 		return self.runJS(function: function, parameters: parameters)
 	}
 	
+    //TODO: Make this for every type of robot
 	public func robotFirmwareIncompatible(id: String, firmware: String) -> Bool {
 		let safeID = FrontendCallbackCenter.safeString(from: id)
 		let safeFirmware = FrontendCallbackCenter.safeString(from: firmware)
 		
 		let function = "CallbackManager.robot.disconnectIncompatible"
-		let parameters = [safeID, safeFirmware, HummingbirdPeripheral.minimumFirmware]
+		let parameters = [safeID, safeFirmware, BBTRobotType.Hummingbird.minimumFirmware]
 		
 		return self.runJS(function: function, parameters: parameters)
 	}

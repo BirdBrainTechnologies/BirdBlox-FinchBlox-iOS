@@ -198,7 +198,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 			self.disconnect(byID: id)
 			return
 		}
-		
+		/*
 		var robotInit: (CBPeripheral, ((BBTRobotBLEPeripheral) -> Void)?) -> BBTRobotBLEPeripheral
 		switch type {
 		case .Hummingbird:
@@ -210,8 +210,9 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 		default:
 			robotInit = HummingbirdPeripheral.init
 		}
-		
-		self.currentlyConnecting = robotInit(peripheral, {rbt in
+		*/
+        print("did connect \(peripheral.name ?? "unknown") of type: \(type.description)")
+		self.currentlyConnecting = BBTRobotBLEPeripheral.init(peripheral, type, {rbt in
 			let id = rbt.peripheral.identifier.uuidString
 			if self.oughtToBeConnected.keys.contains(id) {
 				self.connectedRobots[id] = rbt
@@ -316,7 +317,12 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 		
 		let idString = peripheral.identifier.uuidString
 		self.discoveredPeripherals.removeValue(forKey: idString)
-		self.oughtToBeConnected[idString] = (peripheral: peripheral, type: type)
+        //TODO: Should only be displaying and connecting to robots of the correct type?
+        if let name = peripheral.name, let pType = BBTRobotType.fromString(name) {
+            self.oughtToBeConnected[idString] = (peripheral: peripheral, type: pType)
+        } else {
+            self.oughtToBeConnected[idString] = (peripheral: peripheral, type: type)
+        }
 //		self.connectedPeripherals[idString] = peripheral
 		
 		let options = [CBConnectPeripheralOptionNotifyOnDisconnectionKey: NSNumber(value: true)]
