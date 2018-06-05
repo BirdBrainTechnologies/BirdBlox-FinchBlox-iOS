@@ -8,7 +8,7 @@
 //
 // This file provides utility functions for interacting with the Flutter
 //
-
+/*
 import Foundation
 
 class BBTFlutterUtility {
@@ -74,4 +74,4 @@ class BBTFlutterUtility {
 	static let responseCharacter = getUnicode(Character("r"))
 	
 	public static let servoOffAngle = BBTHummingbirdUtility.servoOffAngle
-}
+}*/

@@ -243,3 +243,12 @@ struct FixedLengthArray<T: Equatable>: Equatable {
 	}
 }
 
+/**
+ Converts a note number to a period in microseconds (us)
+ See: https://newt.phys.unsw.edu.au/jw/notes.html
+  fm  =  (2^((m−69)/12))(440 Hz)
+ */
+public func noteToPeriod(_ note: UInt8) -> UInt16 {
+    let frequency = 440 * pow(Double(2), Double((Double(note) - 69)/12))
+    return UInt16((1/frequency) * 1000000)
+}

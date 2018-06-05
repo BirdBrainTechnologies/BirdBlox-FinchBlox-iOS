@@ -8,7 +8,7 @@
 //
 // This file provides utility functions for interacting with the HummingbirdBit
 //
-
+/*
 import Foundation
 
 class BBTHummingbirdBitUtility {
@@ -162,4 +162,4 @@ class BBTHummingbirdBitUtility {
 	}
 	
 	static let servoOffAngle: UInt8 = 255
-}
+}*/

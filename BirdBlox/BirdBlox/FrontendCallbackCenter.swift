@@ -59,7 +59,7 @@ class FrontendCallbackCenter {
 					return
 				}
 				
-				print("Ran '\(js)', got \(String(describing: ret))")
+				//print("Ran '\(js)', got \(String(describing: ret))")
 				#if DEBUG
 					print("Ran '\(js)', got \(String(describing: ret))")
 				#endif
@@ -104,13 +104,15 @@ class FrontendCallbackCenter {
 	}
 	
     //TODO: Make this for every type of robot
-	public func robotFirmwareIncompatible(id: String, firmware: String) -> Bool {
+    public func robotFirmwareIncompatible(robotType: BBTRobotType, id: String, firmware: String) -> Bool {
 		let safeID = FrontendCallbackCenter.safeString(from: id)
 		let safeFirmware = FrontendCallbackCenter.safeString(from: firmware)
 		
 		let function = "CallbackManager.robot.disconnectIncompatible"
-		let parameters = [safeID, safeFirmware, BBTRobotType.Hummingbird.minimumFirmware]
+		let parameters = [safeID, safeFirmware, robotType.minimumFirmware]
 		
+        let safeMin = FrontendCallbackCenter.safeString(from: robotType.minimumFirmware)
+        print("Firmware incompatible: \(id), \(firmware), \(safeMin), \(parameters)")
 		return self.runJS(function: function, parameters: parameters)
 	}
 	

@@ -184,12 +184,12 @@ class BBTBackendServer: NSObject, WKScriptMessageHandler {
 			let body = obj["body"] as? String,
 			let id = obj["id"] as? String,
 			let background = obj["inBackground"] as? String else {
-			print("Unable to repsond")
+			print("Unable to respond")
 			return
 		}
 		
 		NSLog("bg \(background) faux req \(requestStr)")
-		
+        
 		self.handleNativeCall(responseID: id, requestStr: requestStr, body: body,
 		                      background: background)
 	}

@@ -35,16 +35,38 @@ struct BBTTriLED: Equatable {
 	}
 }
 struct BBTBuzzer: Equatable {
-    let frequecy: UInt
+    let frequecy: UInt //frequency of note in Hz
     let volume: UInt
     
-    init(_ freq: UInt, _ vol: UInt) {
-        frequecy = freq
-        volume = vol
+    private var period: UInt16 //the period of the note in us
+    private var duration: UInt16 //duration of buzz in ms
+    
+    init(freq: UInt = 0, vol: UInt = 0, period: UInt16 = 0, duration: UInt16 = 0) {
+        self.frequecy = freq
+        self.volume = vol
+        self.duration = duration
+        self.period = period
+    }
+    
+    //convert to array used to set the Hummingbird Bit buzzer
+    func array() -> [UInt8] {
+        //let microSeconds = UInt16( (1 / frequecy) * 1000000 )
+        
+        var buzzerArray: [UInt8] = []
+        //buzzerArray[0] = UInt8(microSeconds >> 8)
+        //buzzerArray[1] = UInt8(microSeconds & 0x00ff)
+        buzzerArray.append( UInt8(period >> 8) )
+        buzzerArray.append( UInt8(period & 0x00ff) )
+        buzzerArray.append( UInt8(duration >> 8) )
+        buzzerArray.append( UInt8(duration & 0x00ff) )
+        //print("buzzer array: \(buzzerArray)")
+        
+        return buzzerArray
     }
     
     static func ==(lhs: BBTBuzzer, rhs: BBTBuzzer) -> Bool {
-        return lhs.frequecy == rhs.frequecy    && lhs.volume == rhs.volume
+        return lhs.frequecy == rhs.frequecy &&
+            lhs.volume == rhs.volume && lhs.duration == rhs.duration
     }
 }
 
@@ -58,6 +80,8 @@ struct BBTRobotOutputState: Equatable {
     public var motors: FixedLengthArray<Int8>?
     public var vibrators: FixedLengthArray<UInt8>?
     public var buzzer: BBTBuzzer?
+    //public var ledArray: FixedLengthArray<UInt8>?
+    public var ledArray: String?
     
     init(robotType: BBTRobotType) {
         self.robotType = robotType
@@ -83,7 +107,11 @@ struct BBTRobotOutputState: Equatable {
         }
             
         if robotType.buzzerCount == 1 {
-            buzzer = BBTBuzzer(0, 0)
+            self.buzzer = BBTBuzzer()
+        }
+        if robotType.ledArrayCount == 1 {
+            //self.ledArray = FixedLengthArray(length: 25, repeating: UInt8(0))
+            self.ledArray = "0000000000000000000000000"
         }
     }
     
@@ -109,39 +137,45 @@ struct BBTRobotOutputState: Equatable {
                 adjusted_motors[1] = UInt8(motors[1])
             }
             
-            let adjustServo: ((UInt8) -> UInt8) = { ($0 > 180) ? 255 : $0 + ($0 >> 2) }
+            //Doing this in robotRequests now
+            //let adjustServo: ((UInt8) -> UInt8) = { ($0 > 180) ? 255 : $0 + ($0 >> 2) }
             
-            let servosFull = (adjustServo(servos[0]), adjustServo(servos[1]),
-                              adjustServo(servos[2]), adjustServo(servos[3]))
+            //let servosFull = (adjustServo(servos[0]), adjustServo(servos[1]),
+            //                  adjustServo(servos[2]), adjustServo(servos[3]))
             
             let array: [UInt8] = [letter,
                                   trileds[0].tuple.0, trileds[0].tuple.1, trileds[0].tuple.2,
                                   trileds[1].tuple.0, trileds[1].tuple.1, trileds[1].tuple.2,
                                   leds[0], leds[1], leds[2], leds[3],
-                                  servosFull.0, servosFull.1, servosFull.2, servosFull.3,
+  //                                servosFull.0, servosFull.1, servosFull.2, servosFull.3,
+                                servos[0], servos[1], servos[2], servos[3],
                                   vibrators[0], vibrators[1], adjusted_motors[0], adjusted_motors[1]]
             assert(array.count == 19)
             
             return Data(bytes: UnsafePointer<UInt8>(array), count: array.count)
         case .HummingbirdBit:
-        //Set all: 0xCA LED1 LED4status R1 G1 B1 R2 G2 B2 SS1 SS2 SS3 SS4 LED2 LED3
-            guard let leds = leds, let trileds = trileds, let servos = servos else {
+        //Set all: 0xCA LED1 LED4status R1 G1 B1 R2 G2 B2 SS1 SS2 SS3 SS4 LED2 LED3 Time us(MSB) Time us(LSB) Time ms(MSB) Time ms(LSB)
+            guard let leds = leds, let trileds = trileds, let servos = servos, let buzzer = buzzer else {
                 fatalError("Missing information in the hummingbird bit output state")
             }
             
             let letter: UInt8 = 0xCA
             
-            let adjustServo: ((UInt8) -> UInt8) = { ($0 > 180) ? 255 : $0 + ($0 >> 2) }
+            //let adjustServo: ((UInt8) -> UInt8) = { ($0 > 180) ? 255 : $0 + ($0 >> 2) }
             
-            let servosFull = (adjustServo(servos[0]), adjustServo(servos[1]),
-                              adjustServo(servos[2]), adjustServo(servos[3]))
+            //let servosFull = (adjustServo(servos[0]), adjustServo(servos[1]),
+              //                adjustServo(servos[2]), adjustServo(servos[3]))
+            
+            let buzzerArray = buzzer.array()
             
             let array: [UInt8] = [letter, leds[0], leds[3],
                                   trileds[0].tuple.0, trileds[0].tuple.1, trileds[0].tuple.2,
                                   trileds[1].tuple.0, trileds[1].tuple.1, trileds[1].tuple.2,
-                                  servosFull.0, servosFull.1, servosFull.2, servosFull.3,
-                                  leds[1], leds[2]]
-            assert(array.count == 15)
+                            //      servosFull.0, servosFull.1, servosFull.2, servosFull.3,
+                                servos[0], servos[1], servos[2], servos[3],
+                                  leds[1], leds[2],
+                                  buzzerArray[0], buzzerArray[1], buzzerArray[2], buzzerArray[3]]
+            assert(array.count == 19)
             
             return Data(bytes: UnsafePointer<UInt8>(array), count: array.count)
         case .Flutter: return Data()
@@ -180,7 +214,7 @@ struct BBTRobotOutputState: Equatable {
     
     static func ==(lhs: BBTRobotOutputState, rhs: BBTRobotOutputState) -> Bool {
         return (lhs.trileds == rhs.trileds) && (lhs.servos == rhs.servos) &&
-            (lhs.leds == rhs.leds) && (lhs.motors == rhs.motors) && (lhs.vibrators == rhs.vibrators) && (lhs.buzzer == rhs.buzzer)
+            (lhs.leds == rhs.leds) && (lhs.motors == rhs.motors) && (lhs.vibrators == rhs.vibrators) && (lhs.buzzer == rhs.buzzer) && (lhs.ledArray == rhs.ledArray)
     }
 }
 

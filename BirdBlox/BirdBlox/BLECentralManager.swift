@@ -33,7 +33,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 	
 	public var scanState: BLECentralManagerScanState
 	
-	private var _discoveredPeripheralsSeqeuntial: [CBPeripheral]
+	private var _discoveredPeripheralsSeqeuntial: [(CBPeripheral, String)]
 	private var discoveredPeripherals: [String: CBPeripheral]
 	private var connectedPeripherals: [String: CBPeripheral]
 	private var connectedRobots: [String: BBTRobotBLEPeripheral]
@@ -79,10 +79,10 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 	}
 	
 	private var scanStoppedBlock: (() -> Void)? = nil
-	private var robotDiscoveredBlock: (([CBPeripheral]) -> Void)? = nil
+	private var robotDiscoveredBlock: (([(CBPeripheral, String)]) -> Void)? = nil
 	
 	public func startScan(serviceUUIDs: [CBUUID],
-	                      updateDiscovered: (([CBPeripheral]) -> Void)? = nil,
+	                      updateDiscovered: (([(CBPeripheral, String)]) -> Void)? = nil,
 	                      scanEnded: (() -> Void)? = nil) {
 		
 		self.stopScan()
@@ -134,7 +134,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 		}
 	}
 	
-	public var foundDevices: [CBPeripheral] {
+	public var foundDevices: [(CBPeripheral, String)] {
 		return self._discoveredPeripheralsSeqeuntial
 	}
 	
@@ -170,7 +170,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 				self.discoveredPeripherals[id] = peripheral
 			} else {
 				self.discoveredPeripherals[id] = peripheral
-				self._discoveredPeripheralsSeqeuntial.append(peripheral)
+				self._discoveredPeripheralsSeqeuntial.append((peripheral, RSSI.stringValue))
 			}
 			
 			if let type = self.oughtToBeConnected[id]?.type {

@@ -58,6 +58,9 @@ class RobotRequests {
 		
 		server["/robot/out/buzzer"] =
 			RobotRequests.handler(fromIDAndTypeHandler: self.setBuzzerRequest)
+        
+        server["/robot/out/ledArray"] =
+            RobotRequests.handler(fromIDAndTypeHandler: self.setLedArrayRequest)
 		
 		server["/robot/in"] = RobotRequests.handler(fromIDAndTypeHandler: self.inputRequest)
 		
@@ -80,9 +83,11 @@ class RobotRequests {
 		
 		bleCenter.startScan(serviceUUIDs: [type.scanningUUID], updateDiscovered: { (peripherals) in
 			let altName = "Fetching name..."
-			let darray = peripherals.map { (peripheral) in
+			let darray = peripherals.map { (peripheral, rssi) in
 				["id": peripheral.identifier.uuidString,
-				 "name": BBTgetDeviceNameForGAPName(peripheral.name ?? altName)]
+				 "name": BBTgetDeviceNameForGAPName(peripheral.name ?? altName),
+                 "device": BBTRobotType.fromString(peripheral.name ?? altName)?.description ?? altName,
+                 "RSSI": rssi]
 			}
 			
 			let _ = FrontendCallbackCenter.shared.updateDiscoveredRobotList(typeStr: typeStr,
@@ -209,20 +214,42 @@ class RobotRequests {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		
 		guard let portStr = queries["port"],
-			let angleStr = queries["angle"],
-			let port = UInt(portStr),
-			let angle = UInt8(angleStr) else {
-				
-				return .badRequest(.text("Missing or invalid parameters"))
+			let port = UInt(portStr)  else {
+				return .badRequest(.text("Missing or invalid port"))
 		}
 		
+        //sending 255 turns it off
+        var value: UInt8 = 0
+        if let angleStr = queries["angle"], let angle = UInt8(angleStr) {
+            //let adjustServo: ((UInt8) -> UInt8) = { ($0 > 180) ? 255 : $0 + ($0 >> 2) }
+            switch type {
+            case .Hummingbird:
+                let adjustServo: ((UInt8) -> UInt8) = { ($0 > 180) ? 255 : $0 + ($0 >> 2) }
+                value = adjustServo(angle)
+            case .HummingbirdBit:
+                if angle > 180 { value = UInt8(254)
+                } else {
+                    value = UInt8( angle * (254 / 180) ) 
+                }
+            default: fatalError("position servo not set up for type \(type)")
+            }
+        //This is only for rotation servos. Currently only available in hummingbird bit
+        } else if let percentStr = queries["percent"], let percent = Int(percentStr) {
+            if percent >= -10 && percent <= 10 { value = UInt8(255) //off signal
+            } else if percent > 100 { value = UInt8(254)
+            } else if percent < -100 { value = UInt8(0)
+            } else { value = UInt8( ( (percent * 23) / 100 ) + 122 ) } //from bambi
+        } else {
+            return .badRequest(.text("Missing or invalid parameter"))
+        }
+        
 		let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
 		                                                 acceptTypes: [.Hummingbird, .HummingbirdBit, .Flutter])
 		guard let robot = roboto else {
 			return requesto!
 		}
 		
-		if robot.setServo(port: port, angle: angle) {
+        if robot.setServo(port: port, value: value) {
 			return .ok(.text("set"))
 		} else {
 			return .internalServerError
@@ -265,15 +292,50 @@ class RobotRequests {
 			realPercent = Double(value) / 2.55
 		}
 		
-		var sensorValue: Int
+		var sensorValue: String
 		
 		switch sensor {
 		case "distance":
-			sensorValue = rawToDistance(value)
+			sensorValue = String(rawToDistance(value))
 		case "temperature":
-			sensorValue = rawToTemp(value)
+			sensorValue = String(rawToTemp(value))
 		case "soil":
-			sensorValue = bound(Int(percent), min: 0, max: 90)
+			sensorValue = String(bound(Int(percent), min: 0, max: 90))
+        case "accelerometer": //TODO: 2's complement double?
+            guard let axis = queries["axis"] else {
+                return .badRequest(.text("Accelerometer axis not specified."))
+            }
+            let adjust: ((UInt8) -> String) = { x in
+                let intVal = Int16(bitPattern: UInt16(x))
+                return String(Double(intVal * 2 / 128))
+            }
+            switch axis {
+            case "X": sensorValue = adjust(values[4])
+            case "Y": sensorValue = adjust(values[5])
+            case "Z": sensorValue = adjust(values[6])
+            case "all":
+                sensorValue = "adjust(values[4]) adjust(values[5]) adjust(values[6])"
+            default:
+                return .badRequest(.text("Accelerometer axis not specified."))
+            }
+        case "magnetometer": //TODO: 2's complement signed int?
+            guard let axis = queries["axis"] else {
+                return .badRequest(.text("Accelerometer axis not specified."))
+            }
+            let adjust: ((UInt8, UInt8) -> String) = { msb, lsb in
+                return String( Int16(bitPattern: (UInt16((msb << 8) | lsb)) ) )
+            }
+            let x = adjust(values[8], values[9])
+            let y = adjust(values[10], values[11])
+            let z = adjust(values[12], values[13])
+            switch axis {
+            case "X": sensorValue = x
+            case "Y": sensorValue = y
+            case "Z": sensorValue = z
+            case "all": sensorValue = "\(x) \(y) \(z)"
+            default:
+                return .badRequest(.text("Accelerometer axis not specified."))
+            }
 		default:
 			return .ok(.text(String(realPercent)))
 		}
@@ -360,33 +422,78 @@ class RobotRequests {
 	}
 	
 	
-	//MARK: Flutter outputs
-	
 	private func setBuzzerRequest(id: String, type: BBTRobotType,
 	                              request: HttpRequest) -> HttpResponse {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
+        
+        
+        if type == .Flutter {
 		
-		guard let volumeStr = queries["volume"],
-			let frequencyStr = queries["frequency"],
-			let volume = Int(volumeStr),
-			let frequency = Int(frequencyStr) else {
-				
-				return .badRequest(.text("Missing or invalid parameters"))
-		}
+            guard let volumeStr = queries["volume"],
+                let frequencyStr = queries["frequency"],
+                let volume = Int(volumeStr),
+                let frequency = Int(frequencyStr) else {
+                    
+                    return .badRequest(.text("Missing or invalid parameters"))
+            }
+        
 		
-		let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
-		                                                 acceptTypes: [.Flutter, .Finch, .HummingbirdBit])
-		guard let robot = roboto else {
-			return requesto!
-		}
-		
-		if robot.setBuzzer(volume: volume, frequency: frequency) {
-			return .ok(.text("set"))
-		} else {
-			return .internalServerError
-		}
+            let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
+                                                             acceptTypes: [.Flutter])
+            guard let robot = roboto else {
+                return requesto!
+            }
+            
+            if robot.setBuzzer(volume: volume, frequency: frequency, period: 0, duration: 0) {
+                return .ok(.text("set"))
+            } else {
+                return .internalServerError
+            }
+        } else {
+            
+            guard let noteStr = queries["note"], let durationStr = queries["duration"],
+                let note = UInt8(noteStr), let duration = UInt16(durationStr) else {
+                return .badRequest(.text("Missing or invalid parameters"))
+            }
+            
+            let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
+                                                             acceptTypes: [.Finch, .HummingbirdBit])
+            guard let robot = roboto else {
+                return requesto!
+            }
+            
+            let period = noteToPeriod(note)
+            if robot.setBuzzer(volume: 0, frequency: 0, period: period, duration: duration) {
+                return .ok(.text("set"))
+            } else {
+                return .internalServerError
+            }
+        }
 	}
 	
+    private func setLedArrayRequest(id: String, type: BBTRobotType,
+                                  request: HttpRequest) -> HttpResponse {
+        let queries = BBTSequentialQueryArrayToDict(request.queryParams)
+        
+        guard let ledStatusString = queries["ledArrayStatus"] else {
+            return .badRequest(.text("Missing or invalid parameters in set led array request"))
+        }
+        
+        let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
+                                                         acceptTypes: [.MicroBit    , .HummingbirdBit])
+        
+        guard let robot = roboto else {
+            return requesto!
+        }
+        
+        print("led array string: \(ledStatusString)")
+        if robot.setLedArray(ledStatusString) {
+            return .ok(.text("set"))
+        } else {
+            return .internalServerError
+        }
+    }
+    
 	//MARK: Finch Outputs
 	//TODO: Delete
 	private func setAll(id: String, type: BBTRobotType,

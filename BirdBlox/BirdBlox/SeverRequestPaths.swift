@@ -5,7 +5,7 @@
 //  Created by Jeremy Huang on 2017-05-30.
 //  Copyright © 2017年 Birdbrain Technologies LLC. All rights reserved.
 //
-
+/*
 import Foundation
 
 
@@ -45,3 +45,4 @@ struct BBTServerRequestPaths {
 //	
 //	server[BBTServerRequestPaths.getSensorHB] = hummingbirdManager.getInput
 }
+*/
