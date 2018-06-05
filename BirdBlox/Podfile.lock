@@ -1,0 +1,31 @@
+PODS:
+  - Swifter (1.4.0)
+  - Zip (1.1.0)
+
+DEPENDENCIES:
+  - Swifter (from `https://github.com/httpswift/swifter.git`, branch `stable`)
+  - Zip (from `https://github.com/marmelroy/Zip.git`, branch `master`)
+
+EXTERNAL SOURCES:
+  Swifter:
+    :branch: stable
+    :git: https://github.com/httpswift/swifter.git
+  Zip:
+    :branch: master
+    :git: https://github.com/marmelroy/Zip.git
+
+CHECKOUT OPTIONS:
+  Swifter:
+    :commit: c6d8ea04c7b5f00e7f688cff52100ecc8139f18a
+    :git: https://github.com/httpswift/swifter.git
+  Zip:
+    :commit: e0935dcb2c99f4511ecf95cab5dcec0f25335829
+    :git: https://github.com/marmelroy/Zip.git
+
+SPEC CHECKSUMS:
+  Swifter: 0361c3d150dbf3f162fcadf35aecfd874c614533
+  Zip: fa748987fc7ffef470c81d9928d223601179e338
+
+PODFILE CHECKSUM: d734152e9b38820351b27e9bcf81b28cf5c0383f
+
+COCOAPODS: 1.3.1
