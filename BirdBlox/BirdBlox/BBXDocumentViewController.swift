@@ -291,8 +291,7 @@ SFSafariViewControllerDelegate {
 	}
 	
 	//MARK: Setup Sever
-//	let hummingbirdManager = HummingbirdManager()
-//	let flutterManager = FlutterManager()
+
 	let robotRequests = RobotRequests()
 	let soundManager = SoundManager()
 	let settingsManager = SettingsManager()

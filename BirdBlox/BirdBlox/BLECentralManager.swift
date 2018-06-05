@@ -198,19 +198,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 			self.disconnect(byID: id)
 			return
 		}
-		/*
-		var robotInit: (CBPeripheral, ((BBTRobotBLEPeripheral) -> Void)?) -> BBTRobotBLEPeripheral
-		switch type {
-		case .Hummingbird:
-			robotInit = HummingbirdPeripheral.init
-		case .Flutter:
-			robotInit = FlutterPeripheral.init
-		case .Finch:
-			robotInit = FinchPeripheral.init
-		default:
-			robotInit = HummingbirdPeripheral.init
-		}
-		*/
+		
         print("did connect \(peripheral.name ?? "unknown") of type: \(type.description)")
 		self.currentlyConnecting = BBTRobotBLEPeripheral.init(peripheral, type, {rbt in
 			let id = rbt.peripheral.identifier.uuidString

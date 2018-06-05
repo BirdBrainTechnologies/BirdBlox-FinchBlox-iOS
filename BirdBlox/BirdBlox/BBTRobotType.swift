@@ -202,7 +202,7 @@ enum BBTRobotType {
     }
     
     //MARK: output commands
-    func ledCommand(_ port: UInt8, intensity: UInt8) -> Data{
+    func ledCommand(_ port: UInt8, intensity: UInt8) -> Data? {
         let bounded_intensity = bound(intensity, min: 0, max: 100)
         let real_intensity = UInt8(floor(Double(bounded_intensity)*2.55))
         switch self {
@@ -214,11 +214,11 @@ enum BBTRobotType {
             //TODO: Test this
             let letter: UInt8 = 0xC0 + port
             return Data(bytes: UnsafePointer<UInt8>([letter, real_intensity, 0xFF, 0xFF] as [UInt8]), count: 4)
-        case .Finch, .Flutter, .MicroBit: return Data()
+        case .Finch, .Flutter, .MicroBit: return nil
         }
     }
     
-    func triLEDCommand (_ port: UInt8, red_val: UInt8, green_val: UInt8, blue_val: UInt8) ->Data{
+    func triLEDCommand (_ port: UInt8, red_val: UInt8, green_val: UInt8, blue_val: UInt8) ->Data? {
         let bounded_red = bound(red_val, min: 0, max: 100)
         let real_red = UInt8(floor(Double(bounded_red)*2.55))
         let bounded_green = bound(green_val, min: 0, max: 100)
@@ -236,18 +236,15 @@ enum BBTRobotType {
             return Data(bytes: UnsafePointer<UInt8>([letter, real_red, real_green, real_blue] as [UInt8]), count: 4)
         case .Finch:
         //TODO: implement something here. Finch should have a triled.
-            return Data()
+            return nil
         case .Flutter:
-            let rgbHexString = String(format: "%x,%x,%x", bounded_red, bounded_green, bounded_blue)
-            let commandString = ("s" + "l" + "\(port)," + rgbHexString + "\r")
-            
-            return Data(bytes: [UInt8](commandString.utf8), count: commandString.utf8.count)
-        case .MicroBit: return Data()
+            return nil
+        case .MicroBit: return nil
             
         }
     }
     
-    func motorCommand (_ port: UInt8, speed: Int) -> Data{
+    func motorCommand (_ port: UInt8, speed: Int) -> Data? {
         
         switch self {
         case .Hummingbird:
@@ -267,12 +264,12 @@ enum BBTRobotType {
             return Data(bytes: UnsafePointer<UInt8>([letter, real_port, real_direction, real_speed] as [UInt8]), count: 4)
         case .Finch:
         //TODO: implement something here
-            return Data()
-        case .Flutter, .HummingbirdBit, .MicroBit: return Data()
+            return nil
+        case .Flutter, .HummingbirdBit, .MicroBit: return nil
         }
     }
     
-    func vibrationCommand(_ port: UInt8, intensity: UInt8) -> Data{
+    func vibrationCommand(_ port: UInt8, intensity: UInt8) -> Data? {
         switch self{
         case .Hummingbird:
             let real_port: UInt8 = getUnicode(port-1)
@@ -280,11 +277,11 @@ enum BBTRobotType {
             let bounded_intensity = bound(intensity, min: 0, max: 100)
             let real_intensity: UInt8 = UInt8(floor(Double(bounded_intensity)*2.55))
             return Data(bytes: UnsafePointer<UInt8>([letter, real_port, real_intensity] as [UInt8]), count: 3)
-        case .Flutter, .Finch, .HummingbirdBit, .MicroBit: return Data()
+        case .Flutter, .Finch, .HummingbirdBit, .MicroBit: return nil
         }
     }
     
-    func servoCommand(_ port: UInt8, angle: UInt8) -> Data{
+    func servoCommand(_ port: UInt8, angle: UInt8) -> Data? {
         switch self{
         case .Hummingbird://TODO: fix this? scaled when message received
             let real_port: UInt8 = getUnicode(port-1)
@@ -294,41 +291,30 @@ enum BBTRobotType {
             return Data(bytes: UnsafePointer<UInt8>([letter, real_port, real_angle] as [UInt8]), count: 3)
         case .HummingbirdBit:
         //TODO: implement something here
-            return Data()
+            return nil
         case .Flutter:
-            let bounded_angle = bound(angle, min: 0, max: 180)
-            let angleHexString = String(format: "%x", bounded_angle)
-            let commandString = ("s" + "s" + "\(port)," + angleHexString + "\r")
-            return Data(bytes: [UInt8](commandString.utf8), count: commandString.utf8.count)
-        case .Finch, .MicroBit: return Data()
+            return nil
+        case .Finch, .MicroBit: return nil
         }
     }
     
-    func buzzerCommand(vol: UInt, freq: UInt, period: UInt16, dur: UInt16) -> Data {
+    func buzzerCommand(period: UInt16, dur: UInt16) -> Data? {
         switch self{
-        case .Flutter:
-            let boundedVol = bound(Int(vol), min: 0, max: 100)
-            let boundedFreq = UInt16(bound(Int(freq), min: 0, max: 20000))
-            
-            let vfHexString = String(format: "%x,%x", boundedVol, boundedFreq)
-            let commandString = ("s" + "z" + "," + vfHexString + "\r")
-            
-            return Data(bytes: [UInt8](commandString.utf8), count: commandString.utf8.count)
-        case .Finch:
+        case .Flutter, .Finch:
         //TODO:
-            return Data()
+            return nil
         case .HummingbirdBit: //TODO: test
             let letter: UInt8 = 0xCD
             let buzzer = BBTBuzzer(freq: 0, vol: 0, period: period, duration: dur)
             let buzzerArray = buzzer.array()
             return Data(bytes: UnsafePointer<UInt8>([letter, buzzerArray[0], buzzerArray[1], buzzerArray[2], buzzerArray[3]] as [UInt8]), count: 5)
-        case .Hummingbird, .MicroBit: return Data()
+        case .Hummingbird, .MicroBit: return nil
         }
     }
     
-    func ledArrayCommand(_ status: String) -> Data {
+    func ledArrayCommand(_ status: String) -> Data? {
         switch self {
-        case .Hummingbird, .Flutter: return Data()
+        case .Hummingbird, .Flutter: return nil
         case .HummingbirdBit, .Finch, .MicroBit:
             let letter: UInt8 = 0xCC
             let symbol: UInt8 = 0x80

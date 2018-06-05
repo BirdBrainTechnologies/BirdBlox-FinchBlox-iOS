@@ -27,45 +27,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     //static let sensorByteCount = 4  //TODO: Should this be different for finch?
     //private var lastSensorUpdate: [UInt8] = Array<UInt8>(repeating: 0, count: sensorByteCount)
     private var lastSensorUpdate: [UInt8]
-    var sensorValues: [UInt8] {
-        switch type {
-        case .Hummingbird, .Finch, .HummingbirdBit, .MicroBit:
-            return lastSensorUpdate
-        case .Flutter:
-            //TODO: Fix if we start using flutter again
-            return lastSensorUpdate
-            /*
-            var response: String = sendDataWithResponse(data: BBTFlutterUtility.readCommand)
-            var values = response.split(",")
-            var counter = 0
-            //this just gets the 0th character of values[0] (which should only be 1
-            //character and checks to see if it is the flutter response char
-            while(getUnicode(values[0][values[0].index(values[0].startIndex, offsetBy: 0)]) !=
-                BBTFlutterUtility.responseCharacter) {
-                    print("Got invalid response: " + response)
-                    response = sendDataWithResponse(data: BBTFlutterUtility.readCommand)
-                    values = response.split(",")
-                    counter += 1
-                    if counter >= MAX_RETRY {
-                        print("failed to send read command")
-                        break
-                   }
-
-            }
-            
-            let sp1 = UInt8(values[1])
-            let sp2 = UInt8(values[2])
-            let sp3 = UInt8(values[3])
-            
-            guard let sensorPercent1 = sp1,
-                let sensorPercent2 = sp2,
-                let sensorPercent3 = sp3 else {
-                    return [0, 0, 0]
-            }
-            
-            return [sensorPercent1, sensorPercent2, sensorPercent3]*/
-        }
-    }
+    var sensorValues: [UInt8] { return lastSensorUpdate }
     
     private let initializationCompletion: ((BBTRobotBLEPeripheral) -> Void)?
     private var _initialized = false
@@ -131,24 +93,6 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         updateDesc
     }
     
-    //MARK: Flutter only variables
-    var rx_config_line: CBDescriptor?
-    private var data_cond: NSCondition = NSCondition()
-    
-    private var servos: [UInt8] = [0,0,0]
-    private var servos_time: [Double] = [0,0,0]
-    private var trileds: [[UInt8]] = [[0,0,0],[0,0,0],[0,0,0]]
-    private var trileds_time: [Double] = [0,0,0]
-    private var buzzerVolume: Int = 0
-    private var buzzerFrequency: Int = 0
-    private var buzzerTime: Double = 0
-    
-    let OK_RESPONSE = "OK"
-    let FAIL_RESPONSE = "FAIL"
-    let MAX_RETRY = 50
-    
-    let cache_timeout: Double = 15.0 //in seconds
-    
     //MARK: INIT
     
     required init(_ peripheral: CBPeripheral, _ type: BBTRobotType, _ completion: ((BBTRobotBLEPeripheral) -> Void)? = nil){
@@ -158,24 +102,6 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         
         lastSensorUpdate = Array<UInt8>(repeating: 0, count: type.sensorByteCount)
         
-        /*
-        switch type {
-        case .Hummingbird:
-            self.currentOutputState = BBTHummingbirdOutputState()
-            self.nextOutputState = BBTHummingbirdOutputState()
-        case .Finch:
-            self.currentOutputState = BBTFinchOutputState()
-            self.nextOutputState = BBTFinchOutputState()
-        case .Flutter:
-            self.currentOutputState = BBTFlutterOutputState()
-            self.nextOutputState = BBTFlutterOutputState()
-        case .HummingbirdBit:
-            self.currentOutputState = BBTHummingbirdBitOutputState()
-            self.nextOutputState = BBTHummingbirdBitOutputState()
-        case .MicroBit:
-            self.currentOutputState = BBTMicroBitOutputState()
-            self.nextOutputState = BBTMicroBitOutputState()
-        }*/
         self.currentOutputState = BBTRobotOutputState(robotType: type)
         self.nextOutputState = BBTRobotOutputState(robotType: type)
         
@@ -214,7 +140,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     /**
      * Once we find a characteristic, we check if it is the RX or TX line that was
      * found. Once we have found both, we send a notification saying the device
-     * is now connected if hummingbird or we begin looking for descriptors if flutter
+     * is now connected
      */
     func peripheral(_ peripheral: CBPeripheral,
                     didDiscoverCharacteristicsFor service: CBService, error: Error?) {
@@ -238,7 +164,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
                 }
                 if(wasTXSet && wasRXSet){
                     switch type{ //TODO: merge initialize functions
-                    case .Hummingbird, .HummingbirdBit, .MicroBit:
+                    case .Hummingbird, .HummingbirdBit, .MicroBit, .Flutter:
                         DispatchQueue.main.async {
                             self.initializeHB()
                         }
@@ -248,11 +174,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
                             self.initializeFN()
                         }
                         return
-                    case .Flutter:
-                        peripheral.discoverDescriptors(for: rx_line!)
-                        return
                     }
-                    
                 }
             }
         }
@@ -367,51 +289,6 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     }
     
     /**
-     * We want a specific characteristic on the RX line that is used for data
-     * This method is only used for Flutter
-     */
-    func peripheral(_ peripheral: CBPeripheral,
-                    didDiscoverDescriptorsFor characteristic: CBCharacteristic, error: Error?) {
-        if (peripheral != self.peripheral || error != nil || characteristic != rx_line!) {
-            //not the right device
-            return
-        }
-        if let descriptors = characteristic.descriptors {
-            for descriptor in descriptors {
-                if descriptor.uuid == type.RX_CONFIG_UUID {
-                    rx_config_line = descriptor
-                    peripheral.setNotifyValue(true, for: rx_line!)
-                    self.initializeFlutter()
-                    return
-                }
-            }
-        }
-    }
-    private func initializeFlutter() {
-        self._initialized = true
-        //        print(self.sendDataWithResponse(data: "G4".data(using: .ascii)!))
-        print("flutter initialized")
-        if let completion = self.initializationCompletion {
-            completion(self)
-        }
-    }
-    
-    /**
-     * Called when a descriptor is updated
-     * Also only used for Flutter
-     */
-    func peripheral(_ peripheral: CBPeripheral,
-                    didUpdateValueFor descriptor: CBDescriptor, error: Error?) {
-        if descriptor != rx_config_line {
-            return
-        }
-        print((descriptor.value as! Data?) ?? "nil update flutter")
-        data_cond.lock()
-        data_cond.signal()
-        data_cond.unlock()
-    }
-    
-    /**
      *
      */
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic,
@@ -421,65 +298,47 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             return
         }
         
-        switch type {
-        case .Hummingbird, .HummingbirdBit, .MicroBit, .Finch:
-            //If we are trying to reset the hummingbird's name, this should be the device's MAC
-            //print("Did update characteristic \(characteristic)")
-            //print("\(characteristic.value!.count) \(characteristic)")
-            
-            if characteristic.uuid != type.RX_UUID {
-                return
-            }
-            
-            guard let inData = characteristic.value else {
-                return
-            }
-            
-            //This block used for getting the firmware info
-            guard self.initialized else {
-                self.initializingCondition.lock()
-                print("hi")
-                print(inData.debugDescription)
-                inData.copyBytes(to: &self.lineIn, count: self.lineIn.count)
-                self.initializingCondition.signal()
-                self.initializingCondition.unlock()
-                return
-            }
-            
-            //var bytes = Array(repeating: 0 as UInt8, count: inData.count)
-            //inData.copyBytes(to: &bytes, count: inData.count)
-            //print("byte count: \(characteristic.value!.count), bytes: \(bytes)")
-            
-            //TODO: Why is this? Hummingbird duo seems to send a lot
-            //of different length messages. Are they for different things?
-            if type == .Hummingbird && characteristic.value!.count % 5 != 0 {
-                print("Characteristic value \(characteristic.value!.count) not divisible by 5.")
-                return
-            }
-            
-            //print(inData.debugDescription)
-            //print("\(lastSensorUpdate[0]) \(lastSensorUpdate[1]) \(lastSensorUpdate[2]) \(lastSensorUpdate[3]) ")
-            //print(characteristic.value?.description)
-            //print(lastSensorUpdate)
-            
-            //Assume it's sensor in data
-            inData.copyBytes(to: &self.lastSensorUpdate, count: type.sensorByteCount)
-        case .Flutter:
-            if characteristic != tx_line {
-                return
-            }
-            data_cond.lock()
-            data_cond.signal()
-            data_cond.unlock()
-            /*
-        case .Finch:
-            guard let inData = characteristic.value else {
-                return
-            }
-            
-            //Assume it's sensor in data
-            inData.copyBytes(to: &self.lastSensorUpdate, count: 10)*/
+        //If we are trying to reset the hummingbird's name, this should be the device's MAC
+        //print("Did update characteristic \(characteristic)")
+        //print("\(characteristic.value!.count) \(characteristic)")
+        
+        if characteristic.uuid != type.RX_UUID {
+            return
         }
+        
+        guard let inData = characteristic.value else {
+            return
+        }
+        
+        //This block used for getting the firmware info
+        guard self.initialized else {
+            self.initializingCondition.lock()
+            print("hi")
+            print(inData.debugDescription)
+            inData.copyBytes(to: &self.lineIn, count: self.lineIn.count)
+            self.initializingCondition.signal()
+            self.initializingCondition.unlock()
+            return
+        }
+            
+        //var bytes = Array(repeating: 0 as UInt8, count: inData.count)
+        //inData.copyBytes(to: &bytes, count: inData.count)
+        //print("byte count: \(characteristic.value!.count), bytes: \(bytes)")
+        
+        //TODO: Why is this? Hummingbird duo seems to send a lot
+        //of different length messages. Are they for different things?
+        if type == .Hummingbird && characteristic.value!.count % 5 != 0 {
+            print("Characteristic value \(characteristic.value!.count) not divisible by 5.")
+            return
+        }
+        
+        //print(inData.debugDescription)
+        //print("\(lastSensorUpdate[0]) \(lastSensorUpdate[1]) \(lastSensorUpdate[2]) \(lastSensorUpdate[3]) ")
+        //print(characteristic.value?.description)
+        //print(lastSensorUpdate)
+        
+        //Assume it's sensor in data
+        inData.copyBytes(to: &self.lastSensorUpdate, count: type.sensorByteCount)
     }
     
     /**
@@ -507,16 +366,12 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     //MARK: Misc. functions
     
     public func endOfLifeCleanup() -> Bool{
-        switch type {
-        case .Hummingbird, .Finch, .HummingbirdBit, .MicroBit:
-            //        self.sendData(data: BBTHummingbirdUtility.getPollStopCommand())
-            self.syncTimer.invalidate()
-        case .Flutter: ()
-        }
+        //        self.sendData(data: BBTHummingbirdUtility.getPollStopCommand())
+        self.syncTimer.invalidate()
         return true
     }
     
-    //Hummingbird and finch function
+    
     private func sendData(data: Data) {
         if self.connected {
             peripheral.writeValue(data, for: tx_line!, type: .withResponse)
@@ -534,41 +389,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         }
     }
     
-    //flutter function
-    func sendDataWithResponse(data: Data) -> String {
-        guard let tx_line = self.tx_line else {
-            NSLog("Has not discovered tx line yet.")
-            return FAIL_RESPONSE
-        }
-        
-        data_cond.lock()
-        peripheral.writeValue(data, for: tx_line, type: .withResponse)
-        //peripheral.writeValue(data, for: rx_config_line!)
-        data_cond.wait(until: Date(timeIntervalSinceNow: 0.2))
-        data_cond.unlock()
-        
-        let response = tx_line.value
-        if let safe_response = response,
-            let data_string = String(data: safe_response, encoding: .utf8) {
-            return data_string
-        }
-        return FAIL_RESPONSE
-    }
-    //flutter function
-    func sendDataWithoutResponse(data: Data) {
-        var response: String? = FAIL_RESPONSE
-        var counter = 0
-        while(response != OK_RESPONSE) {
-            response = sendDataWithResponse(data: data)
-            counter += 1
-            if counter >= MAX_RETRY {
-                let dataArray = [UInt8](data)
-                print("failed to send data: \(dataArray)")
-                return
-            }
-        }
-    }
-    //hummingbird and finch function
+ 
     private func conditionHelper(condition: NSCondition, holdLock: Bool = true,
                                  predicate: (() -> Bool), work: (() -> ())) {
         if holdLock {
@@ -595,22 +416,19 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     //MARK: Robot outputs
     func setLED(port: Int, intensity: UInt8) -> Bool {
         
-        //Neither finch nor flutter have regular leds
-        //if type == .Flutter || type == .Finch {
-        //    return false
-        //}
-        
         //if there are fewer leds than the port number specified
         if self.type.ledCount < port {
             return false
         }
-        
         guard self.peripheral.state == .connected else {
             return false
         }
+        
         guard self.useSetall else {
-            self.sendData(data: type.ledCommand(UInt8(port),
-                                                                    intensity: intensity))
+            guard let command = type.ledCommand(UInt8(port), intensity: intensity) else {
+                return false
+            }
+            self.sendData(data: command)
             Thread.sleep(forTimeInterval: 0.1)
             return true
         }
@@ -627,8 +445,6 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         })
         
         self.writtenCondition.unlock()
-        
-        print("exit")
         return true
     }
     
@@ -641,51 +457,29 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             return false
         }
         
-        switch type {
-        case .Hummingbird, .Finch, .HummingbirdBit:
-            guard self.useSetall else {
-                let command = type.triLEDCommand(UInt8(port),
-                                                                     red_val: intensities.red,
-                                                                     green_val: intensities.green,
-                                                                     blue_val: intensities.blue)
-                self.sendData(data: command)
-                Thread.sleep(forTimeInterval: 0.1)
-                return true
+        guard self.useSetall else {
+            guard let command = type.triLEDCommand(UInt8(port), red_val: intensities.red, green_val: intensities.green, blue_val: intensities.blue) else {
+                return false
             }
-            
-            let i = Int(port - 1)
-            let (r, g, b) = (intensities.red, intensities.green, intensities.blue)
-            
-            self.writtenCondition.lock()
-            
-            self.conditionHelper(condition: self.writtenCondition, holdLock: false,
-                                 predicate: {
-                                    self.nextOutputState.trileds![i] == self.currentOutputState.trileds![i]
-            }, work: {
-                self.nextOutputState.trileds![i] = BBTTriLED(red: r, green: g, blue: b)
-            })
-            
-            self.writtenCondition.unlock()
+            self.sendData(data: command)
+            Thread.sleep(forTimeInterval: 0.1)
             return true
-        case .Flutter:
-            let i = Int(port - 1)
-            let (r, g, b) = (intensities.red, intensities.green, intensities.blue)
-            let current_time = NSDate().timeIntervalSince1970
-            if(trileds[i] == [r,g,b] && (current_time - trileds_time[i]) < cache_timeout){
-                print("triled command not sent because it has been cached.")
-                return true //Still successful in getting LED to be the right value
-            }
-            let command = type.triLEDCommand(UInt8(port), red_val: r, green_val: g, blue_val: b)
-            self.sendDataWithoutResponse(data: command)
-            trileds[i] = [r,g,b]
-            trileds_time[i] = current_time
-            
-            //        print("triled command sent \(r) \(g) \(b)")
-            
-            return true
-        case .MicroBit:
-            return false
         }
+        
+        let i = Int(port - 1)
+        let (r, g, b) = (intensities.red, intensities.green, intensities.blue)
+        
+        self.writtenCondition.lock()
+        
+        self.conditionHelper(condition: self.writtenCondition, holdLock: false,
+                             predicate: {
+                                self.nextOutputState.trileds![i] == self.currentOutputState.trileds![i]
+        }, work: {
+            self.nextOutputState.trileds![i] = BBTTriLED(red: r, green: g, blue: b)
+        })
+        
+        self.writtenCondition.unlock()
+        return true
     }
     
     func setVibration(port: Int, intensity: UInt8) -> Bool {
@@ -697,8 +491,9 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             return false
         }
         guard self.useSetall else {
-            let command = type.vibrationCommand(UInt8(port),
-                                                                    intensity: intensity)
+            guard let command = type.vibrationCommand(UInt8(port), intensity: intensity) else {
+                return false
+            }
             self.sendData(data: command)
             Thread.sleep(forTimeInterval: 0.1)
             return true
@@ -716,26 +511,22 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         })
         
         self.writtenCondition.unlock()
-        
-        
         return true
     }
     
     func setMotor(port: Int, speed: Int8) -> Bool {
         
-        //flutter does not have motors
-        //if type == .Flutter || type == .MicroBit || type == .HummingbirdBit {
-        //    return false
-        //}
         if self.type.motorCount < port {
             return false
         }
         guard self.peripheral.state == .connected else {
             return false
         }
+        
         guard self.useSetall else {
-            let command = type.motorCommand(UInt8(port),
-                                                                speed: Int(speed))
+            guard let command = type.motorCommand(UInt8(port), speed: Int(speed)) else {
+                return false
+            }
             self.sendData(data: command)
             Thread.sleep(forTimeInterval: 0.1)
             return true
@@ -766,45 +557,30 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         guard self.peripheral.state == .connected else {
             return false
         }
-        switch type {
-        case .Hummingbird, .Finch, .HummingbirdBit:
-            guard self.useSetall else {
-                //TODO: value now adjusted in robotRequest. make change here if we are going to use this.
-                let command = type.servoCommand(UInt8(port),
-                                                                    angle: value)
-                self.sendData(data: command)
-                Thread.sleep(forTimeInterval: 0.1)
-                return true
+        
+        guard self.useSetall else {
+            //TODO: value now adjusted in robotRequest. make change here if we are going to use this.
+            guard let command = type.servoCommand(UInt8(port), angle: value) else {
+                return false
             }
-            
-            let i = Int(port - 1)
-            
-            self.writtenCondition.lock()
-            
-            self.conditionHelper(condition: self.writtenCondition, holdLock: false,
-                                 predicate: {
-                                    self.nextOutputState.servos![i] == self.currentOutputState.servos![i]
-            }, work: {
-                self.nextOutputState.servos![i] = value
-            })
-            
-            self.writtenCondition.unlock()
+            self.sendData(data: command)
+            Thread.sleep(forTimeInterval: 0.1)
             return true
-        case .Flutter:
-            //TODO: values are now adjusted in robotrequest. May need changes here.
-            let i = Int(port - 1)
-            let current_time = NSDate().timeIntervalSince1970
-            if(servos[i] == value && (current_time - servos_time[i]) < cache_timeout){
-                return true //Still successful in getting output to be the right value
-            }
-            let command: Data = type.servoCommand(UInt8(port), angle: value)
-            servos[i] = value
-            servos_time[i] = current_time
-            self.sendDataWithoutResponse(data: command)
-            return true
-        case .MicroBit:
-            return false
         }
+        
+        let i = Int(port - 1)
+        
+        self.writtenCondition.lock()
+        
+        self.conditionHelper(condition: self.writtenCondition, holdLock: false,
+                             predicate: {
+                                self.nextOutputState.servos![i] == self.currentOutputState.servos![i]
+        }, work: {
+            self.nextOutputState.servos![i] = value
+        })
+        
+        self.writtenCondition.unlock()
+        return true
     }
     
     func setBuzzer(volume: Int, frequency: Int, period: UInt16, duration: UInt16) -> Bool {
@@ -816,51 +592,41 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             return false
         }
         
-        switch type {
-        case .Hummingbird, .Finch, .MicroBit:
-            return false //TODO: add finch buzzer!
-        case .HummingbirdBit:
-            guard self.useSetall else {
-                let command = type.buzzerCommand(vol: 0, freq: 0, period: period, dur: duration)
-                self.sendData(data: command)
-                Thread.sleep(forTimeInterval: 0.1)
-                return true
+        guard self.useSetall else {
+            guard let command = type.buzzerCommand(period: period, dur: duration) else {
+                return false
             }
-            
-            self.writtenCondition.lock()
-            
-            self.conditionHelper(condition: self.writtenCondition, holdLock: false,
-                                 predicate: {
-                                    self.nextOutputState.buzzer! == self.currentOutputState.buzzer!
-            }, work: {
-                self.nextOutputState.buzzer = BBTBuzzer(freq: 0, vol: 0, period: period, duration: duration)
-            })
-            
-            self.writtenCondition.unlock()
-            return true
-        case .Flutter:
-            let current_time = NSDate().timeIntervalSince1970
-            if(buzzerVolume == volume &&
-                buzzerFrequency == frequency &&
-                (current_time - buzzerTime) < cache_timeout){
-                return true //Still successful in getting output to be the right value
-            }
-            
-            let command: Data = type.buzzerCommand(vol: UInt(volume), freq: UInt(frequency), period: 0, dur: 0)
-            
-            buzzerVolume = volume
-            buzzerFrequency = frequency
-            buzzerTime = current_time
-            
-            self.sendDataWithoutResponse(data: command)
+            self.sendData(data: command)
+            Thread.sleep(forTimeInterval: 0.1)
             return true
         }
+        
+        self.writtenCondition.lock()
+        
+        self.conditionHelper(condition: self.writtenCondition, holdLock: false,
+                             predicate: {
+                                self.nextOutputState.buzzer! == self.currentOutputState.buzzer!
+        }, work: {
+            self.nextOutputState.buzzer = BBTBuzzer(freq: 0, vol: 0, period: period, duration: duration)
+        })
+        
+        self.writtenCondition.unlock()
+        return true
     }
     
     func setLedArray(_ statusString: String) -> Bool {
         
+        if self.type.ledArrayCount != 1 {
+            return false
+        }
+        guard self.peripheral.state == .connected else {
+            return false
+        }
+        
         guard self.useSetall else {
-            let command = type.ledArrayCommand(statusString)
+            guard let command = type.ledArrayCommand(statusString) else {
+                return false
+            }
             self.sendData(data: command)
             Thread.sleep(forTimeInterval: 0.1)
             return true
@@ -935,8 +701,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             self.nextOutputState.buzzer = BBTBuzzer()
             self.sendData(data: command)
             
-            if nextCopy.ledArray != currentOutputState.ledArray, let ledArray = nextCopy.ledArray {
-                let ledArrayCommand = type.ledArrayCommand(ledArray)
+            if nextCopy.ledArray != currentOutputState.ledArray, let ledArray = nextCopy.ledArray, let ledArrayCommand = type.ledArrayCommand(ledArray) {
                 self.sendData(data: ledArrayCommand)
             }
             
@@ -964,51 +729,14 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     }
     
     func setAllOutputsToOff() -> Bool {
-        switch type {
-        case .Hummingbird, .Finch, .HummingbirdBit, .MicroBit:
-            //Sending an ASCII capital X should do the same thing.
-            //Useful for legacy firmware
+        //Sending an ASCII capital X should do the same thing.
+        //Useful for legacy firmware
             
-            self.writtenCondition.lock()
-            self.nextOutputState = BBTRobotOutputState(robotType: type)
-            self.writtenCondition.unlock()
-        case .Flutter:
-            //The order of output to shut off are: buzzer, servos, LEDs
-            //Beware of shortcuts in boolean logic
-            //Sending an ASCII capital X should do the same thing
-            
-            //        var suc = true
-            //        suc = self.setBuzzer(volume: 0, frequency: 0) && suc
-            //        for i in UInt(1)...3 {
-            //            suc = self.setServo(port: i, angle: BBTFlutterUtility.servoOffAngle) && suc
-            //        }
-            //        for i in UInt(1)...3 {
-            //            suc = self.setTriLED(port: i, intensities: BBTTriLED(0, 0, 0)) && suc
-            //        }
-            
-            self.sendDataWithoutResponse(data: type.turnOffCommand())
-        }
+        self.writtenCondition.lock()
+        self.nextOutputState = BBTRobotOutputState(robotType: type)
+        self.writtenCondition.unlock()
+        
         return true
     }
     
-    //MARK: Flutter only functions
-    
-    func get (port: Int, input_type: String) -> Int? {
-        let percent = self.sensorValues[port - 1]
-        
-        let value = percentToRaw(percent)
-        
-        switch input_type {
-        case "distance":
-            return rawToDistance(value)
-        case "temperature":
-            print("temp sensor \(value)")
-            print("rtt \(rawToTemp(value))")
-            return rawToTemp(value)
-        case "soil":
-            return bound(Int(percent), min: 0, max: 90)
-        default:
-            return Int(percent)
-        }
-    }
 }
