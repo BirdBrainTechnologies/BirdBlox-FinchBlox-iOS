@@ -180,44 +180,147 @@ class RobotRequests {
 		return (robot, nil)
 	}
 	
-	private func setTriLEDRequest(id: String, type: BBTRobotType,
-	                              request: HttpRequest) -> HttpResponse {
+	private func inputRequest(id: String, type: BBTRobotType,
+	                          request: HttpRequest) -> HttpResponse {
+        
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
-		
-		guard let portStr = queries["port"],
-			let redStr = queries["red"],
-			let greenStr = queries["green"],
-			let blueStr = queries["blue"],
-			let port = UInt(portStr),
-			let red = UInt8(redStr),
-			let green = UInt8(greenStr),
-			let blue = UInt8(blueStr) else {
-				
-				return .badRequest(.text("Missing or invalid parameters"))
+		guard let sensor = queries["sensor"] else {
+            return .badRequest(.text("Malformed Request - sensor type missing"))
 		}
 		
 		let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
-		                                                 acceptTypes: [.Hummingbird, .HummingbirdBit, .Finch, .Flutter])
+		                                                 acceptTypes: [.Flutter, .Hummingbird, .HummingbirdBit, .Finch])
 		guard let robot = roboto else {
 			return requesto!
 		}
 		
-		if robot.setTriLED(port: port, intensities: BBTTriLED(red, green, blue)) {
-			return .ok(.text("set"))
-		} else {
-			return .internalServerError
+		let values = robot.sensorValues
+		var sensorValue: String
+		
+		switch sensor {
+        //TODO: add a check to make sure there is an accelerometer or magnetometer when requested
+        case "accelerometer": 
+            guard let axis = queries["axis"] else {
+                return .badRequest(.text("Accelerometer axis not specified."))
+            }
+            let adjust: ((UInt8) -> String) = { x in
+                let intVal = Int8(bitPattern: x) //convert to 2's complement signed int
+                let string = String(Double(intVal) * 196/1280) //scaling from bambi
+                print("ACCELEROMETER VALUES! \(x) \(intVal) \(string)")
+                return string
+            }
+            switch axis {
+            case "x": sensorValue = adjust(values[4])
+            case "y": sensorValue = adjust(values[5])
+            case "z": sensorValue = adjust(values[6])
+            case "all":
+                sensorValue = "adjust(values[4]) adjust(values[5]) adjust(values[6])"
+            default:
+                return .badRequest(.text("Accelerometer axis incorrectly specified as \(axis)"))
+            }
+        case "magnetometer": //TODO: 2's complement signed int?
+            guard let axis = queries["axis"] else {
+                return .badRequest(.text("Accelerometer axis not specified."))
+            }
+            let adjust: ((UInt8, UInt8) -> String) = { msb, lsb in
+                let uIntVal = (UInt16(msb) << 8) | UInt16(lsb)
+                let intVal = Int16(bitPattern: uIntVal)
+                print( "MAGNETOMETER VALUES! \(msb) \(lsb) \(uIntVal) \(intVal)" )
+                return String( intVal )
+            }
+            let x = adjust(values[8], values[9])
+            let y = adjust(values[10], values[11])
+            let z = adjust(values[12], values[13])
+            switch axis {
+            case "x": sensorValue = x
+            case "y": sensorValue = y
+            case "z": sensorValue = z
+            case "all": sensorValue = "\(x) \(y) \(z)"
+            default:
+                return .badRequest(.text("Accelerometer axis not specified."))
+            }
+		default:
+            //For hummingbird type sensors, a port will be specified.
+            //These sensor values will be in the first 4 value array spots.
+            guard let portStr = queries["port"], var port = Int(portStr) else {
+                return .badRequest(.text("Malformed Request - port not specified."))
+            }
+            
+            port -= 1
+            guard port < robot.type.sensorPortCount && port >= 0 else {
+                return .badRequest(.text("Port is out of bounds"))
+            }
+            
+            let value = values[port]
+            let percent = UInt8(rawToPercent(value))
+            let realPercent = Double(value) / 2.55
+            
+            switch sensor {
+            case "dial":
+                var scaledVal = Int( Double(value) * (100 / 230) )
+                if scaledVal > 100 { scaledVal = 100 }
+                sensorValue = String(scaledVal)
+            case "distance":
+                sensorValue = String(rawToDistance(value))
+            case "temperature":
+                sensorValue = String(rawToTemp(value))
+            case "soil":
+                sensorValue = String(bound(Int(percent), min: 0, max: 90))
+            case "sound":
+                if robot.type == .HummingbirdBit {
+                    sensorValue = String(value * (200/255)) //scaling from bambi
+                } else {
+                    sensorValue = String(realPercent) //TODO: should this really be different?
+                }
+            default:
+                return .ok(.text(String(realPercent)))
+            }
 		}
+		
+		return .ok(.text(sensorValue))
 	}
 	
-	private func setServoRequest(id: String, type: BBTRobotType,
-	                             request: HttpRequest) -> HttpResponse {
-		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
-		
-		guard let portStr = queries["port"],
-			let port = UInt(portStr)  else {
-				return .badRequest(.text("Missing or invalid port"))
-		}
-		
+	
+	//MARK: Outputs
+    
+    private func setTriLEDRequest(id: String, type: BBTRobotType,
+                                  request: HttpRequest) -> HttpResponse {
+        let queries = BBTSequentialQueryArrayToDict(request.queryParams)
+        
+        guard let portStr = queries["port"],
+            let redStr = queries["red"],
+            let greenStr = queries["green"],
+            let blueStr = queries["blue"],
+            let port = UInt(portStr),
+            let red = UInt8(redStr),
+            let green = UInt8(greenStr),
+            let blue = UInt8(blueStr) else {
+                
+                return .badRequest(.text("Missing or invalid parameters"))
+        }
+        
+        let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
+                                                         acceptTypes: [.Hummingbird, .HummingbirdBit, .Finch, .Flutter])
+        guard let robot = roboto else {
+            return requesto!
+        }
+        
+        if robot.setTriLED(port: port, intensities: BBTTriLED(red, green, blue)) {
+            return .ok(.text("set"))
+        } else {
+            return .internalServerError
+        }
+    }
+    
+    private func setServoRequest(id: String, type: BBTRobotType,
+                                 request: HttpRequest) -> HttpResponse {
+        let queries = BBTSequentialQueryArrayToDict(request.queryParams)
+        
+        guard let portStr = queries["port"],
+            let port = UInt(portStr)  else {
+                return .badRequest(.text("Missing or invalid port"))
+        }
+        
         //sending 255 turns it off
         var value: UInt8 = 0
         if let angleStr = queries["angle"], let angle = UInt8(angleStr) {
@@ -229,11 +332,11 @@ class RobotRequests {
             case .HummingbirdBit:
                 if angle > 180 { value = UInt8(254)
                 } else {
-                    value = UInt8( angle * (254 / 180) ) 
+                    value = UInt8( angle * (254 / 180) )
                 }
             default: fatalError("position servo not set up for type \(type)")
             }
-        //This is only for rotation servos. Currently only available in hummingbird bit
+            //This is only for rotation servos. Currently only available in hummingbird bit
         } else if let percentStr = queries["percent"], let percent = Int(percentStr) {
             if percent >= -10 && percent <= 10 { value = UInt8(255) //off signal
             } else if percent > 100 { value = UInt8(254)
@@ -243,108 +346,18 @@ class RobotRequests {
             return .badRequest(.text("Missing or invalid parameter"))
         }
         
-		let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
-		                                                 acceptTypes: [.Hummingbird, .HummingbirdBit, .Flutter])
-		guard let robot = roboto else {
-			return requesto!
-		}
-		
+        let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
+                                                         acceptTypes: [.Hummingbird, .HummingbirdBit, .Flutter])
+        guard let robot = roboto else {
+            return requesto!
+        }
+        
         if robot.setServo(port: port, value: value) {
-			return .ok(.text("set"))
-		} else {
-			return .internalServerError
-		}
-	}
-	
-	private func inputRequest(id: String, type: BBTRobotType,
-	                          request: HttpRequest) -> HttpResponse {
-		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
-		
-		guard let portStr = queries["port"],
-			let sensor = queries["sensor"],
-			var port = Int(portStr) else {
-				
-				return .badRequest(.text("Malformed Request"))
-		}
-		
-		let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
-		                                                 acceptTypes: [.Flutter, .Hummingbird, .HummingbirdBit, .Finch])
-		guard let robot = roboto else {
-			return requesto!
-		}
-		
-		let values = robot.sensorValues
-		
-		port -= 1
-		guard port < values.count && port >= 0 else {
-			return .badRequest(.text("Port is out of bounds"))
-		}
-		
-		var percent = values[port]
-		var value = percentToRaw(percent)
-		var realPercent = Double(percent)
-		//HB returns raw values from sensors, while FL returns percentages.
-        switch type {
-        case .Flutter: ()
-        case .Hummingbird, .HummingbirdBit, .Finch, .MicroBit:
-			value = values[port]
-			percent = UInt8(rawToPercent(value))
-			realPercent = Double(value) / 2.55
-		}
-		
-		var sensorValue: String
-		
-		switch sensor {
-		case "distance":
-			sensorValue = String(rawToDistance(value))
-		case "temperature":
-			sensorValue = String(rawToTemp(value))
-		case "soil":
-			sensorValue = String(bound(Int(percent), min: 0, max: 90))
-        case "accelerometer": //TODO: 2's complement double?
-            guard let axis = queries["axis"] else {
-                return .badRequest(.text("Accelerometer axis not specified."))
-            }
-            let adjust: ((UInt8) -> String) = { x in
-                let intVal = Int16(bitPattern: UInt16(x))
-                return String(Double(intVal * 2 / 128))
-            }
-            switch axis {
-            case "X": sensorValue = adjust(values[4])
-            case "Y": sensorValue = adjust(values[5])
-            case "Z": sensorValue = adjust(values[6])
-            case "all":
-                sensorValue = "adjust(values[4]) adjust(values[5]) adjust(values[6])"
-            default:
-                return .badRequest(.text("Accelerometer axis not specified."))
-            }
-        case "magnetometer": //TODO: 2's complement signed int?
-            guard let axis = queries["axis"] else {
-                return .badRequest(.text("Accelerometer axis not specified."))
-            }
-            let adjust: ((UInt8, UInt8) -> String) = { msb, lsb in
-                return String( Int16(bitPattern: (UInt16((msb << 8) | lsb)) ) )
-            }
-            let x = adjust(values[8], values[9])
-            let y = adjust(values[10], values[11])
-            let z = adjust(values[12], values[13])
-            switch axis {
-            case "X": sensorValue = x
-            case "Y": sensorValue = y
-            case "Z": sensorValue = z
-            case "all": sensorValue = "\(x) \(y) \(z)"
-            default:
-                return .badRequest(.text("Accelerometer axis not specified."))
-            }
-		default:
-			return .ok(.text(String(realPercent)))
-		}
-		
-		return .ok(.text(String(sensorValue)))
-	}
-	
-	
-	//MARK: Outputs for Hummingbirds
+            return .ok(.text("set"))
+        } else {
+            return .internalServerError
+        }
+    }
 	
 	private func setLEDRequest(id: String, type: BBTRobotType,
 	                           request: HttpRequest) -> HttpResponse {

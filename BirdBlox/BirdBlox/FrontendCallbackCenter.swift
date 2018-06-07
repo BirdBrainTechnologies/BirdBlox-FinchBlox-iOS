@@ -61,7 +61,7 @@ class FrontendCallbackCenter {
 				
 				//print("Ran '\(js)', got \(String(describing: ret))")
 				#if DEBUG
-					print("Ran '\(js)', got \(String(describing: ret))")
+					//print("Ran '\(js)', got \(String(describing: ret))")
 				#endif
 			})
 		}

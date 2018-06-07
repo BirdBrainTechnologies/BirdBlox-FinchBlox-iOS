@@ -181,6 +181,8 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 				rd(self.foundDevices)
 			}
 			
+            print("Advertisement Data: \(advertisementData["kCBAdvDataLocalName"])")
+            
 		default:
 			return
 		}

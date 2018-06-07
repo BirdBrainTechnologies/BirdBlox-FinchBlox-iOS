@@ -363,6 +363,14 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         //        print(self.lastWriteStart)
     }
     
+    /**
+     * When the MicroBit is disconnected from or connected to the Hummingbird, it updates its name
+     * This function does not ever seem to be called??
+     */
+    func peripheralDidUpdateName(_ peripheral: CBPeripheral) {
+        print("Name updated to \(peripheral.name ?? "unknown")")
+    }
+    
     //MARK: Misc. functions
     
     public func endOfLifeCleanup() -> Bool{
