@@ -710,6 +710,8 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             self.sendData(data: command)
             
             if nextCopy.ledArray != currentOutputState.ledArray, let ledArray = nextCopy.ledArray, let ledArrayCommand = type.ledArrayCommand(ledArray) {
+                //TODO: maybe only send stop command if changing from flash to symbol
+                self.sendData(data: Data(bytes: UnsafePointer<UInt8>([0xCC, 0x00, 0xFF, 0xFF, 0xFF] as [UInt8]), count: 5))
                 self.sendData(data: ledArrayCommand)
             }
             

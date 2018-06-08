@@ -111,7 +111,7 @@ struct BBTRobotOutputState: Equatable {
         }
         if robotType.ledArrayCount == 1 {
             //self.ledArray = FixedLengthArray(length: 25, repeating: UInt8(0))
-            self.ledArray = "0000000000000000000000000"
+            self.ledArray = "S0000000000000000000000000"
         }
     }
     

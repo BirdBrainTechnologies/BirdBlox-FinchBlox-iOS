@@ -61,6 +61,8 @@ class RobotRequests {
         
         server["/robot/out/ledArray"] =
             RobotRequests.handler(fromIDAndTypeHandler: self.setLedArrayRequest)
+        server["/robot/out/printBlock"] =
+            RobotRequests.handler(fromIDAndTypeHandler: self.setLedArrayRequest)
 		
 		server["/robot/in"] = RobotRequests.handler(fromIDAndTypeHandler: self.inputRequest)
 		
@@ -190,7 +192,7 @@ class RobotRequests {
 		}
 		
 		let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
-		                                                 acceptTypes: [.Flutter, .Hummingbird, .HummingbirdBit, .Finch])
+		                                                 acceptTypes: [.Flutter, .Hummingbird, .HummingbirdBit, .Finch, .MicroBit])
 		guard let robot = roboto else {
 			return requesto!
 		}
@@ -199,6 +201,17 @@ class RobotRequests {
 		var sensorValue: String
 		
 		switch sensor {
+        case "buttonA", "buttonB", "shake": //microbit buttons and shake
+            let buttonShake = values[7]
+            let bsBitValues = byteToBits(buttonShake)
+            //TODO: should the buttons return true when pressed?
+            switch sensor {
+            case "buttonA": sensorValue = String(bsBitValues[4])
+            case "buttonB": sensorValue = String(bsBitValues[5])
+            case "shake": sensorValue = String(bsBitValues[0])
+            default: return .badRequest(.text("sensor not specified correctly"))
+            }
+            
         //TODO: add a check to make sure there is an accelerometer or magnetometer when requested
         case "accelerometer": 
             guard let axis = queries["axis"] else {
@@ -488,9 +501,25 @@ class RobotRequests {
     private func setLedArrayRequest(id: String, type: BBTRobotType,
                                   request: HttpRequest) -> HttpResponse {
         let queries = BBTSequentialQueryArrayToDict(request.queryParams)
+        var ledStatusString : String
         
-        guard let ledStatusString = queries["ledArrayStatus"] else {
-            return .badRequest(.text("Missing or invalid parameters in set led array request"))
+        if request.path.contains("printBlock") {
+            guard let printString = queries["printString"] else {
+                return .badRequest(.text("String to print not specified."))
+            }
+            //TODO: what should the bounds really be?
+            var printable = String(printString.prefix(15)).uppercased()
+            //if printString.count < 2 {
+            //    printable.append("AA")
+            //}
+            ledStatusString = "F" + printable
+        } else if request.path.contains("ledArray") {
+            guard let ledArrayStatus = queries["ledArrayStatus"] else {
+                return .badRequest(.text("Missing or invalid parameters in set led array request"))
+            }
+            ledStatusString = "S" + ledArrayStatus
+        } else {
+            return .badRequest(.text("Specify printBlock or ledArray when setting the array"))
         }
         
         let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,

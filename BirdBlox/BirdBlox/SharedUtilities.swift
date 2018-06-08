@@ -79,7 +79,25 @@ public func toUInt8(_ value: Int) -> UInt8 {
 }
 
 
-//data Conversions
+//MARK: data Conversions
+
+/**
+ * Convert a byte of data into an array of bits
+ */
+func byteToBits(_ byte: UInt8) -> [UInt8] {
+    var byte = byte
+    var bits = [UInt8](repeating: 0, count: 8)
+    for i in 0..<8 {
+        let currentBit = byte & 0x01
+        if currentBit != 0 {
+            bits[i] = 1
+        }
+        
+        byte >>= 1
+    }
+    
+    return bits
+}
 
 /**
     Converts a raw value from a robot into a temperature
@@ -212,7 +230,6 @@ public func BBTSequentialQueryArrayToDict
 	
 	return dict
 }
-
 
 struct FixedLengthArray<T: Equatable>: Equatable {
 	private var array: Array<T>

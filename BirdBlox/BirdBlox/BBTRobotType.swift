@@ -325,33 +325,47 @@ enum BBTRobotType {
         case .Hummingbird, .Flutter: return nil
         case .HummingbirdBit, .Finch, .MicroBit:
             let letter: UInt8 = 0xCC
-            let symbol: UInt8 = 0x80
             let ledStatusChars = Array(status)
             
-            var led8to1String = ""
-            for i in 0 ..< 8 {
-                led8to1String = String(ledStatusChars[i]) + led8to1String
+            switch ledStatusChars[0] {
+            case "S": //Set a symbol
+                let symbol: UInt8 = 0x80
+                
+                var led8to1String = ""
+                for i in 1 ..< 9 {
+                    led8to1String = String(ledStatusChars[i]) + led8to1String
+                }
+        
+                var led16to9String = ""
+                for i in 9 ..< 17 {
+                    led16to9String = String(ledStatusChars[i]) + led16to9String
+                }
+                
+                var led24to17String = ""
+                for i in 17 ..< 25 {
+                    led24to17String = String(ledStatusChars[i]) + led24to17String
+                }
+                
+                guard let leds8to1 = UInt8(led8to1String, radix: 2),
+                    let led16to9 = UInt8(led16to9String, radix: 2),
+                    let led24to17 = UInt8(led24to17String, radix: 2),
+                    let led25 = UInt8(String(ledStatusChars[25])) else {
+                        fatalError()
+                }
+                print("leds 8 to 1: \(led8to1String) \(leds8to1)")
+                
+                return Data(bytes: UnsafePointer<UInt8>([letter, symbol, led25, led24to17, led16to9, leds8to1] as [UInt8]), count: 6)
+                
+            case "F": //flash a string
+                let length = ledStatusChars.count - 1
+                let flash = UInt8(64 + length)
+                var commandArray = [letter, flash]
+                for i in 1 ... length {
+                    commandArray.append(getUnicode(ledStatusChars[i]))
+                }
+                return Data(bytes: UnsafePointer<UInt8>(commandArray), count: length + 2)
+            default: return nil
             }
-    
-            var led16to9String = ""
-            for i in 8 ..< 16 {
-                led16to9String = String(ledStatusChars[i]) + led16to9String
-            }
-            
-            var led24to17String = ""
-            for i in 16 ..< 24 {
-                led24to17String = String(ledStatusChars[i]) + led24to17String
-            }
-            
-            guard let leds8to1 = UInt8(led8to1String, radix: 2),
-                let led16to9 = UInt8(led16to9String, radix: 2),
-                let led24to17 = UInt8(led24to17String, radix: 2),
-                let led25 = UInt8(String(ledStatusChars[24])) else {
-                    fatalError()
-            }
-            print("leds 8 to 1: \(led8to1String) \(leds8to1)")
-            
-            return Data(bytes: UnsafePointer<UInt8>([letter, symbol, led25, led24to17, led16to9, leds8to1] as [UInt8]), count: 6)
         }
     }
     
