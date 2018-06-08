@@ -83,10 +83,11 @@ class RobotRequests {
 		
 		bleCenter.startScan(serviceUUIDs: [type.scanningUUID], updateDiscovered: { (peripherals) in
 			let altName = "Fetching name..."
-			let darray = peripherals.map { (peripheral, rssi) in
+			let darray = peripherals.map { (peripheral, rssi, type) in
 				["id": peripheral.identifier.uuidString,
 				 "name": BBTgetDeviceNameForGAPName(peripheral.name ?? altName),
-                 "device": BBTRobotType.fromString(peripheral.name ?? altName)?.description ?? altName,
+                 //"device": BBTRobotType.fromString(peripheral.name ?? altName)?.description ?? altName,
+                 "device": type.description,
                  "RSSI": rssi]
 			}
 			
@@ -218,7 +219,7 @@ class RobotRequests {
             default:
                 return .badRequest(.text("Accelerometer axis incorrectly specified as \(axis)"))
             }
-        case "magnetometer": //TODO: 2's complement signed int?
+        case "magnetometer":
             guard let axis = queries["axis"] else {
                 return .badRequest(.text("Accelerometer axis not specified."))
             }
@@ -226,7 +227,7 @@ class RobotRequests {
                 let uIntVal = (UInt16(msb) << 8) | UInt16(lsb)
                 let intVal = Int16(bitPattern: uIntVal)
                 print( "MAGNETOMETER VALUES! \(msb) \(lsb) \(uIntVal) \(intVal)" )
-                return String( intVal )
+                return String( intVal / 10 ) //TODO: check
             }
             let x = adjust(values[8], values[9])
             let y = adjust(values[10], values[11])

@@ -33,7 +33,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 	
 	public var scanState: BLECentralManagerScanState
 	
-	private var _discoveredPeripheralsSeqeuntial: [(CBPeripheral, String)]
+	private var _discoveredPeripheralsSeqeuntial: [(CBPeripheral, String, BBTRobotType)]
 	private var discoveredPeripherals: [String: CBPeripheral]
 	private var connectedPeripherals: [String: CBPeripheral]
 	private var connectedRobots: [String: BBTRobotBLEPeripheral]
@@ -79,10 +79,10 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 	}
 	
 	private var scanStoppedBlock: (() -> Void)? = nil
-	private var robotDiscoveredBlock: (([(CBPeripheral, String)]) -> Void)? = nil
+	private var robotDiscoveredBlock: (([(CBPeripheral, String, BBTRobotType)]) -> Void)? = nil
 	
 	public func startScan(serviceUUIDs: [CBUUID],
-	                      updateDiscovered: (([(CBPeripheral, String)]) -> Void)? = nil,
+	                      updateDiscovered: (([(CBPeripheral, String, BBTRobotType)]) -> Void)? = nil,
 	                      scanEnded: (() -> Void)? = nil) {
 		
 		self.stopScan()
@@ -134,7 +134,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 		}
 	}
 	
-	public var foundDevices: [(CBPeripheral, String)] {
+	public var foundDevices: [(CBPeripheral, String, BBTRobotType)] {
 		return self._discoveredPeripheralsSeqeuntial
 	}
 	
@@ -166,22 +166,31 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 			self.deviceCount += 1
 		case .searchingScan:
 			let id = peripheral.identifier.uuidString
+            guard let robotType = BBTRobotType.fromString(advertisementData["kCBAdvDataLocalName"] as? String ?? peripheral.name ?? "unknown") else {
+                NSLog("Could not determine type of peripheral with id \(id)")
+                return
+            }
+            
 			if self.discoveredPeripherals.keys.contains(id) {
 				self.discoveredPeripherals[id] = peripheral
 			} else {
 				self.discoveredPeripherals[id] = peripheral
-				self._discoveredPeripheralsSeqeuntial.append((peripheral, RSSI.stringValue))
+				self._discoveredPeripheralsSeqeuntial.append((peripheral, RSSI.stringValue, robotType))
 			}
 			
 			if let type = self.oughtToBeConnected[id]?.type {
-				let _ = self.connectToRobot(byID: id, ofType: type)
+                if type != robotType {
+                    print("Type missmatch! \(type.description) ne \(robotType.description)")
+                    self.oughtToBeConnected[id]?.type = robotType
+                }
+				let _ = self.connectToRobot(byID: id, ofType: robotType)
 			}
 			
 			if let rd = self.robotDiscoveredBlock {
 				rd(self.foundDevices)
 			}
 			
-            print("Advertisement Data: \(advertisementData["kCBAdvDataLocalName"])")
+            print("Advertised name: \(advertisementData["kCBAdvDataLocalName"] ?? "unknown") Robot type: \(robotType.description)")
             
 		default:
 			return
@@ -308,11 +317,11 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 		let idString = peripheral.identifier.uuidString
 		self.discoveredPeripherals.removeValue(forKey: idString)
         //TODO: Should only be displaying and connecting to robots of the correct type?
-        if let name = peripheral.name, let pType = BBTRobotType.fromString(name) {
-            self.oughtToBeConnected[idString] = (peripheral: peripheral, type: pType)
-        } else {
+        //if let name = peripheral.name, let pType = BBTRobotType.fromString(name) {
+        //    self.oughtToBeConnected[idString] = (peripheral: peripheral, type: pType)
+        //} else {
             self.oughtToBeConnected[idString] = (peripheral: peripheral, type: type)
-        }
+        //}
 //		self.connectedPeripherals[idString] = peripheral
 		
 		let options = [CBConnectPeripheralOptionNotifyOnDisconnectionKey: NSNumber(value: true)]
