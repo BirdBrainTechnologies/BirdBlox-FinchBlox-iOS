@@ -23,7 +23,12 @@ public func getUnicode(_ num: UInt8) -> UInt8{
  */
 public func getUnicode(_ char: Character) -> UInt8{
     let scalars = String(char).unicodeScalars
-    return UInt8(scalars[scalars.startIndex].value)
+    var val = scalars[scalars.startIndex].value
+    if val > 255 {
+        NSLog("Unicode for character \(char) not supported.")
+        val = 254
+    }
+    return UInt8(val)
 }
 
 /**
@@ -103,9 +108,9 @@ func byteToBits(_ byte: UInt8) -> [UInt8] {
     Converts a raw value from a robot into a temperature
  */
 public func rawToTemp(_ raw_val: UInt8) -> Int{
-    print("hi")
+    //print("hi")
     let temp: Int = Int(floor(((Double(raw_val) - 127.0)/2.4 + 25) * 100 / 100));
-    print("ho")
+    //print("ho")
     return temp
 }
 

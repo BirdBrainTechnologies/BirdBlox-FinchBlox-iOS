@@ -352,7 +352,6 @@ enum BBTRobotType {
                     let led25 = UInt8(String(ledStatusChars[25])) else {
                         fatalError()
                 }
-                print("leds 8 to 1: \(led8to1String) \(leds8to1)")
                 
                 return Data(bytes: UnsafePointer<UInt8>([letter, symbol, led25, led24to17, led16to9, leds8to1] as [UInt8]), count: 6)
                 
@@ -366,6 +365,16 @@ enum BBTRobotType {
                 return Data(bytes: UnsafePointer<UInt8>(commandArray), count: length + 2)
             default: return nil
             }
+        }
+    }
+    
+    func clearLedArrayCommand() -> Data? {
+        //To stop flashing or clearing the screen use
+        //0xCC 0x00 0xFF 0xFF 0xFF
+        switch self {
+        case .Finch, .HummingbirdBit, .MicroBit:
+            return Data(bytes: UnsafePointer<UInt8>([0xCC, 0x00, 0xFF, 0xFF, 0xFF] as [UInt8]), count: 5)
+        case .Flutter, .Hummingbird: return nil
         }
     }
     
@@ -384,6 +393,16 @@ enum BBTRobotType {
         case .MicroBit:
             //TODO:
             return Data()
+        }
+    }
+    
+    //MARK: Calibration commands
+    func calibrateMagnetometerCommand() -> Data? {
+        //Calibrate Magnetometer: 0xCE 0xFF 0xFF 0xFF
+        switch self {
+        case .HummingbirdBit, .MicroBit, .Finch:
+            return Data(bytes: UnsafePointer<UInt8>([0xCE, 0xFF, 0xFF, 0xFF] as [UInt8]), count: 4)
+        case .Flutter, .Hummingbird: return nil
         }
     }
 }

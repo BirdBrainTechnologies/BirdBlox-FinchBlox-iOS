@@ -209,6 +209,7 @@ class AudioManager: NSObject, AVAudioRecorderDelegate {
 			cappedNote = 255
 		}
 		let noteEightBit = UInt8(cappedNote)
+        print("Playing note \(noteEightBit)")
 		sampler.startNote(noteEightBit, withVelocity: 127, onChannel: 1)
 		DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(duration)) {
 			self.sampler.stopNote(noteEightBit, onChannel: 1)

@@ -74,7 +74,7 @@ class RobotRequests {
 	
 	private func discoverRequest(request: HttpRequest) -> HttpResponse {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
-		
+		print("Discover request received.")
 		guard let typeStr = queries[RobotRequests.robotTypeKey] else {
 			return .badRequest(.text("Missing Query Parameter"))
 		}
@@ -85,7 +85,8 @@ class RobotRequests {
 		
 		bleCenter.startScan(serviceUUIDs: [type.scanningUUID], updateDiscovered: { (peripherals) in
 			let altName = "Fetching name..."
-			let darray = peripherals.map { (peripheral, rssi, type) in
+            let filteredList = peripherals.filter { $0.2 == type }
+			let darray = filteredList.map { (peripheral, rssi, type) in
 				["id": peripheral.identifier.uuidString,
 				 "name": BBTgetDeviceNameForGAPName(peripheral.name ?? altName),
                  //"device": BBTRobotType.fromString(peripheral.name ?? altName)?.description ?? altName,
@@ -163,7 +164,7 @@ class RobotRequests {
 			let _ = robot.setAllOutputsToOff()
 		})
 		
-		return .ok(.text("Issued stop commands to every connected Hummingbird."))
+		return .ok(.text("Issued stop commands to every connected device."))
 	}
 	
 	private func getRobotOrResponse(id: String, type: BBTRobotType, acceptTypes: [BBTRobotType])
@@ -199,8 +200,39 @@ class RobotRequests {
 		
 		let values = robot.sensorValues
 		var sensorValue: String
+        
+        //The accelerometer values are used for multiple blocks
+        let accelerometerAdjust: ((UInt8) -> Double) = { x in
+            let intVal = Int8(bitPattern: x) //convert to 2's complement signed int
+            let scaledVal = Double(intVal) * 196/1280 //scaling from bambi
+            print("ACCELEROMETER VALUES! \(x) \(intVal) \(scaledVal)")
+            return scaledVal
+        }
 		
 		switch sensor {
+        
+        //Screen up and Screen down are z: Acc Z > 0.8*g screen down, Acc Z < -0.8*g screen up
+        //Tilt left and tilt right are x: Acc X > 0.8g tilt left, Acc X < -0.8g tilt right
+        //Logo up and logo down are y: Acc Y > 0.8g logo down, Acc Y < -0.8g logo up
+        case "screenUp":
+            let val = accelerometerAdjust(values[6])
+            if val < -0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
+        case "screenDown":
+            let val = accelerometerAdjust(values[6])
+            if val > 0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
+        case "tiltLeft":
+            let val = accelerometerAdjust(values[4])
+            if val > 0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
+        case "tiltRight":
+            let val = accelerometerAdjust(values[4])
+            if val < -0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
+        case "logoUp":
+            let val = accelerometerAdjust(values[5])
+            if val < -0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
+        case "logoDown":
+            let val = accelerometerAdjust(values[5])
+            if val > 0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
+            
         case "buttonA", "buttonB", "shake": //microbit buttons and shake
             let buttonShake = values[7]
             let bsBitValues = byteToBits(buttonShake)
@@ -217,18 +249,11 @@ class RobotRequests {
             guard let axis = queries["axis"] else {
                 return .badRequest(.text("Accelerometer axis not specified."))
             }
-            let adjust: ((UInt8) -> String) = { x in
-                let intVal = Int8(bitPattern: x) //convert to 2's complement signed int
-                let string = String(Double(intVal) * 196/1280) //scaling from bambi
-                print("ACCELEROMETER VALUES! \(x) \(intVal) \(string)")
-                return string
-            }
+            
             switch axis {
-            case "x": sensorValue = adjust(values[4])
-            case "y": sensorValue = adjust(values[5])
-            case "z": sensorValue = adjust(values[6])
-            case "all":
-                sensorValue = "adjust(values[4]) adjust(values[5]) adjust(values[6])"
+            case "x": sensorValue = String(accelerometerAdjust(values[4]))
+            case "y": sensorValue = String(accelerometerAdjust(values[5]))
+            case "z": sensorValue = String(accelerometerAdjust(values[6]))
             default:
                 return .badRequest(.text("Accelerometer axis incorrectly specified as \(axis)"))
             }
@@ -452,50 +477,26 @@ class RobotRequests {
 	private func setBuzzerRequest(id: String, type: BBTRobotType,
 	                              request: HttpRequest) -> HttpResponse {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
-        
-        
-        if type == .Flutter {
-		
-            guard let volumeStr = queries["volume"],
-                let frequencyStr = queries["frequency"],
-                let volume = Int(volumeStr),
-                let frequency = Int(frequencyStr) else {
-                    
-                    return .badRequest(.text("Missing or invalid parameters"))
-            }
-        
-		
-            let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
-                                                             acceptTypes: [.Flutter])
-            guard let robot = roboto else {
-                return requesto!
-            }
             
-            if robot.setBuzzer(volume: volume, frequency: frequency, period: 0, duration: 0) {
-                return .ok(.text("set"))
-            } else {
-                return .internalServerError
-            }
-        } else {
-            
-            guard let noteStr = queries["note"], let durationStr = queries["duration"],
-                let note = UInt8(noteStr), let duration = UInt16(durationStr) else {
-                return .badRequest(.text("Missing or invalid parameters"))
-            }
-            
-            let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
-                                                             acceptTypes: [.Finch, .HummingbirdBit])
-            guard let robot = roboto else {
-                return requesto!
-            }
-            
-            let period = noteToPeriod(note)
-            if robot.setBuzzer(volume: 0, frequency: 0, period: period, duration: duration) {
-                return .ok(.text("set"))
-            } else {
-                return .internalServerError
-            }
+        guard let noteStr = queries["note"], let durationStr = queries["duration"],
+            let note = UInt8(noteStr), let exactDur = Double(durationStr) else {
+            return .badRequest(.text("Missing or invalid parameters"))
         }
+        
+        let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
+                                                         acceptTypes: [.Finch, .HummingbirdBit])
+        guard let robot = roboto else {
+            return requesto!
+        }
+        
+        let duration = UInt16(round(exactDur))
+        let period = noteToPeriod(note)
+        if robot.setBuzzer(volume: 0, frequency: 0, period: period, duration: duration) {
+            return .ok(.text("set"))
+        } else {
+            return .internalServerError
+        }
+        
 	}
 	
     private func setLedArrayRequest(id: String, type: BBTRobotType,
@@ -507,12 +508,8 @@ class RobotRequests {
             guard let printString = queries["printString"] else {
                 return .badRequest(.text("String to print not specified."))
             }
-            //TODO: what should the bounds really be?
-            var printable = String(printString.prefix(15)).uppercased()
-            //if printString.count < 2 {
-            //    printable.append("AA")
-            //}
-            ledStatusString = "F" + printable
+            
+            ledStatusString = "F" + String(printString.prefix(18)).uppercased()
         } else if request.path.contains("ledArray") {
             guard let ledArrayStatus = queries["ledArrayStatus"] else {
                 return .badRequest(.text("Missing or invalid parameters in set led array request"))

@@ -49,6 +49,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     //End variables write protected by writtenCondition
     private var syncTimer: Timer = Timer()
     let syncInterval = 0.03125 //(32Hz) TODO: should this be 0.017 (60Hz) for finch?
+    //let syncInterval = 0.06
     let cacheTimeoutDuration: UInt64 = 1 * 1_000_000_000 //nanoseconds
     let waitRefreshTime = 0.5 //seconds
     
@@ -210,7 +211,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
                 (String(bytes: [versionArray[4]], encoding: .ascii) ?? "")
             
             print(versionArray)
-            print("end hi")
+            //print("end hi")
             self.initializingCondition.unlock()
             
             
@@ -245,7 +246,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             
             Thread.sleep(forTimeInterval: 0.1)
         }
-            
+        
         //self.sendData(data: BBTHummingbirdUtility.getPollStartCommand())
         self.sendData(data: type.sensorCommand("pollStart"))
         
@@ -313,7 +314,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         //This block used for getting the firmware info
         guard self.initialized else {
             self.initializingCondition.lock()
-            print("hi")
+            //print("hi")
             print(inData.debugDescription)
             inData.copyBytes(to: &self.lineIn, count: self.lineIn.count)
             self.initializingCondition.signal()
@@ -664,11 +665,13 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         return self.lastSensorUpdate
     }
     
-    //TODO: Is this only for Hummingbird? The finch version was a little different. I deleted it.
+    /**
+     * Sends the current output state all at once
+     *  (rather than sending each change individually)
+     * This function is scheduled on a timer. It is called every syncInterval seconds.
+     */
     func syncronizeOutputs() {
         self.writtenCondition.lock()
-        
-        //        print("s ", separator: "", terminator: "")
         
         let nextCopy = self.nextOutputState
         
@@ -679,39 +682,23 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         let shouldSync = changeOccurred || timeout
         
         if self.initialized && (self.lastWriteWritten || timeout)  && shouldSync {
-            /*
-            var command = Data()
-            
-            switch type {
-            case .Hummingbird:
-                
-                /*
-                let cmdMkr = BBTHummingbirdUtility.getSetAllCommand
-                
-                guard let tris = nextCopy.trileds, let leds = nextCopy.leds, let servos = nextCopy.servos, let motors = nextCopy.motors, let vibrators = nextCopy.vibrators else {
-                    fatalError("Stuff missing from robot output state!")
-                }
-                command = cmdMkr((tris[0].tuple, tris[1].tuple),
-                                     (leds[0], leds[1], leds[2], leds[3]),
-                                     (servos[0], servos[1], servos[2], servos[3]),
-                                     (motors[0], motors[1]),
-                                     (vibrators[0], vibrators[1]))
-                */
-                command = nextCopy.setAllCommand()
-                
-            case .Finch, .Flutter, .HummingbirdBit, .MicroBit: ()
-                
-            }*/
             
             let command = nextCopy.setAllCommand()
             //TODO: Fix. what if the state has changed in the meantime??
             // maybe I should be checking to see if this needs to be done first.
-            self.nextOutputState.buzzer = BBTBuzzer()
+            // What if the same message is sent twice in a row?
+            if nextCopy.buzzer == self.nextOutputState.buzzer {
+                self.nextOutputState.buzzer = BBTBuzzer()
+            } else {
+                print("the buzzer has already changed")
+            }
+            
             self.sendData(data: command)
             
-            if nextCopy.ledArray != currentOutputState.ledArray, let ledArray = nextCopy.ledArray, let ledArrayCommand = type.ledArrayCommand(ledArray) {
+            if nextCopy.ledArray != currentOutputState.ledArray, let ledArray = nextCopy.ledArray, let ledArrayCommand = type.ledArrayCommand(ledArray), let clearCommand = type.clearLedArrayCommand() {
+                print("sending change.")
                 //TODO: maybe only send stop command if changing from flash to symbol
-                self.sendData(data: Data(bytes: UnsafePointer<UInt8>([0xCC, 0x00, 0xFF, 0xFF, 0xFF] as [UInt8]), count: 5))
+                //self.sendData(data: clearCommand)
                 self.sendData(data: ledArrayCommand)
             }
             
@@ -722,9 +709,9 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             
             //For debugging
             #if DEBUG
-                let bytes = UnsafeMutableBufferPointer<UInt8>(
-                    start: UnsafeMutablePointer<UInt8>.allocate(capacity: 20), count: 19)
-                let _ = command.copyBytes(to: bytes)
+                //let bytes = UnsafeMutableBufferPointer<UInt8>(
+                //    start: UnsafeMutablePointer<UInt8>.allocate(capacity: 20), count: 19)
+                //let _ = command.copyBytes(to: bytes)
                 //print("\(self.creationTime)")
                 //print("Setting All: \(bytes.map({return $0}))")
             #endif
@@ -741,7 +728,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     func setAllOutputsToOff() -> Bool {
         //Sending an ASCII capital X should do the same thing.
         //Useful for legacy firmware
-            
+        //TODO: Use the command to turn things off?
         self.writtenCondition.lock()
         self.nextOutputState = BBTRobotOutputState(robotType: type)
         self.writtenCondition.unlock()

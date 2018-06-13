@@ -97,7 +97,8 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 		self.robotDiscoveredBlock = updateDiscovered
 		self.scanStoppedBlock = scanEnded
 		
-		centralManager.scanForPeripherals(withServices: serviceUUIDs, options: nil)
+        let options = [CBCentralManagerScanOptionAllowDuplicatesKey: true]
+		centralManager.scanForPeripherals(withServices: serviceUUIDs, options: options)
 		discoverTimer = Timer.scheduledTimer(timeInterval: BLECentralManager.scanDuration,
 		                                     target: self,
 		                                     selector: #selector(BLECentralManager.stopScan),

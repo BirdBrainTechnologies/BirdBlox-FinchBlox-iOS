@@ -140,7 +140,7 @@ class DataModel: NSObject, FileManagerDelegate {
 //	}
 //	
 	func fileManager(_ fileManager: FileManager, shouldProceedAfterError error: Error, movingItemAt srcURL: URL, to dstURL: URL) -> Bool {
-		print("\(error)")
+        print("File Manager error: \(error)")
 		return false
 	}
 	
@@ -556,6 +556,7 @@ class DataModel: NSObject, FileManagerDelegate {
 		//From Tom: https://github.com/TomWildenhain/HummingbirdDragAndDrop-/archive/dev.zip
 		//Semi Stable: https://github.com/BirdBrainTechnologies/HummingbirdDragAndDrop-/archive/dev.zip
 		let repoUrl = URL(string:"https://github.com/BirdBrainTechnologies/HummingbirdDragAndDrop-/archive/dev.zip")!
+        //let repoUrl = URL(string:"https://github.com/TomWildenhain/HummingbirdDragAndDrop-/archive/dev.zip")!
 		
 		guard let libLoc = try? FileManager.default.url(for: .libraryDirectory,
 		                                                 in: .userDomainMask, appropriateFor: nil,
