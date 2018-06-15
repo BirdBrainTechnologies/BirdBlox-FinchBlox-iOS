@@ -307,7 +307,7 @@ class RobotRequests {
                 sensorValue = String(bound(Int(percent), min: 0, max: 90))
             case "sound":
                 if robot.type == .HummingbirdBit {
-                    sensorValue = String(value * (200/255)) //scaling from bambi
+                    sensorValue = String(round(Double(value) * (200/255))) //scaling from bambi
                 } else {
                     sensorValue = String(realPercent) //TODO: should this really be different?
                 }
@@ -333,8 +333,8 @@ class RobotRequests {
             let port = UInt(portStr),
             let red = UInt8(redStr),
             let green = UInt8(greenStr),
-            let blue = UInt8(blueStr) else {
-                
+            let blue = UInt8(blueStr),
+            red <= 100, green <= 100, blue <= 100 else {
                 return .badRequest(.text("Missing or invalid parameters"))
         }
         
@@ -344,7 +344,11 @@ class RobotRequests {
             return requesto!
         }
         
-        if robot.setTriLED(port: port, intensities: BBTTriLED(red, green, blue)) {
+        let scaled: ((UInt8) -> UInt8) = { intensity in
+            return UInt8(round(Double(intensity) * (255/100)))
+        }
+        
+        if robot.setTriLED(port: port, intensities: BBTTriLED(scaled(red), scaled(green), scaled(blue))) {
             return .ok(.text("set"))
         } else {
             return .internalServerError
@@ -371,7 +375,7 @@ class RobotRequests {
             case .HummingbirdBit:
                 if angle > 180 { value = UInt8(254)
                 } else {
-                    value = UInt8( angle * (254 / 180) )
+                    value = UInt8( round(Double(angle) * (254 / 180)) )
                 }
             default: fatalError("position servo not set up for type \(type)")
             }
@@ -405,7 +409,8 @@ class RobotRequests {
 		guard let portStr = queries["port"],
 			let intensityStr = queries["intensity"],
 			let port = Int(portStr),
-			let intensity = UInt8(intensityStr) else {
+			let intensity = UInt8(intensityStr),
+            intensity <= 100 else {
 			
 			return .badRequest(.text("Missing or invalid parameters"))
 		}
@@ -416,7 +421,8 @@ class RobotRequests {
 			return requesto!
 		}
 		
-		if robot.setLED(port: port, intensity: intensity) {
+        let scaledIntensity = UInt8(round(Double(intensity) * (255/100)))
+		if robot.setLED(port: port, intensity: scaledIntensity) {
 			return .ok(.text("set"))
 		} else {
 			return .internalServerError
