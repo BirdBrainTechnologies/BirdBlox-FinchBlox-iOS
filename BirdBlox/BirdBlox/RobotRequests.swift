@@ -526,7 +526,7 @@ class RobotRequests {
             return requesto!
         }
         
-        print("led array string: \(ledStatusString)")
+        //print("led array string: \(ledStatusString)")
         if robot.setLedArray(ledStatusString) {
             return .ok(.text("set"))
         } else {

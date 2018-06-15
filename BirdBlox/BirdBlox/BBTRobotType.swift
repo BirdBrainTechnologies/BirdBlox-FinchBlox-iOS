@@ -79,7 +79,7 @@ enum BBTRobotType {
         case .Hummingbird: return 4
         case .Flutter: return 0
         case .Finch: return 0
-        case .HummingbirdBit: return 4
+        case .HummingbirdBit: return 3
         case .MicroBit: return 0
         }
     }

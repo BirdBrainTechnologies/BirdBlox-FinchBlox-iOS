@@ -154,7 +154,7 @@ struct BBTRobotOutputState: Equatable {
             
             return Data(bytes: UnsafePointer<UInt8>(array), count: array.count)
         case .HummingbirdBit:
-        //Set all: 0xCA LED1 LED4status R1 G1 B1 R2 G2 B2 SS1 SS2 SS3 SS4 LED2 LED3 Time us(MSB) Time us(LSB) Time ms(MSB) Time ms(LSB)
+        //Set all: 0xCA LED1 Reserved R1 G1 B1 R2 G2 B2 SS1 SS2 SS3 SS4 LED2 LED3 Time us(MSB) Time us(LSB) Time ms(MSB) Time ms(LSB)
             guard let leds = leds, let trileds = trileds, let servos = servos, let buzzer = buzzer else {
                 fatalError("Missing information in the hummingbird bit output state")
             }
@@ -168,7 +168,7 @@ struct BBTRobotOutputState: Equatable {
             
             let buzzerArray = buzzer.array()
             
-            let array: [UInt8] = [letter, leds[0], leds[3],
+            let array: [UInt8] = [letter, leds[0], 0x00,
                                   trileds[0].tuple.0, trileds[0].tuple.1, trileds[0].tuple.2,
                                   trileds[1].tuple.0, trileds[1].tuple.1, trileds[1].tuple.2,
                             //      servosFull.0, servosFull.1, servosFull.2, servosFull.3,

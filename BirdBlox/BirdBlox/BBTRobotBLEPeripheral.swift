@@ -693,13 +693,20 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
                 print("the buzzer has already changed")
             }
             
-            self.sendData(data: command)
+            let oldCommand = currentOutputState.setAllCommand()
+            if command != oldCommand {
+                NSLog("Sending set all.")
+                self.sendData(data: command)
+            }
             
-            if nextCopy.ledArray != currentOutputState.ledArray, let ledArray = nextCopy.ledArray, let ledArrayCommand = type.ledArrayCommand(ledArray), let clearCommand = type.clearLedArrayCommand() {
-                print("sending change.")
+            //if nextCopy.ledArray != currentOutputState.ledArray, let ledArray = nextCopy.ledArray, let ledArrayCommand = type.ledArrayCommand(ledArray), let clearCommand = type.clearLedArrayCommand() {
                 //TODO: maybe only send stop command if changing from flash to symbol
                 //self.sendData(data: clearCommand)
-                self.sendData(data: ledArrayCommand)
+            if nextCopy.ledArray != currentOutputState.ledArray, let ledArray = nextCopy.ledArray, let ledArrayCommand = type.ledArrayCommand(ledArray) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + self.syncInterval/2) {
+                    NSLog("Sending led array change.")
+                    self.sendData(data: ledArrayCommand)
+                }
             }
             
             self.lastWriteStart = DispatchTime.now()
