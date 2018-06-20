@@ -238,8 +238,20 @@ class RobotRequests {
             let bsBitValues = byteToBits(buttonShake)
             //TODO: should the buttons return true when pressed?
             switch sensor {
-            case "buttonA": sensorValue = String(bsBitValues[4])
-            case "buttonB": sensorValue = String(bsBitValues[5])
+            case "buttonA":
+                let val = bsBitValues[4]
+                if val == 0 {
+                    sensorValue = String(1)
+                } else {
+                    sensorValue = String(0)
+                }
+            case "buttonB":
+                let val = bsBitValues[5]
+                if val == 0 {
+                    sensorValue = String(1)
+                } else {
+                    sensorValue = String(0)
+                }
             case "shake": sensorValue = String(bsBitValues[0])
             default: return .badRequest(.text("sensor not specified correctly"))
             }

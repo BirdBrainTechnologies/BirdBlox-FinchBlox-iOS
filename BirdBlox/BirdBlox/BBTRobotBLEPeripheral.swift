@@ -351,7 +351,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             NSLog("Unable to write to \(type.description) due to error \(error)")
         }
         
-        //        print("did write")
+        NSLog("Did write value.")
         
         //We successfully sent a command
         self.writtenCondition.lock()
@@ -384,6 +384,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     private func sendData(data: Data) {
         if self.connected {
             peripheral.writeValue(data, for: tx_line!, type: .withResponse)
+            //peripheral.writeValue(data, for: tx_line!, type: .withoutResponse)
             
             //            if self.commandMode {
             //                print("Sent command: " +
@@ -681,6 +682,8 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             self.cacheTimeoutDuration)
         let shouldSync = changeOccurred || timeout
         
+        NSLog("Sync outputs. \(timeout) \(changeOccurred) \(self.lastWriteWritten)")
+        
         if self.initialized && (self.lastWriteWritten || timeout)  && shouldSync {
             
             let command = nextCopy.setAllCommand()
@@ -713,6 +716,10 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             self.lastWriteWritten = false
             
             self.currentOutputState = nextCopy
+            
+            //TODO: if we stop using write requests (sending data .withResponse)
+            // then we should remove the lastWriteWritten variable
+            //self.lastWriteWritten = true
             
             //For debugging
             #if DEBUG

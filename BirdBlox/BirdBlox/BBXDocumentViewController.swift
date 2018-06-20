@@ -72,6 +72,8 @@ SFSafariViewControllerDelegate {
 		
 		self.webView = WKWebView(frame: self.barRespectingRect(from: self.view.bounds),
 		                         configuration: config)
+        //webView.navigationDelegate = self
+        //webView.uiDelegate = self
 		
 		self.webView.contentMode = UIViewContentMode.scaleToFill
 		self.webView.backgroundColor = UIColor.gray
@@ -602,6 +604,32 @@ SFSafariViewControllerDelegate {
 	var wv: WKWebView {
 		return self.webView
 	}
+    
+    /*
+    //MARK: WKNavigationDelegate methods
+    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        print("Did fail navigation with error: \(error)")
+    }
+    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+        print("Did Fail to load content with error: \(error)")
+    }
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        print("did finish navigation.")
+    }
+    func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
+        print("content process did terminate.")
+    }
+    func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
+        print("did commit navigation \(navigation.debugDescription)")
+    }
+    func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+        print("did start provisional navigation: \(navigation.debugDescription)")
+    }
+    
+    //MARK: WKUIDelegate methods
+    func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping () -> Void) {
+        print("Alert to display: \(message)")
+    }*/
 }
 
 /*
