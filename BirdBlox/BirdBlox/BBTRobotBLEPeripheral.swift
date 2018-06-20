@@ -383,8 +383,8 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     
     private func sendData(data: Data) {
         if self.connected {
-            peripheral.writeValue(data, for: tx_line!, type: .withResponse)
-            //peripheral.writeValue(data, for: tx_line!, type: .withoutResponse)
+            //peripheral.writeValue(data, for: tx_line!, type: .withResponse)
+            peripheral.writeValue(data, for: tx_line!, type: .withoutResponse)
             
             //            if self.commandMode {
             //                print("Sent command: " +
@@ -719,7 +719,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             
             //TODO: if we stop using write requests (sending data .withResponse)
             // then we should remove the lastWriteWritten variable
-            //self.lastWriteWritten = true
+            self.lastWriteWritten = true
             
             //For debugging
             #if DEBUG
