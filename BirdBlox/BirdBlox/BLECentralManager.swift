@@ -191,7 +191,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 				rd(self.foundDevices)
 			}
 			
-            print("Advertised name: \(advertisementData["kCBAdvDataLocalName"] ?? "unknown") Robot type: \(robotType.description)")
+            //print("Advertised name: \(advertisementData["kCBAdvDataLocalName"] ?? "unknown") Robot type: \(robotType.description)")
             
 		default:
 			return

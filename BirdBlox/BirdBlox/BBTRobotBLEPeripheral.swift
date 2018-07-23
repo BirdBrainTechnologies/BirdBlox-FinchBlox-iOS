@@ -38,15 +38,17 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     //MARK: Variables to coordinate set all
     private var useSetall = true
     private var writtenCondition: NSCondition = NSCondition()
+    private var useWithResponse = false //For most devices, we send commands .withoutResponse
     
     //MARK: Variables write protected by writtenCondition
     //private var currentOutputState: BBTHummingbirdOutputState
     //public var nextOutputState: BBTHummingbirdOutputState
     private var currentOutputState: BBTRobotOutputState
     public var nextOutputState: BBTRobotOutputState
-    var lastWriteWritten: Bool = false
+    var lastWriteWritten: Bool = true
     var lastWriteStart: DispatchTime = DispatchTime.now()
     //End variables write protected by writtenCondition
+    
     private var syncTimer: Timer = Timer()
     let syncInterval = 0.03125 //(32Hz) TODO: should this be 0.017 (60Hz) for finch?
     //let syncInterval = 0.06
@@ -54,6 +56,8 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     let waitRefreshTime = 0.5 //seconds
     
     let creationTime = DispatchTime.now()
+    
+    var commandPending: Data? = nil
     
     private var initializingCondition = NSCondition()
     private var lineIn: [UInt8] = [0, 0, 0, 0, 0, 0, 0, 0]
@@ -167,7 +171,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
                     switch type{ //TODO: merge initialize functions
                     case .Hummingbird, .HummingbirdBit, .MicroBit, .Flutter:
                         DispatchQueue.main.async {
-                            self.initializeHB()
+                            self.initializeDevice()
                         }
                         return
                     case .Finch:
@@ -180,47 +184,70 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             }
         }
     }
-    private func initializeHB() {
+    private func initializeDevice() {
         print("start init")
+        
+        if type == .Hummingbird, let name = peripheral.name, name.starts(with: "HB") {
+            print("Setting to with response!")
+            self.useWithResponse = true
+        }
+        
         //Get ourselves a fresh slate
         //self.sendData(data: BBTHummingbirdUtility.getPollStopCommand())
-        self.sendData(data: type.sensorCommand("pollStop"))
+        self.sendData(data: type.sensorCommand("pollStop")) //TODO: Do pollStop/pollStart need to be .withResponse?
         //        Thread.sleep(forTimeInterval: 4) //make sure that the HB is booted up
         //Worked 4 of 5 times when at 3 seconds.
         
         //Check firmware version.
-        //TODO: Check firmware for other robots.
-        if type == .Hummingbird {
         
-            let timeoutTime = Date(timeIntervalSinceNow: TimeInterval(7)) //seconds
-            
-            self.initializingCondition.lock()
-            let oldLineIn = self.lineIn
-            self.sendData(data: "G4".data(using: .utf8)!)
-            
-            //Wait until we get a response or until we timeout.
-            //If we time out the verion will be 0.0, which is invalid.
-            while (self.lineIn == oldLineIn && (Date().timeIntervalSince(timeoutTime) < 0)) {
-                self.initializingCondition.wait(until: Date(timeIntervalSinceNow: 1))
-            }
-            let versionArray = self.lineIn
-            
-            
+        let timeoutTime = Date(timeIntervalSinceNow: TimeInterval(7)) //seconds
+        
+        self.initializingCondition.lock()
+        let oldLineIn = self.lineIn
+        //self.sendData(data: "G4".data(using: .utf8)!) //switching this method to .withoutResponse
+        //peripheral.writeValue("G4".data(using: .utf8)!, for: tx_line!, type: .withResponse)
+        guard let versioningCommand = type.hardwareFirmwareVersionCommand() else {
+            BLE_Manager.disconnect(byID: self.id)
+            NSLog("Initialization failed. Device type \(type.description) not supported.")
+            return
+        }
+        peripheral.writeValue(versioningCommand, for: tx_line!, type: .withResponse)
+        
+        //Wait until we get a response or until we timeout.
+        //If we time out the verion will be 0.0, which is invalid.
+        while (self.lineIn == oldLineIn && (Date().timeIntervalSince(timeoutTime) < 0)) {
+            self.initializingCondition.wait(until: Date(timeIntervalSinceNow: 1))
+        }
+        let versionArray = self.lineIn
+        
+        //set the hardware and firmware version values
+        switch type {
+        case .Hummingbird:
             self.hardwareString = String(versionArray[0]) + "." + String(versionArray[1])
             self.firmwareVersionString = String(versionArray[2]) + "." + String(versionArray[3]) +
                 (String(bytes: [versionArray[4]], encoding: .ascii) ?? "")
-            
-            print(versionArray)
-            //print("end hi")
-            self.initializingCondition.unlock()
-            
-            
-            guard self.connected else {
-                BLE_Manager.disconnect(byID: self.id)
-                NSLog("Initialization failed because HB got disconnected.")
-                return
-            }
-            
+        case .HummingbirdBit, .MicroBit:
+            self.hardwareString = String(versionArray[0])
+            self.firmwareVersionString = "\(versionArray[1])/\(versionArray[2])"
+        case .Flutter, .Finch:
+            NSLog("Firmware and Hardware version not set for types not supported.")
+        }
+        
+        
+        print(versionArray)
+        //print("end hi")
+        self.initializingCondition.unlock()
+        
+        
+        guard self.connected else {
+            BLE_Manager.disconnect(byID: self.id)
+            NSLog("Initialization failed because device got disconnected.")
+            return
+        }
+        
+        //Check firmware version to make sure it is above the min
+        switch type {
+        case .Hummingbird:
             //TODO: Handle different min firmwares for different robot types
             //TODO: I don't think this is working properly. On a bluefruit adapter (HB88756) I got the version
             // array: [143, 153, 148, 135, 132, 0, 0, 0] and sometimes didn't get anything and the
@@ -243,15 +270,32 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
                 self.useSetall = false
             }
             
+        case .HummingbirdBit, .MicroBit:
             
-            Thread.sleep(forTimeInterval: 0.1)
+            guard versionArray[1] >= 1 && versionArray[2] >= 1 else {
+                let _ = FrontendCallbackCenter.shared
+                    .robotFirmwareIncompatible(robotType: type, id: self.id, firmware: self.firmwareVersionString)
+                
+                BLE_Manager.disconnect(byID: self.id)
+                NSLog("Initialization failed due to incompatible firmware.")
+                return
+            }
+            
+        case .Finch, .Flutter:
+            BLE_Manager.disconnect(byID: self.id)
+            NSLog("Initialization failed because Finch and Flutter not currently supported!")
+            return
         }
         
+        //TODO: do we really need this?
+        Thread.sleep(forTimeInterval: 0.1)
+        
+        print("Sending poll start")
         //self.sendData(data: BBTHummingbirdUtility.getPollStartCommand())
         self.sendData(data: type.sensorCommand("pollStart"))
         
         //        DispatchQueue.main.async{
-        if self.useSetall {
+        if self.useSetall { //TODO: scheduledTimer isn't very reliable. Switch to scheduleRepeating when stop supporting iOS9
             self.syncTimer =
                 Timer.scheduledTimer(timeInterval: self.syncInterval, target: self,
                                      selector: #selector(syncronizeOutputs),
@@ -343,7 +387,9 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     }
     
     /**
-     * Called when we update a characteristic (when we write to the HB or finch)
+     * Called when we get a response bact after updating
+     * a characteristic (when we write to the HB or finch).
+     * Not called after a write that is .withoutResponse
      */
     func peripheral(_ peripheral: CBPeripheral,
                     didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
@@ -355,13 +401,18 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         
         //We successfully sent a command
         self.writtenCondition.lock()
-        self.lastWriteWritten = true
-        self.writtenCondition.signal()
         
-        //        self.currentOutputState = self.nextOutputState.immutableCopy
+        if let pendingCommand = self.commandPending {//TODO: remove this? not needed for duo
+            NSLog("Sending an led array command now that response has been received.")
+            sendData(data: pendingCommand)
+            self.commandPending = nil
+            self.lastWriteStart = DispatchTime.now()
+        } else {
+            self.lastWriteWritten = true
+            self.writtenCondition.signal()
+        }
         
         self.writtenCondition.unlock()
-        //        print(self.lastWriteStart)
     }
     
     /**
@@ -383,18 +434,14 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     
     private func sendData(data: Data) {
         if self.connected {
-            //peripheral.writeValue(data, for: tx_line!, type: .withResponse)
-            peripheral.writeValue(data, for: tx_line!, type: .withoutResponse)
             
-            //            if self.commandMode {
-            //                print("Sent command: " +
-            //                    (NSString(data: data, encoding: String.Encoding.utf8.rawValue)! as String))
-            //            }
-            //            else {
-            ////                print("Sent non-command mode message")
-            //            }
-        }
-        else{
+            if self.useWithResponse {
+                peripheral.writeValue(data, for: tx_line!, type: .withResponse) //set lastWriteWritten to true when response received
+            } else {
+                peripheral.writeValue(data, for: tx_line!, type: .withoutResponse)
+            }
+            
+        } else {
             print("Not connected")
         }
     }
@@ -407,6 +454,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         }
         
         while !predicate() {
+            NSLog("waiting...")
             condition.wait(until: Date(timeIntervalSinceNow: self.waitRefreshTime))
         }
         
@@ -448,11 +496,8 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         self.writtenCondition.lock()
         
         self.conditionHelper(condition: self.writtenCondition, holdLock: false,
-                             predicate: {
-                                self.nextOutputState.leds![i] == self.currentOutputState.leds![i]
-        }, work: {
-            self.nextOutputState.leds![i] = intensity
-        })
+                             predicate: { self.nextOutputState.leds![i] == self.currentOutputState.leds![i] },
+                             work: { self.nextOutputState.leds![i] = intensity })
         
         self.writtenCondition.unlock()
         return true
@@ -682,9 +727,11 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             self.cacheTimeoutDuration)
         let shouldSync = changeOccurred || timeout
         
-        NSLog("Sync outputs. \(timeout) \(changeOccurred) \(self.lastWriteWritten)")
+        //NSLog("Sync outputs. \(timeout) \(changeOccurred) \(self.lastWriteWritten)")
         
         if self.initialized && (self.lastWriteWritten || timeout)  && shouldSync {
+            
+            //if timeout { NSLog("Timeout") }
             
             let command = nextCopy.setAllCommand()
             //TODO: Fix. what if the state has changed in the meantime??
@@ -700,26 +747,28 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             if command != oldCommand {
                 NSLog("Sending set all.")
                 self.sendData(data: command)
+                self.lastWriteStart = DispatchTime.now()
+                if self.useWithResponse { self.lastWriteWritten = false }
             }
             
             //if nextCopy.ledArray != currentOutputState.ledArray, let ledArray = nextCopy.ledArray, let ledArrayCommand = type.ledArrayCommand(ledArray), let clearCommand = type.clearLedArrayCommand() {
                 //TODO: maybe only send stop command if changing from flash to symbol
                 //self.sendData(data: clearCommand)
             if nextCopy.ledArray != currentOutputState.ledArray, let ledArray = nextCopy.ledArray, let ledArrayCommand = type.ledArrayCommand(ledArray) {
-                DispatchQueue.main.asyncAfter(deadline: .now() + self.syncInterval/2) {
-                    NSLog("Sending led array change.")
-                    self.sendData(data: ledArrayCommand)
+                if !self.lastWriteWritten {
+                    NSLog("Putting led array command into pending...")
+                    self.commandPending = ledArrayCommand
+                } else {
+                    if self.useWithResponse {self.lastWriteWritten = false}
+                    DispatchQueue.main.asyncAfter(deadline: .now() + self.syncInterval/2) {
+                        NSLog("Sending led array change.")
+                        self.sendData(data: ledArrayCommand)
+                        self.lastWriteStart = DispatchTime.now()  //TODO: need this? or lastwritewritten above?
+                    }
                 }
             }
             
-            self.lastWriteStart = DispatchTime.now()
-            self.lastWriteWritten = false
-            
             self.currentOutputState = nextCopy
-            
-            //TODO: if we stop using write requests (sending data .withResponse)
-            // then we should remove the lastWriteWritten variable
-            self.lastWriteWritten = true
             
             //For debugging
             #if DEBUG
@@ -729,12 +778,14 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
                 //print("\(self.creationTime)")
                 //print("Setting All: \(bytes.map({return $0}))")
             #endif
-        }
-        else {
+        } else {
             if !self.lastWriteWritten {
-                //                print("miss")
+                NSLog("Trying to sync outputs before last write has been written.")
             }
         }
+        
+        //Comment following line out when using lastWriteWritten and sending .withResponse
+        if !self.useWithResponse { self.writtenCondition.signal() }
         
         self.writtenCondition.unlock()
     }

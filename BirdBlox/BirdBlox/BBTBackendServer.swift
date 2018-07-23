@@ -57,7 +57,7 @@ class BBTBackendServer: NSObject, WKScriptMessageHandler {
 			func guardedHandler(request: HttpRequest) -> HttpResponse {
 				let address = request.address ?? "unknown"
 				
-				NSLog("Faux HTTP Request \(request.path) from address \(address).")
+				//NSLog("Faux HTTP Request \(request.path) from address \(address).")
 				
 				
 				if request.address == nil || request.address != BBTLocalHostIP{

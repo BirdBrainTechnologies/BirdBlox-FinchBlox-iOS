@@ -9,6 +9,7 @@
 import Foundation
 import CoreBluetooth
 import Swifter
+import GLKit
 
 class RobotRequests {
 	private let bleCenter = BLECentralManager.shared
@@ -63,8 +64,11 @@ class RobotRequests {
             RobotRequests.handler(fromIDAndTypeHandler: self.setLedArrayRequest)
         server["/robot/out/printBlock"] =
             RobotRequests.handler(fromIDAndTypeHandler: self.setLedArrayRequest)
+        
 		
 		server["/robot/in"] = RobotRequests.handler(fromIDAndTypeHandler: self.inputRequest)
+        server["/robot/out/compass"] =
+            RobotRequests.handler(fromIDAndTypeHandler: self.compassRequest)
 		
 		server["/robot/showInfo"] = RobotRequests.handler(fromIDAndTypeHandler: self.infoRequest)
 		
@@ -184,6 +188,8 @@ class RobotRequests {
 		return (robot, nil)
 	}
 	
+    //MARK: Inputs
+    
 	private func inputRequest(id: String, type: BBTRobotType,
 	                          request: HttpRequest) -> HttpResponse {
         
@@ -200,14 +206,6 @@ class RobotRequests {
 		
 		let values = robot.sensorValues
 		var sensorValue: String
-        
-        //The accelerometer values are used for multiple blocks
-        let accelerometerAdjust: ((UInt8) -> Double) = { x in
-            let intVal = Int8(bitPattern: x) //convert to 2's complement signed int
-            let scaledVal = Double(intVal) * 196/1280 //scaling from bambi
-            print("ACCELEROMETER VALUES! \(x) \(intVal) \(scaledVal)")
-            return scaledVal
-        }
 		
 		switch sensor {
         
@@ -272,7 +270,7 @@ class RobotRequests {
         case "magnetometer":
             guard let axis = queries["axis"] else {
                 return .badRequest(.text("Accelerometer axis not specified."))
-            }
+            }/*
             let adjust: ((UInt8, UInt8) -> String) = { msb, lsb in
                 let uIntVal = (UInt16(msb) << 8) | UInt16(lsb)
                 let intVal = Int16(bitPattern: uIntVal)
@@ -282,10 +280,12 @@ class RobotRequests {
             let x = adjust(values[8], values[9])
             let y = adjust(values[10], values[11])
             let z = adjust(values[12], values[13])
+            */
+            let (x, y, z) = magnetometerValues(values)
             switch axis {
-            case "x": sensorValue = x
-            case "y": sensorValue = y
-            case "z": sensorValue = z
+            case "x": sensorValue = "\(x)"
+            case "y": sensorValue = "\(y)"
+            case "z": sensorValue = "\(z)"
             case "all": sensorValue = "\(x) \(y) \(z)"
             default:
                 return .badRequest(.text("Accelerometer axis not specified."))
@@ -308,11 +308,15 @@ class RobotRequests {
             
             switch sensor {
             case "dial":
-                var scaledVal = Int( Double(value) * (100 / 230) )
+                var scaledVal = Int( round(Double(value) * (100 / 230)) )
                 if scaledVal > 100 { scaledVal = 100 }
                 sensorValue = String(scaledVal)
             case "distance":
-                sensorValue = String(rawToDistance(value))
+                if robot.type == .HummingbirdBit {
+                    sensorValue = String(Int(round(Double(value) * (117/100))))
+                } else {
+                    sensorValue = String(rawToDistance(value))
+                }
             case "temperature":
                 sensorValue = String(rawToTemp(value))
             case "soil":
@@ -331,6 +335,84 @@ class RobotRequests {
 		return .ok(.text(sensorValue))
 	}
 	
+    private func compassRequest(id: String, type: BBTRobotType,
+                                request: HttpRequest) -> HttpResponse {
+        let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
+                                                         acceptTypes: [.HummingbirdBit, .Finch, .MicroBit])
+        
+        guard let robot = roboto else {
+            return requesto!
+        }
+        
+        let (mx, my, mz) = magnetometerValues(robot.sensorValues)
+        let (ax, ay, az) = accelerometerValues(robot.sensorValues)
+        //let values = robot.sensorValues
+        //let mx = magVal(values[8], values[9])
+        //let my = magVal(values[10], values[11])
+        //let mz = magVal(values[12], values[13])
+        //let ax = Double(Int8(bitPattern: values[4]))
+        //let ay = Double(Int8(bitPattern: values[5]))
+        //let az = Double(Int8(bitPattern: values[6]))
+        
+        let phi = atan(-ay/az)
+        let theta = atan(ax/(ay*sin(phi) + az*cos(phi)))
+        
+        let xPrime = Double(mx)
+        let yPrime = Double(my)*cos(phi) - Double(mz)*sin(phi)
+        let zPrime = Double(my)*sin(phi) + Double(mz)*cos(phi)
+        
+        let xPP = xPrime*cos(theta) + zPrime*sin(theta)
+        let yPP = yPrime
+        
+        //let angle = 180 + atan2(xPP, yPP)
+        let angle = 180 + GLKMathRadiansToDegrees(Float(atan(xPP/yPP)))
+        
+        return .ok(.text(String(angle)))
+        //return .badRequest(.text("Bad compass request."))
+    }
+    
+    private func magnetometerValues(_ values: [UInt8]) -> (Int, Int, Int) {
+        /*let adjust: ((UInt8, UInt8) -> Int) = { msb, lsb in
+            let uIntVal = (UInt16(msb) << 8) | UInt16(lsb)
+            let intVal = Int16(bitPattern: uIntVal)
+            print( "MAGNETOMETER VALUES! \(msb) \(lsb) \(uIntVal) \(intVal)" )
+            return Int( intVal / 10 ) //TODO: check
+        }
+        let x = adjust(values[8], values[9])
+        let y = adjust(values[10], values[11])
+        let z = adjust(values[12], values[13])
+        */
+        let x = magVal(values[8], values[9]) / 10
+        let y = magVal(values[10], values[11]) / 10
+        let z = magVal(values[12], values[13]) / 10
+        
+        return (x, y, z)
+    }
+    
+    private func magVal(_ msb: UInt8, _ lsb: UInt8) -> Int {
+        let uIntVal = (UInt16(msb) << 8) | UInt16(lsb)
+        let intVal = Int16(bitPattern: uIntVal)
+        print( "MAGNETOMETER VALUES! \(msb) \(lsb) \(uIntVal) \(intVal)" )
+        return Int( intVal )
+    }
+    
+    private func accelerometerValues(_ values: [UInt8]) -> (Double, Double, Double) {
+        let x = accelerometerAdjust(values[4])
+        let y = accelerometerAdjust(values[5])
+        let z = accelerometerAdjust(values[6])
+        
+        return (x, y, z)
+    }
+    
+    //The accelerometer values are used for multiple blocks
+    private func accelerometerAdjust (_ x: UInt8) -> Double {
+        let intVal = Int8(bitPattern: x) //convert to 2's complement signed int
+        let scaledVal = Double(intVal) * 196/1280 //scaling from bambi
+        print("ACCELEROMETER VALUES! \(x) \(intVal) \(scaledVal)")
+        return scaledVal
+    }
+    
+    
 	
 	//MARK: Outputs
     
@@ -361,6 +443,7 @@ class RobotRequests {
         }
         
         if robot.setTriLED(port: port, intensities: BBTTriLED(scaled(red), scaled(green), scaled(blue))) {
+            NSLog("Set triled green \(green)")
             return .ok(.text("set"))
         } else {
             return .internalServerError

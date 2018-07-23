@@ -353,6 +353,7 @@ enum BBTRobotType {
                         fatalError()
                 }
                 
+                NSLog("Symbol command \([letter, symbol, led25, led24to17, led16to9, leds8to1])")
                 return Data(bytes: UnsafePointer<UInt8>([letter, symbol, led25, led24to17, led16to9, leds8to1] as [UInt8]), count: 6)
                 
             case "F": //flash a string
@@ -362,6 +363,8 @@ enum BBTRobotType {
                 for i in 1 ... length {
                     commandArray.append(getUnicode(ledStatusChars[i]))
                 }
+                
+                NSLog("Flash command \(commandArray)")
                 return Data(bytes: UnsafePointer<UInt8>(commandArray), count: length + 2)
             default: return nil
             }
@@ -396,13 +399,23 @@ enum BBTRobotType {
         }
     }
     
-    //MARK: Calibration commands
+    //MARK: Other commands
     func calibrateMagnetometerCommand() -> Data? {
         //Calibrate Magnetometer: 0xCE 0xFF 0xFF 0xFF
         switch self {
         case .HummingbirdBit, .MicroBit, .Finch:
             return Data(bytes: UnsafePointer<UInt8>([0xCE, 0xFF, 0xFF, 0xFF] as [UInt8]), count: 4)
         case .Flutter, .Hummingbird: return nil
+        }
+    }
+    
+    func hardwareFirmwareVersionCommand() -> Data? {
+        switch self {
+        case .Hummingbird:
+            return "G4".data(using: .utf8)!
+        case .HummingbirdBit, .MicroBit:
+            return Data(bytes: UnsafePointer<UInt8>([0xCF, 0xFF, 0xFF, 0xFF] as [UInt8]), count: 4)
+        case .Flutter, .Finch: return nil
         }
     }
 }

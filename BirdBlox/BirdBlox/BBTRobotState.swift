@@ -177,6 +177,7 @@ struct BBTRobotOutputState: Equatable {
                                   buzzerArray[0], buzzerArray[1], buzzerArray[2], buzzerArray[3]]
             assert(array.count == 19)
             
+            //NSLog("Set all \(array)")
             return Data(bytes: UnsafePointer<UInt8>(array), count: array.count)
         case .Flutter: return Data()
         case .Finch:
