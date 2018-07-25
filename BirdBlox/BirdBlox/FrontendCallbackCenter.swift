@@ -190,4 +190,9 @@ class FrontendCallbackCenter {
 		
 		return self.runJS(function: function, parameters: parameters)
 	}
+    
+    //When the app is sent to the background, we need to stop any running code
+    func stopExecution() ->  Bool {
+        return self.runJS(function: "CodeManager.stop", parameters: [])
+    }
 }

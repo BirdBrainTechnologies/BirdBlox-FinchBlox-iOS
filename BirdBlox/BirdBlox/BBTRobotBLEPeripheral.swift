@@ -226,16 +226,19 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             self.hardwareString = String(versionArray[0]) + "." + String(versionArray[1])
             self.firmwareVersionString = String(versionArray[2]) + "." + String(versionArray[3]) +
                 (String(bytes: [versionArray[4]], encoding: .ascii) ?? "")
-        case .HummingbirdBit, .MicroBit:
+        case .HummingbirdBit:
             self.hardwareString = String(versionArray[0])
             self.firmwareVersionString = "\(versionArray[1])/\(versionArray[2])"
+        case .MicroBit:
+            self.hardwareString = String(versionArray[0])
+            self.firmwareVersionString = String(versionArray[1])
         case .Flutter, .Finch:
             NSLog("Firmware and Hardware version not set for types not supported.")
         }
         
         
-        print(versionArray)
-        //print("end hi")
+        print("Version array: \(versionArray)")
+
         self.initializingCondition.unlock()
         
         
@@ -272,6 +275,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             
         case .HummingbirdBit, .MicroBit:
             
+            //versionArray[1] is micro:bit firmware, versionArray[2] is SAMD (on bit board)
             guard versionArray[1] >= 1 && versionArray[2] >= 1 else {
                 let _ = FrontendCallbackCenter.shared
                     .robotFirmwareIncompatible(robotType: type, id: self.id, firmware: self.firmwareVersionString)

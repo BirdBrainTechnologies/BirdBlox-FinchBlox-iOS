@@ -217,12 +217,18 @@ class AudioManager: NSObject, AVAudioRecorderDelegate {
 	
 	}
 	
+    /*
+     * Stop any notes that are playing. 120 is the midi controller value for stop all
+     * see https://www.midi.org/specifications-old/item/table-1-summary-of-midi-message
+     */
     func stopTones() {
+        sampler.sendController(120, withValue: 0, onChannel: 1)
+        /*
         audioEngine.stop()
         do {
             try audioEngine.start()
         } catch {
             NSLog("Failed to start audio player")
-        }
+        }*/
     }
 }

@@ -55,10 +55,8 @@ class BBTBackendServer: NSObject, WKScriptMessageHandler {
 	subscript(path: String) -> ((HttpRequest) -> HttpResponse)? {
 		set(handler) {
 			func guardedHandler(request: HttpRequest) -> HttpResponse {
-				let address = request.address ?? "unknown"
 				
-				//NSLog("Faux HTTP Request \(request.path) from address \(address).")
-				
+				NSLog("Faux HTTP Request \(request.path) from address \(request.address ?? "unknown").")
 				
 				if request.address == nil || request.address != BBTLocalHostIP{
 					#if DEBUG
@@ -246,29 +244,26 @@ class BBTBackendServer: NSObject, WKScriptMessageHandler {
 	//Unfortunately we can't just call it because we need to make an HttpRequest from 
 	//the native call and not just a socket. (This function is private.)
 	private func extractQueryParams(_ url: String) -> [(String, String)] {
-		guard let questionMark = url.characters.index(of: "?") else {
+		guard let questionMark = url.index(of: "?") else {
 			return []
 		}
-		let queryStart = url.characters.index(after: questionMark)
-		guard url.endIndex > queryStart else {
+		let queryStart = url.index(after: questionMark)
+		guard url.endIndex > queryStart, let query = String(url[queryStart..<url.endIndex]) else {
 			return []
 		}
-		let query = String(url.characters[queryStart..<url.endIndex])
+
 		return query.components(separatedBy: "&")
 			.reduce([(String, String)]()) { (c, s) -> [(String, String)] in
-				guard let nameEndIndex = s.characters.index(of: "=") else {
-					return c
-				}
-				guard let name = String(s.characters[s.startIndex..<nameEndIndex]).removingPercentEncoding else {
+				guard let nameEndIndex = s.index(of: "="),
+                    let name = String(s[s.startIndex..<nameEndIndex]).removingPercentEncoding else {
 					return c
 				}
 				let valueStartIndex = s.index(nameEndIndex, offsetBy: 1)
-				guard valueStartIndex < s.endIndex else {
+				guard valueStartIndex < s.endIndex,
+                    let value = String(s[valueStartIndex..<s.endIndex]).removingPercentEncoding else {
 					return c + [(name, "")]
 				}
-				guard let value = String(s.characters[valueStartIndex..<s.endIndex]).removingPercentEncoding else {
-					return c + [(name, "")]
-				}
+				
 				return c + [(name, value)]
 		}
 	}

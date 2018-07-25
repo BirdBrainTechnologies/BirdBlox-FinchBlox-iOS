@@ -315,7 +315,7 @@ class DataModel: NSObject, FileManagerDelegate {
 	
 	// Replaces disallowed characters with underscores
 	public static func sanitizedName(of name: String) -> String {
-		guard name.characters.count > 0 else {
+		guard name.count > 0 else {
 			return "_"
 		}
 		
@@ -502,14 +502,14 @@ class DataModel: NSObject, FileManagerDelegate {
 			  let file = try? FileHandle(forWritingTo: self.logLoc),
 			  let data = message.data(using: .utf8) else {
 			
-			let oldLogs = (try? String(contentsOf: self.logLoc)) ?? ""
+			var oldLogs = (try? String(contentsOf: self.logLoc)) ?? ""
 			
-			var logChars = oldLogs.characters
-			if logChars.count > DataModel.truncLogSize {
-				logChars = logChars.dropFirst(logChars.count - 25000)
+			//var logChars = oldLogs.characters
+			if oldLogs.count > DataModel.truncLogSize {
+                oldLogs = String(oldLogs.dropFirst(oldLogs.count - 25000))
 			}
 			
-			let log = String(logChars) + message
+			let log = String(oldLogs) + message
 			let _ = try? log.write(to: self.logLoc, atomically: true, encoding: .utf8)
 			return
 		}
