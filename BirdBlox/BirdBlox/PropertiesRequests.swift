@@ -7,7 +7,8 @@
 //
 
 import Foundation
-import Swifter
+import UIKit
+//import Swifter
 
 class PropertiesManager {
 	var heightInPoints: CGFloat = 300.0

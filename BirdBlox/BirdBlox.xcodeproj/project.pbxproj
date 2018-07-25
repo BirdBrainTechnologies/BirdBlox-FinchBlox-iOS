@@ -8,6 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		31686092209A615C008D92AF /* BBTRobotType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31686091209A615C008D92AF /* BBTRobotType.swift */; };
+		3188E84B2108B68C00AD54AB /* String+File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3188E84A2108B68C00AD54AB /* String+File.swift */; };
+		3188E84D2108B70D00AD54AB /* String+Misc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3188E84C2108B70D00AD54AB /* String+Misc.swift */; };
+		31A4AF972108AE8E0097CE01 /* HttpRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31A4AF962108AE8E0097CE01 /* HttpRequest.swift */; };
+		31A4AF992108AEC30097CE01 /* HttpResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31A4AF982108AEC30097CE01 /* HttpResponse.swift */; };
+		31A4AF9B2108AEF50097CE01 /* HttpRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31A4AF9A2108AEF50097CE01 /* HttpRouter.swift */; };
+		31A4AF9D2108AF480097CE01 /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31A4AF9C2108AF480097CE01 /* Socket.swift */; };
+		31A4AF9F2108AFD50097CE01 /* Errno.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31A4AF9E2108AFD50097CE01 /* Errno.swift */; };
+		31A4AFA12108B09C0097CE01 /* Files.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31A4AFA02108B09C0097CE01 /* Files.swift */; };
 		3F0E4A731ED37D3900369F70 /* DeviceUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F0E4A721ED37D3900369F70 /* DeviceUtilities.swift */; };
 		3F5F6D291EDDB3A800799277 /* BBTBackendServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F5F6D281EDDB3A800799277 /* BBTBackendServer.swift */; };
 		3F9F72471F223D2000C29FEB /* RobotRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9F72461F223D2000C29FEB /* RobotRequests.swift */; };
@@ -20,7 +28,6 @@
 		3FF13C061F15692F00D1F358 /* CallbackManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FF13C051F15692F00D1F358 /* CallbackManager.swift */; };
 		3FFA170F1F1D492B0085CE71 /* BBTRobotBLEPeripheral.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FFA170E1F1D492B0085CE71 /* BBTRobotBLEPeripheral.swift */; };
 		BA8169511E81A98A00AAF7A3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8169501E81A98A00AAF7A3 /* AppDelegate.swift */; };
-		BA8169531E81A98A00AAF7A3 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8169521E81A98A00AAF7A3 /* ViewController.swift */; };
 		BA8169561E81A98A00AAF7A3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BA8169541E81A98A00AAF7A3 /* Main.storyboard */; };
 		BA8169581E81A98A00AAF7A3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BA8169571E81A98A00AAF7A3 /* Assets.xcassets */; };
 		BA81695B1E81A98A00AAF7A3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BA8169591E81A98A00AAF7A3 /* LaunchScreen.storyboard */; };
@@ -41,6 +48,14 @@
 /* Begin PBXFileReference section */
 		1CBEFB40603958D76A5BFE44 /* Pods-BirdBlox.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BirdBlox.release.xcconfig"; path = "Pods/Target Support Files/Pods-BirdBlox/Pods-BirdBlox.release.xcconfig"; sourceTree = "<group>"; };
 		31686091209A615C008D92AF /* BBTRobotType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBTRobotType.swift; sourceTree = "<group>"; };
+		3188E84A2108B68C00AD54AB /* String+File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+File.swift"; sourceTree = "<group>"; };
+		3188E84C2108B70D00AD54AB /* String+Misc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+Misc.swift"; sourceTree = "<group>"; };
+		31A4AF962108AE8E0097CE01 /* HttpRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpRequest.swift; sourceTree = "<group>"; };
+		31A4AF982108AEC30097CE01 /* HttpResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpResponse.swift; sourceTree = "<group>"; };
+		31A4AF9A2108AEF50097CE01 /* HttpRouter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpRouter.swift; sourceTree = "<group>"; };
+		31A4AF9C2108AF480097CE01 /* Socket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Socket.swift; sourceTree = "<group>"; };
+		31A4AF9E2108AFD50097CE01 /* Errno.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Errno.swift; sourceTree = "<group>"; };
+		31A4AFA02108B09C0097CE01 /* Files.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Files.swift; sourceTree = "<group>"; };
 		3F0E4A721ED37D3900369F70 /* DeviceUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceUtilities.swift; sourceTree = "<group>"; };
 		3F5F6D281EDDB3A800799277 /* BBTBackendServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BBTBackendServer.swift; sourceTree = "<group>"; };
 		3F9F72461F223D2000C29FEB /* RobotRequests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RobotRequests.swift; sourceTree = "<group>"; };
@@ -56,7 +71,6 @@
 		4B9CF54964A1E1D488464E38 /* Pods_BirdBlox.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BirdBlox.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA81694D1E81A98A00AAF7A3 /* BirdBlox.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BirdBlox.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA8169501E81A98A00AAF7A3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		BA8169521E81A98A00AAF7A3 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		BA8169551E81A98A00AAF7A3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		BA8169571E81A98A00AAF7A3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BA81695A1E81A98A00AAF7A3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -87,6 +101,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		31A4AF952108ACC10097CE01 /* SwifterFiles */ = {
+			isa = PBXGroup;
+			children = (
+				3188E84C2108B70D00AD54AB /* String+Misc.swift */,
+				3188E84A2108B68C00AD54AB /* String+File.swift */,
+				31A4AFA02108B09C0097CE01 /* Files.swift */,
+				31A4AF9E2108AFD50097CE01 /* Errno.swift */,
+				31A4AF9C2108AF480097CE01 /* Socket.swift */,
+				31A4AF9A2108AEF50097CE01 /* HttpRouter.swift */,
+				31A4AF982108AEC30097CE01 /* HttpResponse.swift */,
+				31A4AF962108AE8E0097CE01 /* HttpRequest.swift */,
+			);
+			path = SwifterFiles;
+			sourceTree = "<group>";
+		};
 		3FA7D5DF1EF026C700FE4882 /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -146,7 +175,6 @@
 				BA8169621E81AD7C00AAF7A3 /* httpServer */,
 				BA8169501E81A98A00AAF7A3 /* AppDelegate.swift */,
 				3FA4F8A81F03EE56005EB384 /* BBXDocumentViewController.swift */,
-				BA8169521E81A98A00AAF7A3 /* ViewController.swift */,
 				BA8169541E81A98A00AAF7A3 /* Main.storyboard */,
 				BA8169571E81A98A00AAF7A3 /* Assets.xcassets */,
 				BA8169591E81A98A00AAF7A3 /* LaunchScreen.storyboard */,
@@ -159,6 +187,7 @@
 		BA8169621E81AD7C00AAF7A3 /* httpServer */ = {
 			isa = PBXGroup;
 			children = (
+				31A4AF952108ACC10097CE01 /* SwifterFiles */,
 				3F5F6D281EDDB3A800799277 /* BBTBackendServer.swift */,
 				BA8169671E81B72D00AAF7A3 /* FrontendRequests.swift */,
 				3F9F72461F223D2000C29FEB /* RobotRequests.swift */,
@@ -276,9 +305,12 @@
 			files = (
 			);
 			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-BirdBlox/Pods-BirdBlox-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/Zip/Zip.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Zip.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -306,13 +338,16 @@
 			files = (
 			);
 			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-BirdBlox-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -327,23 +362,30 @@
 				3FFA170F1F1D492B0085CE71 /* BBTRobotBLEPeripheral.swift in Sources */,
 				3FA7D5E31EF2E65800FE4882 /* BBTRobotState.swift in Sources */,
 				31686092209A615C008D92AF /* BBTRobotType.swift in Sources */,
+				31A4AF9D2108AF480097CE01 /* Socket.swift in Sources */,
+				31A4AF972108AE8E0097CE01 /* HttpRequest.swift in Sources */,
 				3F0E4A731ED37D3900369F70 /* DeviceUtilities.swift in Sources */,
+				31A4AF9F2108AFD50097CE01 /* Errno.swift in Sources */,
 				3FA4F8A71F02F2BB005EB384 /* BBXDocument.swift in Sources */,
-				BA8169531E81A98A00AAF7A3 /* ViewController.swift in Sources */,
 				BA8A75991EB27CF700ECFABC /* AudioManager.swift in Sources */,
 				BA8A759B1EB2817E00ECFABC /* SettingsRequests.swift in Sources */,
 				3FDE24E81ED36910000BC24B /* PropertiesRequests.swift in Sources */,
 				BA8169681E81B72D00AAF7A3 /* FrontendRequests.swift in Sources */,
 				BA81696B1E81B7BC00AAF7A3 /* DataModel.swift in Sources */,
+				31A4AFA12108B09C0097CE01 /* Files.swift in Sources */,
 				BA8169511E81A98A00AAF7A3 /* AppDelegate.swift in Sources */,
+				31A4AF992108AEC30097CE01 /* HttpResponse.swift in Sources */,
 				BA81696D1E81BC3F00AAF7A3 /* StringExtensions.swift in Sources */,
 				BA8A75971EB27A8C00ECFABC /* SoundRequests.swift in Sources */,
 				BA8A75931EB2481F00ECFABC /* DataRequests.swift in Sources */,
 				3F9F72471F223D2000C29FEB /* RobotRequests.swift in Sources */,
 				BA8A75951EB2519200ECFABC /* HostDeviceRequests.swift in Sources */,
+				3188E84B2108B68C00AD54AB /* String+File.swift in Sources */,
 				3FEC5DA41EF987640067C41B /* FrontendCallbackCenter.swift in Sources */,
+				3188E84D2108B70D00AD54AB /* String+Misc.swift in Sources */,
 				3FF13C061F15692F00D1F358 /* CallbackManager.swift in Sources */,
 				BAE2EBCF1E84417000198B19 /* BLECentralManager.swift in Sources */,
+				31A4AF9B2108AEF50097CE01 /* HttpRouter.swift in Sources */,
 				3FA4F8A91F03EE56005EB384 /* BBXDocumentViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

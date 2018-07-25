@@ -7,7 +7,8 @@
 //
 
 import Foundation
-import Swifter
+import UIKit
+//import Swifter
 
 class DataManager: NSObject {
     

@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 import WebKit
-import Swifter
+//import Swifter
 import SafariServices
 
 

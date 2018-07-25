@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import Swifter
+//import Swifter
 
 class SoundManager: NSObject {
 

@@ -6,7 +6,7 @@ target 'BirdBlox' do
   use_frameworks!
 
   # Pods for BirdBlox
-  pod 'Swifter', :git => 'https://github.com/httpswift/swifter.git', :branch => 'stable'
+  # pod 'Swifter', :git => 'https://github.com/httpswift/swifter.git', :branch => 'stable'
   pod 'Zip', :git => 'https://github.com/marmelroy/Zip.git', :branch => 'master'
 
 end

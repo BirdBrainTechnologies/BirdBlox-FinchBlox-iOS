@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import Swifter
+//import Swifter
 
 class SettingsManager: NSObject {
     

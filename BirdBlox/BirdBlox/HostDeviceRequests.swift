@@ -7,7 +7,8 @@
 //
 
 import Foundation
-import Swifter
+import UIKit
+//import Swifter
 import CoreLocation
 import CoreMotion
 import SystemConfiguration.CaptiveNetwork
