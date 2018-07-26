@@ -13,6 +13,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
 
     public let peripheral: CBPeripheral
     public let type: BBTRobotType
+    public let name: String
     private let BLE_Manager: BLECentralManager
 	
     public var id: String {
@@ -36,7 +37,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     }
     
     //MARK: Variables to coordinate set all
-    private var useSetall = true
+    //private var useSetall = true
     private var writtenCondition: NSCondition = NSCondition()
     private var useWithResponse = false //For most devices, we send commands .withoutResponse
     
@@ -80,18 +81,18 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     
     override public var description: String {
         let gapName = self.peripheral.name ?? "Unknown"
-        let name = BBTgetDeviceNameForGAPName(gapName)
+        //let name = BBTgetDeviceNameForGAPName(gapName)
         
         var updateDesc = ""
-        if !self.useSetall {
+        /*if !self.useSetall {
             updateDesc = "\n\nThis \(type.description) needs to be updated. " +
                 "See the link below: \n" +
             "http://www.hummingbirdkit.com/learning/installing-birdblox#BurnFirmware "
-        }
+        }*/
         
         return
-            "\(type.description) Peripheral\n" +
-                "Name: \(name)\n" +
+            "\(self.type.description) Peripheral\n" +
+                "Name: \(self.name)\n" +
                 "Bluetooth Name: \(gapName)\n" +
                 "Hardware Version: \(self.hardwareString)\n" +
                 "Firmware Version: \(self.firmwareVersionString)" +
@@ -103,6 +104,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     required init(_ peripheral: CBPeripheral, _ type: BBTRobotType, _ completion: ((BBTRobotBLEPeripheral) -> Void)? = nil){
         self.peripheral = peripheral
         self.type = type
+        self.name = BBTgetDeviceNameForGAPName(self.peripheral.name ?? "Unknown")
         self.BLE_Manager = BLECentralManager.shared
         
         lastSensorUpdate = Array<UInt8>(repeating: 0, count: type.sensorByteCount)
@@ -169,15 +171,13 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
                 }
                 if(wasTXSet && wasRXSet){
                     switch type{ //TODO: merge initialize functions
-                    case .Hummingbird, .HummingbirdBit, .MicroBit, .Flutter:
+                    case .Hummingbird, .HummingbirdBit, .MicroBit:
                         DispatchQueue.main.async {
                             self.initializeDevice()
                         }
                         return
-                    case .Finch:
-                        DispatchQueue.main.async {
-                            self.initializeFN()
-                        }
+                    case .Finch, .Flutter:
+                        NSLog("Finch and Flutter not currently supported.")
                         return
                     }
                 }
@@ -185,10 +185,10 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         }
     }
     private func initializeDevice() {
-        print("start init")
+        NSLog("Beginning initialization of \(self.name) (\(self.type.description)).")
         
         if type == .Hummingbird, let name = peripheral.name, name.starts(with: "HB") {
-            print("Setting to with response!")
+            print("\(self.name) will use .withResponse.")
             self.useWithResponse = true
         }
         
@@ -215,8 +215,17 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         
         //Wait until we get a response or until we timeout.
         //If we time out the verion will be 0.0, which is invalid.
-        while (self.lineIn == oldLineIn && (Date().timeIntervalSince(timeoutTime) < 0)) {
+        //while (self.lineIn == oldLineIn && (Date().timeIntervalSince(timeoutTime) < 0)) {
+        while (self.lineIn == oldLineIn) {
             self.initializingCondition.wait(until: Date(timeIntervalSinceNow: 1))
+            if (Date().timeIntervalSince(timeoutTime) >= 0) {
+                let _ = FrontendCallbackCenter.shared.robotDisconnected(name: self.name, reason: "initialization timeout")
+                
+                BLE_Manager.disconnect(byID: self.id)
+                NSLog("\(self.name) initialization failed due to timeout.")
+                return
+                
+            }
         }
         let versionArray = self.lineIn
         
@@ -241,8 +250,10 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
 
         self.initializingCondition.unlock()
         
-        
+        //TODO: is this the best place to check this?
         guard self.connected else {
+            let _ = FrontendCallbackCenter.shared.robotDisconnected(name: self.name, reason: "lost connection")
+            
             BLE_Manager.disconnect(byID: self.id)
             NSLog("Initialization failed because device got disconnected.")
             return
@@ -257,8 +268,9 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             // whole program crashed.
             //If the firmware version is too low, then disconnect and inform the user.
             //Must be higher than 2.2b OR be 2.1i
-            guard versionArray[2] >= 2 &&
-                ((versionArray[3] >= 2) || (versionArray[3] == 1 && versionArray[4] >= 105)) else {
+            //guard versionArray[2] >= 2 &&
+            //    ((versionArray[3] >= 2) || (versionArray[3] == 1 && versionArray[4] >= 105)) else {
+            guard versionArray[2] >= 2 && versionArray[3] >= 2 else {
                     let _ = FrontendCallbackCenter.shared
                         .robotFirmwareIncompatible(robotType: type, id: self.id, firmware: self.firmwareVersionString)
                     
@@ -268,10 +280,11 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             }
             
             //Old firmware, but still compatible
+            /*
             if versionArray[3] == 1 && versionArray[4] >= 105 {
                 let _ = FrontendCallbackCenter.shared.robotFirmwareStatus(id: self.id, status: "old")
                 self.useSetall = false
-            }
+            }*/
             
         case .HummingbirdBit, .MicroBit:
             
@@ -286,6 +299,10 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             }
             
         case .Finch, .Flutter:
+            //TODO: (finch) add a check for legacy firmware and use set all for only
+            //firmwares newer than 2.2.a
+            //From Tom: send the characters 'G' '4' and you will get back the hardware version
+            //(currently 0x03 0x00) and the firmware version (0x02 0x02 'b'), might be 'a' instead of 'b'
             BLE_Manager.disconnect(byID: self.id)
             NSLog("Initialization failed because Finch and Flutter not currently supported!")
             return
@@ -298,22 +315,24 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         //self.sendData(data: BBTHummingbirdUtility.getPollStartCommand())
         self.sendData(data: type.sensorCommand("pollStart"))
         
-        //        DispatchQueue.main.async{
-        if self.useSetall { //TODO: scheduledTimer isn't very reliable. Switch to scheduleRepeating when stop supporting iOS9
-            self.syncTimer =
-                Timer.scheduledTimer(timeInterval: self.syncInterval, target: self,
-                                     selector: #selector(syncronizeOutputs),
-                                     userInfo: nil, repeats: true)
-            self.syncTimer.fire()
-        }
-        //        }
+        //if self.useSetall {
+        
+        //TODO: scheduledTimer isn't very reliable. Switch to scheduleRepeating when stop supporting iOS9
+        self.syncTimer =
+            Timer.scheduledTimer(timeInterval: self.syncInterval, target: self,
+                                 selector: #selector(syncronizeOutputs),
+                                 userInfo: nil, repeats: true)
+        self.syncTimer.fire()
+        //}
+
         
         self._initialized = true
-        print("Hummingbird initialized")
+        print("\(self.type.description) \(self.name) initialized")
         if let completion = self.initializationCompletion {
             completion(self)
         }
     }
+    /*
     private func initializeFN() {
         print("start init")
         //Get ourselves a fresh slate
@@ -335,7 +354,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         if let completion = self.initializationCompletion {
             completion(self)
         }
-    }
+    }*/
     
     /**
      *
@@ -343,13 +362,12 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic,
                     error: Error?) {
         if error != nil {
-            NSLog(error.debugDescription)
+            NSLog("Error in didUpdateValueFor: \(error.debugDescription)")
             return
         }
         
         //If we are trying to reset the hummingbird's name, this should be the device's MAC
-        //print("Did update characteristic \(characteristic)")
-        //print("\(characteristic.value!.count) \(characteristic)")
+        //print("Did update characteristic for \(self.name) by \(characteristic.value!.count): \(characteristic)")
         
         if characteristic.uuid != type.RX_UUID {
             return
@@ -362,9 +380,9 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         //This block used for getting the firmware info
         guard self.initialized else {
             self.initializingCondition.lock()
-            //print("hi")
-            print(inData.debugDescription)
+            print("Got version data in: \(inData.debugDescription)")
             inData.copyBytes(to: &self.lineIn, count: self.lineIn.count)
+            print("Copied to lineIn: \(self.lineIn)")
             self.initializingCondition.signal()
             self.initializingCondition.unlock()
             return
@@ -435,7 +453,10 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         return true
     }
     
-    
+    /**
+     * Main function used to send data to the robot.
+     * Called from syncronizeOutputs, and also during initialization
+     */
     private func sendData(data: Data) {
         if self.connected {
             
@@ -446,6 +467,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             }
             
         } else {
+            //TODO: something else here?
             print("Not connected")
         }
     }
@@ -469,14 +491,34 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             condition.unlock()
         }
     }
-    
-    //TODO: (finch) add a check for legacy firmware and use set all for only
-    //firmwares newer than 2.2.a
-    //From Tom: send the characters 'G' '4' and you will get back the hardware version
-    //(currently 0x03 0x00) and the firmware version (0x02 0x02 'b'), might be 'a' instead of 'b'
+    /**
+     * Set a specific output to be set next time setAll is sent.
+     * Returns false if this output cannot be set
+     */
+    private func setOutput(ifCheck isValid: Bool, when predicate: (() -> Bool), set work: (() -> ())) -> Bool {
+        
+        guard self.peripheral.state == .connected else {
+            return false
+        }
+        if !isValid {
+            return false
+        }
+        
+        self.conditionHelper(condition: self.writtenCondition, predicate: predicate, work: work)
+        
+        return true
+    }
     
     //MARK: Robot outputs
     func setLED(port: Int, intensity: UInt8) -> Bool {
+        
+        let i = Int(port - 1)
+        
+        return setOutput(ifCheck: (self.type.ledCount >= port),
+                         when: {self.nextOutputState.leds![i] == self.currentOutputState.leds![i] },
+                         set: { self.nextOutputState.leds![i] = intensity })
+        
+        /*
         
         //if there are fewer leds than the port number specified
         if self.type.ledCount < port {
@@ -486,14 +528,14 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             return false
         }
         
-        guard self.useSetall else {
+        /*guard self.useSetall else {
             guard let command = type.ledCommand(UInt8(port), intensity: intensity) else {
                 return false
             }
             self.sendData(data: command)
             Thread.sleep(forTimeInterval: 0.1)
             return true
-        }
+        }*/
         
         let i = port - 1
         
@@ -505,10 +547,17 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         
         self.writtenCondition.unlock()
         return true
+        */
     }
     
     func setTriLED(port: UInt, intensities: BBTTriLED) -> Bool {
         
+        let i = Int(port - 1)
+        
+        return setOutput(ifCheck: (self.type.triledCount >= port),
+                         when: {self.nextOutputState.trileds![i] == self.currentOutputState.trileds![i]},
+                         set: {self.nextOutputState.trileds![i] = intensities})
+        /*
         if self.type.triledCount < port {
             return false
         }
@@ -516,14 +565,14 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             return false
         }
         
-        guard self.useSetall else {
+        /*guard self.useSetall else {
             guard let command = type.triLEDCommand(UInt8(port), red_val: intensities.red, green_val: intensities.green, blue_val: intensities.blue) else {
                 return false
             }
             self.sendData(data: command)
             Thread.sleep(forTimeInterval: 0.1)
             return true
-        }
+        }*/
         
         let i = Int(port - 1)
         let (r, g, b) = (intensities.red, intensities.green, intensities.blue)
@@ -539,24 +588,32 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         
         self.writtenCondition.unlock()
         return true
+         */
     }
     
     func setVibration(port: Int, intensity: UInt8) -> Bool {
         
+        let i = Int(port - 1)
+        
+        return setOutput(ifCheck: (self.type.vibratorCount >= port),
+                         when: {self.nextOutputState.vibrators![i] == self.currentOutputState.vibrators![i]},
+                         set: {self.nextOutputState.vibrators![i] = intensity})
+        
+        /*
         if self.type.vibratorCount < port {
             return false
         }
         guard self.peripheral.state == .connected else {
             return false
         }
-        guard self.useSetall else {
+        /*guard self.useSetall else {
             guard let command = type.vibrationCommand(UInt8(port), intensity: intensity) else {
                 return false
             }
             self.sendData(data: command)
             Thread.sleep(forTimeInterval: 0.1)
             return true
-        }
+        }*/
         
         let i = port - 1
         
@@ -571,10 +628,19 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         
         self.writtenCondition.unlock()
         return true
+        */
     }
     
     func setMotor(port: Int, speed: Int8) -> Bool {
         
+        let i = Int(port - 1)
+        
+        return setOutput(ifCheck: (self.type.motorCount >= port),
+                         when: {self.nextOutputState.motors![i] == self.currentOutputState.motors![i]},
+                         set: {self.nextOutputState.motors![i] = speed})
+            
+            
+        /*
         if self.type.motorCount < port {
             return false
         }
@@ -582,14 +648,14 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             return false
         }
         
-        guard self.useSetall else {
+        /*guard self.useSetall else {
             guard let command = type.motorCommand(UInt8(port), speed: Int(speed)) else {
                 return false
             }
             self.sendData(data: command)
             Thread.sleep(forTimeInterval: 0.1)
             return true
-        }
+        }*/
         
         let i = port - 1
         
@@ -603,12 +669,20 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         })
         
         self.writtenCondition.unlock()
-        
-        
+ 
         return true
+        */
     }
     
     func setServo(port: UInt, value: UInt8) -> Bool {
+        
+        let i = Int(port - 1)
+        
+        return setOutput(ifCheck: (self.type.servoCount >= port),
+                         when: {self.nextOutputState.servos![i] == self.currentOutputState.servos![i]},
+                         set: {self.nextOutputState.servos![i] = value})
+        
+        /*
         print("setting servo to \(value)")
         if self.type.servoCount < port {
             return false
@@ -617,7 +691,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             return false
         }
         
-        guard self.useSetall else {
+        /*guard self.useSetall else {
             //TODO: value now adjusted in robotRequest. make change here if we are going to use this.
             guard let command = type.servoCommand(UInt8(port), angle: value) else {
                 return false
@@ -625,7 +699,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             self.sendData(data: command)
             Thread.sleep(forTimeInterval: 0.1)
             return true
-        }
+        }*/
         
         let i = Int(port - 1)
         
@@ -640,10 +714,16 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         
         self.writtenCondition.unlock()
         return true
+        */
     }
     
-    func setBuzzer(volume: Int, frequency: Int, period: UInt16, duration: UInt16) -> Bool {
+    func setBuzzer(period: UInt16, duration: UInt16) -> Bool {
         
+        return setOutput(ifCheck: (self.type.buzzerCount == 1),
+                         when: {self.nextOutputState.buzzer! == self.currentOutputState.buzzer!},
+                         set: {self.nextOutputState.buzzer = BBTBuzzer(period: period, duration: duration)})
+        
+        /*
         if self.type.buzzerCount != 1 {
             return false
         }
@@ -651,14 +731,14 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             return false
         }
         
-        guard self.useSetall else {
+        /*guard self.useSetall else {
             guard let command = type.buzzerCommand(period: period, dur: duration) else {
                 return false
             }
             self.sendData(data: command)
             Thread.sleep(forTimeInterval: 0.1)
             return true
-        }
+        }*/
         
         self.writtenCondition.lock()
         
@@ -666,15 +746,21 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
                              predicate: {
                                 self.nextOutputState.buzzer! == self.currentOutputState.buzzer!
         }, work: {
-            self.nextOutputState.buzzer = BBTBuzzer(freq: 0, vol: 0, period: period, duration: duration)
+            self.nextOutputState.buzzer = BBTBuzzer(period: period, duration: duration)
         })
         
         self.writtenCondition.unlock()
         return true
+        */
     }
     
     func setLedArray(_ statusString: String) -> Bool {
         
+        return setOutput(ifCheck: (self.type.ledArrayCount == 1),
+                         when: {self.nextOutputState.ledArray == self.currentOutputState.ledArray},
+                         set: {self.nextOutputState.ledArray = statusString})
+        
+        /*
         if self.type.ledArrayCount != 1 {
             return false
         }
@@ -682,14 +768,14 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             return false
         }
         
-        guard self.useSetall else {
+        /*guard self.useSetall else {
             guard let command = type.ledArrayCommand(statusString) else {
                 return false
             }
             self.sendData(data: command)
             Thread.sleep(forTimeInterval: 0.1)
             return true
-        }
+        }*/
         
         self.writtenCondition.lock()
         
@@ -702,17 +788,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         
         self.writtenCondition.unlock()
         return true
-        
-    }
-    
-    //TODO: Finch only??
-    var allStr = "0,0,0,0,0,0,0,0,0,0,0,0,0,0"
-    var lastStr = "0,0,0,0,0,0,0,0,0,0,0,0,0,0"
-    func setAll(str: String) -> [UInt8] {
-        self.writtenCondition.lock()
-        self.allStr = str
-        self.writtenCondition.unlock()
-        return self.lastSensorUpdate
+        */
     }
     
     /**

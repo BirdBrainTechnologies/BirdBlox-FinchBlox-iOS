@@ -313,7 +313,7 @@ enum BBTRobotType {
             return nil
         case .HummingbirdBit: //TODO: test
             let letter: UInt8 = 0xCD
-            let buzzer = BBTBuzzer(freq: 0, vol: 0, period: period, duration: dur)
+            let buzzer = BBTBuzzer(period: period, duration: dur)
             let buzzerArray = buzzer.array()
             return Data(bytes: UnsafePointer<UInt8>([letter, buzzerArray[0], buzzerArray[1], buzzerArray[2], buzzerArray[3]] as [UInt8]), count: 5)
         case .Hummingbird, .MicroBit: return nil

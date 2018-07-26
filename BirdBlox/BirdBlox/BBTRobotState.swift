@@ -35,15 +35,11 @@ struct BBTTriLED: Equatable {
 	}
 }
 struct BBTBuzzer: Equatable {
-    let frequecy: UInt //frequency of note in Hz
-    let volume: UInt
     
     private var period: UInt16 //the period of the note in us
     private var duration: UInt16 //duration of buzz in ms
     
-    init(freq: UInt = 0, vol: UInt = 0, period: UInt16 = 0, duration: UInt16 = 0) {
-        self.frequecy = freq
-        self.volume = vol
+    init(period: UInt16 = 0, duration: UInt16 = 0) {
         self.duration = duration
         self.period = period
     }
@@ -65,8 +61,7 @@ struct BBTBuzzer: Equatable {
     }
     
     static func ==(lhs: BBTBuzzer, rhs: BBTBuzzer) -> Bool {
-        return lhs.frequecy == rhs.frequecy &&
-            lhs.volume == rhs.volume && lhs.duration == rhs.duration
+        return lhs.period == rhs.period && lhs.duration == rhs.duration
     }
 }
 

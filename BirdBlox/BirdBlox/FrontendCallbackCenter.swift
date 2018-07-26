@@ -115,6 +115,14 @@ class FrontendCallbackCenter {
         print("Firmware incompatible: \(id), \(firmware), \(safeMin), \(parameters)")
 		return self.runJS(function: function, parameters: parameters)
 	}
+
+    public func robotDisconnected(name: String, reason: String) -> Bool {
+        let function = "DialogManager.showAlertDialog"
+        let parameters = ["Robot Disconnected", "\(name) has been disconnected due to \(reason)", "OK"]
+        //TODO: Instead of just showing an alert, we should also remove the device
+        // just like in DeviceManager.prototype.disconnectIncompatible
+        return self.runJS(function: function, parameters: parameters)
+    }
 	
 	public func robotFirmwareStatus(id: String, status: String) -> Bool {
 		let safeID = FrontendCallbackCenter.safeString(from: id)

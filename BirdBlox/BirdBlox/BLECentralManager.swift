@@ -154,6 +154,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 		}
 	}
 	
+    //MARK: Central Manager Delegate methods
 	
 	/**
 	* If a device is discovered, it is given a unique name and added to our
@@ -283,6 +284,8 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 		}
 	}
 	
+    //MARK: Connect/disconnect robot
+    
 	func disconnect(byID id: String) {
 		print("disconnect running")
 		guard self.oughtToBeConnected.keys.contains(id) ||
