@@ -220,6 +220,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 				let _ = FrontendCallbackCenter.shared.robotUpdateStatus(id: id, connected: true)
 				self.currentlyConnecting = 5
 			} else {
+                NSLog("A robot (\(rbt.name)) was just initialized that is not in the oughtToBeConnected list.")
 //				self.disconnect(byID: id)
 			}
 		})
@@ -306,7 +307,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 		centralManager.cancelPeripheralConnection(peripheral)
 		self.currentlyConnecting = 5
 		
-		print("disconnect running")
+		print("disconnect done")
 	}
 	
 	//Returns false if no robot with id is in the discovered list

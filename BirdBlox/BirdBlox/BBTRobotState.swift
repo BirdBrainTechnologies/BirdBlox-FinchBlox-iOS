@@ -46,16 +46,12 @@ struct BBTBuzzer: Equatable {
     
     //convert to array used to set the Hummingbird Bit buzzer
     func array() -> [UInt8] {
-        //let microSeconds = UInt16( (1 / frequecy) * 1000000 )
         
         var buzzerArray: [UInt8] = []
-        //buzzerArray[0] = UInt8(microSeconds >> 8)
-        //buzzerArray[1] = UInt8(microSeconds & 0x00ff)
         buzzerArray.append( UInt8(period >> 8) )
         buzzerArray.append( UInt8(period & 0x00ff) )
         buzzerArray.append( UInt8(duration >> 8) )
         buzzerArray.append( UInt8(duration & 0x00ff) )
-        //print("buzzer array: \(buzzerArray)")
         
         return buzzerArray
     }
@@ -75,7 +71,6 @@ struct BBTRobotOutputState: Equatable {
     public var motors: FixedLengthArray<Int8>?
     public var vibrators: FixedLengthArray<UInt8>?
     public var buzzer: BBTBuzzer?
-    //public var ledArray: FixedLengthArray<UInt8>?
     public var ledArray: String?
     
     init(robotType: BBTRobotType) {
@@ -105,7 +100,6 @@ struct BBTRobotOutputState: Equatable {
             self.buzzer = BBTBuzzer()
         }
         if robotType.ledArrayCount == 1 {
-            //self.ledArray = FixedLengthArray(length: 25, repeating: UInt8(0))
             self.ledArray = "S0000000000000000000000000"
         }
     }
@@ -132,18 +126,11 @@ struct BBTRobotOutputState: Equatable {
                 adjusted_motors[1] = UInt8(motors[1])
             }
             
-            //Doing this in robotRequests now
-            //let adjustServo: ((UInt8) -> UInt8) = { ($0 > 180) ? 255 : $0 + ($0 >> 2) }
-            
-            //let servosFull = (adjustServo(servos[0]), adjustServo(servos[1]),
-            //                  adjustServo(servos[2]), adjustServo(servos[3]))
-            
             let array: [UInt8] = [letter,
                                   trileds[0].tuple.0, trileds[0].tuple.1, trileds[0].tuple.2,
                                   trileds[1].tuple.0, trileds[1].tuple.1, trileds[1].tuple.2,
                                   leds[0], leds[1], leds[2], leds[3],
-  //                                servosFull.0, servosFull.1, servosFull.2, servosFull.3,
-                                servos[0], servos[1], servos[2], servos[3],
+                                  servos[0], servos[1], servos[2], servos[3],
                                   vibrators[0], vibrators[1], adjusted_motors[0], adjusted_motors[1]]
             assert(array.count == 19)
             
@@ -156,18 +143,12 @@ struct BBTRobotOutputState: Equatable {
             
             let letter: UInt8 = 0xCA
             
-            //let adjustServo: ((UInt8) -> UInt8) = { ($0 > 180) ? 255 : $0 + ($0 >> 2) }
-            
-            //let servosFull = (adjustServo(servos[0]), adjustServo(servos[1]),
-              //                adjustServo(servos[2]), adjustServo(servos[3]))
-            
             let buzzerArray = buzzer.array()
             
             let array: [UInt8] = [letter, leds[0], 0x00,
                                   trileds[0].tuple.0, trileds[0].tuple.1, trileds[0].tuple.2,
                                   trileds[1].tuple.0, trileds[1].tuple.1, trileds[1].tuple.2,
-                            //      servosFull.0, servosFull.1, servosFull.2, servosFull.3,
-                                servos[0], servos[1], servos[2], servos[3],
+                                  servos[0], servos[1], servos[2], servos[3],
                                   leds[1], leds[2],
                                   buzzerArray[0], buzzerArray[1], buzzerArray[2], buzzerArray[3]]
             assert(array.count == 19)
@@ -175,35 +156,7 @@ struct BBTRobotOutputState: Equatable {
             //NSLog("Set all \(array)")
             return Data(bytes: UnsafePointer<UInt8>(array), count: array.count)
         case .Flutter: return Data()
-        case .Finch:
-        //Set all: 0xDA RGB_R RGB_G RGB_B Dir_L Speed_L Dir_R Speed_R
-            guard let trileds = trileds, let motors = motors else {
-                fatalError("Missing information in Finch output state")
-            }
-            
-            let letter: UInt8 = 0xDA
-            
-            var adjusted_motors: [UInt8] = [0,0]
-            var motor_dir: [UInt8] = [1,1]
-            if motors[0] < 0 {
-                motor_dir[0] = 0
-                adjusted_motors[0] = UInt8(bound(-(Int)(motors[0]), min: -100, max: 100)) + 128
-            } else {
-                adjusted_motors[0] = UInt8(motors[0])
-            }
-            if motors[1] < 0 {
-                motor_dir[1] = 0
-                adjusted_motors[1] = UInt8(bound(-(Int)(motors[1]), min: -100, max: 100)) + 128
-            } else {
-                adjusted_motors[1] = UInt8(motors[1])
-            }
-            
-            let array: [UInt8] = [letter,
-                                  trileds[0].tuple.0, trileds[0].tuple.1, trileds[0].tuple.2,
-                                  motor_dir[0], adjusted_motors[0], motor_dir[1], adjusted_motors[1]]
-            assert(array.count == 8)
-            
-            return Data(bytes: UnsafePointer<UInt8>(array), count: array.count)
+        case .Finch: return Data()
         case .MicroBit: return Data()
         }
     }

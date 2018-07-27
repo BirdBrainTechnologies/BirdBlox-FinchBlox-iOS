@@ -37,30 +37,4 @@ class BBXCallbackManager {
 	public func removeAvailableSensor(_ sensor: Sensor) {
 		webView.evaluateJavaScript("CallbackManager.device.removeSensor(\(sensor.jsString()))")
 	}
-	
-//	private struct CBMDevice {
-//		weak var webView: WKWebView?
-//		
-//		public enum Sensor {
-//			case Microphone, GPSReceiver, Barometer, Accelerometer
-//			
-//			func jsString() -> String {
-//				switch(self) {
-//				case .Microphone: return "microphone"
-//				case .GPSReceiver: return "gps"
-//				case .Barometer: return "barometer"
-//				case .Accelerometer: return "accelerometer"
-//				}
-//			}
-//		}
-//		
-//		public func addAvailableSensor(_ sensor: Sensor) {
-//			webView.evaluate
-//		}
-//		
-//		public func removeAvailableSensor(_ sensor: Sensor) {
-//			
-//		}
-//	}
-	
 }
