@@ -323,8 +323,8 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             return
         }
         
-        let temp = [UInt8](inData)
-        print("Characteristic updated to \(temp)")
+        //let temp = [UInt8](inData)
+        //print("Characteristic updated to \(temp)")
         
         //This block used for getting the firmware info
         guard self.initialized else {
@@ -592,6 +592,15 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         self.writtenCondition.unlock()
         
         return true
+    }
+    
+    func calibrateCompass() -> Bool {
+        if let command = self.type.calibrateMagnetometerCommand() {
+            sendData(data: command)
+            return true
+        } else {
+            return false
+        }
     }
     
 }

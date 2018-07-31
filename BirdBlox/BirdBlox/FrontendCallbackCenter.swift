@@ -123,6 +123,12 @@ class FrontendCallbackCenter {
         // just like in DeviceManager.prototype.disconnectIncompatible
         return self.runJS(function: function, parameters: parameters)
     }
+    //TODO: Delete?
+    public func showMessage(title: String, msg: String) -> Bool {
+        let function = "DialogManager.showAlertDialog"
+        let parameters = ["", msg, "OK"]
+        return self.runJS(function: function, parameters: parameters)
+    }
 	
 	public func robotFirmwareStatus(id: String, status: String) -> Bool {
 		let safeID = FrontendCallbackCenter.safeString(from: id)
@@ -134,17 +140,17 @@ class FrontendCallbackCenter {
 		return self.runJS(function: function, parameters: parameters)
 	}
 	
-	public func scanHasStopped(typeStr: String) -> Bool {
-		let safeType = FrontendCallbackCenter.safeString(from: typeStr)
-		
+	public func scanHasStopped() -> Bool {
+		//let safeType = FrontendCallbackCenter.safeString(from: typeStr)
+		NSLog("Scan has stopped. Notifying frontend.")
 		let function = "CallbackManager.robot.stopDiscover"
-		let parameters = [safeType]
+        let parameters: [String] = []
 		
 		return self.runJS(function: function, parameters: parameters)
 	}
 	
-	public func updateDiscoveredRobotList(typeStr: String, robotList: [[String: String]]) -> Bool {
-		let safeType = FrontendCallbackCenter.safeString(from: typeStr)
+	public func updateDiscoveredRobotList(robotList: [[String: String]]) -> Bool {
+		//let safeType = FrontendCallbackCenter.safeString(from: typeStr)
 		
 		guard let jsonList = FrontendCallbackCenter.jsonString(from: robotList) else {
 			return false
@@ -152,7 +158,7 @@ class FrontendCallbackCenter {
 		let safeList = FrontendCallbackCenter.safeString(from: jsonList)
 		
 		let function = "CallbackManager.robot.discovered"
-		let parameters = [safeType, safeList]
+		let parameters = [safeList]
 		
 		return self.runJS(function: function, parameters: parameters)
 	}

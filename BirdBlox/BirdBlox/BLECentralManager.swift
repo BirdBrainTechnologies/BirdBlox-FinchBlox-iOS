@@ -85,6 +85,9 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 	                      updateDiscovered: (([(CBPeripheral, String, BBTRobotType)]) -> Void)? = nil,
 	                      scanEnded: (() -> Void)? = nil) {
 		
+        //Stop any scanning that is already occuring. No need to notify the frontend or do anything
+        // else at this time - scanning will resume shortly.
+        self.scanStoppedBlock = nil
 		self.stopScan()
 		
 		guard !self.isScanning && (self.centralManager.centralManagerState == .poweredOn) else {
@@ -104,7 +107,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 		                                     selector: #selector(BLECentralManager.stopScan),
 		                                     userInfo: nil, repeats: false)
 		self.scanState = .searchingScan
-		NSLog("Stated bluetooth scan")
+		NSLog("Started bluetooth scan")
 	}
 	
 	public func startCountingScan() {
@@ -313,6 +316,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 	//Returns false if no robot with id is in the discovered list
 	//Implicitly stops the scan
 	func connectToRobot(byID id: String, ofType type: BBTRobotType) -> Bool {
+        
 		guard let peripheral = self.discoveredPeripherals[id] else {
 			return false
 		}

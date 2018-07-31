@@ -9,7 +9,7 @@
 import Foundation
 import CoreBluetooth
 //import Swifter
-import GLKit
+
 
 class RobotRequests {
 	private let bleCenter = BLECentralManager.shared
@@ -64,31 +64,32 @@ class RobotRequests {
             RobotRequests.handler(fromIDAndTypeHandler: self.setLedArrayRequest)
         server["/robot/out/printBlock"] =
             RobotRequests.handler(fromIDAndTypeHandler: self.setLedArrayRequest)
-        
+        server["robot/out/compassCalibrate"] =
+            RobotRequests.handler(fromIDAndTypeHandler: self.compassCalibrateRequest)
 		
 		server["/robot/in"] = RobotRequests.handler(fromIDAndTypeHandler: self.inputRequest)
-        server["/robot/out/compass"] =
-            RobotRequests.handler(fromIDAndTypeHandler: self.compassRequest)
+        //server["/robot/out/compass"] = RobotRequests.handler(fromIDAndTypeHandler: self.compassRequest)
 		
 		server["/robot/showInfo"] = RobotRequests.handler(fromIDAndTypeHandler: self.infoRequest)
 		
 	}
 	
 	private func discoverRequest(request: HttpRequest) -> HttpResponse {
-		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
+		//let queries = BBTSequentialQueryArrayToDict(request.queryParams)
 		print("Discover request received.")
+        /*
 		guard let typeStr = queries[RobotRequests.robotTypeKey] else {
 			return .badRequest(.text("Missing Query Parameter"))
 		}
-		
 		guard let type = BBTRobotType.fromString(typeStr) else {
 			return .badRequest(.text("Invalid robot type: \(typeStr)"))
-		}
+		}*/
 		
-		bleCenter.startScan(serviceUUIDs: [type.scanningUUID], updateDiscovered: { (peripherals) in
+        //TODO: iterate over all available robot types when this becomes possible in new versions of swift
+		bleCenter.startScan(serviceUUIDs: [BBTRobotType.Hummingbird.scanningUUID], updateDiscovered: { (peripherals) in
 			let altName = "Fetching name..."
-            let filteredList = peripherals.filter { $0.2 == type }
-			let darray = filteredList.map { (peripheral, rssi, type) in
+            //let filteredList = peripherals.filter { $0.2 == type }
+			let darray = peripherals.map { (peripheral, rssi, type) in
 				["id": peripheral.identifier.uuidString,
 				 "name": BBTgetDeviceNameForGAPName(peripheral.name ?? altName),
                  //"device": BBTRobotType.fromString(peripheral.name ?? altName)?.description ?? altName,
@@ -96,10 +97,9 @@ class RobotRequests {
                  "RSSI": rssi]
 			}
 			
-			let _ = FrontendCallbackCenter.shared.updateDiscoveredRobotList(typeStr: typeStr,
-			                                                                robotList: darray)
+			let _ = FrontendCallbackCenter.shared.updateDiscoveredRobotList(robotList: darray)
 		}, scanEnded: {
-			let _ = FrontendCallbackCenter.shared.scanHasStopped(typeStr: typeStr)
+			let _ = FrontendCallbackCenter.shared.scanHasStopped()
 		})
 		
 		return .ok(.text("Scanning started"))
@@ -211,22 +211,22 @@ class RobotRequests {
         //Tilt left and tilt right are x: Acc X > 0.8g tilt left, Acc X < -0.8g tilt right
         //Logo up and logo down are y: Acc Y > 0.8g logo down, Acc Y < -0.8g logo up
         case "screenUp":
-            let val = accelerometerAdjust(values[6])
+            let val = rawToAccelerometer(values[6])
             if val < -0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
         case "screenDown":
-            let val = accelerometerAdjust(values[6])
+            let val = rawToAccelerometer(values[6])
             if val > 0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
         case "tiltLeft":
-            let val = accelerometerAdjust(values[4])
+            let val = rawToAccelerometer(values[4])
             if val > 0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
         case "tiltRight":
-            let val = accelerometerAdjust(values[4])
+            let val = rawToAccelerometer(values[4])
             if val < -0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
         case "logoUp":
-            let val = accelerometerAdjust(values[5])
+            let val = rawToAccelerometer(values[5])
             if val < -0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
         case "logoDown":
-            let val = accelerometerAdjust(values[5])
+            let val = rawToAccelerometer(values[5])
             if val > 0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
             
         case "buttonA", "buttonB", "shake": //microbit buttons and shake
@@ -259,9 +259,9 @@ class RobotRequests {
             }
             
             switch axis {
-            case "x": sensorValue = String(accelerometerAdjust(values[4]))
-            case "y": sensorValue = String(accelerometerAdjust(values[5]))
-            case "z": sensorValue = String(accelerometerAdjust(values[6]))
+            case "x": sensorValue = String(rawToAccelerometer(values[4]))
+            case "y": sensorValue = String(rawToAccelerometer(values[5]))
+            case "z": sensorValue = String(rawToAccelerometer(values[6]))
             default:
                 return .badRequest(.text("Accelerometer axis incorrectly specified as \(axis)"))
             }
@@ -279,15 +279,20 @@ class RobotRequests {
             let y = adjust(values[10], values[11])
             let z = adjust(values[12], values[13])
             */
-            let (x, y, z) = magnetometerValues(values)
+            //let (x, y, z) = magnetometerValues(values)
             switch axis {
-            case "x": sensorValue = "\(x)"
-            case "y": sensorValue = "\(y)"
-            case "z": sensorValue = "\(z)"
-            case "all": sensorValue = "\(x) \(y) \(z)"
+            case "x": sensorValue = String(rawToMagnetometer(values[8], values[9]))
+            case "y": sensorValue = String(rawToMagnetometer(values[10], values[11]))
+            case "z": sensorValue = String(rawToMagnetometer(values[12], values[13]))
             default:
                 return .badRequest(.text("Accelerometer axis not specified."))
             }
+        case "compass":
+            let accArray = Array(values[4...6])
+            let magArray = Array(values[8...13])
+            print("Compass!! \(values) \(accArray) \(magArray)")
+            let compass = rawToCompass(rawAcc: accArray, rawMag: magArray)
+            sensorValue = String(compass)
 		default:
             //For hummingbird type sensors, a port will be specified.
             //These sensor values will be in the first 4 value array spots.
@@ -332,7 +337,7 @@ class RobotRequests {
 		
 		return .ok(.text(sensorValue))
 	}
-	
+	/*
     private func compassRequest(id: String, type: BBTRobotType,
                                 request: HttpRequest) -> HttpResponse {
         let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
@@ -342,33 +347,43 @@ class RobotRequests {
             return requesto!
         }
         
-        let (mx, my, mz) = magnetometerValues(robot.sensorValues)
-        let (ax, ay, az) = accelerometerValues(robot.sensorValues)
-        //let values = robot.sensorValues
-        //let mx = magVal(values[8], values[9])
-        //let my = magVal(values[10], values[11])
-        //let mz = magVal(values[12], values[13])
-        //let ax = Double(Int8(bitPattern: values[4]))
-        //let ay = Double(Int8(bitPattern: values[5]))
-        //let az = Double(Int8(bitPattern: values[6]))
+        //let (imx, imy, imz) = magnetometerValues(robot.sensorValues)
+        //let (mx, my, mz) = (Double(imx), Double(imy), Double(imz))
+        //let (ax, ay, az) = accelerometerValues(robot.sensorValues)
+        let values = robot.sensorValues
+        //let mx = Double(magVal(values[8], values[9]))
+        //let my = Double(magVal(values[10], values[11]))
+        //let mz = Double(magVal(values[12], values[13]))
+        
+        let mx = rawToRawMag(values[8], values[9])
+        let my = rawToRawMag(values[10], values[11])
+        let mz = rawToRawMag(values[12], values[13])
+        
+        let ax = Double(Int8(bitPattern: values[4]))
+        let ay = Double(Int8(bitPattern: values[5]))
+        let az = Double(Int8(bitPattern: values[6]))
+        
+        //let mx = Double((UInt16(values[9]) & 0xFF) | (UInt16(values[8]) << 8))
+        //let my = Double((UInt16(values[11]) & 0xFF) | (UInt16(values[10]) << 8))
+        //let mz = Double((UInt16(values[13]) & 0xFF) | (UInt16(values[12]) << 8))
         
         let phi = atan(-ay/az)
-        let theta = atan(ax/(ay*sin(phi) + az*cos(phi)))
+        let theta = atan( ax / (ay*sin(phi) + az*cos(phi)) )
         
-        let xPrime = Double(mx)
-        let yPrime = Double(my)*cos(phi) - Double(mz)*sin(phi)
-        let zPrime = Double(my)*sin(phi) + Double(mz)*cos(phi)
+        let xP = mx
+        let yP = my * cos(phi) - mz * sin(phi)
+        let zP = my * sin(phi) + mz * cos(phi)
         
-        let xPP = xPrime*cos(theta) + zPrime*sin(theta)
-        let yPP = yPrime
+        let xPP = xP * cos(theta) + zP * sin(theta)
+        let yPP = yP
         
         //let angle = 180 + atan2(xPP, yPP)
-        let angle = 180 + GLKMathRadiansToDegrees(Float(atan(xPP/yPP)))
+        let angle = 180 + GLKMathRadiansToDegrees(Float(atan2(xPP, yPP)))
+        let roundedAngle = Int(angle.rounded())
         
-        return .ok(.text(String(angle)))
-        //return .badRequest(.text("Bad compass request."))
-    }
-    
+        return .ok(.text(String(roundedAngle)))
+    }*/
+    /*
     private func magnetometerValues(_ values: [UInt8]) -> (Int, Int, Int) {
         /*let adjust: ((UInt8, UInt8) -> Int) = { msb, lsb in
             let uIntVal = (UInt16(msb) << 8) | UInt16(lsb)
@@ -380,9 +395,9 @@ class RobotRequests {
         let y = adjust(values[10], values[11])
         let z = adjust(values[12], values[13])
         */
-        let x = magVal(values[8], values[9]) / 10
-        let y = magVal(values[10], values[11]) / 10
-        let z = magVal(values[12], values[13]) / 10
+        let x = magVal(values[8], values[9]) // / 10
+        let y = magVal(values[10], values[11]) // / 10
+        let z = magVal(values[12], values[13]) // / 10
         
         return (x, y, z)
     }
@@ -408,7 +423,7 @@ class RobotRequests {
         let scaledVal = Double(intVal) * 196/1280 //scaling from bambi
         print("ACCELEROMETER VALUES! \(x) \(intVal) \(scaledVal)")
         return scaledVal
-    }
+    }*/
     
     
 	
@@ -619,7 +634,7 @@ class RobotRequests {
         }
         
         let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
-                                                         acceptTypes: [.MicroBit    , .HummingbirdBit])
+                                                         acceptTypes: [.MicroBit, .HummingbirdBit])
         
         guard let robot = roboto else {
             return requesto!
@@ -633,5 +648,21 @@ class RobotRequests {
         }
     }
     
-	
+    private func compassCalibrateRequest(id: String, type: BBTRobotType,
+                                    request: HttpRequest) -> HttpResponse {
+        print("Calibrate request!!")
+        
+        let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
+                                                         acceptTypes: [.MicroBit, .HummingbirdBit])
+        
+        guard let robot = roboto else {
+            return requesto!
+        }
+        
+        if robot.calibrateCompass() {
+            return .ok(.text("calibrated"))
+        } else {
+            return .internalServerError
+        }
+    }
 }

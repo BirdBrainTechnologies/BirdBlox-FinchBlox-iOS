@@ -9,6 +9,7 @@
 //
 
 import Foundation
+import GLKit
 
 /**
     Takes an int and returns the unicode value for the int as a string
@@ -115,7 +116,8 @@ public func rawToTemp(_ raw_val: UInt8) -> Int{
 }
 
 /**
- Converts a raw value from a robot into a distance
+ * Converts a raw value from a robot into a distance
+ * For use only with Hummingbird Duo distance sensors
  */
 public func rawToDistance(_ raw_val: UInt8) -> Int{
     var reading: Double = Double(raw_val) * 4.0
@@ -161,6 +163,57 @@ public func rawToPercent(_ raw_val: UInt8) -> Int{
  */
 public func percentToRaw(_ percent_val: UInt8) -> UInt8{
     return toUInt8(Int(floor(Double(percent_val) * 2.55)))
+}
+
+/**
+ * Convert raw value into a scaled magnetometer value
+ */
+public func rawToMagnetometer(_ msb: UInt8, _ lsb: UInt8) -> Int {
+    let scaledVal = rawToRawMag(msb, lsb) * 0.1 //scaling to put in units of uT
+    return Int(scaledVal.rounded())
+}
+public func rawToRawMag(_ msb: UInt8, _ lsb: UInt8) -> Double {
+    let uIntVal = (UInt16(msb) << 8) | UInt16(lsb)
+    let intVal = Int16(bitPattern: uIntVal)
+    return Double(intVal)
+}
+
+/**
+ * Convert raw value into a scaled accelerometer value
+ */
+public func rawToAccelerometer(_ raw_val: UInt8) -> Double {
+    let intVal = Int8(bitPattern: raw_val) //convert to 2's complement signed int
+    let scaledVal = Double(intVal) * 196/1280 //scaling from bambi
+    return scaledVal
+}
+
+/**
+ * Convert raw sensor values into a compass value
+ */
+public func rawToCompass(rawAcc: [UInt8], rawMag: [UInt8]) -> Int {
+    let mx = rawToRawMag(rawMag[0], rawMag[1])
+    let my = rawToRawMag(rawMag[2], rawMag[3])
+    let mz = rawToRawMag(rawMag[4], rawMag[5])
+    
+    let ax = Double(Int8(bitPattern: rawAcc[0]))
+    let ay = Double(Int8(bitPattern: rawAcc[1]))
+    let az = Double(Int8(bitPattern: rawAcc[2]))
+    
+    let phi = atan(-ay/az)
+    let theta = atan( ax / (ay*sin(phi) + az*cos(phi)) )
+    
+    let xP = mx
+    let yP = my * cos(phi) - mz * sin(phi)
+    let zP = my * sin(phi) + mz * cos(phi)
+    
+    let xPP = xP * cos(theta) + zP * sin(theta)
+    let yPP = yP
+    
+    //let angle = 180 + atan2(xPP, yPP)
+    let angle = 180 + GLKMathRadiansToDegrees(Float(atan2(xPP, yPP)))
+    let roundedAngle = Int(angle.rounded())
+    
+    return roundedAngle
 }
 
 /**

@@ -129,7 +129,8 @@ enum BBTRobotType {
     //MARK: Inputs
     var sensorPortCount: UInt {
         switch self {
-        case .Hummingbird, .HummingbirdBit: return 4
+        case .Hummingbird: return 4
+        case .HummingbirdBit: return 3
         case .Finch, .Flutter, .MicroBit: return 0
         }
     }
