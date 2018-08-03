@@ -11,7 +11,7 @@ import UIKit
 import WebKit
 //import Swifter
 import SafariServices
-
+import MobileCoreServices
 
 /*
 BBXDocumentViewController
@@ -330,10 +330,11 @@ SFSafariViewControllerDelegate {
 			self.timeLastShaken = Date(timeIntervalSince1970: 0)
 			return .ok(.text(respStr))
 		}
-		
+        
 		self.server["/cloud/showPicker"] = { (request: HttpRequest) -> HttpResponse in
 			let docTypes = [DataModel.bbxUTI, "public.xml"]
-			let picker = UIDocumentPickerViewController(documentTypes: docTypes, in: .open)
+			//let picker = UIDocumentPickerViewController(documentTypes: docTypes, in: .open)
+            let picker = UIDocumentPickerViewController(documentTypes: docTypes, in: .import)
 			picker.delegate = self
 			
 			DispatchQueue.main.sync {
@@ -571,8 +572,36 @@ SFSafariViewControllerDelegate {
 	
 	
 	//MARK: UIDocumentPickerDelegate
+    
 	
 	func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentAt url: URL) {
+        
+        print("File picked! \(url.absoluteString)")
+        print("save loc: \(DataModel.shared.bbxSaveLoc)")
+        let filename = url.deletingPathExtension().lastPathComponent
+        print("File name! \(filename)")
+        var saveName = filename + "_import.bbx"
+        var fileUrl = DataModel.shared.bbxSaveLoc.appendingPathComponent(saveName)
+        var i = 1
+        let fileManager = FileManager.default
+        while fileManager.fileExists(atPath: fileUrl.path) {
+            saveName = "\(filename)_import_\(i).bbx"
+            fileUrl = DataModel.shared.bbxSaveLoc.appendingPathComponent(saveName)
+            i += 1
+        }
+        print("Saving \(fileUrl.absoluteString)")
+        do {
+            try fileManager.moveItem(at: url.standardizedFileURL, to: fileUrl)
+        } catch {
+            print(error)
+        }
+        let _ = FrontendCallbackCenter.shared.reloadOpenDialog()
+        
+        let text = FrontendCallbackCenter.safeString(from: "File imported as\n\'\(saveName)\'")
+        let _ = FrontendCallbackCenter.shared.echo(getRequestString:
+            "/tablet/choice?question=\(text)&button1=Dismiss")
+        return
+        /*
 		let doc = BBXDocument(fileURL: url)
 		let _ = FrontendCallbackCenter.shared.markLoadingDocument()
 		doc.open(completionHandler: { suc in
@@ -592,7 +621,7 @@ SFSafariViewControllerDelegate {
 				
 				self.present(alert, animated: true, completion: nil)
 			}
-		})
+		})*/
 	}
 	
 	//MARK: SFSafariViewControllerDelegate

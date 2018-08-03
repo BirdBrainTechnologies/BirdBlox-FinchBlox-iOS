@@ -14,6 +14,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     public let peripheral: CBPeripheral
     public let type: BBTRobotType
     public let name: String
+    private let connectionAttempts: Int //How many times have we already tried to connect to this peripheral?
     private let BLE_Manager: BLECentralManager
 	
     public var id: String {
@@ -27,6 +28,8 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     
     private var lastSensorUpdate: [UInt8]
     var sensorValues: [UInt8] { return lastSensorUpdate }
+    var compassCalibrated: Bool = false
+    var batteryStatus: BatteryStatus?
     
     private let initializationCompletion: ((BBTRobotBLEPeripheral) -> Void)?
     private var _initialized = false
@@ -81,9 +84,10 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     
     //MARK: INIT
     
-    required init(_ peripheral: CBPeripheral, _ type: BBTRobotType, _ completion: ((BBTRobotBLEPeripheral) -> Void)? = nil){
+    required init(_ peripheral: CBPeripheral, _ type: BBTRobotType, _ attempt: Int, _ completion: ((BBTRobotBLEPeripheral) -> Void)? = nil){
         self.peripheral = peripheral
         self.type = type
+        self.connectionAttempts = attempt
         self.name = BBTgetDeviceNameForGAPName(self.peripheral.name ?? "Unknown")
         self.BLE_Manager = BLECentralManager.shared
         
@@ -195,15 +199,22 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         
         //Wait until we get a response or until we timeout.
         while (self.lineIn == oldLineIn) {
-            self.initializingCondition.wait(until: Date(timeIntervalSinceNow: 1))
             if (Date().timeIntervalSince(timeoutTime) >= 0) {
-                let _ = FrontendCallbackCenter.shared.robotDisconnected(name: self.name, reason: "initialization timeout")
                 
-                BLE_Manager.disconnect(byID: self.id)
-                NSLog("\(self.name) initialization failed due to timeout.")
+                NSLog("\(self.name) initialization failed due to timeout. Connected? \(self.connected)")
+                //BLE_Manager.disconnect(byID: self.id)
+                
+                if self.connectionAttempts < 10 {
+                    BLE_Manager.connectToRobot(byPeripheral: self.peripheral, ofType: self.type)
+                    NSLog("\(self.name) Reconnecting...")
+                } else {
+                    NSLog ("Not attempting to reconnect \(self.name). There have been \(self.connectionAttempts) attempts already. Currently connected? \(self.connected)")
+                    BLE_Manager.disconnect(byID: self.id)
+                    let _ = FrontendCallbackCenter.shared.robotDisconnected(name: self.name, reason: "initialization timeout") //TODO: Remove from frontend list somehow
+                }
                 return
-                
             }
+            self.initializingCondition.wait(until: Date(timeIntervalSinceNow: 1))
         }
         let versionArray = self.lineIn
         
@@ -228,7 +239,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
 
         self.initializingCondition.unlock()
         
-        //TODO: is this the best place to check this?
+        //TODO: is this the best place to check this? Also checking above...
         guard self.connected else {
             let _ = FrontendCallbackCenter.shared.robotDisconnected(name: self.name, reason: "lost connection")
             
@@ -351,6 +362,44 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         
         //Assume it's sensor in data
         inData.copyBytes(to: &self.lastSensorUpdate, count: type.sensorByteCount)
+        
+        //Check the state of compass calibration
+        if type == .HummingbirdBit || type == .MicroBit {
+            let byte = self.lastSensorUpdate[7]
+            let bits = byteToBits(byte)
+            
+            if bits[3] == 1 {
+                //print("CALIBRATION FAILED \(bits)")
+                self.compassCalibrated = false
+            } else if bits[2] == 1 {
+                //print("CALIBRATION SUCCESSFUL \(bits)")
+                self.compassCalibrated = true
+            } else {
+                //print("CALIBRATION UNKNOWN \(bits)")
+                self.compassCalibrated = false
+            }
+        }
+        
+        //Check battery status. Stored in sensor 4 for bit and sensor 5 for duo
+        if let i = type.batteryVoltageIndex, let greenThreshold = type.batteryGreenThreshold, let yellowThreshold = type.batteryYellowThreshold {
+            let voltage = rawToVoltage( lastSensorUpdate[i] )
+            
+            let newStatus: BatteryStatus
+            if voltage > greenThreshold {
+                newStatus = BatteryStatus.green
+            } else if voltage > yellowThreshold {
+                newStatus = BatteryStatus.yellow
+            } else {
+                newStatus = BatteryStatus.red
+            }
+            
+            if self.batteryStatus != newStatus {
+                self.batteryStatus = newStatus
+                let _ = FrontendCallbackCenter.shared.robotUpdateBattery(id: self.peripheral.identifier.uuidString, batteryStatus: newStatus.rawValue)
+            }
+            
+            //print("Voltage!! \(voltage) \(lastSensorUpdate[i]) \(self.batteryStatus)")
+        }
     }
     
     /**
@@ -413,7 +462,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             
         } else {
             //TODO: something else here?
-            print("Not connected")
+            NSLog("Trying to send \(data) to \(self.name) but self.connected is \(self.connected).")
         }
     }
     

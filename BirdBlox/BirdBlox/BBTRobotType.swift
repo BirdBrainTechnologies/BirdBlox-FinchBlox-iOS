@@ -64,6 +64,30 @@ enum BBTRobotType {
         return "2.2b"
     }
     
+    //MARK: Battery Thresholds
+    var batteryVoltageIndex: Int? {
+        switch self{
+        case .Hummingbird: return 4
+        case .HummingbirdBit: return 3
+        case .Flutter, .Finch, .MicroBit: return nil
+        }
+    }
+    var batteryGreenThreshold: Double? { //battery must be > this value for green status
+        switch self {
+        case .HummingbirdBit, .Hummingbird: return 4.75
+        //case .MicroBit: return 2.25
+        case .Flutter, .Finch, .MicroBit: return nil
+        }
+    }
+    var batteryYellowThreshold: Double? { //battery must be > this value for yellow status
+        switch self {
+        case .HummingbirdBit, .Hummingbird: return 4.63
+        //case .MicroBit: return 2.0
+        case .Flutter, .Finch, .MicroBit: return nil
+        }
+    }
+    
+    
     //MARK: Outputs
     var triledCount: UInt {
         switch self {
@@ -202,7 +226,7 @@ enum BBTRobotType {
     }
     var sensorByteCount: Int {
         switch self {
-        case .Hummingbird: return 4
+        case .Hummingbird: return 5
         case .Flutter: return 1
         case .Finch: return 10
         case .HummingbirdBit: return 14

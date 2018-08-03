@@ -37,7 +37,8 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 	private var discoveredPeripherals: [String: CBPeripheral]
 	private var connectedPeripherals: [String: CBPeripheral]
 	private var connectedRobots: [String: BBTRobotBLEPeripheral]
-	private var oughtToBeConnected: [String: (peripheral: CBPeripheral, type: BBTRobotType)]
+    private var oughtToBeConnected: [String: (peripheral: CBPeripheral, type: BBTRobotType, connectAttempts: Int)]
+    private var attemptingConnection: [String]
 	
 	private var discoverTimer: Timer
 	private static let scanDuration = TimeInterval(30) //seconds
@@ -58,6 +59,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 		self.connectedPeripherals = Dictionary()
 		self._discoveredPeripheralsSeqeuntial = Array()
 		self.oughtToBeConnected = Dictionary()
+        self.attemptingConnection = Array()
 		
 		self.centralQueue = DispatchQueue(label: "ble", attributes: [])
 		self.centralManager = CBCentralManager(delegate: nil, queue: centralQueue)
@@ -176,6 +178,9 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
                 return
             }
             
+            //check to see if we are already trying to connect to this one
+            if self.attemptingConnection.contains(id) { return }
+            
 			if self.discoveredPeripherals.keys.contains(id) {
 				self.discoveredPeripherals[id] = peripheral
 			} else {
@@ -188,7 +193,9 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
                     print("Type missmatch! \(type.description) ne \(robotType.description)")
                     self.oughtToBeConnected[id]?.type = robotType
                 }
-				let _ = self.connectToRobot(byID: id, ofType: robotType)
+                print("Found a robot that ought to be connected! \(peripheral.name ?? "unknown") \(connectedPeripherals.keys.contains(id)) \(connectedRobots.keys.contains(id)) \(currentlyConnecting) \(self.attemptingConnection.contains(id)) \(self.attemptingConnection.count)")
+                
+                let _ = self.connectToRobot(byID: id, ofType: robotType)
 			}
 			
 			if let rd = self.robotDiscoveredBlock {
@@ -209,20 +216,24 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 		let id = peripheral.identifier.uuidString
 		self.connectedPeripherals[id] = peripheral
 		
-		guard let type = self.oughtToBeConnected[id]?.type else {
+		guard let type = self.oughtToBeConnected[id]?.type, let attempts = self.oughtToBeConnected[id]?.connectAttempts else {
 			print("Peripheral that ought not to be connected was connected")
 			self.disconnect(byID: id)
 			return
 		}
 		
         print("did connect \(peripheral.name ?? "unknown") of type: \(type.description)")
-		self.currentlyConnecting = BBTRobotBLEPeripheral.init(peripheral, type, {rbt in
+		self.currentlyConnecting = BBTRobotBLEPeripheral.init(peripheral, type, attempts, {rbt in
 			let id = rbt.peripheral.identifier.uuidString
 			if self.oughtToBeConnected.keys.contains(id) {
 				self.connectedRobots[id] = rbt
 				let _ = FrontendCallbackCenter.shared.robotUpdateStatus(id: id, connected: true)
+                if let bs = rbt.batteryStatus?.rawValue {
+                    let _ = FrontendCallbackCenter.shared.robotUpdateBattery(id: id, batteryStatus: bs)
+                }
 				self.currentlyConnecting = 5
-			} else {
+                self.attemptingConnection = self.attemptingConnection.filter{ $0 != id }
+            } else { //TODO: is this where we get robots connected in the background?? check currentlyConnecting somewhere.
                 NSLog("A robot (\(rbt.name)) was just initialized that is not in the oughtToBeConnected list.")
 //				self.disconnect(byID: id)
 			}
@@ -292,6 +303,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
     
 	func disconnect(byID id: String) {
 		print("disconnect running")
+        /*
 		guard self.oughtToBeConnected.keys.contains(id) ||
 			self.connectedPeripherals.keys.contains(id) else {
 			return
@@ -302,8 +314,18 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 			peripheral = self.oughtToBeConnected[id]!.peripheral
 		} else {
 			peripheral = self.connectedPeripherals[id]!
-		}
+		}*/
 		
+        guard let peripheral = self.oughtToBeConnected[id]?.peripheral ?? self.connectedPeripherals[id] else {
+            NSLog("Could not find peripheral to disconnect.")
+            return
+        }
+        
+        if let robot = self.connectedRobots[id] {
+            NSLog("In the process of disconnecting \(robot.name).")
+        } else {
+            NSLog("Could not find robot for \(id) during disconnect.")
+        }
 		self.oughtToBeConnected.removeValue(forKey: id)
 		
 		
@@ -318,26 +340,32 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 	func connectToRobot(byID id: String, ofType type: BBTRobotType) -> Bool {
         
 		guard let peripheral = self.discoveredPeripherals[id] else {
+            NSLog("Failed to find the peripheral we are trying to connect to...")
 			return false
 		}
-		
+        self.attemptingConnection.append(id)
+        //self.discoveredPeripherals.removeValue(forKey: id) //TODO: Does this do anything?
+        
 		Thread.sleep(forTimeInterval: 3.0) //make sure that the HB is booted up
 		
-		let idString = peripheral.identifier.uuidString
-		self.discoveredPeripherals.removeValue(forKey: idString)
-        //TODO: Should only be displaying and connecting to robots of the correct type?
-        //if let name = peripheral.name, let pType = BBTRobotType.fromString(name) {
-        //    self.oughtToBeConnected[idString] = (peripheral: peripheral, type: pType)
-        //} else {
-            self.oughtToBeConnected[idString] = (peripheral: peripheral, type: type)
-        //}
-//		self.connectedPeripherals[idString] = peripheral
+        connectToRobot(byPeripheral: peripheral, ofType: type)
 		
-		let options = [CBConnectPeripheralOptionNotifyOnDisconnectionKey: NSNumber(value: true)]
-		self.centralManager.connect(peripheral, options: options)
-		
-		self.stopScan()
+        self.stopScan()
 		
 		return true
 	}
+    
+    func connectToRobot(byPeripheral peripheral: CBPeripheral, ofType type: BBTRobotType) {
+        let id = peripheral.identifier.uuidString
+        
+        if self.oughtToBeConnected.keys.contains(id) {
+            self.oughtToBeConnected[id]?.connectAttempts += 1
+        } else {
+            self.oughtToBeConnected[id] = (peripheral: peripheral, type: type, 0)
+        }
+        print("Connect to robot. \(peripheral.name ?? "unknown") \(oughtToBeConnected)")
+        
+        let options = [CBConnectPeripheralOptionNotifyOnDisconnectionKey: NSNumber(value: true)]
+        self.centralManager.connect(peripheral, options: options)
+    }
 }

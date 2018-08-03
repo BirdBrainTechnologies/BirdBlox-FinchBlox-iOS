@@ -140,8 +140,9 @@ public func rawToDistance(_ raw_val: UInt8) -> Int{
 /**
  Converts a raw value from a robot into a voltage
  */
-public func rawToVoltage(_ raw_val: UInt8) -> Int{
-    return Int(floor((100.0 * Double(raw_val) / 51.0) / 100))
+public func rawToVoltage(_ raw_val: UInt8) -> Double {
+    return Double(raw_val) * 0.0406
+    //return Int(floor((100.0 * Double(raw_val) / 51.0) / 100))
 }
 
 /**
@@ -326,4 +327,8 @@ struct FixedLengthArray<T: Equatable>: Equatable {
 public func noteToPeriod(_ note: UInt8) -> UInt16 {
     let frequency = 440 * pow(Double(2), Double((Double(note) - 69)/12))
     return UInt16((1/frequency) * 1000000)
+}
+
+enum BatteryStatus: Int {
+    case red = 0, yellow, green
 }

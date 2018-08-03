@@ -102,6 +102,14 @@ class FrontendCallbackCenter {
 		
 		return self.runJS(function: function, parameters: parameters)
 	}
+    public func robotUpdateBattery(id: String, batteryStatus: Int) -> Bool {
+        let safeResponse = FrontendCallbackCenter.safeString(from: id)
+        
+        let function = "CallbackManager.robot.updateBatteryStatus"
+        let parameters = [safeResponse, String(batteryStatus)]
+        
+        return self.runJS(function: function, parameters: parameters)
+    }
 	
     //TODO: Make this for every type of robot
     public func robotFirmwareIncompatible(robotType: BBTRobotType, id: String, firmware: String) -> Bool {
@@ -180,6 +188,13 @@ class FrontendCallbackCenter {
 		
 		return self.runJS(function: function, parameters: parameters)
 	}
+    
+    func reloadOpenDialog() -> Bool {
+        let function = "OpenDialog.currentDialog.reloadDialog"
+        let parameters: [String] = []
+        
+        return self.runJS(function: function, parameters: parameters)
+    }
 	
 	func recordingEnded() -> Bool {
 		let function = "CallbackManager.sounds.recordingEnded"
