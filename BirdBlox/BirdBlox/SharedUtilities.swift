@@ -332,3 +332,7 @@ public func noteToPeriod(_ note: UInt8) -> UInt16 {
 enum BatteryStatus: Int {
     case red = 0, yellow, green
 }
+
+enum BBTrobotConnectStatus {
+    case oughtToBeConnected, shouldBeDisconnected, attemptingConnection
+}

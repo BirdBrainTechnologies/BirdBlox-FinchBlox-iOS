@@ -12,9 +12,10 @@ import CoreBluetooth
 class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
 
     public let peripheral: CBPeripheral
-    public let type: BBTRobotType
+    public var type: BBTRobotType
     public let name: String
-    private let connectionAttempts: Int //How many times have we already tried to connect to this peripheral?
+    private var connectionAttempts: Int //How many times have we already tried to connect to this peripheral?
+    public var status: BBTrobotConnectStatus
     private let BLE_Manager: BLECentralManager
 	
     public var id: String {
@@ -58,7 +59,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     var commandPending: Data? = nil //TODO: Delete? For use with led arrays and .withResponse
     
     private var initializingCondition = NSCondition()
-    private var lineIn: [UInt8] = [0, 0, 0, 0, 0, 0, 0, 0]
+    private var lineIn: [UInt8] = []
     private var hardwareString = ""
     private var firmwareVersionString = ""
     private var oldFirmware = false
@@ -84,10 +85,11 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     
     //MARK: INIT
     
-    required init(_ peripheral: CBPeripheral, _ type: BBTRobotType, _ attempt: Int, _ completion: ((BBTRobotBLEPeripheral) -> Void)? = nil){
+    required init(_ peripheral: CBPeripheral, _ type: BBTRobotType, _ completion: ((BBTRobotBLEPeripheral) -> Void)? = nil){
         self.peripheral = peripheral
         self.type = type
-        self.connectionAttempts = attempt
+        self.connectionAttempts = 0
+        self.status = .shouldBeDisconnected
         self.name = BBTgetDeviceNameForGAPName(self.peripheral.name ?? "Unknown")
         self.BLE_Manager = BLECentralManager.shared
         
@@ -101,7 +103,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         super.init()
         
         self.peripheral.delegate = self
-        self.peripheral.discoverServices([type.SERVICE_UUID])
+        //self.peripheral.discoverServices([type.SERVICE_UUID])
     }
 
     
@@ -185,7 +187,9 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         //Check firmware version.
         let timeoutTime = Date(timeIntervalSinceNow: TimeInterval(7)) //seconds
         self.initializingCondition.lock()
-        let oldLineIn = self.lineIn
+        //let oldLineIn = self.lineIn
+        let blankLine: [UInt8] = [0, 0, 0, 0, 0, 0, 0, 0]
+        self.lineIn = blankLine
         
         guard let versioningCommand = type.hardwareFirmwareVersionCommand() else {
             BLE_Manager.disconnect(byID: self.id)
@@ -198,15 +202,18 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         print("sent versioning command")
         
         //Wait until we get a response or until we timeout.
-        while (self.lineIn == oldLineIn) {
+        //while (self.lineIn == oldLineIn) {
+        while (self.lineIn == blankLine) {
             if (Date().timeIntervalSince(timeoutTime) >= 0) {
                 
                 NSLog("\(self.name) initialization failed due to timeout. Connected? \(self.connected)")
                 //BLE_Manager.disconnect(byID: self.id)
                 
+                self.initializingCondition.unlock()
                 if self.connectionAttempts < 10 {
-                    BLE_Manager.connectToRobot(byPeripheral: self.peripheral, ofType: self.type)
+                    //BLE_Manager.connectToRobot(byPeripheral: self.peripheral, ofType: self.type)
                     NSLog("\(self.name) Reconnecting...")
+                    connect()
                 } else {
                     NSLog ("Not attempting to reconnect \(self.name). There have been \(self.connectionAttempts) attempts already. Currently connected? \(self.connected)")
                     BLE_Manager.disconnect(byID: self.id)
@@ -440,6 +447,21 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     }
     
     //MARK: Misc. functions
+    
+    /**
+     * Connect to the peripheral
+     */
+    public func connect() {
+        self.status = .attemptingConnection
+        self.connectionAttempts += 1
+        self._initialized = false
+        Thread.sleep(forTimeInterval: 3.0) //make sure that the HB is booted up
+        
+        //If this connection was not canceled in the mean time
+        if self.status == .attemptingConnection {
+            self.BLE_Manager.connect(toPeripheral: self.peripheral)
+        }
+    }
     
     public func endOfLifeCleanup() -> Bool{
         //        self.sendData(data: BBTHummingbirdUtility.getPollStopCommand())

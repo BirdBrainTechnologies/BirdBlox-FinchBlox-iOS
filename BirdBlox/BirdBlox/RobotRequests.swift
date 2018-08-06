@@ -89,12 +89,14 @@ class RobotRequests {
 		bleCenter.startScan(serviceUUIDs: [BBTRobotType.Hummingbird.scanningUUID], updateDiscovered: { (peripherals) in
 			let altName = "Fetching name..."
             //let filteredList = peripherals.filter { $0.2 == type }
-			let darray = peripherals.map { (peripheral, rssi, type) in
+            let filteredList = peripherals.filter { $0.3 > Date().addingTimeInterval(-3.0) } //remove any robot we have not found in the last 3 seconds
+            //print("Filtered list: \(filteredList.map { (p, r, t, f) in r })")
+			let darray = filteredList.map { (peripheral, rssi, type, found) in
 				["id": peripheral.identifier.uuidString,
 				 "name": BBTgetDeviceNameForGAPName(peripheral.name ?? altName),
                  //"device": BBTRobotType.fromString(peripheral.name ?? altName)?.description ?? altName,
                  "device": type.description,
-                 "RSSI": rssi]
+                 "RSSI": rssi.stringValue]
 			}
 			
 			let _ = FrontendCallbackCenter.shared.updateDiscoveredRobotList(robotList: darray)
