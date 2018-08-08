@@ -91,14 +91,17 @@ class RobotRequests {
             //let filteredList = peripherals.filter { $0.2 == type }
             let filteredList = peripherals.filter { $0.3 > Date().addingTimeInterval(-3.0) } //remove any robot we have not found in the last 3 seconds
             //print("Filtered list: \(filteredList.map { (p, r, t, f) in r })")
-			let darray = filteredList.map { (peripheral, rssi, type, found) in
-				["id": peripheral.identifier.uuidString,
+            let darray = filteredList.map { (arg) -> [String: String] in
+                let (peripheral, rssi, type, _) = arg
+                return ["id": peripheral.identifier.uuidString,
 				 "name": BBTgetDeviceNameForGAPName(peripheral.name ?? altName),
                  //"device": BBTRobotType.fromString(peripheral.name ?? altName)?.description ?? altName,
                  "device": type.description,
-                 "RSSI": rssi.stringValue]
+                 //"RSSI": rssi.stringValue]
+                "RSSI": mode(Array(rssi.suffix(50))).stringValue] //peripherals are discovered more than 30 times per second
 			}
-			
+            //print("list: \(peripherals) filteredList: \(filteredList) darray: \(darray.map{ $0["RSSI"] })")
+            print("Updating: \(darray.map{ "\($0["name"] ?? "?"): \($0["RSSI"] ?? "?")" })")
 			let _ = FrontendCallbackCenter.shared.updateDiscoveredRobotList(robotList: darray)
 		}, scanEnded: {
 			let _ = FrontendCallbackCenter.shared.scanHasStopped()
@@ -618,19 +621,25 @@ class RobotRequests {
     private func setLedArrayRequest(id: String, type: BBTRobotType,
                                   request: HttpRequest) -> HttpResponse {
         let queries = BBTSequentialQueryArrayToDict(request.queryParams)
-        var ledStatusString : String
+        var ledStatusString:[String] = []
         
         if request.path.contains("printBlock") {
             guard let printString = queries["printString"] else {
                 return .badRequest(.text("String to print not specified."))
             }
             
-            ledStatusString = "F" + String(printString.prefix(18)).uppercased()
+            ledStatusString.append("F" + String(printString.prefix(18)).uppercased())
+            //TODO: Finish working this out? Or are we doing this on the frontend?
+            /*while printString.count > 18 { //count is not the right thing
+                printString = String(printString.dropFirst(18))
+                print("printString: \(printString)")
+                ledStatusString.append("F" + String(printString.prefix(18)).uppercased())
+            }*/
         } else if request.path.contains("ledArray") {
             guard let ledArrayStatus = queries["ledArrayStatus"] else {
                 return .badRequest(.text("Missing or invalid parameters in set led array request"))
             }
-            ledStatusString = "S" + ledArrayStatus
+            ledStatusString.append("S" + ledArrayStatus)
         } else {
             return .badRequest(.text("Specify printBlock or ledArray when setting the array"))
         }
@@ -642,8 +651,8 @@ class RobotRequests {
             return requesto!
         }
         
-        //print("led array string: \(ledStatusString)")
-        if robot.setLedArray(ledStatusString) {
+        print("led array string: \(ledStatusString)")
+        if robot.setLedArray(ledStatusString[0]) {
             return .ok(.text("set"))
         } else {
             return .internalServerError

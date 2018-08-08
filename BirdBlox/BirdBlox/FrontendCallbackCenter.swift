@@ -131,12 +131,6 @@ class FrontendCallbackCenter {
         // just like in DeviceManager.prototype.disconnectIncompatible
         return self.runJS(function: function, parameters: parameters)
     }
-    //TODO: Delete?
-    public func showMessage(title: String, msg: String) -> Bool {
-        let function = "DialogManager.showAlertDialog"
-        let parameters = ["", msg, "OK"]
-        return self.runJS(function: function, parameters: parameters)
-    }
 	
 	public func robotFirmwareStatus(id: String, status: String) -> Bool {
 		let safeID = FrontendCallbackCenter.safeString(from: id)

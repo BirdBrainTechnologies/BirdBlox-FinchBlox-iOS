@@ -51,12 +51,13 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     
     private var syncTimer: Timer = Timer()
     let syncInterval = 0.03125 //(32Hz)
+    //let syncInterval = 0.0625
     let cacheTimeoutDuration: UInt64 = 1 * 1_000_000_000 //nanoseconds
     let waitRefreshTime = 0.5 //seconds
     
     let creationTime = DispatchTime.now()
     
-    var commandPending: Data? = nil //TODO: Delete? For use with led arrays and .withResponse
+    var commandPending: Data? = nil //For use with led arrays
     
     private var initializingCondition = NSCondition()
     private var lineIn: [UInt8] = []
@@ -116,8 +117,10 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
         if (peripheral != self.peripheral || error != nil) {
             //not the right device
+            NSLog("Did discover service, but somehow this isn't the peripheral referenced.")
             return
         }
+        //print("Did discover service for \(name)")
         if let services = peripheral.services{
             for service in services {
                 if(service.uuid == type.SERVICE_UUID){
@@ -139,8 +142,10 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
                     didDiscoverCharacteristicsFor service: CBService, error: Error?) {
         if (peripheral != self.peripheral || error != nil) {
             //not the right device
+            NSLog("Did discover characteristics for the wrong device, or error: \(error?.localizedDescription ?? "no error")")
             return
         }
+        //print("Did discover characteristic for \(name)")
         var wasTXSet = false
         var wasRXSet = false
         if let characteristics = service.characteristics{
@@ -176,6 +181,10 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         if type == .Hummingbird, let name = peripheral.name, name.starts(with: "HB") {
             print("\(self.name) will use .withResponse.")
             self.useWithResponse = true
+        } else if type == .HummingbirdBit || type == .MicroBit {
+            //If you want to use .withResponse, you must change the
+            // way that led array commands are handled.
+            self.useWithResponse = false
         }
         
         //Get ourselves a fresh slate
@@ -425,15 +434,15 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         //We successfully sent a command
         self.writtenCondition.lock()
         
-        if let pendingCommand = self.commandPending {//TODO: remove this? not needed for duo
-            NSLog("Sending an led array command now that response has been received.")
-            sendData(data: pendingCommand)
-            self.commandPending = nil
-            self.lastWriteStart = DispatchTime.now()
-        } else {
+        //if let pendingCommand = self.commandPending {//TODO: remove this? not needed for duo
+        //    NSLog("Sending an led array command now that response has been received.")
+        //    sendData(data: pendingCommand)
+        //    self.commandPending = nil
+        //    self.lastWriteStart = DispatchTime.now()
+        //} else {
             self.lastWriteWritten = true
             self.writtenCondition.signal()
-        }
+        //}
         
         self.writtenCondition.unlock()
     }
@@ -452,6 +461,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
      * Connect to the peripheral
      */
     public func connect() {
+        //print("in \(name).connect() while robots list is \(BLE_Manager.robots.mapValues({ return "\($0.name): \($0.status)" }))")
         self.status = .attemptingConnection
         self.connectionAttempts += 1
         self._initialized = false
@@ -593,6 +603,19 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     func syncronizeOutputs() {
         self.writtenCondition.lock()
         
+        //It seems that we cannot send two commands in one cycle. If there is both
+        // a setAll command to send and an ledArray, the led array has been saved
+        // for the next cycle.
+        if let command = self.commandPending, !self.useWithResponse, self.initialized {
+            print("sending a pending command.")
+            self.sendData(data: command)
+            self.commandPending = nil
+            self.lastWriteStart = DispatchTime.now()
+            self.writtenCondition.signal()
+            self.writtenCondition.unlock()
+            return
+        }
+        
         let nextCopy = self.nextOutputState
         
         let changeOccurred = !(nextCopy == self.currentOutputState)
@@ -604,6 +627,8 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         //NSLog("Sync outputs. \(timeout) \(changeOccurred) \(self.lastWriteWritten)")
         
         if self.initialized && (self.lastWriteWritten || timeout)  && shouldSync {
+            
+            
             
             //if timeout { NSLog("Timeout") }
             
@@ -617,10 +642,12 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
                 print("the buzzer has already changed")
             }
             
+            var sentSetAll = false
             let oldCommand = currentOutputState.setAllCommand()
             if command != oldCommand {
                 NSLog("Sending set all.")
                 self.sendData(data: command)
+                sentSetAll = true
                 self.lastWriteStart = DispatchTime.now()
                 if self.useWithResponse { self.lastWriteWritten = false }
             }
@@ -629,16 +656,21 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
                 //TODO: maybe only send stop command if changing from flash to symbol
                 //self.sendData(data: clearCommand)
             if nextCopy.ledArray != currentOutputState.ledArray, let ledArray = nextCopy.ledArray, let ledArrayCommand = type.ledArrayCommand(ledArray) {
-                if !self.lastWriteWritten {
+                if sentSetAll { //Make sure we do not send more than one packet per cycle
                     NSLog("Putting led array command into pending...")
                     self.commandPending = ledArrayCommand
                 } else {
                     if self.useWithResponse {self.lastWriteWritten = false}
+                    NSLog("Sending led array change.")
+                    self.sendData(data: ledArrayCommand)
+                    self.lastWriteStart = DispatchTime.now()  //TODO: need this? or lastwritewritten above?
+                    
+                    /* Writing 2 commands per interval had strange issues
                     DispatchQueue.main.asyncAfter(deadline: .now() + self.syncInterval/2) {
                         NSLog("Sending led array change.")
                         self.sendData(data: ledArrayCommand)
                         self.lastWriteStart = DispatchTime.now()  //TODO: need this? or lastwritewritten above?
-                    }
+                    }*/
                 }
             }
             

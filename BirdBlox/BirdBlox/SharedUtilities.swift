@@ -84,6 +84,23 @@ public func toUInt8(_ value: Int) -> UInt8 {
     return UInt8(new_value)
 }
 
+/**
+    Find the mode (most frequent value) of an NSNumber array
+    Failure returns 0
+ */
+public func mode(_ array: [NSNumber]) -> NSNumber {
+
+    var counts = [NSNumber: Int]()
+        
+    array.forEach { counts[$0] = (counts[$0] ?? 0) + 1 }
+        
+    if let (value, _) = counts.max(by: {$0.1 < $1.1}) {
+        //return (value, count)
+        return value
+    }
+    return 0  //TODO: ?
+}
+
 
 //MARK: data Conversions
 

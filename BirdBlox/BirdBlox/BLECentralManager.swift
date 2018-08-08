@@ -35,16 +35,18 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 	
 	//private var _discoveredPeripheralsSeqeuntial: [(CBPeripheral, String, BBTRobotType)]
 	//private var discoveredPeripherals: [String: CBPeripheral]
-    private var discoveredPeripherals: [String: (peripheral: CBPeripheral, rssi: NSNumber, type: BBTRobotType, found: Date)]
+    private var discoveredPeripherals: [String: (peripheral: CBPeripheral, rssi: [NSNumber], type: BBTRobotType, found: Date)]
 	//private var connectedPeripherals: [String: CBPeripheral]
 	//private var connectedRobots: [String: BBTRobotBLEPeripheral]
     //private var oughtToBeConnected: [String: (peripheral: CBPeripheral, type: BBTRobotType, connectAttempts: Int)]
     //private var attemptingConnection: [String]
     
-    private var robots: [String: BBTRobotBLEPeripheral]
+    var robots: [String: BBTRobotBLEPeripheral]
 	
 	private var discoverTimer: Timer
 	private static let scanDuration = TimeInterval(30) //seconds
+    private let updateInterval = TimeInterval(1)
+    private var lastDeviceListUpdate: Date?
 	
 	//private var currentlyConnecting: Any
 	
@@ -54,7 +56,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 	override init() {
 		
 		//self.discoveredPeripherals = [String: CBPeripheral]()
-        self.discoveredPeripherals = [String: (CBPeripheral, NSNumber, BBTRobotType, Date)]()
+        self.discoveredPeripherals = [String: (CBPeripheral, [NSNumber], BBTRobotType, Date)]()
 		self.scanState = .notScanning
 		self.discoverTimer = Timer()
 		self.deviceCount = 0
@@ -87,10 +89,10 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 	}
 	
 	private var scanStoppedBlock: (() -> Void)? = nil
-	private var robotDiscoveredBlock: (([(CBPeripheral, NSNumber, BBTRobotType, Date)]) -> Void)? = nil
+	private var robotDiscoveredBlock: (([(CBPeripheral, [NSNumber], BBTRobotType, Date)]) -> Void)? = nil
 	
 	public func startScan(serviceUUIDs: [CBUUID],
-	                      updateDiscovered: (([(CBPeripheral, NSNumber, BBTRobotType, Date)]) -> Void)? = nil,
+	                      updateDiscovered: (([(CBPeripheral, [NSNumber], BBTRobotType, Date)]) -> Void)? = nil,
 	                      scanEnded: (() -> Void)? = nil) {
 		
         //Stop any scanning that is already occuring. No need to notify the frontend or do anything
@@ -139,6 +141,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 			self.scanState = .notScanning
 			discoverTimer.invalidate()
 			NSLog("Stopped bluetooth scan")
+            lastDeviceListUpdate = nil
 			
 			if let se = self.scanStoppedBlock {
 				se()
@@ -146,7 +149,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 		}
 	}
 	
-	public var foundDevices: [(CBPeripheral, NSNumber, BBTRobotType, Date)] {
+	public var foundDevices: [(CBPeripheral, [NSNumber], BBTRobotType, Date)] {
 		//return self._discoveredPeripheralsSeqeuntial
         return Array(self.discoveredPeripherals.values)
 	}
@@ -192,8 +195,9 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
             //check to see if we are already trying to connect to this one
             //if self.attemptingConnection.contains(id) { return }
             if let robot = self.robots[id] {
+                NSLog("Found robot \(robot.name) with status \(robot.status)")
                 switch robot.status {
-                case .attemptingConnection: return
+                case .attemptingConnection: return //TODO: remove from discovered list?
                 case .oughtToBeConnected:
                     if robot.type != robotType {
                         print("Type missmatch! \(robot.type.description) ne \(robotType.description)")
@@ -215,13 +219,20 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 				self._discoveredPeripheralsSeqeuntial.append((peripheral, RSSI.stringValue, robotType))
 			}*/
             //TODO: sample the rssi values over some period? Use the mode? Sometimes the rssi value is 127. What does that mean?
-            if let oldRSSI = self.discoveredPeripherals[id]?.rssi, abs(oldRSSI.intValue - RSSI.intValue) < 15 {
+            //if let oldRSSI = self.discoveredPeripherals[id]?.rssi, abs(oldRSSI.intValue - RSSI.intValue) < 15 {
                 //print("discovered \(peripheral.name) \(RSSI) \(oldRSSI)")
-                self.discoveredPeripherals[id] = (peripheral, oldRSSI, robotType, Date())
-            } else {
-                //print("discovered \(peripheral.name) \(RSSI)")
-                self.discoveredPeripherals[id] = (peripheral, RSSI, robotType, Date())
-            }
+                //self.discoveredPeripherals[id] = (peripheral, oldRSSI, robotType, Date())
+            
+            let roundedRSSI = 10 * (round(RSSI.doubleValue/10)) as NSNumber
+            //NSLog("discovered \(peripheral.name ?? "?") \(RSSI) \(roundedRSSI)")
+            //if self.discoveredPeripherals.keys.contains(id) {
+            //    self.discoveredPeripherals[id]?.peripheral = peripheral //TODO: need this?
+            //    self.discoveredPeripherals[id]?.rssi.append(roundedRSSI)
+            //} else {
+            //    self.discoveredPeripherals[id] = (peripheral, [roundedRSSI], robotType, Date())
+            //}
+            
+            self.discoveredPeripherals[id] = (peripheral, (self.discoveredPeripherals[id]?.rssi ?? []) + [roundedRSSI], robotType, Date())
 			
             /*
 			if let type = self.oughtToBeConnected[id]?.type {
@@ -234,9 +245,15 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
                 let _ = self.connectToRobot(byID: id, ofType: robotType)
 			}*/
 			
-			if let rd = self.robotDiscoveredBlock {
-				rd(self.foundDevices)
-			}
+            //Give it one update interval to get a list before reporting
+            if let lastUpdate = lastDeviceListUpdate {
+                if let rd = self.robotDiscoveredBlock, -lastUpdate.timeIntervalSinceNow > updateInterval {
+                    rd(self.foundDevices)
+                    lastDeviceListUpdate = Date()
+                }
+            } else {
+                lastDeviceListUpdate = Date()
+            }
 			
             //print("Advertised name: \(advertisementData["kCBAdvDataLocalName"] ?? "unknown") Robot type: \(robotType.description)")
             
@@ -256,11 +273,16 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
             //should be .attemptingConnection at this time.
             // Will switch to .oughtToBeConnected when initialization is finished
             case .attemptingConnection:
-                print("Just connected to \(robot.name)")
+                print("Just connected to \(robot.name), \(peripheral == robot.peripheral) \(peripheral.services)")
                 peripheral.discoverServices([robot.type.SERVICE_UUID])
-            case .oughtToBeConnected: () //TODO: What?
-            case .shouldBeDisconnected: () //TODO: What?
+            case .oughtToBeConnected: //TODO: What?
+                NSLog("Just connected to \(robot.name) but robot should already be connected.")
+            case .shouldBeDisconnected: //TODO: What?
+                NSLog("Just connected to \(robot.name) but robot should be disconnected.")
+                self.disconnect(byID: id)
             }
+        } else {
+            NSLog("Could not find robot for peripheral \(peripheral.name) that was just connected.")
         }
         /*
 		self.connectedPeripherals[id] = peripheral
@@ -310,6 +332,10 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 		self.connectedRobots.removeValue(forKey: id)
         */
         if let robot = self.robots[id] {
+            if robot.status == .attemptingConnection { //TODO: Does this come up? 
+                print("Did disconnect while attempting a connection to \(robot.name)")
+                robot.status = .oughtToBeConnected
+            }
             let _ = robot.endOfLifeCleanup()
         } else {
             NSLog("Did disconnect unknown peripheral \(peripheral) with error \(errorStr)")
@@ -408,12 +434,17 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
             NSLog("Failed to find the peripheral we are trying to connect to...")
 			return false
 		}
+        let temp = centralManager.retrievePeripherals(withIdentifiers: [peripheral.identifier])
+        
         //self.attemptingConnection.append(id)
         //self.discoveredPeripherals.removeValue(forKey: id) //TODO: Does this do anything?
         
 		//Thread.sleep(forTimeInterval: 3.0) //make sure that the HB is booted up
 		
         //connectToRobot(byPeripheral: peripheral, ofType: type)
+        
+        print("Connect to \(peripheral.name ?? "unknown") while robots list is \(robots.mapValues({ return "\($0.name): \($0.status)" }))")
+        
         if let robot = self.robots[id] {
             switch robot.status {
             case .attemptingConnection: () //TODO: What
@@ -432,8 +463,8 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
                     let _ = FrontendCallbackCenter.shared.robotUpdateBattery(id: id, batteryStatus: bs)
                 }
             })
-            robot.connect()
             self.robots[id] = robot
+            robot.connect()
         }
 		
         self.stopScan()
