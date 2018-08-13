@@ -56,6 +56,15 @@ SFSafariViewControllerDelegate {
 			if let name = UserDefaults.standard.string(forKey: self.curDocNameKey) {
 				let _ = self.openProgram(byName: name)
 			}
+            
+            if let lang = NSLocale.preferredLanguages.first?.prefix(2) {
+                let language = String(lang)
+                NSLog("Setting frontend language to \(language)")
+                if FrontendCallbackCenter.shared.setLanguage(language) {
+                    NSLog("Successfully set language to \(language)")
+                }
+            }
+            
 			
 			return .ok(.text("Hello webpage! I am a server."))
 		}
@@ -505,7 +514,7 @@ SFSafariViewControllerDelegate {
 			let curDocName = DataModel.shared.getSetting(self.curDocNameKey)
 			guard (filename != curDocName || (type != .BirdBloxProgram) ||
 				(self.document.documentState == .closed)) else {
-				print("delete open")
+				print("delete open \(filename) \(curDocName ?? "no current doc") \(type) \(self.document.documentState == .closed)")
 				self.closeCurrentProgram(completion: { suc in
 					if suc {
 						let _ = deleteHandler(request)

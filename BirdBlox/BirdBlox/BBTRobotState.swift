@@ -73,6 +73,8 @@ struct BBTRobotOutputState: Equatable {
     public var buzzer: BBTBuzzer?
     public var ledArray: String?
     
+    public static let flashSent: String = "CommandFlashSent"
+    
     init(robotType: BBTRobotType) {
         self.robotType = robotType
         

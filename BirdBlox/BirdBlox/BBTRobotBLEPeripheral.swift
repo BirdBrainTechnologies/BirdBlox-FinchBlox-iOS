@@ -30,6 +30,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     private var lastSensorUpdate: [UInt8]
     var sensorValues: [UInt8] { return lastSensorUpdate }
     var compassCalibrated: Bool = false
+    var compassCalibrationStart: Date?
     var batteryStatus: BatteryStatus?
     
     private let initializationCompletion: ((BBTRobotBLEPeripheral) -> Void)?
@@ -381,6 +382,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         
         //Check the state of compass calibration
         if type == .HummingbirdBit || type == .MicroBit {
+            
             let byte = self.lastSensorUpdate[7]
             let bits = byteToBits(byte)
             
@@ -465,6 +467,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         self.status = .attemptingConnection
         self.connectionAttempts += 1
         self._initialized = false
+        self.batteryStatus = nil
         Thread.sleep(forTimeInterval: 3.0) //make sure that the HB is booted up
         
         //If this connection was not canceled in the mean time
@@ -655,7 +658,9 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             //if nextCopy.ledArray != currentOutputState.ledArray, let ledArray = nextCopy.ledArray, let ledArrayCommand = type.ledArrayCommand(ledArray), let clearCommand = type.clearLedArrayCommand() {
                 //TODO: maybe only send stop command if changing from flash to symbol
                 //self.sendData(data: clearCommand)
-            if nextCopy.ledArray != currentOutputState.ledArray, let ledArray = nextCopy.ledArray, let ledArrayCommand = type.ledArrayCommand(ledArray) {
+            if nextCopy.ledArray != currentOutputState.ledArray,
+                nextCopy.ledArray != BBTRobotOutputState.flashSent,
+                let ledArray = nextCopy.ledArray, let ledArrayCommand = type.ledArrayCommand(ledArray) {
                 if sentSetAll { //Make sure we do not send more than one packet per cycle
                     NSLog("Putting led array command into pending...")
                     self.commandPending = ledArrayCommand
@@ -672,6 +677,11 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
                         self.lastWriteStart = DispatchTime.now()  //TODO: need this? or lastwritewritten above?
                     }*/
                 }
+                print("Sending \(ledArray)")
+                if ledArray.starts(with: "F") {
+                    print("And now setting to \(BBTRobotOutputState.flashSent)")
+                    nextOutputState.ledArray = BBTRobotOutputState.flashSent
+                }//TODO: is this ok??
             }
             
             self.currentOutputState = nextCopy

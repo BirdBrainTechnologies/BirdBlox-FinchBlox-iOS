@@ -218,4 +218,11 @@ class FrontendCallbackCenter {
     func stopExecution() ->  Bool {
         return self.runJS(function: "CodeManager.stop", parameters: [])
     }
+    
+    func setLanguage(_ lang: String) -> Bool {
+        let function = "CallbackManager.tablet.getLanguage"
+        let parameters = [lang]
+        
+        return self.runJS(function: function, parameters: parameters)
+    }
 }

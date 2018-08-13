@@ -195,16 +195,16 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
             //check to see if we are already trying to connect to this one
             //if self.attemptingConnection.contains(id) { return }
             if let robot = self.robots[id] {
-                NSLog("Found robot \(robot.name) with status \(robot.status)")
+                //NSLog("Found robot \(robot.name) with status \(robot.status)")
+                if robot.type != robotType {
+                    print("Type missmatch! \(robot.type.description) not \(robotType.description)")
+                    robot.type = robotType
+                }
+                
                 switch robot.status {
                 case .attemptingConnection: return //TODO: remove from discovered list?
                 case .oughtToBeConnected:
-                    if robot.type != robotType {
-                        print("Type missmatch! \(robot.type.description) ne \(robotType.description)")
-                        robot.type = robotType
-                    }
-                    print("Found a robot that ought to be connected! \(peripheral.name ?? "unknown") \(robot.status)")
-                    
+                    print("Found a robot that ought to be connected! \(peripheral.name ?? "unknown") \(robot.status) \(robot.type)")
                     //let _ = self.connectToRobot(byID: id, ofType: robotType)
                     robot.connect()
                 case .shouldBeDisconnected: ()

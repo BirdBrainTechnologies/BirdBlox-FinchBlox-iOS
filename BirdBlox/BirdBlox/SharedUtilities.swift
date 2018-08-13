@@ -341,9 +341,15 @@ struct FixedLengthArray<T: Equatable>: Equatable {
  See: https://newt.phys.unsw.edu.au/jw/notes.html
   fm  =  (2^((m−69)/12))(440 Hz)
  */
-public func noteToPeriod(_ note: UInt8) -> UInt16 {
+public func noteToPeriod(_ note: UInt8) -> UInt16? {
+    
     let frequency = 440 * pow(Double(2), Double((Double(note) - 69)/12))
-    return UInt16((1/frequency) * 1000000)
+    let period = (1/frequency) * 1000000
+    if period > 0 && period <= Double(UInt16.max) {
+        return UInt16(period)
+    } else {
+        return nil
+    }
 }
 
 enum BatteryStatus: Int {

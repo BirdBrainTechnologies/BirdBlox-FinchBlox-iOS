@@ -101,7 +101,7 @@ class RobotRequests {
                 "RSSI": mode(Array(rssi.suffix(50))).stringValue] //peripherals are discovered more than 30 times per second
 			}
             //print("list: \(peripherals) filteredList: \(filteredList) darray: \(darray.map{ $0["RSSI"] })")
-            print("Updating: \(darray.map{ "\($0["name"] ?? "?"): \($0["RSSI"] ?? "?")" })")
+            //print("Updating: \(darray.map{ "\($0["name"] ?? "?"): \($0["RSSI"] ?? "?")" })")
 			let _ = FrontendCallbackCenter.shared.updateDiscoveredRobotList(robotList: darray)
 		}, scanEnded: {
 			let _ = FrontendCallbackCenter.shared.scanHasStopped()
@@ -335,6 +335,8 @@ class RobotRequests {
                 } else {
                     sensorValue = String(realPercent) //TODO: should this really be different?
                 }
+            case "other":
+                sensorValue = String(Double(value) * (3.3/255))
             default:
                 return .ok(.text(String(realPercent)))
             }
@@ -596,7 +598,7 @@ class RobotRequests {
 	private func setBuzzerRequest(id: String, type: BBTRobotType,
 	                              request: HttpRequest) -> HttpResponse {
 		let queries = BBTSequentialQueryArrayToDict(request.queryParams)
-            
+        
         guard let noteStr = queries["note"], let durationStr = queries["duration"],
             let note = UInt8(noteStr), let exactDur = Double(durationStr) else {
             return .badRequest(.text("Missing or invalid parameters"))
@@ -609,8 +611,8 @@ class RobotRequests {
         }
         
         let duration = UInt16(round(exactDur))
-        let period = noteToPeriod(note)
-        if robot.setBuzzer(period: period, duration: duration) {
+        
+        if let period = noteToPeriod(note), robot.setBuzzer(period: period, duration: duration) {
             return .ok(.text("set"))
         } else {
             return .internalServerError
@@ -628,7 +630,8 @@ class RobotRequests {
                 return .badRequest(.text("String to print not specified."))
             }
             
-            ledStatusString.append("F" + String(printString.prefix(18)).uppercased())
+            ledStatusString.append("F" + String(printString.prefix(18)))
+            
             //TODO: Finish working this out? Or are we doing this on the frontend?
             /*while printString.count > 18 { //count is not the right thing
                 printString = String(printString.dropFirst(18))
@@ -670,7 +673,12 @@ class RobotRequests {
             return requesto!
         }
         
-        if robot.calibrateCompass() {
+        //Don't call calibrate again too soon.
+        if let calStarted = robot.compassCalibrationStart, calStarted.timeIntervalSinceNow > -2 {
+            return .ok(.text("calibrated"))
+        } else if robot.calibrateCompass() {
+            robot.compassCalibrationStart = Date()
+            print("Setting calibration start time")
             return .ok(.text("calibrated"))
         } else {
             return .internalServerError
