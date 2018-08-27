@@ -1,5 +1,6 @@
 BirdBlox/Frontend/*
 BirdBlox/Pods/*
+.DS_Store
 
 # Xcode
 #

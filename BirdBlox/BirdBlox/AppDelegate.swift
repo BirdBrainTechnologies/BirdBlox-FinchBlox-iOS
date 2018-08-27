@@ -140,7 +140,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 		print("Import starting")
 		
 		do {
-			let name = url.lastPathComponent.replacingOccurrences(of: ".bbx", with: "")
+			let name = url.lastPathComponent.replacingOccurrences(of: ".bbx", with: "") + "_import"
 			
 			
 			let avname = DataModel.shared.availableName(from: name)! //This also sanitizes the name

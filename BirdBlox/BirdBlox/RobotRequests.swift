@@ -673,12 +673,7 @@ class RobotRequests {
             return requesto!
         }
         
-        //Don't call calibrate again too soon.
-        if let calStarted = robot.compassCalibrationStart, calStarted.timeIntervalSinceNow > -2 {
-            return .ok(.text("calibrated"))
-        } else if robot.calibrateCompass() {
-            robot.compassCalibrationStart = Date()
-            print("Setting calibration start time")
+        if robot.calibrateCompass() {
             return .ok(.text("calibrated"))
         } else {
             return .internalServerError

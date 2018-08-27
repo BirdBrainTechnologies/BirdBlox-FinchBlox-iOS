@@ -30,7 +30,6 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     private var lastSensorUpdate: [UInt8]
     var sensorValues: [UInt8] { return lastSensorUpdate }
     var compassCalibrated: Bool = false
-    var compassCalibrationStart: Date?
     var batteryStatus: BatteryStatus?
     
     private let initializationCompletion: ((BBTRobotBLEPeripheral) -> Void)?
@@ -468,6 +467,8 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         self.connectionAttempts += 1
         self._initialized = false
         self.batteryStatus = nil
+        self.commandPending = nil
+        self.nextOutputState = BBTRobotOutputState(robotType: type)
         Thread.sleep(forTimeInterval: 3.0) //make sure that the HB is booted up
         
         //If this connection was not canceled in the mean time
@@ -508,7 +509,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             condition.lock()
         }
         
-        while !predicate() {
+        while !predicate() && self.initialized {
             NSLog("waiting...")
             condition.wait(until: Date(timeIntervalSinceNow: self.waitRefreshTime))
         }

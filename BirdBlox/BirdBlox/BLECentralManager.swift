@@ -333,7 +333,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
         */
         if let robot = self.robots[id] {
             if robot.status == .attemptingConnection { //TODO: Does this come up? 
-                print("Did disconnect while attempting a connection to \(robot.name)")
+                NSLog("Did disconnect while attempting a connection to \(robot.name)")
                 robot.status = .oughtToBeConnected
             }
             let _ = robot.endOfLifeCleanup()
