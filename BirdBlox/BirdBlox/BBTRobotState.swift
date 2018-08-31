@@ -72,6 +72,8 @@ struct BBTRobotOutputState: Equatable {
     public var vibrators: FixedLengthArray<UInt8>?
     public var buzzer: BBTBuzzer?
     public var ledArray: String?
+    public var pins: FixedLengthArray<UInt8>?
+    public var mode: [UInt8]? //8 bits
     
     public static let flashSent: String = "CommandFlashSent"
     
@@ -103,6 +105,11 @@ struct BBTRobotOutputState: Equatable {
         }
         if robotType.ledArrayCount == 1 {
             self.ledArray = "S0000000000000000000000000"
+        }
+        
+        if robotType.pinCount > 0 {
+            self.pins = FixedLengthArray(length: robotType.pinCount, repeating: UInt8(0))
+            self.mode = [0,0,0,0,0,0,0,0]
         }
     }
     
@@ -159,13 +166,37 @@ struct BBTRobotOutputState: Equatable {
             return Data(bytes: UnsafePointer<UInt8>(array), count: array.count)
         case .Flutter: return Data()
         case .Finch: return Data()
-        case .MicroBit: return Data()
+        case .MicroBit:
+        /** Micro:bit I/O :
+         * 0x90, FrequencyMSB, FrequencyLSB, Time MSB, Mode, Pad0_value, Pad1_value, Pad2_value
+         * Frequency is valid for only pin 0
+         *
+         * Mode 8 bits:
+         * FU, FU, P0_Mode_MSbit, P0_Mode_LSbit, P1_Mode_MSbit, P1_Mode_MSbit, P2_Mode_MSbit, P2_Mode_LSbit
+         */
+            guard let pins = pins, let buzzer = buzzer, let mode = mode, let modeByte = bitsToByte(mode) else {
+                fatalError("Missing information in the micro:bit output state")
+            }
+            let letter: UInt8 = 0x90
+            let buzzerArray = buzzer.array()
+            
+            var array: [UInt8]
+            if mode[2] == 1 {
+                array = [letter, buzzerArray[0], buzzerArray[1], buzzerArray[2], modeByte, buzzerArray[3], pins[1], pins[2]]
+            } else {
+                array = [letter, 0, 0, 0, modeByte, pins[0], pins[1], pins[2]]
+            }
+            
+            //NSLog("micro:bit set all \(array)")
+            return Data(bytes: UnsafePointer<UInt8>(array), count: array.count)
         }
     }
     
     static func ==(lhs: BBTRobotOutputState, rhs: BBTRobotOutputState) -> Bool {
         return (lhs.trileds == rhs.trileds) && (lhs.servos == rhs.servos) &&
-            (lhs.leds == rhs.leds) && (lhs.motors == rhs.motors) && (lhs.vibrators == rhs.vibrators) && (lhs.buzzer == rhs.buzzer) && (lhs.ledArray == rhs.ledArray)
+            (lhs.leds == rhs.leds) && (lhs.motors == rhs.motors) &&
+            (lhs.vibrators == rhs.vibrators) && (lhs.buzzer == rhs.buzzer) &&
+            (lhs.ledArray == rhs.ledArray) && (lhs.pins == rhs.pins) && (lhs.mode == rhs.mode)
     }
 }
 

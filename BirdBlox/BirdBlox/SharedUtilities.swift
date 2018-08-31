@@ -123,6 +123,17 @@ func byteToBits(_ byte: UInt8) -> [UInt8] {
 }
 
 /**
+ * Convert an array of bits into a byte of data
+ */
+func bitsToByte(_ bits: [UInt8]) -> UInt8? {
+    var string = ""
+    for bit in bits {
+        string += String(bit)
+    }
+    return UInt8(string, radix: 2) ?? nil
+}
+
+/**
     Converts a raw value from a robot into a temperature
  */
 public func rawToTemp(_ raw_val: UInt8) -> Int{
@@ -249,25 +260,40 @@ public func BBTkidNameFromMacSuffix(_ deviceName: String) -> String? {
 		let namesDict = NSDictionary(contentsOfFile: namesPath),
 		let mac = Int(deviceName[deviceName.index(deviceName.startIndex,
 		                                          offsetBy: 2)..<deviceName.endIndex], radix: 16)  {
+        
+        guard let namesDict = namesDict as? Dictionary<String, Array<String>>,
+            let firstNames = namesDict["first_names"], let middleNames = namesDict["middle_names"],
+            let lastNames = namesDict["last_names"], let badNames = namesDict["bad_names"] else {
+                NSLog("Could not load name dictionary.")
+                return nil
+        }
 		
 		 // grab bits from the MAC address (6 bits, 6 bits, 8 bits => last, middle, first)
 		 // (5 digis of mac address is 20 bits) llllllmmmmmmffffffff
 		 
 		let macNumber = mac
 		let offset = (macNumber & 0xFF) % 16
-		let firstIndex = (macNumber & 0xFF) + offset
-		let middleIndex = ((macNumber >> 8) & 0b111111) + offset
-		let lastIndex = ((macNumber >> (8+6)) & 0b111111) + offset
+		let firstIndex = ((macNumber & 0xFF) + offset) % firstNames.count
+		var middleIndex = (((macNumber >> 8) & 0b111111) + offset) % middleNames.count
+		let lastIndex = (((macNumber >> (8+6)) & 0b111111) + offset) % lastNames.count
 		
-		let namesDict = namesDict as! Dictionary<String, Array<String>>
-		let preName = namesDict["first_names"]![firstIndex] + " " +
-			namesDict["middle_names"]![middleIndex]
-		let name = preName + " " + namesDict["last_names"]![lastIndex]
-		
-		//print("\(deviceName) \(firstIndex), \(middleIndex), \(lastIndex)")
+        var name: String?
+        var abbreviatedName = ""
+        repeat {
+            let firstName = firstNames[firstIndex]
+            let middleName = middleNames[middleIndex]
+            let lastName = lastNames[lastIndex]
+            
+            abbreviatedName = String(firstName.prefix(1) + middleName.prefix(1) + lastName.prefix(1))
+            name = firstName + " " + middleName + " " + lastName
+            print("\(deviceName) \(mac) \(firstIndex), \(middleIndex), \(lastIndex); \(abbreviatedName) \(name ?? "?")")
+            
+            //if the abbreviation is in the bad words list, move to the next middle name
+            middleIndex = (middleIndex + 1) % middleNames.count
+            print(middleIndex)
+        } while badNames.contains(abbreviatedName)
 		
 		return name
-		
 	}
 	
 	NSLog("Unable to parse GAP Name \"\(deviceName)\"")

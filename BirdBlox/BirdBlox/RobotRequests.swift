@@ -66,6 +66,8 @@ class RobotRequests {
             RobotRequests.handler(fromIDAndTypeHandler: self.setLedArrayRequest)
         server["robot/out/compassCalibrate"] =
             RobotRequests.handler(fromIDAndTypeHandler: self.compassCalibrateRequest)
+        server["robot/out/write"] =
+            RobotRequests.handler(fromIDAndTypeHandler: self.writeToMBPinRequest)
 		
 		server["/robot/in"] = RobotRequests.handler(fromIDAndTypeHandler: self.inputRequest)
         //server["/robot/out/compass"] = RobotRequests.handler(fromIDAndTypeHandler: self.compassRequest)
@@ -211,7 +213,7 @@ class RobotRequests {
 		var sensorValue: String
 		
 		switch sensor {
-        
+            
         //Screen up and Screen down are z: Acc Z > 0.8*g screen down, Acc Z < -0.8*g screen up
         //Tilt left and tilt right are x: Acc X > 0.8g tilt left, Acc X < -0.8g tilt right
         //Logo up and logo down are y: Acc Y > 0.8g logo down, Acc Y < -0.8g logo up
@@ -301,6 +303,7 @@ class RobotRequests {
 		default:
             //For hummingbird type sensors, a port will be specified.
             //These sensor values will be in the first 4 value array spots.
+            //Also used for micro:bit pins
             guard let portStr = queries["port"], var port = Int(portStr) else {
                 return .badRequest(.text("Malformed Request - port not specified."))
             }
@@ -315,6 +318,22 @@ class RobotRequests {
             let realPercent = Double(value) / 2.55
             
             switch sensor {
+            case "pin":
+                //If the pin is not already in read mode, we must change modes
+                // and then wait for a new sensor value.
+                if !robot.checkReadMode(forPin: port) {
+                    if robot.setMicroBitRead(port) {
+                        Thread.sleep(forTimeInterval: 0.2)
+                        let newVals = robot.sensorValues
+                        print("Read mode updated for pin \(port), thread slept. returning \(newVals[port]) from \(newVals)")
+                        sensorValue = String(newVals[port])
+                    } else {
+                        return .internalServerError
+                    }
+                } else {
+                    print("Value for pin \(port) is \(value). \(values)")
+                    sensorValue = String(value)
+                }
             case "dial":
                 var scaledVal = Int( round(Double(value) * (100 / 230)) )
                 if scaledVal > 100 { scaledVal = 100 }
@@ -605,7 +624,7 @@ class RobotRequests {
         }
         
         let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
-                                                         acceptTypes: [.Finch, .HummingbirdBit])
+                                                         acceptTypes: [.Finch, .HummingbirdBit, .MicroBit])
         guard let robot = roboto else {
             return requesto!
         }
@@ -656,6 +675,32 @@ class RobotRequests {
         
         print("led array string: \(ledStatusString)")
         if robot.setLedArray(ledStatusString[0]) {
+            return .ok(.text("set"))
+        } else {
+            return .internalServerError
+        }
+    }
+    
+    private func writeToMBPinRequest(id: String, type: BBTRobotType,
+                                     request: HttpRequest) -> HttpResponse {
+        let queries = BBTSequentialQueryArrayToDict(request.queryParams)
+
+        guard let pinString = queries["port"], let pinNum = Int(pinString),
+            let percentString = queries["percent"], let percent = Int(percentString) else {
+            return .badRequest(.text("Poorly formed write request."))
+        }
+        
+        let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
+                                                         acceptTypes: [.MicroBit])
+        
+        guard let robot = roboto else {
+            return requesto!
+        }
+        
+        let scaledValue = UInt8(percent * 255/100)
+        print("write request for pin \(pinNum), value \(scaledValue) from \(percent)")
+        
+        if robot.setMicroBitPin(pinNum, scaledValue) {
             return .ok(.text("set"))
         } else {
             return .internalServerError

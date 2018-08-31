@@ -587,9 +587,18 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     
     func setBuzzer(period: UInt16, duration: UInt16) -> Bool {
         
+        let set = {
+            if var mode = self.nextOutputState.mode {
+                mode[2] = 1
+                mode[3] = 0
+                self.nextOutputState.mode = mode
+            }
+            self.nextOutputState.buzzer = BBTBuzzer(period: period, duration: duration)
+        }
+        
         return setOutput(ifCheck: (self.type.buzzerCount == 1),
                          when: {self.nextOutputState.buzzer! == self.currentOutputState.buzzer!},
-                         set: {self.nextOutputState.buzzer = BBTBuzzer(period: period, duration: duration)})
+                         set: set)
     }
     
     func setLedArray(_ statusString: String) -> Bool {
@@ -597,6 +606,41 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         return setOutput(ifCheck: (self.type.ledArrayCount == 1),
                          when: {self.nextOutputState.ledArray == self.currentOutputState.ledArray},
                          set: {self.nextOutputState.ledArray = statusString})
+    }
+    
+    func setMicroBitPin(_ pin: Int, _ value: UInt8) -> Bool {
+        
+        let i = Int(pin - 1)
+        let set = {
+            self.nextOutputState.pins![i] = value
+            self.nextOutputState.mode![2*pin] = 0
+            self.nextOutputState.mode![2*pin+1] = 0
+        }
+        
+        return setOutput(ifCheck: (self.type.pinCount >= pin),
+                         when: {self.nextOutputState.pins![i] == self.currentOutputState.pins![i]}, //TODO: do we also need to check the state of mode?
+                         set: set)
+    }
+    
+    func setMicroBitRead(_ pin: Int) -> Bool {
+        
+        let set = {
+            self.nextOutputState.mode![2*(pin+1)] = 0
+            self.nextOutputState.mode![2*(pin+1)+1] = 1
+        }
+        
+        return setOutput(ifCheck: self.type.pinCount >= pin,
+                         when: {self.nextOutputState.mode! == self.currentOutputState.mode!},
+                         set: set)
+    }
+    
+    /**
+     * Checks the mode of the given micro:bit pin. Returns true if read mode.
+     */
+    func checkReadMode(forPin pin: Int) -> Bool {
+        print("Mode: \(self.nextOutputState.mode ?? [])")
+        if self.nextOutputState.mode == self.currentOutputState.mode, let mode = self.nextOutputState.mode, mode[2*(pin+1)] == 0, mode[2*(pin+1)+1] == 1 { return true }
+        return false
     }
     
     /**
@@ -649,7 +693,9 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             var sentSetAll = false
             let oldCommand = currentOutputState.setAllCommand()
             if command != oldCommand {
-                NSLog("Sending set all.")
+                var commandArray: [UInt8] = []
+                commandArray = Array(command)
+                NSLog("Sending set all. \(commandArray)")
                 self.sendData(data: command)
                 sentSetAll = true
                 self.lastWriteStart = DispatchTime.now()

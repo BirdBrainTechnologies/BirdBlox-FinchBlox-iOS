@@ -191,9 +191,15 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
 			let answerHolder: String? = (captured["placeholder"])
 			let prefillText: String? = captured["prefill"]
 			let shouldSelectAll = (captured["selectAll"] == "true") && (prefillText != nil)
+            
+            let bbtColor = UIColor(red: 32/255, green: 155/255, blue: 169/255, alpha: 1.0)
 			
 			let alertController = UIAlertController(title: title, message: question,
 			                                        preferredStyle: UIAlertControllerStyle.alert)
+            
+            alertController.setValue(NSAttributedString(string: title, attributes: [NSFontAttributeName : UIFont.systemFont(ofSize: 20, weight: UIFontWeightBold), NSForegroundColorAttributeName : bbtColor]), forKey: "attributedTitle")
+            alertController.setValue(NSAttributedString(string: question, attributes: [NSFontAttributeName : UIFont.systemFont(ofSize: 14, weight: UIFontWeightMedium), NSForegroundColorAttributeName : bbtColor]), forKey: "attributedMessage")
+            
 			let okayAction = UIAlertAction(title: "Okay", style: UIAlertActionStyle.default){
 				(action) -> Void in
 				if let textField: AnyObject = alertController.textFields?.first{
@@ -212,11 +218,13 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
 			}
 			
 			DispatchQueue.main.async{
+
 				alertController.addTextField {
 					(txtName) -> Void in
 					txtName.placeholder = answerHolder
 					txtName.text = prefillText
 					txtName.clearButtonMode = .whileEditing
+                    txtName.textColor = bbtColor
 				}
 				
 				alertController.addAction(okayAction)
@@ -230,6 +238,10 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
 																  to: field.endOfDocument)
 					}
 				}
+                
+                
+                alertController.view.tintColor = bbtColor
+                
 			}
 			return .ok(.text("Dialog Presented"))
 		}

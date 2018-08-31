@@ -140,7 +140,7 @@ enum BBTRobotType {
         case .Flutter: return 1
         case .Finch: return 1
         case .HummingbirdBit: return 1
-        case .MicroBit: return 0
+        case .MicroBit: return 1
         }
     }
     var ledArrayCount: UInt {
@@ -149,13 +149,19 @@ enum BBTRobotType {
         case .Finch, .HummingbirdBit, .MicroBit: return 1
         }
     }
+    var pinCount: UInt {
+        switch self {
+        case .Hummingbird, .Flutter, .Finch, .HummingbirdBit: return 0
+        case .MicroBit: return 3
+        }
+    }
     
     //MARK: Inputs
     var sensorPortCount: UInt {
         switch self {
         case .Hummingbird: return 4
-        case .HummingbirdBit: return 3
-        case .Finch, .Flutter, .MicroBit: return 0
+        case .HummingbirdBit, .MicroBit: return 3
+        case .Finch, .Flutter: return 0
         }
     }
     
