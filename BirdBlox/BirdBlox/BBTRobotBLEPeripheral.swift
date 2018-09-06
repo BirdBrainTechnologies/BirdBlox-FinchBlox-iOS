@@ -315,6 +315,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         //Start polling for sensor data
         print("Sending poll start")
         self.sendData(data: type.sensorCommand("pollStart"))
+        self.sendData(data: type.turnOffCommand()) //TODO: Do this here? 
         
         //Start sending periodic updates. All changes to outputs will be set at this time.
         //TODO: scheduledTimer isn't very reliable. Switch to scheduleRepeating when stop supporting iOS9

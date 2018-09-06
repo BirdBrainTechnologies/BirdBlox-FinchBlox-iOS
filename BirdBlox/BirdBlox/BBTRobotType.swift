@@ -425,8 +425,7 @@ enum BBTRobotType {
             //TODO:
             return Data()
         case .MicroBit:
-            //TODO:
-            return Data()
+            return Data(bytes: UnsafePointer<UInt8>([144, 0, 0, 0, 0, 0, 0, 0] as [UInt8]), count: 8)
         }
     }
     
