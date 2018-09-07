@@ -147,7 +147,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 			let toLocation =  DataModel.shared.fileLocation(forName: avname, type: .BirdBloxProgram)
 			print("\(toLocation)")
 			try FileManager.default.copyItem(at: url, to: toLocation)
-			print("location writtent to")
+			print("location written to")
 			
 			UserDefaults.standard.set(false, forKey: BBXDocumentViewController.curDocNeedsNameKey)
 			UserDefaults.standard.set(avname, forKey: BBXDocumentViewController.curDocNameKey)

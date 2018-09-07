@@ -54,7 +54,12 @@ SFSafariViewControllerDelegate {
 			self.webUILoaded = true
 			
 			if let name = UserDefaults.standard.string(forKey: self.curDocNameKey) {
-				let _ = self.openProgram(byName: name)
+				//let _ = self.openProgram(byName: name)
+                if FrontendCallbackCenter.shared.setFilePreference(name) {
+                    NSLog("Successfully set the filename to \(name)")
+                } else {
+                    NSLog("Failed to set the filename to \(name)")
+                }
 			}
             
             if let lang = NSLocale.preferredLanguages.first?.prefix(2) {

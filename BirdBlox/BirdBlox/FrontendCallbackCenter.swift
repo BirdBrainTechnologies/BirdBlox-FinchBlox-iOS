@@ -225,4 +225,11 @@ class FrontendCallbackCenter {
         
         return self.runJS(function: function, parameters: parameters)
     }
+    
+    func setFilePreference(_ fileName: String) -> Bool {
+        let function = "CallbackManager.setFilePreference"
+        let parameters = [fileName]
+        print("setting file \(parameters)")
+        return self.runJS(function: function, parameters: parameters)
+    }
 }
