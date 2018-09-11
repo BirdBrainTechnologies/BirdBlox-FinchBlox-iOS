@@ -321,18 +321,19 @@ class RobotRequests {
             case "pin":
                 //If the pin is not already in read mode, we must change modes
                 // and then wait for a new sensor value.
+                let scaledPin: (UInt8) -> String = { String(round(Double($0) * (100/255))) }
                 if !robot.checkReadMode(forPin: port) {
                     if robot.setMicroBitRead(port) {
                         Thread.sleep(forTimeInterval: 0.2)
                         let newVals = robot.sensorValues
                         print("Read mode updated for pin \(port), thread slept. returning \(newVals[port]) from \(newVals)")
-                        sensorValue = String(newVals[port])
+                        sensorValue = scaledPin(newVals[port])
                     } else {
                         return .internalServerError
                     }
                 } else {
                     print("Value for pin \(port) is \(value). \(values)")
-                    sensorValue = String(value)
+                    sensorValue = scaledPin(value)
                 }
             case "dial":
                 var scaledVal = Int( round(Double(value) * (100 / 230)) )
