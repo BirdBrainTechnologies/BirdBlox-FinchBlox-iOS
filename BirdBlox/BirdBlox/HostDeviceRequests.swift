@@ -88,12 +88,6 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
         server["/tablet/dialog"] = dialogRequest(request:)
         server["/tablet/choice"] = choiceRequest(request:)
 		server["/tablet/availableSensors"] = self.sensorAvailabilityRequest
-		
-//		// /tablet/dialog?title=x&question=y&holder=z
-//		server["/tablet/dialog"] = self.dialogRequest
-//		
-//		// /tablet/choice?title=x&question=y&button1=z&button2=q
-//		server["/tablet/choice"] = self.choiceRequest
     }
 	
 	func sensorAvailabilityRequest(request: HttpRequest) -> HttpResponse {
@@ -185,10 +179,10 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
     func dialogRequest(request: HttpRequest) -> HttpResponse {
         let captured = BBTSequentialQueryArrayToDict(request.queryParams)
 		
-        if let title = (captured["title"]),
-			let question = (captured["question"]) {
+        if let title = captured["title"], let question = captured["question"],
+            let okText = captured["okText"], let cancelText = captured["cancelText"] {
 			
-			let answerHolder: String? = (captured["placeholder"])
+			let answerHolder: String? = captured["placeholder"]
 			let prefillText: String? = captured["prefill"]
 			let shouldSelectAll = (captured["selectAll"] == "true") && (prefillText != nil)
             
@@ -200,7 +194,7 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
             alertController.setValue(NSAttributedString(string: title, attributes: [NSFontAttributeName : UIFont.systemFont(ofSize: 20, weight: UIFontWeightBold), NSForegroundColorAttributeName : bbtColor]), forKey: "attributedTitle")
             alertController.setValue(NSAttributedString(string: question, attributes: [NSFontAttributeName : UIFont.systemFont(ofSize: 14, weight: UIFontWeightMedium), NSForegroundColorAttributeName : bbtColor]), forKey: "attributedMessage")
             
-			let okayAction = UIAlertAction(title: "Okay", style: UIAlertActionStyle.default){
+			let okayAction = UIAlertAction(title: okText, style: UIAlertActionStyle.default){
 				(action) -> Void in
 				if let textField: AnyObject = alertController.textFields?.first{
 					let response = (textField as! UITextField).text
@@ -211,7 +205,7 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
 				}
 			}
 			
-			let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel){
+			let cancelAction = UIAlertAction(title: cancelText, style: UIAlertActionStyle.cancel){
 				(action) -> Void in
 				let _ = FrontendCallbackCenter.shared.dialogPromptResponded(cancelled: true,
 				                                                            response: nil)
