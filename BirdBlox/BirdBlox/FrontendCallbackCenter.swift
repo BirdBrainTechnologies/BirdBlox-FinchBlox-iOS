@@ -110,6 +110,11 @@ class FrontendCallbackCenter {
         
         return self.runJS(function: function, parameters: parameters)
     }
+    public func robotCalibrationComplete(id: String, success: Bool) -> Bool {
+        let function = "CallbackManager.robot.compassCalibrationResult"
+        let parameters = [id, String(success)]
+        return self.runJS(function: function, parameters: parameters)
+    }
 	
     //TODO: Make this for every type of robot
     public func robotFirmwareIncompatible(robotType: BBTRobotType, id: String, firmware: String) -> Bool {

@@ -321,7 +321,7 @@ class RobotRequests {
             case "pin":
                 //If the pin is not already in read mode, we must change modes
                 // and then wait for a new sensor value.
-                let scaledPin: (UInt8) -> String = { String(round(Double($0) * (100/255))) }
+                let scaledPin: (UInt8) -> String = { String(round(Double($0) * (114/255))) }
                 if !robot.checkReadMode(forPin: port) {
                     if robot.setMicroBitRead(port) {
                         Thread.sleep(forTimeInterval: 0.2)
@@ -710,7 +710,6 @@ class RobotRequests {
     
     private func compassCalibrateRequest(id: String, type: BBTRobotType,
                                     request: HttpRequest) -> HttpResponse {
-        print("Calibrate request!!")
         
         let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
                                                          acceptTypes: [.MicroBit, .HummingbirdBit])
@@ -720,7 +719,7 @@ class RobotRequests {
         }
         
         if robot.calibrateCompass() {
-            return .ok(.text("calibrated"))
+            return .ok(.text("calibrating"))
         } else {
             return .internalServerError
         }

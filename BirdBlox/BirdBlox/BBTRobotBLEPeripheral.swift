@@ -30,6 +30,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     private var lastSensorUpdate: [UInt8]
     var sensorValues: [UInt8] { return lastSensorUpdate }
     var compassCalibrated: Bool = false
+    var compassCalibrating: Bool = false
     var batteryStatus: BatteryStatus?
     
     private let initializationCompletion: ((BBTRobotBLEPeripheral) -> Void)?
@@ -383,20 +384,26 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         inData.copyBytes(to: &self.lastSensorUpdate, count: type.sensorByteCount)
         
         //Check the state of compass calibration
-        if type == .HummingbirdBit || type == .MicroBit {
+        if (type == .HummingbirdBit || type == .MicroBit) && self.compassCalibrating {
             
             let byte = self.lastSensorUpdate[7]
             let bits = byteToBits(byte)
+            print("CALIBRATION VALUES \(bits[2]) \(bits[3])")
             
             if bits[3] == 1 {
-                //print("CALIBRATION FAILED \(bits)")
+                self.compassCalibrating = false
+                print("CALIBRATION FAILED \(bits)")
                 self.compassCalibrated = false
+                let _ = FrontendCallbackCenter.shared.robotCalibrationComplete(id: self.id, success: false)
             } else if bits[2] == 1 {
-                //print("CALIBRATION SUCCESSFUL \(bits)")
+                self.compassCalibrating = false
+                print("CALIBRATION SUCCESSFUL \(bits)")
                 self.compassCalibrated = true
+                let _ = FrontendCallbackCenter.shared.robotCalibrationComplete(id: self.id, success: true)
             } else {
-                //print("CALIBRATION UNKNOWN \(bits)")
+                print("CALIBRATION UNKNOWN \(bits)")
                 self.compassCalibrated = false
+                
             }
         }
         
@@ -757,13 +764,21 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         return true
     }
     
+    /**
+     * Sends a command to the micro:bit to calibrate its magnetometer.
+     * Since checking for results will begin after compassCalibrating is set,
+     * setting this value immedialtely could result in mistakenly reading
+     * the results of a previous calibration.
+     */
     func calibrateCompass() -> Bool {
         if let command = self.type.calibrateMagnetometerCommand() {
             sendData(data: command)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                self.compassCalibrating = true
+            }
             return true
         } else {
             return false
         }
     }
-    
 }
