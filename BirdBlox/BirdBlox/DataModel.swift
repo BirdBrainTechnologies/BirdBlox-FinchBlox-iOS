@@ -58,10 +58,15 @@ class DataModel: NSObject, FileManagerDelegate {
 			self.tmpLoc = URL(fileURLWithPath: tmpPath)
 		}
 		
-		let libLoc = FileManager.default.urls(for: .libraryDirectory,
-		                                     in: .userDomainMask).first!
-		self.logLoc = libLoc.appendingPathComponent("JavaScript Error Log")
-							.appendingPathExtension("txt")
+		if let libLoc = FileManager.default.urls(for: .libraryDirectory,
+                                                 in: .userDomainMask).first {
+            self.logLoc = libLoc.appendingPathComponent("JavaScript Error Log")
+                .appendingPathExtension("txt")
+        } else {
+            self.logLoc = self.tmpLoc.appendingPathComponent("JavaScript Error Log")
+                .appendingPathExtension("txt")
+        }
+		
 		
 		self.stagingLoc = self.tmpLoc.appendingPathComponent("staging")
 		self.currentDocLoc = self.tmpLoc.appendingPathComponent("currentDoc")

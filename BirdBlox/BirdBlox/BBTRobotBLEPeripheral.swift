@@ -375,8 +375,8 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         
         //TODO: Why is this? Hummingbird duo seems to send a lot
         //of different length messages. Are they for different things?
-        if type == .Hummingbird && characteristic.value!.count % 5 != 0 {
-            print("Characteristic value \(characteristic.value!.count) not divisible by 5.")
+        if type == .Hummingbird && inData.count % 5 != 0 {
+            print("Characteristic value \(inData.count) not divisible by 5.")
             return
         }
         
@@ -499,11 +499,15 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
      */
     private func sendData(data: Data) {
         if self.connected {
+            guard let tx_line = tx_line else {
+                NSLog("tx_line not defined in sendData!")
+                return
+            }
             
             if self.useWithResponse {
-                peripheral.writeValue(data, for: tx_line!, type: .withResponse) //set lastWriteWritten to true when response received
+                peripheral.writeValue(data, for: tx_line, type: .withResponse) //set lastWriteWritten to true when response received
             } else {
-                peripheral.writeValue(data, for: tx_line!, type: .withoutResponse)
+                peripheral.writeValue(data, for: tx_line, type: .withoutResponse)
             }
             
         } else {
@@ -648,9 +652,12 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
      * Checks the mode of the given micro:bit pin. Returns true if read mode.
      */
     func checkReadMode(forPin pin: Int) -> Bool {
+        var isReadMode: Bool = false
+        
         print("Mode: \(self.nextOutputState.mode ?? [])")
-        if self.nextOutputState.mode == self.currentOutputState.mode, let mode = self.nextOutputState.mode, mode[2*(pin+1)] == 0, mode[2*(pin+1)+1] == 1 { return true }
-        return false
+        if self.nextOutputState.mode == self.currentOutputState.mode, let mode = self.nextOutputState.mode, mode[2*(pin+1)] == 0, mode[2*(pin+1)+1] == 1 { isReadMode = true }
+        
+        return isReadMode
     }
     
     /**

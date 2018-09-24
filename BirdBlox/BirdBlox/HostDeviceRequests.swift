@@ -132,19 +132,26 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
 			return .internalServerError
 		}
 	
-        var orientation: String = "In between"
+        //var orientation: String = "In between"
+        var orientation: String = "other"
         if(abs(accel.x + 1) < 0.1){
-            orientation = "Landscape: home button on right"
+            //orientation = "Landscape: home button on right"
+            orientation = "landscape_right"
         } else if(abs(accel.x - 1) < 0.15){
-            orientation = "Landscape: home button on left"
+            //orientation = "Landscape: home button on left"
+            orientation = "landscape_left"
         } else if(abs(accel.y + 1) < 0.15){
-            orientation = "Portrait: home button on bottom"
+            //orientation = "Portrait: home button on bottom"
+            orientation = "portrait_bottom"
         } else if(abs(accel.y - 1) < 0.15){
-            orientation = "Portrait: home button on top"
+            //orientation = "Portrait: home button on top"
+            orientation = "portrait_top"
         } else if(abs(accel.z + 1) < 0.15){
-            orientation = "Faceup"
+            //orientation = "Faceup"
+            orientation = "faceup"
         } else if(abs(accel.z - 1) < 0.15){
-            orientation = "Facedown"
+            //orientation = "Facedown"
+            orientation = "facedown"
         }
 		
         return .ok(.text(orientation))

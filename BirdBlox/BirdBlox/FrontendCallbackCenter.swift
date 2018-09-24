@@ -23,7 +23,7 @@ class FrontendCallbackCenter {
 	}
 	
 	public static func safeString(from: String) -> String {
-		return from.addingPercentEncoding(withAllowedCharacters: CharacterSet())!
+		return from.addingPercentEncoding(withAllowedCharacters: CharacterSet()) ?? ""
 	}
 	
 	public static func jsonString(from: Any) -> String? {
