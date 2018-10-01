@@ -654,8 +654,12 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     func checkReadMode(forPin pin: Int) -> Bool {
         var isReadMode: Bool = false
         
+        self.writtenCondition.lock()
+        
         print("Mode: \(self.nextOutputState.mode ?? [])")
         if self.nextOutputState.mode == self.currentOutputState.mode, let mode = self.nextOutputState.mode, mode[2*(pin+1)] == 0, mode[2*(pin+1)+1] == 1 { isReadMode = true }
+        
+        self.writtenCondition.unlock()
         
         return isReadMode
     }

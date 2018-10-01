@@ -136,16 +136,20 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
         var orientation: String = "other"
         if(abs(accel.x + 1) < 0.1){
             //orientation = "Landscape: home button on right"
-            orientation = "landscape_right"
+            //changed to Landscape: camera on left
+            orientation = "landscape_left"
         } else if(abs(accel.x - 1) < 0.15){
             //orientation = "Landscape: home button on left"
-            orientation = "landscape_left"
+            //changed to Landscape: camera on right
+            orientation = "landscape_right"
         } else if(abs(accel.y + 1) < 0.15){
             //orientation = "Portrait: home button on bottom"
-            orientation = "portrait_bottom"
+            //changed to Portrait: camera on top
+            orientation = "portrait_top"
         } else if(abs(accel.y - 1) < 0.15){
             //orientation = "Portrait: home button on top"
-            orientation = "portrait_top"
+            //changed to Portrait: camera on bottom
+            orientation = "portrait_bottom"
         } else if(abs(accel.z + 1) < 0.15){
             //orientation = "Faceup"
             orientation = "faceup"

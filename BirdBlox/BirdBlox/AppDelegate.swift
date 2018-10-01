@@ -91,6 +91,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //			let url = los[.url] as? URL {
 //			return self.application(application, open: url)
 //		}
+        
+        /*
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss ZZZZZ"
+        dateFormatter.timeZone = TimeZone.current
+        //redirect sterr (which includes NSLog) to a log file in the app's documents directory
+        var paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
+        let documentsDirectory = paths[0]
+        print("Documents directory: \(documentsDirectory)")
+        let logFile = "\(dateFormatter.string(from: Date())).log"
+        let logFilePath = (documentsDirectory as NSString).appendingPathComponent(logFile)
+        freopen(logFilePath.cString(using: String.Encoding.ascii)!, "a+", stderr)
+        */
 		
         return true
     }

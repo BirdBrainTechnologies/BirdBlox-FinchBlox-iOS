@@ -130,10 +130,13 @@ class FrontendCallbackCenter {
 	}
 
     public func robotDisconnected(name: String, reason: String) -> Bool {
-        let function = "DialogManager.showAlertDialog"
-        let parameters = ["Robot Disconnected", "\(name) has been disconnected due to \(reason)", "OK"]
+        //let function = "DialogManager.showAlertDialog"
+        //let parameters = ["Robot Disconnected", "\(name) has been disconnected due to \(reason)", "OK"]
         //TODO: Instead of just showing an alert, we should also remove the device
         // just like in DeviceManager.prototype.disconnectIncompatible
+        
+        let function = "CallbackManager.robot.connectionFailure"
+        let parameters = [name]
         return self.runJS(function: function, parameters: parameters)
     }
 	
