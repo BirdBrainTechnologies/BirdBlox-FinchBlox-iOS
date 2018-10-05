@@ -43,7 +43,7 @@
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>Uses BLE to connect to various robots</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Location Blocks need to get location</string>
+	<string>Location data is required to properly use the Device Latitude and Longitude blocks. Location data is not used or recorded for any other purpose.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>BirdBlox needs to use the microphone to make recordings that you can play later using the play recording block.</string>
 	<key>UIFileSharingEnabled</key>

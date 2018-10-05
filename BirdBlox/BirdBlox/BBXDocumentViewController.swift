@@ -124,7 +124,7 @@ SFSafariViewControllerDelegate {
 			return
 		}
 		
-		//For some reason this always opens the last document 
+		//For some reason this always opens the last document
 		let eset = CharacterSet()
 		let name = self.document.localizedName.addingPercentEncoding(withAllowedCharacters: eset)!
 		let xml = self.document.currentXML.addingPercentEncoding(withAllowedCharacters: eset)!
@@ -153,9 +153,9 @@ SFSafariViewControllerDelegate {
 		}
 		
 		set (doc) {
-			self.realDoc.close(completionHandler: nil)
+			self.realDoc.close(completionHandler: nil) //Doesn't this take a while?
 			self.realDoc = doc
-			
+            
 			if self.webUILoaded {
 				self.updateDisplayFromXML(completion: { (succeeded: Bool) in
 					// Only set this document as our document if it is valid
@@ -425,6 +425,7 @@ SFSafariViewControllerDelegate {
 				print("Running open block now!")
 				openBlock()
 			} else {
+                //TODO: Actually try to close the file here? What if it is already in the process of closing?
 				if #available(iOS 10.0, *) {
 					DispatchQueue.main.sync {
 						self.utilTimer = Timer.scheduledTimer(withTimeInterval: 0.75,
@@ -609,12 +610,23 @@ SFSafariViewControllerDelegate {
         } catch {
             print(error)
         }
+        
+        //Once the file is saved, open automatically
+        let req = "data/open?filename=\(saveName.dropLast(4))"
+        let _ = FrontendCallbackCenter.shared.echo(getRequestString: req)
+        
+        
+        /* In the version below, we show the downloaded file in the dialog and give a message
+         * about how that file was named. However, this text was not translated. It seems
+         * more clear to just open the file, than to have the user guess where it went.
         let _ = FrontendCallbackCenter.shared.reloadOpenDialog()
         
         let text = FrontendCallbackCenter.safeString(from: "File imported as\n\'\(saveName)\'")
         let _ = FrontendCallbackCenter.shared.echo(getRequestString:
             "/tablet/choice?question=\(text)&button1=Dismiss")
         return
+        */
+        
         /*
 		let doc = BBXDocument(fileURL: url)
 		let _ = FrontendCallbackCenter.shared.markLoadingDocument()

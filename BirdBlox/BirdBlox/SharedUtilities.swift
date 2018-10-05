@@ -219,7 +219,12 @@ public func rawToAccelerometer(_ raw_val: UInt8) -> Double {
 /**
  * Convert raw sensor values into a compass value
  */
-public func rawToCompass(rawAcc: [UInt8], rawMag: [UInt8]) -> Int {
+public func rawToCompass(rawAcc: [UInt8], rawMag: [UInt8]) -> Int? {
+    //Compass value is undefined in the case of 0 z direction acceleration
+    if rawAcc[2] == 0 {
+        return nil
+    }
+    
     let mx = rawToRawMag(rawMag[0], rawMag[1])
     let my = rawToRawMag(rawMag[2], rawMag[3])
     let mz = rawToRawMag(rawMag[4], rawMag[5])
@@ -238,7 +243,6 @@ public func rawToCompass(rawAcc: [UInt8], rawMag: [UInt8]) -> Int {
     let xPP = xP * cos(theta) + zP * sin(theta)
     let yPP = yP
     
-    //let angle = 180 + atan2(xPP, yPP)
     let angle = 180 + GLKMathRadiansToDegrees(Float(atan2(xPP, yPP)))
     let roundedAngle = Int(angle.rounded())
     

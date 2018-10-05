@@ -204,7 +204,7 @@ class FrontendCallbackCenter {
 		
 		return self.runJS(function: function, parameters: parameters)
 	}
-	
+    
 	
 	//MARK: misc., utility
 	func echo(getRequestString: String) -> Bool {

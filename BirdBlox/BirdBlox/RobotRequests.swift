@@ -297,9 +297,12 @@ class RobotRequests {
         case "compass":
             let accArray = Array(values[4...6])
             let magArray = Array(values[8...13])
-            print("Compass!! \(values) \(accArray) \(magArray)")
-            let compass = rawToCompass(rawAcc: accArray, rawMag: magArray)
-            sensorValue = String(compass)
+            //print("Compass!! \(values) \(accArray) \(magArray)")
+            if let compass = rawToCompass(rawAcc: accArray, rawMag: magArray) {
+                sensorValue = String(compass)
+            } else {
+                sensorValue = "nil"
+            }
 		default:
             //For hummingbird type sensors, a port will be specified.
             //These sensor values will be in the first 4 value array spots.

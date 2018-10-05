@@ -53,7 +53,9 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
 	}
 	
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        currentLocation = manager.location!.coordinate
+        if let loc = manager.location {
+            currentLocation = loc.coordinate
+        }
     }
     
     //get ssid
