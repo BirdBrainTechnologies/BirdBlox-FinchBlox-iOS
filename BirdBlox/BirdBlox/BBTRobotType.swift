@@ -81,7 +81,9 @@ enum BBTRobotType {
     }
     var batteryYellowThreshold: Double? { //battery must be > this value for yellow status
         switch self {
-        case .HummingbirdBit, .Hummingbird: return 4.63
+        //case .HummingbirdBit, .Hummingbird: return 4.63
+        case .HummingbirdBit: return 4.4
+        case .Hummingbird: return 4.63
         //case .MicroBit: return 2.0
         case .Flutter, .Finch, .MicroBit: return nil
         }
@@ -419,7 +421,6 @@ enum BBTRobotType {
             return Data(bytes: UnsafePointer<UInt8>([letter] as [UInt8]), count: 1)
         case .HummingbirdBit:
             let letter: UInt8 = 0xCB
-            //this command only turns off servos and leds
             return Data(bytes: UnsafePointer<UInt8>([letter, 0xFF, 0xFF, 0xFF] as [UInt8]), count: 4)
         case .Finch:
             //TODO:

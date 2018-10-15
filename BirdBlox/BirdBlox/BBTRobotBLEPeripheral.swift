@@ -767,10 +767,12 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     func setAllOutputsToOff() -> Bool {
         //Sending an ASCII capital X should do the same thing.
         //Useful for legacy firmware
-        //TODO: Use the command to turn things off?
+
         self.writtenCondition.lock()
         self.nextOutputState = BBTRobotOutputState(robotType: type)
         self.writtenCondition.unlock()
+        
+        sendData(data: type.turnOffCommand())
         
         return true
     }

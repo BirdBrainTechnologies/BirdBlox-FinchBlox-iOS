@@ -21,7 +21,7 @@ So the design is intentionally similar to ViewController.swift.
  */
 
 class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocumentPickerDelegate,
-SFSafariViewControllerDelegate {
+SFSafariViewControllerDelegate, WKNavigationDelegate {
 	
 	var webView = WKWebView()
 	var webUILoaded = false
@@ -61,7 +61,7 @@ SFSafariViewControllerDelegate {
                     NSLog("Failed to set the filename to \(name)")
                 }
 			}
-            
+            /*
             if let lang = NSLocale.preferredLanguages.first?.prefix(2) {
                 let language = String(lang)
                 NSLog("Setting frontend language to \(language)")
@@ -69,7 +69,7 @@ SFSafariViewControllerDelegate {
                     NSLog("Successfully set language to \(language)")
                 }
             }
-            
+            */
 			
 			return .ok(.text("Hello webpage! I am a server."))
 		}
@@ -89,6 +89,7 @@ SFSafariViewControllerDelegate {
         //webView.navigationDelegate = self
         //webView.uiDelegate = self
 		
+        self.webView.navigationDelegate = self
 		self.webView.contentMode = UIViewContentMode.scaleToFill
 		self.webView.backgroundColor = UIColor.gray
 		
@@ -659,6 +660,17 @@ SFSafariViewControllerDelegate {
 	var wv: WKWebView {
 		return self.webView
 	}
+    
+    //MARK: WKNavigationDelegate methods
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        if let lang = NSLocale.preferredLanguages.first?.prefix(2) {
+            let language = String(lang)
+            NSLog("Setting frontend language to \(language)")
+            if FrontendCallbackCenter.shared.setLanguage(language) {
+                NSLog("Successfully set language to \(language)")
+            }
+        }
+    }
     
 }
 
