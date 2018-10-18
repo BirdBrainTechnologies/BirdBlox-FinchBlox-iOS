@@ -60,7 +60,9 @@ SFSafariViewControllerDelegate, WKNavigationDelegate {
                 } else {
                     NSLog("Failed to set the filename to \(name)")
                 }
-			}
+            } else {
+                NSLog("Failed to find a current filename.")
+            }
             /*
             if let lang = NSLocale.preferredLanguages.first?.prefix(2) {
                 let language = String(lang)
@@ -663,11 +665,12 @@ SFSafariViewControllerDelegate, WKNavigationDelegate {
     
     //MARK: WKNavigationDelegate methods
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        if let lang = NSLocale.preferredLanguages.first?.prefix(2) {
-            let language = String(lang)
-            NSLog("Setting frontend language to \(language)")
-            if FrontendCallbackCenter.shared.setLanguage(language) {
-                NSLog("Successfully set language to \(language)")
+        //if let lang = NSLocale.preferredLanguages.first?.prefix(2) {
+        if let lang = NSLocale.preferredLanguages.first {
+            //let language = String(lang)
+            NSLog("Setting frontend language to \(lang)")
+            if FrontendCallbackCenter.shared.setLanguage(lang) {
+                NSLog("Successfully set language to \(lang)")
             }
         }
     }
