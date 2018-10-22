@@ -94,7 +94,8 @@ public struct BBTThisIDevice {
 		case "i386":        return 0.15582822085499998
 		case "x86_64":      return 0.15582822085499998
 		default:
-			switch deviceModel.substring(to: deviceModel.index(deviceModel.startIndex, offsetBy: 3)) {
+			//switch deviceModel.substring(to: deviceModel.index(deviceModel.startIndex, offsetBy: 3)) {
+            switch deviceModel[..<deviceModel.index(deviceModel.startIndex, offsetBy: 3)] {
 				case "iPa": return 0.1924242424304
 				case "iPo",
 				     "iPh": return 0.15582822085499998

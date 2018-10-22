@@ -669,7 +669,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
      *  (rather than sending each change individually)
      * This function is scheduled on a timer. It is called every syncInterval seconds.
      */
-    func syncronizeOutputs() {
+    @objc func syncronizeOutputs() {
         self.writtenCondition.lock()
         
         //It seems that we cannot send two commands in one cycle. If there is both

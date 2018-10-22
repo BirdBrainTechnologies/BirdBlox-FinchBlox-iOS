@@ -135,7 +135,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 		}
 	}
 	
-	public func stopScan() {
+	@objc public func stopScan() {
 		if isScanning {
 			centralManager.stopScan()
 			self.scanState = .notScanning
@@ -273,7 +273,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
             //should be .attemptingConnection at this time.
             // Will switch to .oughtToBeConnected when initialization is finished
             case .attemptingConnection:
-                print("Just connected to \(robot.name), \(peripheral == robot.peripheral) \(peripheral.services)")
+                print("Just connected to \(robot.name), \(peripheral == robot.peripheral) \(String(describing: peripheral.services))")
                 peripheral.discoverServices([robot.type.SERVICE_UUID])
             case .oughtToBeConnected: //TODO: What?
                 NSLog("Just connected to \(robot.name) but robot should already be connected.")
@@ -282,7 +282,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
                 self.disconnect(byID: id)
             }
         } else {
-            NSLog("Could not find robot for peripheral \(peripheral.name) that was just connected.")
+            NSLog("Could not find robot for peripheral \(peripheral.name ?? "(name unknown)") that was just connected.")
         }
         /*
 		self.connectedPeripherals[id] = peripheral
@@ -434,7 +434,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
             NSLog("Failed to find the peripheral we are trying to connect to...")
 			return false
 		}
-        let temp = centralManager.retrievePeripherals(withIdentifiers: [peripheral.identifier])
+        //let temp = centralManager.retrievePeripherals(withIdentifiers: [peripheral.identifier])
         
         //self.attemptingConnection.append(id)
         //self.discoveredPeripherals.removeValue(forKey: id) //TODO: Does this do anything?

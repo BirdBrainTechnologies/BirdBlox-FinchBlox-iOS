@@ -341,28 +341,37 @@ class DataModel: NSObject, FileManagerDelegate {
 	}
 	
 	private func getNumberSuffix(from name: String) -> UInt? {
-		let chars = name.characters
-		guard chars.last == Character(")") else {
+		//let chars = name.characters
+		//guard chars.last == Character(")") else {
+        guard name.last == Character(")") else {
 			return nil
 		}
 		
-		var curIndex = chars.index(before: chars.endIndex)
-		while chars[curIndex] != Character("(") {
-			curIndex = chars.index(before: curIndex)
-		}
-		let intPart = name.substring(with:
-			chars.index(after: curIndex)..<chars.index(before: chars.endIndex))
+		//var curIndex = chars.index(before: chars.endIndex)
+        var curIndex = name.index(before: name.endIndex)
+		//while chars[curIndex] != Character("(") {
+		//	curIndex = chars.index(before: curIndex)
+        while name[curIndex] != Character("("){
+            curIndex = name.index(before: curIndex)
+        }
+		//let intPart = name.substring(with:
+		//	chars.index(after: curIndex)..<chars.index(before: chars.endIndex))
+        let intPart = name[name.index(after: curIndex)..<name.index(before: name.endIndex)]
 		
 		return UInt(intPart)
 	}
 	
 	private func getRootOf(name: String) -> String {
-		let chars = name.characters
-		var curIndex = chars.index(before: chars.endIndex)
-		while chars[curIndex] != Character("(") {
-			curIndex = chars.index(before: curIndex)
+		//let chars = name.characters
+		//var curIndex = chars.index(before: chars.endIndex)
+        var curIndex = name.index(before: name.endIndex)
+		//while chars[curIndex] != Character("(") {
+		//	curIndex = chars.index(before: curIndex)
+        while name[curIndex] != Character("(") {
+            curIndex = name.index(before: curIndex)
 		}
-		return name.substring(to: curIndex)
+		//return name.substring(to: curIndex)
+        return String(name[..<curIndex])
 	}
 	
 	public func availableName(from name: String, type: BBXFileType = .BirdBloxProgram) -> String? {

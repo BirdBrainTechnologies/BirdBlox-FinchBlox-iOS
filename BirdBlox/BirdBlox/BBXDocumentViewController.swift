@@ -92,7 +92,7 @@ SFSafariViewControllerDelegate, WKNavigationDelegate {
         //webView.uiDelegate = self
 		
         self.webView.navigationDelegate = self
-		self.webView.contentMode = UIViewContentMode.scaleToFill
+		self.webView.contentMode = UIView.ContentMode.scaleToFill
 		self.webView.backgroundColor = UIColor.gray
 		
 		let htmlLoc = DataModel.shared.frontendPageLoc
@@ -164,7 +164,7 @@ SFSafariViewControllerDelegate, WKNavigationDelegate {
 					// Only set this document as our document if it is valid
 					//Relies on no more requests while the js is still parsing the document
 					if succeeded {
-						let notificationName = NSNotification.Name.UIDocumentStateChanged
+						let notificationName = UIDocument.stateChangedNotification
 						NotificationCenter.default.addObserver(forName: notificationName,
 						                                       object: self.realDoc, queue: nil,
 						                                       using: { notification in
@@ -182,7 +182,7 @@ SFSafariViewControllerDelegate, WKNavigationDelegate {
 	
 	func handleDocumentStateChangeNotification(_ notification: Notification) {
 		switch self.document.documentState {
-		case UIDocumentState.inConflict:
+		case UIDocument.State.inConflict:
 			let v = NSFileVersion.unresolvedConflictVersionsOfItem(at: self.document.fileURL)
 			guard let versions = v else {
 				print("Invalid URL")
@@ -295,7 +295,7 @@ SFSafariViewControllerDelegate, WKNavigationDelegate {
 		
 		let rsJS = "GuiElements.updateDimsPreview(\(nSize.width), \(nSize.height))"
 		self.webView.evaluateJavaScript(rsJS, completionHandler: {
-			print("Updated dims. Error: \($0)")
+			print("Updated dims. Error: \(($0, $1))")
 		})
 	}
 	
@@ -303,7 +303,7 @@ SFSafariViewControllerDelegate, WKNavigationDelegate {
 	var timeLastShaken = Date(timeIntervalSince1970: 0)
 	var shakeExpireInterval = TimeInterval(5) //seconds
 	
-	override func motionEnded(_ motion: UIEventSubtype, with event: UIEvent?) {
+	override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
 		if motion == .motionShake {
 			self.timeLastShaken = Date(timeIntervalSinceNow: 0)
 		}
