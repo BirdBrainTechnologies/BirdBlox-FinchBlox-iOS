@@ -217,25 +217,31 @@ class RobotRequests {
         //Screen up and Screen down are z: Acc Z > 0.8*g screen down, Acc Z < -0.8*g screen up
         //Tilt left and tilt right are x: Acc X > 0.8g tilt left, Acc X < -0.8g tilt right
         //Logo up and logo down are y: Acc Y > 0.8g logo down, Acc Y < -0.8g logo up
+        // 0.8g = 7.848m/s2
         case "screenUp":
             let val = rawToAccelerometer(values[6])
-            if val < -0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
+            //if val < -0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
+            if val < -7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
         case "screenDown":
             let val = rawToAccelerometer(values[6])
-            if val > 0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
+            //if val > 0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
+            if val > 7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
         case "tiltLeft":
             let val = rawToAccelerometer(values[4])
-            if val > 0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
+            //if val > 0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
+            if val > 7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
         case "tiltRight":
             let val = rawToAccelerometer(values[4])
-            if val < -0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
+            //if val < -0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
+            if val < -7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
         case "logoUp":
             let val = rawToAccelerometer(values[5])
-            if val < -0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
+            //if val < -0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
+            if val < -7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
         case "logoDown":
             let val = rawToAccelerometer(values[5])
-            if val > 0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
-            
+            //if val > 0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
+            if val > 7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
         case "buttonA", "buttonB", "shake": //microbit buttons and shake
             let buttonShake = values[7]
             let bsBitValues = byteToBits(buttonShake)
