@@ -137,7 +137,7 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
 		}
 	
         //var orientation: String = "In between"
-        var orientation: String = "other"
+        var orientation: String = "Other"
         if(abs(accel.x + 1) < 0.1){
             //orientation = "Landscape: home button on right"
             //changed to Landscape: camera on left

@@ -27,7 +27,8 @@ class AudioManager: NSObject, AVAudioRecorderDelegate {
         do {
             //try sharedAudioSession.setCategory(convertFromAVAudioSessionCategory(AVAudioSession.Category.playAndRecord))
             if #available(iOS 10.0, *) {
-                try sharedAudioSession.setCategory(.playAndRecord, mode: .default)
+                //try sharedAudioSession.setCategory(.playAndRecord, mode: .default)
+                try sharedAudioSession.setCategory(.playback, mode: .default)
             } else {
                 try AVAudioSessionPatch.setAudioSession()
             }
@@ -60,8 +61,6 @@ class AudioManager: NSObject, AVAudioRecorderDelegate {
         } catch {
             NSLog("Failed to start audio player")
         }
-        
-        print("Audio session input gain: \(sharedAudioSession.inputGain)")
     }
 	
 	
@@ -69,6 +68,16 @@ class AudioManager: NSObject, AVAudioRecorderDelegate {
 	//MARK: Recording Audio
 	
 	public func startRecording(saveName: String) -> Bool {
+        
+        if #available(iOS 10.0, *) {
+            do {
+                try sharedAudioSession.setCategory(.record, mode: .default)
+            } catch {
+                NSLog("Failed to set record mode in startRecording.")
+            }
+        }
+        
+        
 		//TODO: Use the data model
 		let location = DataModel.shared.recordingsLoc.appendingPathComponent(saveName + ".m4a")
 		let settings = [
@@ -111,6 +120,14 @@ class AudioManager: NSObject, AVAudioRecorderDelegate {
 		}
 		
 		recorder.pause()
+        
+        if #available(iOS 10.0, *) {
+            do {
+                try sharedAudioSession.setCategory(.playback, mode: .default)
+            } catch {
+                NSLog("Failed to set playback mode in pauseRecording.")
+            }
+        }
 		
 		return true
 	}
@@ -119,6 +136,14 @@ class AudioManager: NSObject, AVAudioRecorderDelegate {
 		guard let recorder = self.recorder else {
 			return false
 		}
+        
+        if #available(iOS 10.0, *) {
+            do {
+                try sharedAudioSession.setCategory(.record, mode: .default)
+            } catch {
+                NSLog("Failed to set record mode in unpauseRecording.")
+            }
+        }
 		
 		return recorder.record()
 	}
@@ -138,6 +163,14 @@ class AudioManager: NSObject, AVAudioRecorderDelegate {
 		}
 		
 		self.recorder = nil
+        
+        if #available(iOS 10.0, *) {
+            do {
+                try sharedAudioSession.setCategory(.playback, mode: .default)
+            } catch {
+                NSLog("Failed to set playback mode in finishRecording.")
+            }
+        }
 		
 		let _ = FrontendCallbackCenter.shared.recordingEnded()
 	}

@@ -66,24 +66,6 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     private var firmwareVersionString = ""
     private var oldFirmware = false
     
-    override public var description: String {
-        let gapName = self.peripheral.name ?? "Unknown"
-        
-        var updateDesc = ""
-        if self.oldFirmware {
-            updateDesc = "\n\nThis \(type.description) needs to be updated. " +
-                "See the link below: \n" +
-            "http://www.hummingbirdkit.com/learning/installing-birdblox#BurnFirmware "
-        }
-        
-        return
-            "\(self.type.description) Peripheral\n" +
-                "Name: \(self.name)\n" +
-                "Bluetooth Name: \(gapName)\n" +
-                "Hardware Version: \(self.hardwareString)\n" +
-                "Firmware Version: \(self.firmwareVersionString)" + updateDesc
-    }
-    
     
     //MARK: INIT
     
@@ -227,7 +209,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
                 } else {
                     NSLog ("Not attempting to reconnect \(self.name). There have been \(self.connectionAttempts) attempts already. Currently connected? \(self.connected)")
                     BLE_Manager.disconnect(byID: self.id)
-                    let _ = FrontendCallbackCenter.shared.robotDisconnected(name: self.name, reason: "initialization timeout") //TODO: Remove from frontend list somehow
+                    let _ = FrontendCallbackCenter.shared.robotDisconnected(name: self.name)
                 }
                 return
             }
@@ -258,7 +240,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         
         //TODO: is this the best place to check this? Also checking above...
         guard self.connected else {
-            let _ = FrontendCallbackCenter.shared.robotDisconnected(name: self.name, reason: "lost connection")
+            let _ = FrontendCallbackCenter.shared.robotDisconnected(name: self.name)
             
             BLE_Manager.disconnect(byID: self.id)
             NSLog("Initialization failed because device got disconnected.")

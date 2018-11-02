@@ -11,7 +11,7 @@ import UIKit
 import WebKit
 //import Swifter
 import SafariServices
-import MobileCoreServices
+//import MobileCoreServices
 
 /*
 BBXDocumentViewController
@@ -570,7 +570,9 @@ SFSafariViewControllerDelegate, WKNavigationDelegate {
 		server["/robot/showUpdateInstructions"] = { request in
 			DispatchQueue.main.sync {
 				let str =  "http://www.hummingbirdkit.com/learning/installing-birdblox#BurnFirmware"
-				let url = URL(string:str)!
+                guard let url = URL(string:str) else {
+                    return
+                }
 				let websiteVC = SFSafariViewController(url: url)
 				self.present(websiteVC, animated: true, completion: nil)
 				websiteVC.delegate = self
