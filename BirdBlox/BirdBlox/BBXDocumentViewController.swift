@@ -53,7 +53,7 @@ SFSafariViewControllerDelegate, WKNavigationDelegate {
 			
 			self.webUILoaded = true
 			
-			if let name = UserDefaults.standard.string(forKey: self.curDocNameKey) {
+			if let name = UserDefaults.standard.string(forKey: self.curDocNameKey) ?? UserDefaults.standard.string(forKey: self.lastDocNameKey) {
 				//let _ = self.openProgram(byName: name)
                 if FrontendCallbackCenter.shared.setFilePreference(name) {
                     NSLog("Successfully set the filename to \(name)")
@@ -113,8 +113,10 @@ SFSafariViewControllerDelegate, WKNavigationDelegate {
 	//MARK: Document Handling
 	static let curDocNeedsNameKey = "CurrentDocumentNeedsName"
 	static let curDocNameKey = "CurrentDocumentName"
+    static let lastDocNameKey = "LastDocumentName"
 	let curDocNeedsNameKey = "CurrentDocumentNeedsName"
 	let curDocNameKey = "CurrentDocumentName"
+    let lastDocNameKey = "LastDocumentName"
 	
 	private var realDoc = BBXDocument(fileURL: URL(
 		fileURLWithPath: NSSearchPathForDirectoriesInDomains(.documentDirectory,
@@ -238,6 +240,8 @@ SFSafariViewControllerDelegate, WKNavigationDelegate {
 	
 	private func closeCurrentProgram(completion: ((Bool) -> Void)? = nil) {
 		self.document.close(completionHandler: { suc in
+            let curDocName = DataModel.shared.getSetting(self.curDocNameKey)
+            UserDefaults.standard.set(curDocName, forKey: self.lastDocNameKey)
 			UserDefaults.standard.set(nil, forKey: self.curDocNameKey)
 			if let completion = completion {
 				completion(suc)
