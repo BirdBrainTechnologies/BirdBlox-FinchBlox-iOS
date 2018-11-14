@@ -27,7 +27,6 @@ class PropertiesManager {
 	}
 	
 	func getPhysicalDims(request: HttpRequest) -> HttpResponse {
-		print("Dims req")
 		
 		DispatchQueue.main.sync {
 			let window = UIApplication.shared.delegate?.window
@@ -40,7 +39,6 @@ class PropertiesManager {
 		let height = mmFromPoints(p: self.heightInPoints)
 		
 		let width = mmFromPoints(p: self.widthInPoints)
-		
 		
 		return .ok(.text("\(width),\(height)"))
 	}

@@ -272,7 +272,7 @@ class DataModel: NSObject, FileManagerDelegate {
 		}
 	}
 	
-	public func filenameAvailalbe(name: String, type: BBXFileType) -> Bool {
+	public func filenameAvailable(name: String, type: BBXFileType) -> Bool {
 		guard DataModel.nameIsSanitary(name) else {
 			return false
 		}
@@ -379,7 +379,7 @@ class DataModel: NSObject, FileManagerDelegate {
 	}
 	
 	func availableNameRecHelper(from name: String, type: BBXFileType) -> String {
-		if self.filenameAvailalbe(name: name, type: type) {
+		if self.filenameAvailable(name: name, type: type) {
 			return name
 		}
 		
@@ -405,7 +405,7 @@ class DataModel: NSObject, FileManagerDelegate {
 	}
 	
 	public func bbxNameAvailable(_ name: String) -> Bool {
-		return self.filenameAvailalbe(name: name, type: .BirdBloxProgram)
+		return self.filenameAvailable(name: name, type: .BirdBloxProgram)
 	}
 	
 	public func getBBXContent(byName filename: String) -> String? {

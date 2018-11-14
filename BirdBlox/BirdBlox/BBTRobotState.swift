@@ -135,12 +135,18 @@ struct BBTRobotOutputState: Equatable {
                 adjusted_motors[1] = UInt8(motors[1])
             }
             
+            let adjustVib: (UInt8) -> UInt8 = { v in
+                let bounded_intensity = bound(v, min: 0, max: 100)
+                return UInt8(floor(Double(bounded_intensity)*2.55))
+            }
+            
             let array: [UInt8] = [letter,
                                   trileds[0].tuple.0, trileds[0].tuple.1, trileds[0].tuple.2,
                                   trileds[1].tuple.0, trileds[1].tuple.1, trileds[1].tuple.2,
                                   leds[0], leds[1], leds[2], leds[3],
                                   servos[0], servos[1], servos[2], servos[3],
-                                  vibrators[0], vibrators[1], adjusted_motors[0], adjusted_motors[1]]
+                                  adjustVib(vibrators[0]), adjustVib(vibrators[1]),
+                                  adjusted_motors[0], adjusted_motors[1]]
             assert(array.count == 19)
             
             return Data(bytes: UnsafePointer<UInt8>(array), count: array.count)

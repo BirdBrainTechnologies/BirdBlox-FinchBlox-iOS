@@ -604,12 +604,12 @@ SFSafariViewControllerDelegate, WKNavigationDelegate {
         print("save loc: \(DataModel.shared.bbxSaveLoc)")
         let filename = url.deletingPathExtension().lastPathComponent
         print("File name! \(filename)")
-        var saveName = filename + "_import.bbx"
+        var saveName = filename + ".bbx"
         var fileUrl = DataModel.shared.bbxSaveLoc.appendingPathComponent(saveName)
         var i = 1
         let fileManager = FileManager.default
         while fileManager.fileExists(atPath: fileUrl.path) {
-            saveName = "\(filename)_import_\(i).bbx"
+            saveName = "\(filename)_\(i).bbx"
             fileUrl = DataModel.shared.bbxSaveLoc.appendingPathComponent(saveName)
             i += 1
         }
