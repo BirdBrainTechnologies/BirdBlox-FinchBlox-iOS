@@ -75,7 +75,12 @@ SFSafariViewControllerDelegate, WKNavigationDelegate {
 			
 			return .ok(.text("Hello webpage! I am a server."))
 		}
-		
+		self.server["/ui/translatedStrings"] = { request in
+            //This request is to set some text for popups handled by the backend.
+            // Currently only used in Android
+            return .ok(.text("Message received."))
+        }
+        
 		self.server.start()
 		
 		//Setup webview
