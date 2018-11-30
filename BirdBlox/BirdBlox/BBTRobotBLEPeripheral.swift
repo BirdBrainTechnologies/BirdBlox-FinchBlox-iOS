@@ -754,7 +754,9 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         self.nextOutputState = BBTRobotOutputState(robotType: type)
         self.writtenCondition.unlock()
         
-        sendData(data: type.turnOffCommand())
+        if type != .Hummingbird { //The duo command also turns off sensor polling
+            sendData(data: type.turnOffCommand())
+        }
         
         return true
     }

@@ -546,30 +546,29 @@ SFSafariViewControllerDelegate, WKNavigationDelegate {
 			return deleteHandler(request)
 		}
 		
-		let stopAll = server["/robot/stopAll"]!
-		server["/robot/stopAll"] = { req in
-//			server.clearBackgroundQueue(completion: {
-//				server.backgroundQueue.async {
-//					let _ = stopAll(req)
-//				}
-//			}) //This won't help much because there are still ≤30 threads settings outputs
-			
-			//TODO: Add ability for output threads to abort based on a check to a boolean whenever
-			//they wake from sleep (when they are waiting to write out). Then delete this timer.
-			if #available(iOS 10.0, *) {
-				DispatchQueue.main.sync {
-					self.stopTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: false) {
-						t in
-						
-						let _ = stopAll(req)
-						print("stopping again")
-					}
-				}
-			}
-			
-			
-			return stopAll(req)
-		}
+        if let stopAll = server["/robot/stopAll"] {
+            server["/robot/stopAll"] = { req in
+    //			server.clearBackgroundQueue(completion: {
+    //				server.backgroundQueue.async {
+    //					let _ = stopAll(req)
+    //				}
+    //			}) //This won't help much because there are still ≤30 threads settings outputs
+                
+                //TODO: Add ability for output threads to abort based on a check to a boolean whenever
+                //they wake from sleep (when they are waiting to write out). Then delete this timer.
+                if #available(iOS 10.0, *) {
+                    DispatchQueue.main.sync {
+                        self.stopTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: false) {
+                            t in
+                            
+                            let _ = stopAll(req)
+                            print("stopping again")
+                        }
+                    }
+                }
+                return stopAll(req)
+            }
+        }
 		
 		server["/data/markAsNamed"] = { request in
 			UserDefaults.standard.set(false, forKey: self.curDocNeedsNameKey)

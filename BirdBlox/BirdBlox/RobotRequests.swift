@@ -362,7 +362,8 @@ class RobotRequests {
                 if robot.type == .HummingbirdBit {
                     sensorValue = String(round(Double(value) * (200/255))) //scaling from bambi
                 } else {
-                    sensorValue = String(realPercent) //TODO: should this really be different?
+                    //Raw values are already in the approximate range of 0 to 100
+                    sensorValue = String(value)
                 }
             case "other":
                 sensorValue = String(Double(value) * (3.3/255))
