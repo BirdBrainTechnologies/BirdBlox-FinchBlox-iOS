@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		31665822217A2B1D00B17C20 /* AVAudioSessionPatch.m in Sources */ = {isa = PBXBuildFile; fileRef = 31665821217A2B1D00B17C20 /* AVAudioSessionPatch.m */; };
+		3166582B21877BD300B17C20 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3166582A21877BD300B17C20 /* AppDelegate.swift */; };
+		3166582D21877BD300B17C20 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3166582C21877BD300B17C20 /* ViewController.swift */; };
+		3166582F21877BD700B17C20 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3166582E21877BD700B17C20 /* Assets.xcassets */; };
+		3166583221877BD700B17C20 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3166583021877BD700B17C20 /* Main.storyboard */; };
+		3166585421877DA900B17C20 /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA81696C1E81BC3F00AAF7A3 /* StringExtensions.swift */; };
 		31686092209A615C008D92AF /* BBTRobotType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31686091209A615C008D92AF /* BBTRobotType.swift */; };
 		3188E84B2108B68C00AD54AB /* String+File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3188E84A2108B68C00AD54AB /* String+File.swift */; };
 		3188E84D2108B70D00AD54AB /* String+Misc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3188E84C2108B70D00AD54AB /* String+Misc.swift */; };
@@ -16,6 +22,37 @@
 		31A4AF9D2108AF480097CE01 /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31A4AF9C2108AF480097CE01 /* Socket.swift */; };
 		31A4AF9F2108AFD50097CE01 /* Errno.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31A4AF9E2108AFD50097CE01 /* Errno.swift */; };
 		31A4AFA12108B09C0097CE01 /* Files.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31A4AFA02108B09C0097CE01 /* Files.swift */; };
+		31C27E582188A547007BFCDD /* SharedUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAE1FD9F1E920A6600304BEE /* SharedUtilities.swift */; };
+		31C27E592188A547007BFCDD /* DeviceUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F0E4A721ED37D3900369F70 /* DeviceUtilities.swift */; };
+		31C27E5A2188A547007BFCDD /* BluetoothDeviceNames.plist in Sources */ = {isa = PBXBuildFile; fileRef = 3FE5C65C1ED8974100433262 /* BluetoothDeviceNames.plist */; };
+		31C27E5B2188A547007BFCDD /* BLECentralManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAE2EBCE1E84417000198B19 /* BLECentralManager.swift */; };
+		31C27E5C2188A547007BFCDD /* BBTRobotBLEPeripheral.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FFA170E1F1D492B0085CE71 /* BBTRobotBLEPeripheral.swift */; };
+		31C27E5D2188A547007BFCDD /* BBTRobotType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31686091209A615C008D92AF /* BBTRobotType.swift */; };
+		31C27E5E2188A547007BFCDD /* FrontendCallbackCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FEC5DA31EF987640067C41B /* FrontendCallbackCenter.swift */; };
+		31C27E5F2188A547007BFCDD /* CallbackManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FF13C051F15692F00D1F358 /* CallbackManager.swift */; };
+		31C27E602188A547007BFCDD /* DataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA81696A1E81B7BC00AAF7A3 /* DataModel.swift */; };
+		31C27E612188A547007BFCDD /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8A75981EB27CF700ECFABC /* AudioManager.swift */; };
+		31C27E632188A547007BFCDD /* BBTRobotState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FA7D5E21EF2E65800FE4882 /* BBTRobotState.swift */; };
+		31C27E642188A547007BFCDD /* AVAudioSessionPatch.m in Sources */ = {isa = PBXBuildFile; fileRef = 31665821217A2B1D00B17C20 /* AVAudioSessionPatch.m */; };
+		31C27E652188A547007BFCDD /* AVAudioSessionPatch.h in Sources */ = {isa = PBXBuildFile; fileRef = 31665823217A2B4400B17C20 /* AVAudioSessionPatch.h */; };
+		31C27E662188A547007BFCDD /* BirdBlox-Bridging-Header.h in Sources */ = {isa = PBXBuildFile; fileRef = 31665820217A2B1D00B17C20 /* BirdBlox-Bridging-Header.h */; };
+		31C27E672188A547007BFCDD /* String+Misc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3188E84C2108B70D00AD54AB /* String+Misc.swift */; };
+		31C27E682188A547007BFCDD /* String+File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3188E84A2108B68C00AD54AB /* String+File.swift */; };
+		31C27E692188A547007BFCDD /* Files.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31A4AFA02108B09C0097CE01 /* Files.swift */; };
+		31C27E6A2188A547007BFCDD /* Errno.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31A4AF9E2108AFD50097CE01 /* Errno.swift */; };
+		31C27E6B2188A547007BFCDD /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31A4AF9C2108AF480097CE01 /* Socket.swift */; };
+		31C27E6C2188A547007BFCDD /* HttpRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31A4AF9A2108AEF50097CE01 /* HttpRouter.swift */; };
+		31C27E6D2188A547007BFCDD /* HttpResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31A4AF982108AEC30097CE01 /* HttpResponse.swift */; };
+		31C27E6E2188A547007BFCDD /* HttpRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31A4AF962108AE8E0097CE01 /* HttpRequest.swift */; };
+		31C27E6F2188A547007BFCDD /* BBTBackendServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F5F6D281EDDB3A800799277 /* BBTBackendServer.swift */; };
+		31C27E702188A547007BFCDD /* FrontendRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8169671E81B72D00AAF7A3 /* FrontendRequests.swift */; };
+		31C27E712188A547007BFCDD /* RobotRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9F72461F223D2000C29FEB /* RobotRequests.swift */; };
+		31C27E722188A547007BFCDD /* DataRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8A75921EB2481F00ECFABC /* DataRequests.swift */; };
+		31C27E732188A547007BFCDD /* HostDeviceRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8A75941EB2519200ECFABC /* HostDeviceRequests.swift */; };
+		31C27E742188A547007BFCDD /* SoundRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8A75961EB27A8C00ECFABC /* SoundRequests.swift */; };
+		31C27E752188A547007BFCDD /* SettingsRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8A759A1EB2817E00ECFABC /* SettingsRequests.swift */; };
+		31C27E762188A547007BFCDD /* PropertiesRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FDE24E71ED36910000BC24B /* PropertiesRequests.swift */; };
+		31C27E782188BB43007BFCDD /* BBXDocumentOSX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C27E772188BB43007BFCDD /* BBXDocumentOSX.swift */; };
 		3F0E4A731ED37D3900369F70 /* DeviceUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F0E4A721ED37D3900369F70 /* DeviceUtilities.swift */; };
 		3F5F6D291EDDB3A800799277 /* BBTBackendServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F5F6D281EDDB3A800799277 /* BBTBackendServer.swift */; };
 		3F9F72471F223D2000C29FEB /* RobotRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9F72461F223D2000C29FEB /* RobotRequests.swift */; };
@@ -42,11 +79,23 @@
 		BA8A759B1EB2817E00ECFABC /* SettingsRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8A759A1EB2817E00ECFABC /* SettingsRequests.swift */; };
 		BAE1FDA01E920A6600304BEE /* SharedUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAE1FD9F1E920A6600304BEE /* SharedUtilities.swift */; };
 		BAE2EBCF1E84417000198B19 /* BLECentralManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAE2EBCE1E84417000198B19 /* BLECentralManager.swift */; };
+		D0164ACF6D89F9160F758A23 /* Pods_BirdBloxOSX.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 557AD412C6313BF66B5D45E1 /* Pods_BirdBloxOSX.framework */; };
 		DB4B601313BCF127ED80CC5E /* Pods_BirdBlox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B9CF54964A1E1D488464E38 /* Pods_BirdBlox.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1BBF641FEB61682C42B2D9DF /* Pods-BirdBloxOSX.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BirdBloxOSX.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BirdBloxOSX/Pods-BirdBloxOSX.debug.xcconfig"; sourceTree = "<group>"; };
 		1CBEFB40603958D76A5BFE44 /* Pods-BirdBlox.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BirdBlox.release.xcconfig"; path = "Pods/Target Support Files/Pods-BirdBlox/Pods-BirdBlox.release.xcconfig"; sourceTree = "<group>"; };
+		31665820217A2B1D00B17C20 /* BirdBlox-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BirdBlox-Bridging-Header.h"; sourceTree = "<group>"; };
+		31665821217A2B1D00B17C20 /* AVAudioSessionPatch.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AVAudioSessionPatch.m; sourceTree = "<group>"; };
+		31665823217A2B4400B17C20 /* AVAudioSessionPatch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AVAudioSessionPatch.h; sourceTree = "<group>"; };
+		3166582821877BD300B17C20 /* BirdBloxOSX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BirdBloxOSX.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3166582A21877BD300B17C20 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		3166582C21877BD300B17C20 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		3166582E21877BD700B17C20 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		3166583121877BD700B17C20 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		3166583321877BD700B17C20 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		3166583421877BD700B17C20 /* BirdBloxOSX.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BirdBloxOSX.entitlements; sourceTree = "<group>"; };
 		31686091209A615C008D92AF /* BBTRobotType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBTRobotType.swift; sourceTree = "<group>"; };
 		3188E84A2108B68C00AD54AB /* String+File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+File.swift"; sourceTree = "<group>"; };
 		3188E84C2108B70D00AD54AB /* String+Misc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+Misc.swift"; sourceTree = "<group>"; };
@@ -56,6 +105,7 @@
 		31A4AF9C2108AF480097CE01 /* Socket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Socket.swift; sourceTree = "<group>"; };
 		31A4AF9E2108AFD50097CE01 /* Errno.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Errno.swift; sourceTree = "<group>"; };
 		31A4AFA02108B09C0097CE01 /* Files.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Files.swift; sourceTree = "<group>"; };
+		31C27E772188BB43007BFCDD /* BBXDocumentOSX.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBXDocumentOSX.swift; sourceTree = "<group>"; };
 		3F0E4A721ED37D3900369F70 /* DeviceUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceUtilities.swift; sourceTree = "<group>"; };
 		3F5F6D281EDDB3A800799277 /* BBTBackendServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BBTBackendServer.swift; sourceTree = "<group>"; };
 		3F9F72461F223D2000C29FEB /* RobotRequests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RobotRequests.swift; sourceTree = "<group>"; };
@@ -69,6 +119,8 @@
 		3FF13C051F15692F00D1F358 /* CallbackManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallbackManager.swift; sourceTree = "<group>"; };
 		3FFA170E1F1D492B0085CE71 /* BBTRobotBLEPeripheral.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BBTRobotBLEPeripheral.swift; sourceTree = "<group>"; };
 		4B9CF54964A1E1D488464E38 /* Pods_BirdBlox.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BirdBlox.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		557AD412C6313BF66B5D45E1 /* Pods_BirdBloxOSX.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BirdBloxOSX.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B9EB6CC02265CB7BF4975FB5 /* Pods-BirdBloxOSX.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BirdBloxOSX.release.xcconfig"; path = "Pods/Target Support Files/Pods-BirdBloxOSX/Pods-BirdBloxOSX.release.xcconfig"; sourceTree = "<group>"; };
 		BA81694D1E81A98A00AAF7A3 /* BirdBlox.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BirdBlox.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA8169501E81A98A00AAF7A3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BA8169551E81A98A00AAF7A3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -90,6 +142,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		3166582521877BD300B17C20 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D0164ACF6D89F9160F758A23 /* Pods_BirdBloxOSX.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BA81694A1E81A98A00AAF7A3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -101,6 +161,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3166582921877BD300B17C20 /* BirdBloxOSX */ = {
+			isa = PBXGroup;
+			children = (
+				3166582A21877BD300B17C20 /* AppDelegate.swift */,
+				3166582C21877BD300B17C20 /* ViewController.swift */,
+				3166582E21877BD700B17C20 /* Assets.xcassets */,
+				3166583021877BD700B17C20 /* Main.storyboard */,
+				3166583321877BD700B17C20 /* Info.plist */,
+				3166583421877BD700B17C20 /* BirdBloxOSX.entitlements */,
+				31C27E772188BB43007BFCDD /* BBXDocumentOSX.swift */,
+			);
+			path = BirdBloxOSX;
+			sourceTree = "<group>";
+		};
 		31A4AF952108ACC10097CE01 /* SwifterFiles */ = {
 			isa = PBXGroup;
 			children = (
@@ -125,6 +199,9 @@
 				BA8A75981EB27CF700ECFABC /* AudioManager.swift */,
 				3FA4F8A61F02F2BB005EB384 /* BBXDocument.swift */,
 				3FA7D5E21EF2E65800FE4882 /* BBTRobotState.swift */,
+				31665821217A2B1D00B17C20 /* AVAudioSessionPatch.m */,
+				31665823217A2B4400B17C20 /* AVAudioSessionPatch.h */,
+				31665820217A2B1D00B17C20 /* BirdBlox-Bridging-Header.h */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -134,6 +211,8 @@
 			children = (
 				E8B8191F17118ABB8EDC2784 /* Pods-BirdBlox.debug.xcconfig */,
 				1CBEFB40603958D76A5BFE44 /* Pods-BirdBlox.release.xcconfig */,
+				1BBF641FEB61682C42B2D9DF /* Pods-BirdBloxOSX.debug.xcconfig */,
+				B9EB6CC02265CB7BF4975FB5 /* Pods-BirdBloxOSX.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -142,6 +221,7 @@
 			isa = PBXGroup;
 			children = (
 				4B9CF54964A1E1D488464E38 /* Pods_BirdBlox.framework */,
+				557AD412C6313BF66B5D45E1 /* Pods_BirdBloxOSX.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -151,6 +231,7 @@
 			children = (
 				BA8169651E81B17600AAF7A3 /* Frontend */,
 				BA81694F1E81A98A00AAF7A3 /* BirdBlox */,
+				3166582921877BD300B17C20 /* BirdBloxOSX */,
 				BA81694E1E81A98A00AAF7A3 /* Products */,
 				57E3AA007C026CA11E6DC062 /* Pods */,
 				B5B6F9AE55235342912C86D5 /* Frameworks */,
@@ -161,6 +242,7 @@
 			isa = PBXGroup;
 			children = (
 				BA81694D1E81A98A00AAF7A3 /* BirdBlox.app */,
+				3166582821877BD300B17C20 /* BirdBloxOSX.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -223,6 +305,26 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		3166582721877BD300B17C20 /* BirdBloxOSX */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3166584B21877BD800B17C20 /* Build configuration list for PBXNativeTarget "BirdBloxOSX" */;
+			buildPhases = (
+				909DC6954A50D08DA70F3DFE /* [CP] Check Pods Manifest.lock */,
+				3166582421877BD300B17C20 /* Sources */,
+				3166582521877BD300B17C20 /* Frameworks */,
+				3166582621877BD300B17C20 /* Resources */,
+				B6EB8403F66824D40A1E87E9 /* [CP] Embed Pods Frameworks */,
+				219EA3A7161F81B7142ECF11 /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BirdBloxOSX;
+			productName = BirdBloxOSX;
+			productReference = 3166582821877BD300B17C20 /* BirdBloxOSX.app */;
+			productType = "com.apple.product-type.application";
+		};
 		BA81694C1E81A98A00AAF7A3 /* BirdBlox */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = BA81695F1E81A98A00AAF7A3 /* Build configuration list for PBXNativeTarget "BirdBlox" */;
@@ -249,15 +351,24 @@
 		BA8169451E81A98A00AAF7A3 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0820;
-				LastUpgradeCheck = 0900;
+				LastSwiftUpdateCheck = 1000;
+				LastUpgradeCheck = 1000;
 				ORGANIZATIONNAME = "Birdbrain Technologies LLC.";
 				TargetAttributes = {
+					3166582721877BD300B17C20 = {
+						CreatedOnToolsVersion = 10.0;
+						DevelopmentTeam = N6XC9HC8PB;
+						ProvisioningStyle = Automatic;
+					};
 					BA81694C1E81A98A00AAF7A3 = {
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = N6XC9HC8PB;
+						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
+							com.apple.AccessWiFi = {
+								enabled = 1;
+							};
 							com.apple.iCloud = {
 								enabled = 1;
 							};
@@ -279,11 +390,21 @@
 			projectRoot = "";
 			targets = (
 				BA81694C1E81A98A00AAF7A3 /* BirdBlox */,
+				3166582721877BD300B17C20 /* BirdBloxOSX */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		3166582621877BD300B17C20 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3166582F21877BD700B17C20 /* Assets.xcassets in Resources */,
+				3166583221877BD700B17C20 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BA81694B1E81A98A00AAF7A3 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -299,6 +420,21 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		219EA3A7161F81B7142ECF11 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BirdBloxOSX/Pods-BirdBloxOSX-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		34A648280F2DC120B983B97B /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -306,7 +442,7 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-BirdBlox/Pods-BirdBlox-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/Zip/Zip.framework",
+				"${BUILT_PRODUCTS_DIR}/Zip-iOS/Zip.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -332,6 +468,24 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BirdBlox/Pods-BirdBlox-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		909DC6954A50D08DA70F3DFE /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-BirdBloxOSX-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 		AF272EDB977A6E683F2D4546 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -350,9 +504,68 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		B6EB8403F66824D40A1E87E9 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-BirdBloxOSX/Pods-BirdBloxOSX-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/Zip-macOS/Zip.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Zip.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BirdBloxOSX/Pods-BirdBloxOSX-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		3166582421877BD300B17C20 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				31C27E582188A547007BFCDD /* SharedUtilities.swift in Sources */,
+				31C27E592188A547007BFCDD /* DeviceUtilities.swift in Sources */,
+				31C27E5A2188A547007BFCDD /* BluetoothDeviceNames.plist in Sources */,
+				31C27E5B2188A547007BFCDD /* BLECentralManager.swift in Sources */,
+				31C27E5C2188A547007BFCDD /* BBTRobotBLEPeripheral.swift in Sources */,
+				31C27E5D2188A547007BFCDD /* BBTRobotType.swift in Sources */,
+				31C27E5E2188A547007BFCDD /* FrontendCallbackCenter.swift in Sources */,
+				31C27E5F2188A547007BFCDD /* CallbackManager.swift in Sources */,
+				31C27E602188A547007BFCDD /* DataModel.swift in Sources */,
+				31C27E612188A547007BFCDD /* AudioManager.swift in Sources */,
+				31C27E632188A547007BFCDD /* BBTRobotState.swift in Sources */,
+				31C27E642188A547007BFCDD /* AVAudioSessionPatch.m in Sources */,
+				31C27E652188A547007BFCDD /* AVAudioSessionPatch.h in Sources */,
+				31C27E662188A547007BFCDD /* BirdBlox-Bridging-Header.h in Sources */,
+				31C27E672188A547007BFCDD /* String+Misc.swift in Sources */,
+				31C27E682188A547007BFCDD /* String+File.swift in Sources */,
+				31C27E692188A547007BFCDD /* Files.swift in Sources */,
+				31C27E6A2188A547007BFCDD /* Errno.swift in Sources */,
+				31C27E6B2188A547007BFCDD /* Socket.swift in Sources */,
+				31C27E6C2188A547007BFCDD /* HttpRouter.swift in Sources */,
+				31C27E6D2188A547007BFCDD /* HttpResponse.swift in Sources */,
+				31C27E6E2188A547007BFCDD /* HttpRequest.swift in Sources */,
+				31C27E6F2188A547007BFCDD /* BBTBackendServer.swift in Sources */,
+				31C27E702188A547007BFCDD /* FrontendRequests.swift in Sources */,
+				31C27E712188A547007BFCDD /* RobotRequests.swift in Sources */,
+				31C27E722188A547007BFCDD /* DataRequests.swift in Sources */,
+				31C27E732188A547007BFCDD /* HostDeviceRequests.swift in Sources */,
+				31C27E782188BB43007BFCDD /* BBXDocumentOSX.swift in Sources */,
+				31C27E742188A547007BFCDD /* SoundRequests.swift in Sources */,
+				31C27E752188A547007BFCDD /* SettingsRequests.swift in Sources */,
+				31C27E762188A547007BFCDD /* PropertiesRequests.swift in Sources */,
+				3166585421877DA900B17C20 /* StringExtensions.swift in Sources */,
+				3166582D21877BD300B17C20 /* ViewController.swift in Sources */,
+				3166582B21877BD300B17C20 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BA8169491E81A98A00AAF7A3 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -372,6 +585,7 @@
 				3FDE24E81ED36910000BC24B /* PropertiesRequests.swift in Sources */,
 				BA8169681E81B72D00AAF7A3 /* FrontendRequests.swift in Sources */,
 				BA81696B1E81B7BC00AAF7A3 /* DataModel.swift in Sources */,
+				31665822217A2B1D00B17C20 /* AVAudioSessionPatch.m in Sources */,
 				31A4AFA12108B09C0097CE01 /* Files.swift in Sources */,
 				BA8169511E81A98A00AAF7A3 /* AppDelegate.swift in Sources */,
 				31A4AF992108AEC30097CE01 /* HttpResponse.swift in Sources */,
@@ -393,6 +607,14 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
+		3166583021877BD700B17C20 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				3166583121877BD700B17C20 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
 		BA8169541E81A98A00AAF7A3 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -412,6 +634,59 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		3166584C21877BD800B17C20 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1BBF641FEB61682C42B2D9DF /* Pods-BirdBloxOSX.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = BirdBloxOSX/BirdBloxOSX.entitlements;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = N6XC9HC8PB;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = BirdBloxOSX/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.birdbraintechnologies.BirdBloxOSX;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 4.2;
+			};
+			name = Debug;
+		};
+		3166584D21877BD800B17C20 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B9EB6CC02265CB7BF4975FB5 /* Pods-BirdBloxOSX.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = BirdBloxOSX/BirdBloxOSX.entitlements;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = N6XC9HC8PB;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = BirdBloxOSX/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.birdbraintechnologies.BirdBloxOSX;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 4.2;
+			};
+			name = Release;
+		};
 		BA81695D1E81A98A00AAF7A3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -425,6 +700,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -432,6 +708,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -481,6 +758,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -488,6 +766,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -523,6 +802,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = BirdBlox/BirdBlox.entitlements;
 				DEVELOPMENT_TEAM = N6XC9HC8PB;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
@@ -531,7 +811,11 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.BirdBrainTech.HB-Drag-and-Drop";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
+				SWIFT_OBJC_BRIDGING_HEADER = "BirdBlox/BirdBlox-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -541,6 +825,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = BirdBlox/BirdBlox.entitlements;
 				DEVELOPMENT_TEAM = N6XC9HC8PB;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
@@ -549,13 +834,25 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.BirdBrainTech.HB-Drag-and-Drop";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
+				SWIFT_OBJC_BRIDGING_HEADER = "BirdBlox/BirdBlox-Bridging-Header.h";
+				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		3166584B21877BD800B17C20 /* Build configuration list for PBXNativeTarget "BirdBloxOSX" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3166584C21877BD800B17C20 /* Debug */,
+				3166584D21877BD800B17C20 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		BA8169481E81A98A00AAF7A3 /* Build configuration list for PBXProject "BirdBlox" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
