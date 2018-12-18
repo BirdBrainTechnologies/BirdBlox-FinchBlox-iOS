@@ -66,7 +66,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication,
-		didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool{
+		didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool{
         // Override point for customization after application launch.
 		
 		NSLog("BBX Did finish launching")
@@ -91,6 +91,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //			let url = los[.url] as? URL {
 //			return self.application(application, open: url)
 //		}
+        
+        /*
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss ZZZZZ"
+        dateFormatter.timeZone = TimeZone.current
+        //redirect sterr (which includes NSLog) to a log file in the app's documents directory
+        var paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
+        let documentsDirectory = paths[0]
+        print("Documents directory: \(documentsDirectory)")
+        let logFile = "\(dateFormatter.string(from: Date())).log"
+        let logFilePath = (documentsDirectory as NSString).appendingPathComponent(logFile)
+        freopen(logFilePath.cString(using: String.Encoding.ascii)!, "a+", stderr)
+        */
 		
         return true
     }
@@ -125,7 +139,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 	
 	func application(_ app: UIApplication, open url: URL,
-	                 options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
+	                 options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
 		
 		defer {
 			do {
@@ -140,14 +154,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 		print("Import starting")
 		
 		do {
+			//let name = url.lastPathComponent.replacingOccurrences(of: ".bbx", with: "") + "_import"
 			let name = url.lastPathComponent.replacingOccurrences(of: ".bbx", with: "")
 			
-			
-			let avname = DataModel.shared.availableName(from: name)! //This also sanitizes the name
+            guard let avname = DataModel.shared.availableName(from: name) else { //This also sanitizes the name
+                return false
+            }
 			let toLocation =  DataModel.shared.fileLocation(forName: avname, type: .BirdBloxProgram)
 			print("\(toLocation)")
 			try FileManager.default.copyItem(at: url, to: toLocation)
-			print("location writtent to")
+			print("location written to")
 			
 			UserDefaults.standard.set(false, forKey: BBXDocumentViewController.curDocNeedsNameKey)
 			UserDefaults.standard.set(avname, forKey: BBXDocumentViewController.curDocNameKey)
@@ -156,11 +172,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 				return false
 			}
 			print(safeName)
-			let req = "data/open?filename=\(safeName)"
-			let _ = FrontendCallbackCenter.shared.echo(getRequestString: req)
-			
-			DataModel.shared.addSetting("currentDoc", value: avname)
-			DataModel.shared.addSetting("currentDocNamed", value: "true")
+            let openBlock = {
+                let req = "data/open?filename=\(safeName)"
+                let _ = FrontendCallbackCenter.shared.echo(getRequestString: req)
+                //TODO: Are the next 2 lines necessary?
+                DataModel.shared.addSetting("currentDoc", value: avname)
+                DataModel.shared.addSetting("currentDocNamed", value: "true")
+            }
+            if let vc = self.window?.rootViewController as? BBXDocumentViewController {
+                if vc.document.documentState == .closed {
+                    openBlock()
+                } else {
+                    vc.document.close(completionHandler: { suc in
+                        if suc { openBlock() }
+                    })
+                }
+            }
 			
 		} catch {
 			NSLog("I'm unable to open the imported file")

@@ -30,7 +30,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     private var lastSensorUpdate: [UInt8]
     var sensorValues: [UInt8] { return lastSensorUpdate }
     var compassCalibrated: Bool = false
-    var compassCalibrationStart: Date?
+    var compassCalibrating: Bool = false
     var batteryStatus: BatteryStatus?
     
     private let initializationCompletion: ((BBTRobotBLEPeripheral) -> Void)?
@@ -65,24 +65,6 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     private var hardwareString = ""
     private var firmwareVersionString = ""
     private var oldFirmware = false
-    
-    override public var description: String {
-        let gapName = self.peripheral.name ?? "Unknown"
-        
-        var updateDesc = ""
-        if self.oldFirmware {
-            updateDesc = "\n\nThis \(type.description) needs to be updated. " +
-                "See the link below: \n" +
-            "http://www.hummingbirdkit.com/learning/installing-birdblox#BurnFirmware "
-        }
-        
-        return
-            "\(self.type.description) Peripheral\n" +
-                "Name: \(self.name)\n" +
-                "Bluetooth Name: \(gapName)\n" +
-                "Hardware Version: \(self.hardwareString)\n" +
-                "Firmware Version: \(self.firmwareVersionString)" + updateDesc
-    }
     
     
     //MARK: INIT
@@ -227,7 +209,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
                 } else {
                     NSLog ("Not attempting to reconnect \(self.name). There have been \(self.connectionAttempts) attempts already. Currently connected? \(self.connected)")
                     BLE_Manager.disconnect(byID: self.id)
-                    let _ = FrontendCallbackCenter.shared.robotDisconnected(name: self.name, reason: "initialization timeout") //TODO: Remove from frontend list somehow
+                    let _ = FrontendCallbackCenter.shared.robotDisconnected(name: self.name)
                 }
                 return
             }
@@ -258,7 +240,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         
         //TODO: is this the best place to check this? Also checking above...
         guard self.connected else {
-            let _ = FrontendCallbackCenter.shared.robotDisconnected(name: self.name, reason: "lost connection")
+            let _ = FrontendCallbackCenter.shared.robotDisconnected(name: self.name)
             
             BLE_Manager.disconnect(byID: self.id)
             NSLog("Initialization failed because device got disconnected.")
@@ -313,9 +295,12 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         //TODO: do we really need this?
         Thread.sleep(forTimeInterval: 0.1)
         
+        self.sendData(data: type.turnOffCommand()) //TODO: Do this here? 
+        
         //Start polling for sensor data
         print("Sending poll start")
         self.sendData(data: type.sensorCommand("pollStart"))
+        
         
         //Start sending periodic updates. All changes to outputs will be set at this time.
         //TODO: scheduledTimer isn't very reliable. Switch to scheduleRepeating when stop supporting iOS9
@@ -372,8 +357,8 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         
         //TODO: Why is this? Hummingbird duo seems to send a lot
         //of different length messages. Are they for different things?
-        if type == .Hummingbird && characteristic.value!.count % 5 != 0 {
-            print("Characteristic value \(characteristic.value!.count) not divisible by 5.")
+        if type == .Hummingbird && inData.count % 5 != 0 {
+            print("Characteristic value \(inData.count) not divisible by 5.")
             return
         }
         
@@ -381,20 +366,26 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         inData.copyBytes(to: &self.lastSensorUpdate, count: type.sensorByteCount)
         
         //Check the state of compass calibration
-        if type == .HummingbirdBit || type == .MicroBit {
+        if (type == .HummingbirdBit || type == .MicroBit) && self.compassCalibrating {
             
             let byte = self.lastSensorUpdate[7]
             let bits = byteToBits(byte)
+            print("CALIBRATION VALUES \(bits[2]) \(bits[3])")
             
             if bits[3] == 1 {
-                //print("CALIBRATION FAILED \(bits)")
+                self.compassCalibrating = false
+                print("CALIBRATION FAILED \(bits)")
                 self.compassCalibrated = false
+                let _ = FrontendCallbackCenter.shared.robotCalibrationComplete(id: self.id, success: false)
             } else if bits[2] == 1 {
-                //print("CALIBRATION SUCCESSFUL \(bits)")
+                self.compassCalibrating = false
+                print("CALIBRATION SUCCESSFUL \(bits)")
                 self.compassCalibrated = true
+                let _ = FrontendCallbackCenter.shared.robotCalibrationComplete(id: self.id, success: true)
             } else {
-                //print("CALIBRATION UNKNOWN \(bits)")
+                print("CALIBRATION UNKNOWN \(bits)")
                 self.compassCalibrated = false
+                
             }
         }
         
@@ -468,6 +459,8 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         self.connectionAttempts += 1
         self._initialized = false
         self.batteryStatus = nil
+        self.commandPending = nil
+        self.nextOutputState = BBTRobotOutputState(robotType: type)
         Thread.sleep(forTimeInterval: 3.0) //make sure that the HB is booted up
         
         //If this connection was not canceled in the mean time
@@ -488,11 +481,15 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
      */
     private func sendData(data: Data) {
         if self.connected {
+            guard let tx_line = tx_line else {
+                NSLog("tx_line not defined in sendData!")
+                return
+            }
             
             if self.useWithResponse {
-                peripheral.writeValue(data, for: tx_line!, type: .withResponse) //set lastWriteWritten to true when response received
+                peripheral.writeValue(data, for: tx_line, type: .withResponse) //set lastWriteWritten to true when response received
             } else {
-                peripheral.writeValue(data, for: tx_line!, type: .withoutResponse)
+                peripheral.writeValue(data, for: tx_line, type: .withoutResponse)
             }
             
         } else {
@@ -508,7 +505,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             condition.lock()
         }
         
-        while !predicate() {
+        while !predicate() && self.initialized {
             NSLog("waiting...")
             condition.wait(until: Date(timeIntervalSinceNow: self.waitRefreshTime))
         }
@@ -586,9 +583,18 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     
     func setBuzzer(period: UInt16, duration: UInt16) -> Bool {
         
+        let set = {
+            if var mode = self.nextOutputState.mode {
+                mode[2] = 1
+                mode[3] = 0
+                self.nextOutputState.mode = mode
+            }
+            self.nextOutputState.buzzer = BBTBuzzer(period: period, duration: duration)
+        }
+        
         return setOutput(ifCheck: (self.type.buzzerCount == 1),
                          when: {self.nextOutputState.buzzer! == self.currentOutputState.buzzer!},
-                         set: {self.nextOutputState.buzzer = BBTBuzzer(period: period, duration: duration)})
+                         set: set)
     }
     
     func setLedArray(_ statusString: String) -> Bool {
@@ -598,12 +604,54 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
                          set: {self.nextOutputState.ledArray = statusString})
     }
     
+    func setMicroBitPin(_ pin: Int, _ value: UInt8) -> Bool {
+        
+        let i = Int(pin - 1)
+        let set = {
+            self.nextOutputState.pins![i] = value
+            self.nextOutputState.mode![2*pin] = 0
+            self.nextOutputState.mode![2*pin+1] = 0
+        }
+        
+        return setOutput(ifCheck: (self.type.pinCount >= pin),
+                         when: {self.nextOutputState.pins![i] == self.currentOutputState.pins![i]}, //TODO: do we also need to check the state of mode?
+                         set: set)
+    }
+    
+    func setMicroBitRead(_ pin: Int) -> Bool {
+        
+        let set = {
+            self.nextOutputState.mode![2*(pin+1)] = 0
+            self.nextOutputState.mode![2*(pin+1)+1] = 1
+        }
+        
+        return setOutput(ifCheck: self.type.pinCount >= pin,
+                         when: {self.nextOutputState.mode! == self.currentOutputState.mode!},
+                         set: set)
+    }
+    
+    /**
+     * Checks the mode of the given micro:bit pin. Returns true if read mode.
+     */
+    func checkReadMode(forPin pin: Int) -> Bool {
+        var isReadMode: Bool = false
+        
+        self.writtenCondition.lock()
+        
+        print("Mode: \(self.nextOutputState.mode ?? [])")
+        if self.nextOutputState.mode == self.currentOutputState.mode, let mode = self.nextOutputState.mode, mode[2*(pin+1)] == 0, mode[2*(pin+1)+1] == 1 { isReadMode = true }
+        
+        self.writtenCondition.unlock()
+        
+        return isReadMode
+    }
+    
     /**
      * Sends the current output state all at once
      *  (rather than sending each change individually)
      * This function is scheduled on a timer. It is called every syncInterval seconds.
      */
-    func syncronizeOutputs() {
+    @objc func syncronizeOutputs() {
         self.writtenCondition.lock()
         
         //It seems that we cannot send two commands in one cycle. If there is both
@@ -648,7 +696,9 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             var sentSetAll = false
             let oldCommand = currentOutputState.setAllCommand()
             if command != oldCommand {
-                NSLog("Sending set all.")
+                var commandArray: [UInt8] = []
+                commandArray = Array(command)
+                NSLog("Sending set all. \(commandArray)")
                 self.sendData(data: command)
                 sentSetAll = true
                 self.lastWriteStart = DispatchTime.now()
@@ -699,21 +749,33 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     func setAllOutputsToOff() -> Bool {
         //Sending an ASCII capital X should do the same thing.
         //Useful for legacy firmware
-        //TODO: Use the command to turn things off?
+
         self.writtenCondition.lock()
         self.nextOutputState = BBTRobotOutputState(robotType: type)
         self.writtenCondition.unlock()
         
+        if type != .Hummingbird { //The duo command also turns off sensor polling
+            sendData(data: type.turnOffCommand())
+        }
+        
         return true
     }
     
+    /**
+     * Sends a command to the micro:bit to calibrate its magnetometer.
+     * Since checking for results will begin after compassCalibrating is set,
+     * setting this value immedialtely could result in mistakenly reading
+     * the results of a previous calibration.
+     */
     func calibrateCompass() -> Bool {
         if let command = self.type.calibrateMagnetometerCommand() {
             sendData(data: command)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                self.compassCalibrating = true
+            }
             return true
         } else {
             return false
         }
     }
-    
 }

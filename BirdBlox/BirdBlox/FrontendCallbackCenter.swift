@@ -23,7 +23,7 @@ class FrontendCallbackCenter {
 	}
 	
 	public static func safeString(from: String) -> String {
-		return from.addingPercentEncoding(withAllowedCharacters: CharacterSet())!
+		return from.addingPercentEncoding(withAllowedCharacters: CharacterSet()) ?? ""
 	}
 	
 	public static func jsonString(from: Any) -> String? {
@@ -110,6 +110,11 @@ class FrontendCallbackCenter {
         
         return self.runJS(function: function, parameters: parameters)
     }
+    public func robotCalibrationComplete(id: String, success: Bool) -> Bool {
+        let function = "CallbackManager.robot.compassCalibrationResult"
+        let parameters = [id, String(success)]
+        return self.runJS(function: function, parameters: parameters)
+    }
 	
     //TODO: Make this for every type of robot
     public func robotFirmwareIncompatible(robotType: BBTRobotType, id: String, firmware: String) -> Bool {
@@ -124,11 +129,9 @@ class FrontendCallbackCenter {
 		return self.runJS(function: function, parameters: parameters)
 	}
 
-    public func robotDisconnected(name: String, reason: String) -> Bool {
-        let function = "DialogManager.showAlertDialog"
-        let parameters = ["Robot Disconnected", "\(name) has been disconnected due to \(reason)", "OK"]
-        //TODO: Instead of just showing an alert, we should also remove the device
-        // just like in DeviceManager.prototype.disconnectIncompatible
+    public func robotDisconnected(name: String) -> Bool {
+        let function = "CallbackManager.robot.connectionFailure"
+        let parameters = [name]
         return self.runJS(function: function, parameters: parameters)
     }
 	
@@ -196,7 +199,7 @@ class FrontendCallbackCenter {
 		
 		return self.runJS(function: function, parameters: parameters)
 	}
-	
+    
 	
 	//MARK: misc., utility
 	func echo(getRequestString: String) -> Bool {
@@ -223,6 +226,13 @@ class FrontendCallbackCenter {
         let function = "CallbackManager.tablet.getLanguage"
         let parameters = [lang]
         
+        return self.runJS(function: function, parameters: parameters)
+    }
+    
+    func setFilePreference(_ fileName: String) -> Bool {
+        let function = "CallbackManager.setFilePreference"
+        let parameters = [fileName]
+        print("setting file \(parameters)")
         return self.runJS(function: function, parameters: parameters)
     }
 }

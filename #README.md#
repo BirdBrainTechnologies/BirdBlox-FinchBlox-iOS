@@ -6,8 +6,8 @@ This repo uses CocoaPods. Make sure that CocoaPods is installed on your computer
 
 This repo depends on the HummingbirdDragAndDrop repo for the javascript frontend. When running in debug mode, the most recent frontend files (from the dev branch) will be automatically downloaded from GitHub. To compile a release version there are several steps you must follow:
 1. Make sure that appender.py has been run since the last frontend change (run python appender.py on the command line if not)
-2. Copy latest all.js, alliOS9.js, HummingbirdDragAndDrop.html, HummingbirdDragAndDropiOS9.html, MyCSS_rtl.css, and MyCSS.css into the Frontend folder. 
-3. Copy the folders SoundClips and SoundsForUI with all the .wav files to be included in the release into the Frontend folder, and the folder Videos with the calibration videos.
+2. Copy latest all.js, alliOS9.js, HummingbirdDragAndDrop.html, HummingbirdDragAndDropiOS9.html, and MyCSS.css into the Frontend folder. 
+3. Copy the folders SoundClips with all the .wav files, and SoundsForUI with the click sounds to be included in the release into the Frontend folder.
 4. Set DO.enabled = false;
-5. Change the scheme to Birdblox-Release (create this scheme if necessary).
+5. Change the scheme to Birdblox-Release
 

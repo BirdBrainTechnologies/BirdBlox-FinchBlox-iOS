@@ -39,9 +39,11 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
         if(CMAltimeter.isRelativeAltitudeAvailable()){
             altimeter.startRelativeAltitudeUpdates(to: OperationQueue.main,
                                                    withHandler: { data, error in
-                if(error == nil) {
-                    self.currentAltitude = Float(data!.relativeAltitude)
-                    self.currentPressure = Float(data!.pressure)
+                if error == nil, let data = data {
+                    //self.currentAltitude = Float(data!.relativeAltitude)
+                    //self.currentPressure = Float(data!.pressure)
+                    self.currentAltitude = Float(truncating: data.relativeAltitude)
+                    self.currentPressure = Float(truncating: data.pressure)
                 }
             })
         }
@@ -53,7 +55,9 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
 	}
 	
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        currentLocation = manager.location!.coordinate
+        if let loc = manager.location {
+            currentLocation = loc.coordinate
+        }
     }
     
     //get ssid
@@ -88,12 +92,6 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
         server["/tablet/dialog"] = dialogRequest(request:)
         server["/tablet/choice"] = choiceRequest(request:)
 		server["/tablet/availableSensors"] = self.sensorAvailabilityRequest
-		
-//		// /tablet/dialog?title=x&question=y&holder=z
-//		server["/tablet/dialog"] = self.dialogRequest
-//		
-//		// /tablet/choice?title=x&question=y&button1=z&button2=q
-//		server["/tablet/choice"] = self.choiceRequest
     }
 	
 	func sensorAvailabilityRequest(request: HttpRequest) -> HttpResponse {
@@ -138,19 +136,30 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
 			return .internalServerError
 		}
 	
-        var orientation: String = "In between"
+        //var orientation: String = "In between"
+        var orientation: String = "Other"
         if(abs(accel.x + 1) < 0.1){
-            orientation = "Landscape: home button on right"
+            //orientation = "Landscape: home button on right"
+            //changed to Landscape: camera on left
+            orientation = "landscape_left"
         } else if(abs(accel.x - 1) < 0.15){
-            orientation = "Landscape: home button on left"
+            //orientation = "Landscape: home button on left"
+            //changed to Landscape: camera on right
+            orientation = "landscape_right"
         } else if(abs(accel.y + 1) < 0.15){
-            orientation = "Portrait: home button on bottom"
+            //orientation = "Portrait: home button on bottom"
+            //changed to Portrait: camera on top
+            orientation = "portrait_top"
         } else if(abs(accel.y - 1) < 0.15){
-            orientation = "Portrait: home button on top"
+            //orientation = "Portrait: home button on top"
+            //changed to Portrait: camera on bottom
+            orientation = "portrait_bottom"
         } else if(abs(accel.z + 1) < 0.15){
-            orientation = "Faceup"
+            //orientation = "Faceup"
+            orientation = "faceup"
         } else if(abs(accel.z - 1) < 0.15){
-            orientation = "Facedown"
+            //orientation = "Facedown"
+            orientation = "facedown"
         }
 		
         return .ok(.text(orientation))
@@ -185,16 +194,22 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
     func dialogRequest(request: HttpRequest) -> HttpResponse {
         let captured = BBTSequentialQueryArrayToDict(request.queryParams)
 		
-        if let title = (captured["title"]),
-			let question = (captured["question"]) {
+        if let title = captured["title"], let question = captured["question"],
+            let okText = captured["okText"], let cancelText = captured["cancelText"] {
 			
-			let answerHolder: String? = (captured["placeholder"])
+			let answerHolder: String? = captured["placeholder"]
 			let prefillText: String? = captured["prefill"]
 			let shouldSelectAll = (captured["selectAll"] == "true") && (prefillText != nil)
+            
+            let bbtColor = UIColor(red: 32/255, green: 155/255, blue: 169/255, alpha: 1.0)
 			
 			let alertController = UIAlertController(title: title, message: question,
-			                                        preferredStyle: UIAlertControllerStyle.alert)
-			let okayAction = UIAlertAction(title: "Okay", style: UIAlertActionStyle.default){
+			                                        preferredStyle: UIAlertController.Style.alert)
+            
+            alertController.setValue(NSAttributedString(string: title, attributes: convertToOptionalNSAttributedStringKeyDictionary([convertFromNSAttributedStringKey(NSAttributedString.Key.font) : UIFont.systemFont(ofSize: 20, weight: UIFont.Weight.bold), convertFromNSAttributedStringKey(NSAttributedString.Key.foregroundColor) : bbtColor])), forKey: "attributedTitle")
+            alertController.setValue(NSAttributedString(string: question, attributes: convertToOptionalNSAttributedStringKeyDictionary([convertFromNSAttributedStringKey(NSAttributedString.Key.font) : UIFont.systemFont(ofSize: 14, weight: UIFont.Weight.medium), convertFromNSAttributedStringKey(NSAttributedString.Key.foregroundColor) : bbtColor])), forKey: "attributedMessage")
+            
+			let okayAction = UIAlertAction(title: okText, style: UIAlertAction.Style.default){
 				(action) -> Void in
 				if let textField: AnyObject = alertController.textFields?.first{
 					let response = (textField as! UITextField).text
@@ -205,18 +220,20 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
 				}
 			}
 			
-			let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel){
+			let cancelAction = UIAlertAction(title: cancelText, style: UIAlertAction.Style.cancel){
 				(action) -> Void in
 				let _ = FrontendCallbackCenter.shared.dialogPromptResponded(cancelled: true,
 				                                                            response: nil)
 			}
 			
 			DispatchQueue.main.async{
+
 				alertController.addTextField {
 					(txtName) -> Void in
 					txtName.placeholder = answerHolder
 					txtName.text = prefillText
 					txtName.clearButtonMode = .whileEditing
+                    txtName.textColor = bbtColor
 				}
 				
 				alertController.addAction(okayAction)
@@ -230,6 +247,10 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
 																  to: field.endOfDocument)
 					}
 				}
+                
+                
+                alertController.view.tintColor = bbtColor
+                
 			}
 			return .ok(.text("Dialog Presented"))
 		}
@@ -246,8 +267,8 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
 			let button1Text = (captured["button1"]){
 			
 			let alertController = UIAlertController(title: title, message: question,
-			                                        preferredStyle: UIAlertControllerStyle.alert)
-			let button1Action = UIAlertAction(title: button1Text, style: UIAlertActionStyle.default){
+			                                        preferredStyle: UIAlertController.Style.alert)
+			let button1Action = UIAlertAction(title: button1Text, style: UIAlertAction.Style.default){
 				(action) -> Void in
 				let _ = FrontendCallbackCenter.shared.choiceResponded(cancelled: false,
 				                                                      firstSelected: true)
@@ -255,7 +276,7 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
 			alertController.addAction(button1Action)
 			
 			if let button2Text = captured["button2"] {
-				let button2Action = UIAlertAction(title: button2Text, style: UIAlertActionStyle.default){
+				let button2Action = UIAlertAction(title: button2Text, style: UIAlertAction.Style.default){
 					(action) -> Void in
 					let _ = FrontendCallbackCenter.shared.choiceResponded(cancelled: false,
 																		  firstSelected: false)
@@ -278,3 +299,14 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
 	
 }
 
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToOptionalNSAttributedStringKeyDictionary(_ input: [String: Any]?) -> [NSAttributedString.Key: Any]? {
+	guard let input = input else { return nil }
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (NSAttributedString.Key(rawValue: key), value)})
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromNSAttributedStringKey(_ input: NSAttributedString.Key) -> String {
+	return input.rawValue
+}

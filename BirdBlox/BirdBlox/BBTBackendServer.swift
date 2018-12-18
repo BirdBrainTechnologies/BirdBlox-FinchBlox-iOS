@@ -54,24 +54,24 @@ class BBTBackendServer: NSObject, WKScriptMessageHandler {
 	
 	subscript(path: String) -> ((HttpRequest) -> HttpResponse)? {
 		set(handler) {
-			func guardedHandler(request: HttpRequest) -> HttpResponse {
-				
-				NSLog("Faux HTTP Request \(request.path) from address \(request.address ?? "unknown").")
-				
-				if request.address == nil || request.address != BBTLocalHostIP{
-					#if DEBUG
-						NSLog("Permitting external request in DEBUG mode.")
-					#else
-						NSLog("Forbidding external request.")
-						return .forbidden
-					#endif
-				}
-				
-				//Only use the guarded handler if there is a handler to guard
-				return handler!(request)
-			}
-			
-			if handler != nil {
+			if let handler = handler {
+                func guardedHandler(request: HttpRequest) -> HttpResponse {
+                    
+                    NSLog("Faux HTTP Request \(request.path) from address \(request.address ?? "unknown").")
+                    
+                    if request.address == nil || request.address != BBTLocalHostIP{
+                        #if DEBUG
+                        NSLog("Permitting external request in DEBUG mode.")
+                        #else
+                        NSLog("Forbidding external request.")
+                        return .forbidden
+                        #endif
+                    }
+                    
+                    //Only use the guarded handler if there is a handler to guard
+                    return handler(request)
+                }
+                
 				self.pathDict[path] = guardedHandler
 				self.router.register(nil, path: path, handler: guardedHandler)
 			} else {
@@ -248,10 +248,11 @@ class BBTBackendServer: NSObject, WKScriptMessageHandler {
 			return []
 		}
 		let queryStart = url.index(after: questionMark)
-		guard url.endIndex > queryStart, let query = String(url[queryStart..<url.endIndex]) else {
+		guard url.endIndex > queryStart else {
 			return []
 		}
-
+        let query = String(url[queryStart..<url.endIndex])
+        
 		return query.components(separatedBy: "&")
 			.reduce([(String, String)]()) { (c, s) -> [(String, String)] in
 				guard let nameEndIndex = s.index(of: "="),

@@ -58,10 +58,15 @@ class DataModel: NSObject, FileManagerDelegate {
 			self.tmpLoc = URL(fileURLWithPath: tmpPath)
 		}
 		
-		let libLoc = FileManager.default.urls(for: .libraryDirectory,
-		                                     in: .userDomainMask).first!
-		self.logLoc = libLoc.appendingPathComponent("JavaScript Error Log")
-							.appendingPathExtension("txt")
+		if let libLoc = FileManager.default.urls(for: .libraryDirectory,
+                                                 in: .userDomainMask).first {
+            self.logLoc = libLoc.appendingPathComponent("JavaScript Error Log")
+                .appendingPathExtension("txt")
+        } else {
+            self.logLoc = self.tmpLoc.appendingPathComponent("JavaScript Error Log")
+                .appendingPathExtension("txt")
+        }
+		
 		
 		self.stagingLoc = self.tmpLoc.appendingPathComponent("staging")
 		self.currentDocLoc = self.tmpLoc.appendingPathComponent("currentDoc")
@@ -267,7 +272,7 @@ class DataModel: NSObject, FileManagerDelegate {
 		}
 	}
 	
-	public func filenameAvailalbe(name: String, type: BBXFileType) -> Bool {
+	public func filenameAvailable(name: String, type: BBXFileType) -> Bool {
 		guard DataModel.nameIsSanitary(name) else {
 			return false
 		}
@@ -336,28 +341,37 @@ class DataModel: NSObject, FileManagerDelegate {
 	}
 	
 	private func getNumberSuffix(from name: String) -> UInt? {
-		let chars = name.characters
-		guard chars.last == Character(")") else {
+		//let chars = name.characters
+		//guard chars.last == Character(")") else {
+        guard name.last == Character(")") else {
 			return nil
 		}
 		
-		var curIndex = chars.index(before: chars.endIndex)
-		while chars[curIndex] != Character("(") {
-			curIndex = chars.index(before: curIndex)
-		}
-		let intPart = name.substring(with:
-			chars.index(after: curIndex)..<chars.index(before: chars.endIndex))
+		//var curIndex = chars.index(before: chars.endIndex)
+        var curIndex = name.index(before: name.endIndex)
+		//while chars[curIndex] != Character("(") {
+		//	curIndex = chars.index(before: curIndex)
+        while name[curIndex] != Character("("){
+            curIndex = name.index(before: curIndex)
+        }
+		//let intPart = name.substring(with:
+		//	chars.index(after: curIndex)..<chars.index(before: chars.endIndex))
+        let intPart = name[name.index(after: curIndex)..<name.index(before: name.endIndex)]
 		
 		return UInt(intPart)
 	}
 	
 	private func getRootOf(name: String) -> String {
-		let chars = name.characters
-		var curIndex = chars.index(before: chars.endIndex)
-		while chars[curIndex] != Character("(") {
-			curIndex = chars.index(before: curIndex)
+		//let chars = name.characters
+		//var curIndex = chars.index(before: chars.endIndex)
+        var curIndex = name.index(before: name.endIndex)
+		//while chars[curIndex] != Character("(") {
+		//	curIndex = chars.index(before: curIndex)
+        while name[curIndex] != Character("(") {
+            curIndex = name.index(before: curIndex)
 		}
-		return name.substring(to: curIndex)
+		//return name.substring(to: curIndex)
+        return String(name[..<curIndex])
 	}
 	
 	public func availableName(from name: String, type: BBXFileType = .BirdBloxProgram) -> String? {
@@ -365,7 +379,7 @@ class DataModel: NSObject, FileManagerDelegate {
 	}
 	
 	func availableNameRecHelper(from name: String, type: BBXFileType) -> String {
-		if self.filenameAvailalbe(name: name, type: type) {
+		if self.filenameAvailable(name: name, type: type) {
 			return name
 		}
 		
@@ -391,7 +405,7 @@ class DataModel: NSObject, FileManagerDelegate {
 	}
 	
 	public func bbxNameAvailable(_ name: String) -> Bool {
-		return self.filenameAvailalbe(name: name, type: .BirdBloxProgram)
+		return self.filenameAvailable(name: name, type: .BirdBloxProgram)
 	}
 	
 	public func getBBXContent(byName filename: String) -> String? {

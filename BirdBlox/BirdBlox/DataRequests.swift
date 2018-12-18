@@ -49,7 +49,7 @@ class DataManager: NSObject {
 		//To find the reason why a name might be different
 		let sanName = DataModel.sanitizedName(of: name)
 		let alreadySanitized = (sanName == name)
-		let alreadyAvailable = DataModel.shared.filenameAvailalbe(name: name, type: type)
+		let alreadyAvailable = DataModel.shared.filenameAvailable(name: name, type: type)
 		let availableName = DataModel.shared.availableName(from: name, type: type)!
 		
 		let json: [String : Any] = ["availableName" : availableName,
@@ -133,7 +133,7 @@ class DataManager: NSObject {
 			return .badRequest(.text("Invalid type argument"))
 		}
 		
-		if queries["options"] == "soft" && !DataModel.shared.filenameAvailalbe(name: newFilename,
+		if queries["options"] == "soft" && !DataModel.shared.filenameAvailable(name: newFilename,
 		                                                                       type: type) {
 			return .raw(409, "Conflict", nil, nil)
 		}

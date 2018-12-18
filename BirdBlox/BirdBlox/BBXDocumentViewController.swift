@@ -11,7 +11,7 @@ import UIKit
 import WebKit
 //import Swifter
 import SafariServices
-import MobileCoreServices
+//import MobileCoreServices
 
 /*
 BBXDocumentViewController
@@ -21,7 +21,7 @@ So the design is intentionally similar to ViewController.swift.
  */
 
 class BBXDocumentViewController: UIViewController, BBTWebViewController, UIDocumentPickerDelegate,
-SFSafariViewControllerDelegate {
+SFSafariViewControllerDelegate, WKNavigationDelegate {
 	
 	var webView = WKWebView()
 	var webUILoaded = false
@@ -53,10 +53,17 @@ SFSafariViewControllerDelegate {
 			
 			self.webUILoaded = true
 			
-			if let name = UserDefaults.standard.string(forKey: self.curDocNameKey) {
-				let _ = self.openProgram(byName: name)
-			}
-            
+			if let name = UserDefaults.standard.string(forKey: self.curDocNameKey) ?? UserDefaults.standard.string(forKey: self.lastDocNameKey) {
+				//let _ = self.openProgram(byName: name)
+                if FrontendCallbackCenter.shared.setFilePreference(name) {
+                    NSLog("Successfully set the filename to \(name)")
+                } else {
+                    NSLog("Failed to set the filename to \(name)")
+                }
+            } else {
+                NSLog("Failed to find a current filename.")
+            }
+            /*
             if let lang = NSLocale.preferredLanguages.first?.prefix(2) {
                 let language = String(lang)
                 NSLog("Setting frontend language to \(language)")
@@ -64,11 +71,16 @@ SFSafariViewControllerDelegate {
                     NSLog("Successfully set language to \(language)")
                 }
             }
-            
+            */
 			
 			return .ok(.text("Hello webpage! I am a server."))
 		}
-		
+		self.server["/ui/translatedStrings"] = { request in
+            //This request is to set some text for popups handled by the backend.
+            // Currently only used in Android
+            return .ok(.text("Message received."))
+        }
+        
 		self.server.start()
 		
 		//Setup webview
@@ -84,7 +96,8 @@ SFSafariViewControllerDelegate {
         //webView.navigationDelegate = self
         //webView.uiDelegate = self
 		
-		self.webView.contentMode = UIViewContentMode.scaleToFill
+        self.webView.navigationDelegate = self
+		self.webView.contentMode = UIView.ContentMode.scaleToFill
 		self.webView.backgroundColor = UIColor.gray
 		
 		let htmlLoc = DataModel.shared.frontendPageLoc
@@ -105,8 +118,10 @@ SFSafariViewControllerDelegate {
 	//MARK: Document Handling
 	static let curDocNeedsNameKey = "CurrentDocumentNeedsName"
 	static let curDocNameKey = "CurrentDocumentName"
+    static let lastDocNameKey = "LastDocumentName"
 	let curDocNeedsNameKey = "CurrentDocumentNeedsName"
 	let curDocNameKey = "CurrentDocumentName"
+    let lastDocNameKey = "LastDocumentName"
 	
 	private var realDoc = BBXDocument(fileURL: URL(
 		fileURLWithPath: NSSearchPathForDirectoriesInDomains(.documentDirectory,
@@ -119,7 +134,7 @@ SFSafariViewControllerDelegate {
 			return
 		}
 		
-		//For some reason this always opens the last document 
+		//For some reason this always opens the last document
 		let eset = CharacterSet()
 		let name = self.document.localizedName.addingPercentEncoding(withAllowedCharacters: eset)!
 		let xml = self.document.currentXML.addingPercentEncoding(withAllowedCharacters: eset)!
@@ -148,15 +163,15 @@ SFSafariViewControllerDelegate {
 		}
 		
 		set (doc) {
-			self.realDoc.close(completionHandler: nil)
+			self.realDoc.close(completionHandler: nil) //Doesn't this take a while?
 			self.realDoc = doc
-			
+            
 			if self.webUILoaded {
 				self.updateDisplayFromXML(completion: { (succeeded: Bool) in
 					// Only set this document as our document if it is valid
 					//Relies on no more requests while the js is still parsing the document
 					if succeeded {
-						let notificationName = NSNotification.Name.UIDocumentStateChanged
+						let notificationName = UIDocument.stateChangedNotification
 						NotificationCenter.default.addObserver(forName: notificationName,
 						                                       object: self.realDoc, queue: nil,
 						                                       using: { notification in
@@ -174,7 +189,7 @@ SFSafariViewControllerDelegate {
 	
 	func handleDocumentStateChangeNotification(_ notification: Notification) {
 		switch self.document.documentState {
-		case UIDocumentState.inConflict:
+		case UIDocument.State.inConflict:
 			let v = NSFileVersion.unresolvedConflictVersionsOfItem(at: self.document.fileURL)
 			guard let versions = v else {
 				print("Invalid URL")
@@ -230,6 +245,8 @@ SFSafariViewControllerDelegate {
 	
 	private func closeCurrentProgram(completion: ((Bool) -> Void)? = nil) {
 		self.document.close(completionHandler: { suc in
+            let curDocName = DataModel.shared.getSetting(self.curDocNameKey)
+            UserDefaults.standard.set(curDocName, forKey: self.lastDocNameKey)
 			UserDefaults.standard.set(nil, forKey: self.curDocNameKey)
 			if let completion = completion {
 				completion(suc)
@@ -287,7 +304,7 @@ SFSafariViewControllerDelegate {
 		
 		let rsJS = "GuiElements.updateDimsPreview(\(nSize.width), \(nSize.height))"
 		self.webView.evaluateJavaScript(rsJS, completionHandler: {
-			print("Updated dims. Error: \($0)")
+			print("Updated dims. Error: \(($0, $1))")
 		})
 	}
 	
@@ -295,7 +312,7 @@ SFSafariViewControllerDelegate {
 	var timeLastShaken = Date(timeIntervalSince1970: 0)
 	var shakeExpireInterval = TimeInterval(5) //seconds
 	
-	override func motionEnded(_ motion: UIEventSubtype, with event: UIEvent?) {
+	override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
 		if motion == .motionShake {
 			self.timeLastShaken = Date(timeIntervalSinceNow: 0)
 		}
@@ -420,6 +437,7 @@ SFSafariViewControllerDelegate {
 				print("Running open block now!")
 				openBlock()
 			} else {
+                //TODO: Actually try to close the file here? What if it is already in the process of closing?
 				if #available(iOS 10.0, *) {
 					DispatchQueue.main.sync {
 						self.utilTimer = Timer.scheduledTimer(withTimeInterval: 0.75,
@@ -528,30 +546,29 @@ SFSafariViewControllerDelegate {
 			return deleteHandler(request)
 		}
 		
-		let stopAll = server["/robot/stopAll"]!
-		server["/robot/stopAll"] = { req in
-//			server.clearBackgroundQueue(completion: {
-//				server.backgroundQueue.async {
-//					let _ = stopAll(req)
-//				}
-//			}) //This won't help much because there are still ≤30 threads settings outputs
-			
-			//TODO: Add ability for output threads to abort based on a check to a boolean whenever
-			//they wake from sleep (when they are waiting to write out). Then delete this timer.
-			if #available(iOS 10.0, *) {
-				DispatchQueue.main.sync {
-					self.stopTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: false) {
-						t in
-						
-						let _ = stopAll(req)
-						print("stopping again")
-					}
-				}
-			}
-			
-			
-			return stopAll(req)
-		}
+        if let stopAll = server["/robot/stopAll"] {
+            server["/robot/stopAll"] = { req in
+    //			server.clearBackgroundQueue(completion: {
+    //				server.backgroundQueue.async {
+    //					let _ = stopAll(req)
+    //				}
+    //			}) //This won't help much because there are still ≤30 threads settings outputs
+                
+                //TODO: Add ability for output threads to abort based on a check to a boolean whenever
+                //they wake from sleep (when they are waiting to write out). Then delete this timer.
+                if #available(iOS 10.0, *) {
+                    DispatchQueue.main.sync {
+                        self.stopTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: false) {
+                            t in
+                            
+                            let _ = stopAll(req)
+                            print("stopping again")
+                        }
+                    }
+                }
+                return stopAll(req)
+            }
+        }
 		
 		server["/data/markAsNamed"] = { request in
 			UserDefaults.standard.set(false, forKey: self.curDocNeedsNameKey)
@@ -561,7 +578,9 @@ SFSafariViewControllerDelegate {
 		server["/robot/showUpdateInstructions"] = { request in
 			DispatchQueue.main.sync {
 				let str =  "http://www.hummingbirdkit.com/learning/installing-birdblox#BurnFirmware"
-				let url = URL(string:str)!
+                guard let url = URL(string:str) else {
+                    return
+                }
 				let websiteVC = SFSafariViewController(url: url)
 				self.present(websiteVC, animated: true, completion: nil)
 				websiteVC.delegate = self
@@ -589,12 +608,12 @@ SFSafariViewControllerDelegate {
         print("save loc: \(DataModel.shared.bbxSaveLoc)")
         let filename = url.deletingPathExtension().lastPathComponent
         print("File name! \(filename)")
-        var saveName = filename + "_import.bbx"
+        var saveName = filename + ".bbx"
         var fileUrl = DataModel.shared.bbxSaveLoc.appendingPathComponent(saveName)
         var i = 1
         let fileManager = FileManager.default
         while fileManager.fileExists(atPath: fileUrl.path) {
-            saveName = "\(filename)_import_\(i).bbx"
+            saveName = "\(filename)_\(i).bbx"
             fileUrl = DataModel.shared.bbxSaveLoc.appendingPathComponent(saveName)
             i += 1
         }
@@ -604,12 +623,23 @@ SFSafariViewControllerDelegate {
         } catch {
             print(error)
         }
+        
+        //Once the file is saved, open automatically
+        let req = "data/open?filename=\(saveName.dropLast(4))"
+        let _ = FrontendCallbackCenter.shared.echo(getRequestString: req)
+        
+        
+        /* In the version below, we show the downloaded file in the dialog and give a message
+         * about how that file was named. However, this text was not translated. It seems
+         * more clear to just open the file, than to have the user guess where it went.
         let _ = FrontendCallbackCenter.shared.reloadOpenDialog()
         
         let text = FrontendCallbackCenter.safeString(from: "File imported as\n\'\(saveName)\'")
         let _ = FrontendCallbackCenter.shared.echo(getRequestString:
             "/tablet/choice?question=\(text)&button1=Dismiss")
         return
+        */
+        
         /*
 		let doc = BBXDocument(fileURL: url)
 		let _ = FrontendCallbackCenter.shared.markLoadingDocument()
@@ -642,6 +672,18 @@ SFSafariViewControllerDelegate {
 	var wv: WKWebView {
 		return self.webView
 	}
+    
+    //MARK: WKNavigationDelegate methods
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        //if let lang = NSLocale.preferredLanguages.first?.prefix(2) {
+        if let lang = NSLocale.preferredLanguages.first {
+            //let language = String(lang)
+            NSLog("Setting frontend language to \(lang)")
+            if FrontendCallbackCenter.shared.setLanguage(lang) {
+                NSLog("Successfully set language to \(lang)")
+            }
+        }
+    }
     
 }
 
