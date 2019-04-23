@@ -345,9 +345,11 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             print("Got version data in: \(inData.debugDescription)")
             if self.type == .Hummingbird && inData.count > 5 {
                 //In this case, the version information is appended to the end of a sensor poll update
-                inData.suffix(5).copyBytes(to: &self.lineIn, count: self.lineIn.count)
+                //inData.suffix(5).copyBytes(to: &self.lineIn, count: self.lineIn.count)
+                inData.suffix(5).copyBytes(to: &self.lineIn, count: 5)
             } else {
-                inData.copyBytes(to: &self.lineIn, count: self.lineIn.count)
+                //inData.copyBytes(to: &self.lineIn, count: self.lineIn.count)
+                inData.copyBytes(to: &self.lineIn, count: inData.count)
             }
             print("Copied to lineIn: \(self.lineIn)")
             self.initializingCondition.signal()

@@ -26,7 +26,7 @@ class AudioManager: NSObject, AVAudioRecorderDelegate {
 		
         do {
             //try sharedAudioSession.setCategory(convertFromAVAudioSessionCategory(AVAudioSession.Category.playAndRecord))
-            if #available(iOS 10.0, *) {
+            if #available(iOS 11.0, *) {
                 //try sharedAudioSession.setCategory(.playAndRecord, mode: .default)
                 try sharedAudioSession.setCategory(.playback, mode: .default)
             } else {
@@ -69,7 +69,7 @@ class AudioManager: NSObject, AVAudioRecorderDelegate {
 	
 	public func startRecording(saveName: String) -> Bool {
         
-        if #available(iOS 10.0, *) {
+        if #available(iOS 11.0, *) {
             do {
                 try sharedAudioSession.setCategory(.record, mode: .default)
             } catch {
@@ -121,7 +121,7 @@ class AudioManager: NSObject, AVAudioRecorderDelegate {
 		
 		recorder.pause()
         
-        if #available(iOS 10.0, *) {
+        if #available(iOS 11.0, *) {
             do {
                 try sharedAudioSession.setCategory(.playback, mode: .default)
             } catch {
@@ -137,7 +137,7 @@ class AudioManager: NSObject, AVAudioRecorderDelegate {
 			return false
 		}
         
-        if #available(iOS 10.0, *) {
+        if #available(iOS 11.0, *) {
             do {
                 try sharedAudioSession.setCategory(.record, mode: .default)
             } catch {
@@ -164,7 +164,7 @@ class AudioManager: NSObject, AVAudioRecorderDelegate {
 		
 		self.recorder = nil
         
-        if #available(iOS 10.0, *) {
+        if #available(iOS 11.0, *) {
             do {
                 try sharedAudioSession.setCategory(.playback, mode: .default)
             } catch {
