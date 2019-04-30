@@ -251,6 +251,17 @@ class AudioManager: NSObject, AVAudioRecorderDelegate {
 			cappedNote = 255
 		}
 		let noteEightBit = UInt8(cappedNote)
+        
+        if !audioEngine.isRunning {
+            NSLog("Restarting audio engine...")
+            do {
+                try audioEngine.start()
+            } catch {
+                NSLog("Failed to start engine")
+                return
+            }
+        }
+        
         print("Playing note \(noteEightBit)")
 		sampler.startNote(noteEightBit, withVelocity: 127, onChannel: 1)
 		DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(duration)) {
