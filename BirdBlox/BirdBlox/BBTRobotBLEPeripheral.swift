@@ -145,13 +145,13 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
                 }
                 if(wasTXSet && wasRXSet){
                     switch type{
-                    case .Hummingbird, .HummingbirdBit, .MicroBit:
+                    case .Hummingbird, .HummingbirdBit, .MicroBit, .Finch:
                         DispatchQueue.main.async {
                             self.initializeDevice()
                         }
                         return
-                    case .Finch, .Flutter:
-                        NSLog("Finch and Flutter not currently supported.")
+                    case .Flutter:
+                        NSLog("Flutter not currently supported.")
                         return
                     }
                 }
@@ -182,6 +182,8 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         //let oldLineIn = self.lineIn
         let blankLine: [UInt8] = [0, 0, 0, 0, 0, 0, 0, 0]
         self.lineIn = blankLine
+        //TODO: remove when real firmware responses are established.
+        if self.type == .Finch { self.lineIn = [1, 1, 1, 0, 0, 0, 0, 0] }
         
         guard let versioningCommand = type.hardwareFirmwareVersionCommand() else {
             BLE_Manager.disconnect(byID: self.id)
@@ -196,6 +198,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         //Wait until we get a response or until we timeout.
         //while (self.lineIn == oldLineIn) {
         while (self.lineIn == blankLine) {
+            print("hi")
             if (Date().timeIntervalSince(timeoutTime) >= 0) {
                 
                 NSLog("\(self.name) initialization failed due to timeout. Connected? \(self.connected)")
@@ -273,7 +276,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
                 self.oldFirmware = true
             }
             
-        case .HummingbirdBit, .MicroBit:
+        case .HummingbirdBit, .MicroBit, .Finch:
             
             //versionArray[1] is micro:bit firmware, versionArray[2] is SAMD (on bit board)
             //As of now, there is no firmware for these that is not compatible.
@@ -282,13 +285,13 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
                 self.oldFirmware = true
             }
             
-        case .Finch, .Flutter:
+        case .Flutter:
             //TODO: (finch) add a check for legacy firmware and use set all for only
             //firmwares newer than 2.2.a
             //From Tom: send the characters 'G' '4' and you will get back the hardware version
             //(currently 0x03 0x00) and the firmware version (0x02 0x02 'b'), might be 'a' instead of 'b'
             BLE_Manager.disconnect(byID: self.id)
-            NSLog("Initialization failed because Finch and Flutter not currently supported!")
+            NSLog("Initialization failed because Flutter is not currently supported!")
             return
         }
         
@@ -335,19 +338,22 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             NSLog("No characteristic value set for \(characteristic)")
             return
         }
-        
-        //let temp = [UInt8](inData)
+        //print("didupdatevaluefor \(characteristic)")
+        let temp = [UInt8](inData)
         //print("Characteristic updated to \(temp)")
         
         //This block used for getting the firmware info
         guard self.initialized else {
             self.initializingCondition.lock()
-            print("Got version data in: \(inData.debugDescription)")
+            print("Got version data in: \(inData.debugDescription) \(self.lineIn)")
             if self.type == .Hummingbird && inData.count > 5 {
                 //In this case, the version information is appended to the end of a sensor poll update
-                inData.suffix(5).copyBytes(to: &self.lineIn, count: self.lineIn.count)
+                print("Copying lineIn from end of data array");
+                //inData.suffix(5).copyBytes(to: &self.lineIn, count: self.lineIn.count)
+                inData.suffix(5).copyBytes(to: &self.lineIn, count: 5)
             } else {
-                inData.copyBytes(to: &self.lineIn, count: self.lineIn.count)
+                //inData.copyBytes(to: &self.lineIn, count: self.lineIn.count)
+                inData.copyBytes(to: &self.lineIn, count: inData.count)
             }
             print("Copied to lineIn: \(self.lineIn)")
             self.initializingCondition.signal()
@@ -366,9 +372,9 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         inData.copyBytes(to: &self.lastSensorUpdate, count: type.sensorByteCount)
         
         //Check the state of compass calibration
-        if (type == .HummingbirdBit || type == .MicroBit) && self.compassCalibrating {
+        if (type == .HummingbirdBit || type == .MicroBit || type == .Finch) && self.compassCalibrating {
             
-            let byte = self.lastSensorUpdate[7]
+            let byte = self.lastSensorUpdate[type.buttonShakeIndex]
             let bits = byteToBits(byte)
             print("CALIBRATION VALUES \(bits[2]) \(bits[3])")
             
@@ -563,13 +569,13 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
                          set: {self.nextOutputState.vibrators![i] = intensity})
     }
     
-    func setMotor(port: Int, speed: Int8) -> Bool {
+    func setMotor(port: Int, speed: Int8, ticks: Int = 0) -> Bool {
         
         let i = Int(port - 1)
         
         return setOutput(ifCheck: (self.type.motorCount >= port),
                          when: {self.nextOutputState.motors![i] == self.currentOutputState.motors![i]},
-                         set: {self.nextOutputState.motors![i] = speed})
+                         set: {self.nextOutputState.motors![i] = BBTMotor(speed, ticks)})
     }
     
     func setServo(port: UInt, value: UInt8) -> Bool {
@@ -679,8 +685,6 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         
         if self.initialized && (self.lastWriteWritten || timeout)  && shouldSync {
             
-            
-            
             //if timeout { NSLog("Timeout") }
             
             let command = nextCopy.setAllCommand()
@@ -705,35 +709,129 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
                 if self.useWithResponse { self.lastWriteWritten = false }
             }
             
-            //if nextCopy.ledArray != currentOutputState.ledArray, let ledArray = nextCopy.ledArray, let ledArrayCommand = type.ledArrayCommand(ledArray), let clearCommand = type.clearLedArrayCommand() {
-                //TODO: maybe only send stop command if changing from flash to symbol
-                //self.sendData(data: clearCommand)
-            if nextCopy.ledArray != currentOutputState.ledArray,
-                nextCopy.ledArray != BBTRobotOutputState.flashSent,
-                let ledArray = nextCopy.ledArray, let ledArrayCommand = type.ledArrayCommand(ledArray) {
-                if sentSetAll { //Make sure we do not send more than one packet per cycle
-                    NSLog("Putting led array command into pending...")
-                    self.commandPending = ledArrayCommand
-                } else {
-                    if self.useWithResponse {self.lastWriteWritten = false}
-                    NSLog("Sending led array change.")
-                    self.sendData(data: ledArrayCommand)
-                    self.lastWriteStart = DispatchTime.now()  //TODO: need this? or lastwritewritten above?
+            
+            if type == .Finch {
+                
+                var mode: UInt8 = 0x00
+                let setMotors = (nextCopy.motors != currentOutputState.motors)
+                let setLedArray = (nextCopy.ledArray != currentOutputState.ledArray && nextCopy.ledArray != BBTRobotOutputState.flashSent)
+                var setSymbol = false
+                var setFlash = false
+                var ledArrayArray:[UInt8] = []
+                
+                if setLedArray, let ledArray = nextCopy.ledArray {
+                    let ledStatusChars = Array(ledArray)
+                    if ledStatusChars[0] == "S" {
+                        setSymbol = true
+                        
+                        var led8to1String = ""
+                        for i in 1 ..< 9 {
+                            led8to1String = String(ledStatusChars[i]) + led8to1String
+                        }
+                        
+                        var led16to9String = ""
+                        for i in 9 ..< 17 {
+                            led16to9String = String(ledStatusChars[i]) + led16to9String
+                        }
+                        
+                        var led24to17String = ""
+                        for i in 17 ..< 25 {
+                            led24to17String = String(ledStatusChars[i]) + led24to17String
+                        }
+                        
+                        guard let leds8to1 = UInt8(led8to1String, radix: 2),
+                            let led16to9 = UInt8(led16to9String, radix: 2),
+                            let led24to17 = UInt8(led24to17String, radix: 2),
+                            let led25 = UInt8(String(ledStatusChars[25])) else {
+                                return
+                        }
+                        
+                        ledArrayArray = [led25, led24to17, led16to9, leds8to1]
+                        
+                    } else if ledStatusChars[0] == "F" {
+                        setFlash = true
+                        
+                        let length = ledStatusChars.count - 1
+                        for i in 1 ... length {
+                            ledArrayArray.append(getUnicode(ledStatusChars[i]))
+                        }
+                        nextOutputState.ledArray = BBTRobotOutputState.flashSent //TODO: is this necessary?
+                    }
+                }
+                
+                if setMotors && setFlash {
+                    mode = 0x80 + UInt8(ledArrayArray.count)
+                } else if setMotors && setSymbol {
+                    mode = 0x60
+                } else if setMotors {
+                    mode = 0x40
+                } else if setFlash {
+                    mode = UInt8(ledArrayArray.count)
+                } else if setSymbol {
+                    mode = 0x20
+                }
+                
+                if mode != 0 {
+                    guard let motors = nextCopy.motors else {
+                        NSLog("Finch motors not found in output state.")
+                        return
+                    }
+                    let cv:(Int8)->UInt8 = { velocity in
+                        var v = UInt8(abs(velocity)) //TODO: handle the case where velocity = -128? this will cause an overflow error here
+                        if velocity < 0 { v += 128 }
+                        return v
+                    }
                     
-                    /* Writing 2 commands per interval had strange issues
-                    DispatchQueue.main.asyncAfter(deadline: .now() + self.syncInterval/2) {
+                    /* 0xD2, symbol/motors/flash--length,
+                     L_Dir--Speed, L_Ticks_3, L_Ticks_2, L_Ticks_1,
+                     R_Dir--Speed, R_Ticks_3, R_Ticks_2, R_Ticks_1,
+                     M_L_4/C1, M_L_3/C2, M_L_2/C3, M_L_1/C4,
+                     C5, C6, C7, C8, C9, C10 */
+                    let command: [UInt8] = [0xD2, mode,
+                        cv(motors[0].velocity), motors[0].ticksMSB, motors[0].ticksSSB, motors[0].ticksLSB, cv(motors[1].velocity), motors[1].ticksMSB, motors[1].ticksSSB, motors[1].ticksLSB] + ledArrayArray
+                    let commandData = Data(bytes: UnsafePointer<UInt8>(command), count: command.count)
+                    
+                    if sentSetAll {
+                        NSLog("Putting led array and/or motor command into pending...")
+                        self.commandPending = commandData
+                    } else {
+                        NSLog("Sending led array and/or motor change. \(command)")
+                        self.sendData(data: commandData)
+                    }
+                    
+                    
+                }
+                
+            } else {
+                //if nextCopy.ledArray != currentOutputState.ledArray, let ledArray = nextCopy.ledArray, let ledArrayCommand = type.ledArrayCommand(ledArray), let clearCommand = type.clearLedArrayCommand() {
+                    //TODO: maybe only send stop command if changing from flash to symbol
+                    //self.sendData(data: clearCommand)
+                if nextCopy.ledArray != currentOutputState.ledArray,
+                    nextCopy.ledArray != BBTRobotOutputState.flashSent,
+                    let ledArray = nextCopy.ledArray, let ledArrayCommand = type.ledArrayCommand(ledArray) {
+                    if sentSetAll { //Make sure we do not send more than one packet per cycle
+                        NSLog("Putting led array command into pending...")
+                        self.commandPending = ledArrayCommand
+                    } else {
+                        if self.useWithResponse {self.lastWriteWritten = false}
                         NSLog("Sending led array change.")
                         self.sendData(data: ledArrayCommand)
                         self.lastWriteStart = DispatchTime.now()  //TODO: need this? or lastwritewritten above?
-                    }*/
+                        
+                        /* Writing 2 commands per interval had strange issues
+                        DispatchQueue.main.asyncAfter(deadline: .now() + self.syncInterval/2) {
+                            NSLog("Sending led array change.")
+                            self.sendData(data: ledArrayCommand)
+                            self.lastWriteStart = DispatchTime.now()  //TODO: need this? or lastwritewritten above?
+                        }*/
+                    }
+                    print("Sending \(ledArray)")
+                    if ledArray.starts(with: "F") {
+                        print("And now setting to \(BBTRobotOutputState.flashSent)")
+                        nextOutputState.ledArray = BBTRobotOutputState.flashSent
+                    }//TODO: is this ok??
                 }
-                print("Sending \(ledArray)")
-                if ledArray.starts(with: "F") {
-                    print("And now setting to \(BBTRobotOutputState.flashSent)")
-                    nextOutputState.ledArray = BBTRobotOutputState.flashSent
-                }//TODO: is this ok??
             }
-            
             self.currentOutputState = nextCopy
             
         } else {

@@ -45,8 +45,14 @@ class RobotRequests {
 		server["/robot/disconnect"] = self.disconnectRequest
 		
 		server["/robot/stopAll"] = self.stopAllRequest
+        
 		server["/robot/out/triled"] =
 			RobotRequests.handler(fromIDAndTypeHandler: self.setTriLEDRequest)
+        server["/robot/out/beak"] =
+            RobotRequests.handler(fromIDAndTypeHandler: self.setTriLEDRequest)
+        server["/robot/out/tail"] =
+            RobotRequests.handler(fromIDAndTypeHandler: self.setTriLEDRequest)
+        
 		server["/robot/out/servo"] =
 			RobotRequests.handler(fromIDAndTypeHandler: self.setServoRequest)
 		
@@ -56,6 +62,8 @@ class RobotRequests {
 			RobotRequests.handler(fromIDAndTypeHandler: self.setVibrationRequest)
 		server["/robot/out/motor"] =
 			RobotRequests.handler(fromIDAndTypeHandler: self.setMotorRequest)
+        server["/robot/out/motors"] =
+            RobotRequests.handler(fromIDAndTypeHandler: self.setMotorsRequest)
 		
 		server["/robot/out/buzzer"] =
 			RobotRequests.handler(fromIDAndTypeHandler: self.setBuzzerRequest)
@@ -103,7 +111,7 @@ class RobotRequests {
                 "RSSI": mode(Array(rssi.suffix(50))).stringValue] //peripherals are discovered more than 30 times per second
 			}
             //print("list: \(peripherals) filteredList: \(filteredList) darray: \(darray.map{ $0["RSSI"] })")
-            //print("Updating: \(darray.map{ "\($0["name"] ?? "?"): \($0["RSSI"] ?? "?")" })")
+            //print("Updating: \(darray.map{ "\($0["name"] ?? "?"): \($0["RSSI"] ?? "?"): \($0["id"] ?? "?"): \($0["device"] ?? "?")" })")
 			let _ = FrontendCallbackCenter.shared.updateDiscoveredRobotList(robotList: darray)
 		}, scanEnded: {
 			let _ = FrontendCallbackCenter.shared.scanHasStopped()
@@ -211,7 +219,8 @@ class RobotRequests {
 		
 		let values = robot.sensorValues
 		var sensorValue: String
-		
+        let rawAcc = Array(values[robot.type.accXindex...(robot.type.accXindex + 2)])
+		print("about to return sensor values \(values)")
 		switch sensor {
             
         //Screen up and Screen down are z: Acc Z > 0.8*g screen down, Acc Z < -0.8*g screen up
@@ -219,31 +228,31 @@ class RobotRequests {
         //Logo up and logo down are y: Acc Y > 0.8g logo down, Acc Y < -0.8g logo up
         // 0.8g = 7.848m/s2
         case "screenUp":
-            let val = rawToAccelerometer(values[6])
+            let val = rawToAccelerometer(rawAcc[2])
             //if val < -0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
             if val < -7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
         case "screenDown":
-            let val = rawToAccelerometer(values[6])
+            let val = rawToAccelerometer(rawAcc[2])
             //if val > 0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
             if val > 7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
         case "tiltLeft":
-            let val = rawToAccelerometer(values[4])
+            let val = rawToAccelerometer(rawAcc[0])
             //if val > 0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
             if val > 7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
         case "tiltRight":
-            let val = rawToAccelerometer(values[4])
+            let val = rawToAccelerometer(rawAcc[0])
             //if val < -0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
             if val < -7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
         case "logoUp":
-            let val = rawToAccelerometer(values[5])
+            let val = rawToAccelerometer(rawAcc[1])
             //if val < -0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
             if val < -7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
         case "logoDown":
-            let val = rawToAccelerometer(values[5])
+            let val = rawToAccelerometer(rawAcc[1])
             //if val > 0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
             if val > 7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
         case "buttonA", "buttonB", "shake": //microbit buttons and shake
-            let buttonShake = values[7]
+            let buttonShake = values[robot.type.buttonShakeIndex]
             let bsBitValues = byteToBits(buttonShake)
             //TODO: should the buttons return true when pressed?
             switch sensor {
@@ -271,10 +280,12 @@ class RobotRequests {
                 return .badRequest(.text("Accelerometer axis not specified."))
             }
             
+            let xIndex = robot.type.accXindex
+            
             switch axis {
-            case "x": sensorValue = String(rawToAccelerometer(values[4]))
-            case "y": sensorValue = String(rawToAccelerometer(values[5]))
-            case "z": sensorValue = String(rawToAccelerometer(values[6]))
+            case "x": sensorValue = String(rawToAccelerometer(values[xIndex]))
+            case "y": sensorValue = String(rawToAccelerometer(values[xIndex + 1]))
+            case "z": sensorValue = String(rawToAccelerometer(values[xIndex + 2]))
             default:
                 return .badRequest(.text("Accelerometer axis incorrectly specified as \(axis)"))
             }
@@ -293,36 +304,65 @@ class RobotRequests {
             let z = adjust(values[12], values[13])
             */
             //let (x, y, z) = magnetometerValues(values)
-            switch axis {
-            case "x": sensorValue = String(rawToMagnetometer(values[8], values[9]))
-            case "y": sensorValue = String(rawToMagnetometer(values[10], values[11]))
-            case "z": sensorValue = String(rawToMagnetometer(values[12], values[13]))
+            switch robot.type {
+            case .Finch: //Values for the finch are already in uT, and don't need conversion
+                switch axis {
+                case "x": sensorValue = String(Int8(bitPattern: values[17]))
+                case "y": sensorValue = String(Int8(bitPattern: values[18]))
+                case "z": sensorValue = String(Int8(bitPattern: values[19]))
+                default:
+                    return .badRequest(.text("Magnetometer axis not specified."))
+                }
+            case .HummingbirdBit, .MicroBit:
+                switch axis {
+                case "x": sensorValue = String(rawToMagnetometer(values[8], values[9]))
+                case "y": sensorValue = String(rawToMagnetometer(values[10], values[11]))
+                case "z": sensorValue = String(rawToMagnetometer(values[12], values[13]))
+                default:
+                    return .badRequest(.text("Magnetometer axis not specified."))
+                }
             default:
-                return .badRequest(.text("Accelerometer axis not specified."))
+                return .badRequest(.text("robot type not supported for magnetometer block."))
             }
         case "compass":
-            let accArray = Array(values[4...6])
-            let magArray = Array(values[8...13])
+            var magArray:[UInt8]
+            switch robot.type {
+            case .Finch:
+                magArray = Array(values[17...19])
+            default: //.HummingbirdBit and .MicroBit
+                magArray = Array(values[8...13])
+            }
             //print("Compass!! \(values) \(accArray) \(magArray)")
-            if let compass = rawToCompass(rawAcc: accArray, rawMag: magArray) {
+            if let compass = rawToCompass(rawAcc: rawAcc, rawMag: magArray) {
                 sensorValue = String(compass)
             } else {
                 sensorValue = "nil"
             }
+        case "battery":
+            if let i = robot.type.batteryVoltageIndex {
+                sensorValue = String(rawToVoltage(values[i]))
+            } else {
+                return .badRequest(.text("robot type not supported battery values."))
+            }
 		default:
-            //For hummingbird type sensors, a port will be specified.
-            //These sensor values will be in the first 4 value array spots.
-            //Also used for micro:bit pins
-            guard let portStr = queries["port"], var port = Int(portStr) else {
-                return .badRequest(.text("Malformed Request - port not specified."))
-            }
             
-            port -= 1
-            guard port < robot.type.sensorPortCount && port >= 0 else {
-                return .badRequest(.text("Port is out of bounds"))
+            var value:UInt8 = 0
+            var port:Int = 0
+            if robot.type != .Finch { //Finch has no ports
+                //For hummingbird type sensors, a port will be specified.
+                //These sensor values will be in the first 4 value array spots.
+                //Also used for micro:bit pins
+                guard let portStr = queries["port"], let portInt = Int(portStr) else {
+                    return .badRequest(.text("Malformed Request - port not specified."))
+                }
+                
+                port = portInt - 1
+                guard port < robot.type.sensorPortCount && port >= 0 else {
+                    return .badRequest(.text("Port is out of bounds"))
+                }
+                
+                value = values[port]
             }
-            
-            let value = values[port]
             let percent = UInt8(rawToPercent(value))
             let realPercent = Double(value) / 2.55
             
@@ -349,7 +389,12 @@ class RobotRequests {
                 if scaledVal > 100 { scaledVal = 100 }
                 sensorValue = String(scaledVal)
             case "distance":
-                if robot.type == .HummingbirdBit {
+                if robot.type == .Finch {
+                    let msb = Int(values[0])
+                    let lsb = Int(values[1])
+                    let num = (msb << 8) + lsb
+                    sensorValue = String(Int(round(Double(num) * (117/100))))
+                } else if robot.type == .HummingbirdBit {
                     sensorValue = String(Int(round(Double(value) * (117/100))))
                 } else {
                     sensorValue = String(rawToDistance(value))
@@ -365,6 +410,38 @@ class RobotRequests {
                     //Raw values are already in the approximate range of 0 to 100
                     sensorValue = String(value)
                 }
+            case "light":
+                if robot.type == .Finch {
+                    guard let position = queries["position"] else {
+                        return .badRequest(.text("Specific light sensor not specified."))
+                    }
+                    if position == "right" {
+                        sensorValue = String(values[3])
+                    } else {
+                        sensorValue = String(values[2])
+                    }
+                } else {
+                    return .ok(.text(String(realPercent)))
+                }
+            case "line":
+                guard let position = queries["position"] else {
+                    return .badRequest(.text("Specific line sensor not specified."))
+                }
+                if position == "right" {
+                    sensorValue = String(values[5])
+                } else {
+                    sensorValue = String(values[4])
+                }
+            case "encoder":
+                guard let position = queries["position"] else {
+                    return .badRequest(.text("Specific line sensor not specified."))
+                }
+                var i = 7
+                if position == "right" {
+                    i = 10
+                }
+                sensorValue = String( (Int(values[i]) << 16) + (Int(values[i+1]) << 8) + Int(values[i+2]) )
+                
             case "other":
                 sensorValue = String(Double(value) * (3.3/255))
             default:
@@ -470,16 +547,36 @@ class RobotRequests {
                                   request: HttpRequest) -> HttpResponse {
         let queries = BBTSequentialQueryArrayToDict(request.queryParams)
         
-        guard let portStr = queries["port"],
-            let redStr = queries["red"],
+        guard let redStr = queries["red"],
             let greenStr = queries["green"],
             let blueStr = queries["blue"],
-            let port = UInt(portStr),
             let red = UInt8(redStr),
             let green = UInt8(greenStr),
             let blue = UInt8(blueStr),
             red <= 100, green <= 100, blue <= 100 else {
                 return .badRequest(.text("Missing or invalid parameters"))
+        }
+        
+        var port:UInt = 0
+        if request.path.contains("beak") { //Finch Beak
+            port = 1
+        } else if request.path.contains("tail") { //Finch Tail
+            guard let portStr = queries["port"] else {
+                return .badRequest(.text("Missing or invalid tail parameters"))
+            }
+            if portStr == "all" {
+                port = 6
+            } else {
+                guard let portNum = UInt(portStr) else {
+                    return .badRequest(.text("Invalid tail port"))
+                }
+                port = portNum
+            }
+        } else { //Hummingbird Duo and Bit tri-leds
+            guard let portStr = queries["port"], let portNum = UInt(portStr) else {
+                return .badRequest(.text("Missing or invalid tri-led parameters"))
+            }
+            port = portNum
         }
         
         let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
@@ -492,8 +589,22 @@ class RobotRequests {
             return UInt8(round(Double(intensity) * (255/100)))
         }
         
+        //In the case of all tail, we must set several leds
+        if port == 6 {
+            if robot.setTriLED(port: 2, intensities: BBTTriLED(scaled(red), scaled(green), scaled(blue))) {
+                if robot.setTriLED(port: 3, intensities: BBTTriLED(scaled(red), scaled(green), scaled(blue))) {
+                    if robot.setTriLED(port: 4, intensities: BBTTriLED(scaled(red), scaled(green), scaled(blue))) {
+                        if robot.setTriLED(port: 5, intensities: BBTTriLED(scaled(red), scaled(green), scaled(blue))) {
+                            return .ok(.text("set"))
+                        }
+                    }
+                }
+            } else {
+                return .internalServerError
+            }
+        }
+        
         if robot.setTriLED(port: port, intensities: BBTTriLED(scaled(red), scaled(green), scaled(blue))) {
-            NSLog("Set triled green \(green)")
             return .ok(.text("set"))
         } else {
             return .internalServerError
@@ -612,7 +723,7 @@ class RobotRequests {
 		}
 		
 		let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
-		                                                 acceptTypes: [.Hummingbird, .Finch])
+		                                                 acceptTypes: [.Hummingbird])
 		guard let robot = roboto else {
 			return requesto!
 		}
@@ -623,6 +734,33 @@ class RobotRequests {
 			return .internalServerError
 		}
 	}
+    
+    //Handle a request that sets 2 motors at once
+    private func setMotorsRequest(id: String, type: BBTRobotType,
+                                 request: HttpRequest) -> HttpResponse {
+        let queries = BBTSequentialQueryArrayToDict(request.queryParams)
+        
+        guard let speedLStr = queries["speedL"], let speedRStr = queries["speedR"],
+            let speedL = Int8(speedLStr), let speedR = Int8(speedRStr),
+            let ticksLStr = queries["ticksL"], let ticksRStr = queries["ticksR"],
+            let ticksL = Int(ticksLStr), let ticksR = Int(ticksRStr) else {
+                
+                return .badRequest(.text("Missing or invalid parameters"))
+        }
+
+        let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
+                                                         acceptTypes: [.Finch])
+        guard let robot = roboto else {
+            return requesto!
+        }
+        print("found robot, ready to set motors... \(speedL) \(ticksL) \(speedR) \(ticksR)")
+        if robot.setMotor(port: 1, speed: speedL, ticks: ticksL) &&
+            robot.setMotor(port: 2, speed: speedR, ticks: ticksR){
+            return .ok(.text("set"))
+        } else {
+            return .internalServerError
+        }
+    }
 	
 	
 	private func setBuzzerRequest(id: String, type: BBTRobotType,
@@ -662,12 +800,7 @@ class RobotRequests {
             
             ledStatusString.append("F" + String(printString.prefix(18)))
             
-            //TODO: Finish working this out? Or are we doing this on the frontend?
-            /*while printString.count > 18 { //count is not the right thing
-                printString = String(printString.dropFirst(18))
-                print("printString: \(printString)")
-                ledStatusString.append("F" + String(printString.prefix(18)).uppercased())
-            }*/
+            
         } else if request.path.contains("ledArray") {
             guard let ledArrayStatus = queries["ledArrayStatus"] else {
                 return .badRequest(.text("Missing or invalid parameters in set led array request"))
@@ -678,7 +811,7 @@ class RobotRequests {
         }
         
         let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
-                                                         acceptTypes: [.MicroBit, .HummingbirdBit])
+                                                         acceptTypes: [.MicroBit, .HummingbirdBit, .Finch])
         
         guard let robot = roboto else {
             return requesto!
@@ -722,7 +855,7 @@ class RobotRequests {
                                     request: HttpRequest) -> HttpResponse {
         
         let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
-                                                         acceptTypes: [.MicroBit, .HummingbirdBit])
+                                                         acceptTypes: [.MicroBit, .HummingbirdBit, .Finch])
         
         guard let robot = roboto else {
             return requesto!

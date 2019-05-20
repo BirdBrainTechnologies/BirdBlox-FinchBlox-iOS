@@ -60,6 +60,29 @@ struct BBTBuzzer: Equatable {
         return lhs.period == rhs.period && lhs.duration == rhs.duration
     }
 }
+struct BBTMotor: Equatable {
+    
+    public let velocity: Int8
+    public let ticksMSB: UInt8
+    public let ticksSSB: UInt8 //second significant byte
+    public let ticksLSB: UInt8
+    
+    init(_ speed: Int8, _ ticks: Int = 0) {
+        print("creating new Motor state with speed \(speed) and distance \(ticks)")
+        velocity = speed
+        
+        //let ticks = Int(round(distance * 80))
+        ticksMSB = UInt8(ticks >> 16)
+        ticksSSB = UInt8((ticks & 0x00ff00) >> 8)
+        ticksLSB = UInt8(ticks & 0x0000ff)
+        print("motor state created. \(ticks) \(ticksMSB) \(ticksSSB) \(ticksLSB)")
+    }
+    
+    static func == (lhs: BBTMotor, rhs: BBTMotor) -> Bool {
+        return lhs.velocity == rhs.velocity && lhs.ticksLSB == rhs.ticksLSB &&
+            lhs.ticksSSB == rhs.ticksSSB && lhs.ticksMSB == rhs.ticksMSB
+    }
+}
 
 struct BBTRobotOutputState: Equatable {
     
@@ -68,7 +91,7 @@ struct BBTRobotOutputState: Equatable {
     public var trileds: FixedLengthArray<BBTTriLED>?
     public var servos: FixedLengthArray<UInt8>?
     public var leds: FixedLengthArray<UInt8>?
-    public var motors: FixedLengthArray<Int8>?
+    public var motors: FixedLengthArray<BBTMotor>?
     public var vibrators: FixedLengthArray<UInt8>?
     public var buzzer: BBTBuzzer?
     public var ledArray: String?
@@ -93,7 +116,7 @@ struct BBTRobotOutputState: Equatable {
         }
         
         if robotType.motorCount > 0 {
-            self.motors = FixedLengthArray(length: robotType.motorCount, repeating: Int8(0))
+            self.motors = FixedLengthArray(length: robotType.motorCount, repeating: BBTMotor(0,0))
         }
         
         if robotType.vibratorCount > 0 {
@@ -111,6 +134,7 @@ struct BBTRobotOutputState: Equatable {
             self.pins = FixedLengthArray(length: robotType.pinCount, repeating: UInt8(0))
             self.mode = [0,0,0,0,0,0,0,0]
         }
+        
     }
     
     func setAllCommand() -> Data {
@@ -120,19 +144,20 @@ struct BBTRobotOutputState: Equatable {
             
             guard let motors = motors, let servos = servos, let trileds = trileds,
                 let leds = leds, let vibrators = vibrators else {
-                fatalError("Missing information in hummingbird output state")
+                NSLog("Missing information in hummingbird duo output state")
+                return Data()
             }
             
             var adjusted_motors: [UInt8] = [0,0]
-            if motors[0] < 0 {
-                adjusted_motors[0] = UInt8(bound(-(Int)(motors[0]), min: -100, max: 100)) + 128
+            if motors[0].velocity < 0 {
+                adjusted_motors[0] = UInt8(bound(-(Int)(motors[0].velocity), min: -100, max: 100)) + 128
             } else {
-                adjusted_motors[0] = UInt8(motors[0])
+                adjusted_motors[0] = UInt8(motors[0].velocity)
             }
-            if motors[1] < 0 {
-                adjusted_motors[1] = UInt8(bound(-(Int)(motors[1]), min: -100, max: 100)) + 128
+            if motors[1].velocity < 0 {
+                adjusted_motors[1] = UInt8(bound(-(Int)(motors[1].velocity), min: -100, max: 100)) + 128
             } else {
-                adjusted_motors[1] = UInt8(motors[1])
+                adjusted_motors[1] = UInt8(motors[1].velocity)
             }
             
             let adjustVib: (UInt8) -> UInt8 = { v in
@@ -153,7 +178,8 @@ struct BBTRobotOutputState: Equatable {
         case .HummingbirdBit:
         //Set all: 0xCA LED1 Reserved R1 G1 B1 R2 G2 B2 SS1 SS2 SS3 SS4 LED2 LED3 Time us(MSB) Time us(LSB) Time ms(MSB) Time ms(LSB)
             guard let leds = leds, let trileds = trileds, let servos = servos, let buzzer = buzzer else {
-                fatalError("Missing information in the hummingbird bit output state")
+                NSLog("Missing information in the hummingbird bit output state")
+                return Data()
             }
             
             let letter: UInt8 = 0xCA
@@ -171,7 +197,31 @@ struct BBTRobotOutputState: Equatable {
             //NSLog("Set all \(array)")
             return Data(bytes: UnsafePointer<UInt8>(array), count: array.count)
         case .Flutter: return Data()
-        case .Finch: return Data()
+        case .Finch: 
+            // 0xD0, B_R(0-255), B_G(0-255), B_B(0-255), T1_R(0-255), T1_G(0-255), T1_B(0-255), T2_R(0-255),
+            // T2_R(0-255), T2_R(0-255), T3_R(0-255), T3_G(0-255), T3_B(0-255), T4_R(0-255), T4_G(0-255), T4_B(0-255),
+            // Time_us_MSB, Time_us_LSB, Time_ms_MSB, Time_ms_LSB
+            guard let trileds = trileds, let buzzer = buzzer else {
+                NSLog("Missing information in the hummingbird bit output state")
+                return Data()
+            }
+            
+            let letter: UInt8 = 0xD0
+        
+            let buzzerArray = buzzer.array()
+        
+            let array: [UInt8] = [letter,
+                    trileds[0].tuple.0, trileds[0].tuple.1, trileds[0].tuple.2,
+                    trileds[1].tuple.0, trileds[1].tuple.1, trileds[1].tuple.2,
+                    trileds[2].tuple.0, trileds[2].tuple.1, trileds[2].tuple.2,
+                    trileds[3].tuple.0, trileds[3].tuple.1, trileds[3].tuple.2,
+                    trileds[4].tuple.0, trileds[4].tuple.1, trileds[4].tuple.2,
+                    buzzerArray[0], buzzerArray[1], buzzerArray[2], buzzerArray[3]]
+        
+            assert(array.count == 20)
+            //NSLog("Set all \(array)")
+            return Data(bytes: UnsafePointer<UInt8>(array), count: array.count)
+
         case .MicroBit:
         /** Micro:bit I/O :
          * 0x90, FrequencyMSB, FrequencyLSB, Time MSB, Mode, Pad0_value, Pad1_value, Pad2_value
@@ -181,7 +231,8 @@ struct BBTRobotOutputState: Equatable {
          * FU, FU, P0_Mode_MSbit, P0_Mode_LSbit, P1_Mode_MSbit, P1_Mode_MSbit, P2_Mode_MSbit, P2_Mode_LSbit
          */
             guard let pins = pins, let buzzer = buzzer, let mode = mode, let modeByte = bitsToByte(mode) else {
-                fatalError("Missing information in the micro:bit output state")
+                NSLog("Missing information in the micro:bit output state")
+                return Data()
             }
             let letter: UInt8 = 0x90
             let buzzerArray = buzzer.array()
@@ -198,11 +249,23 @@ struct BBTRobotOutputState: Equatable {
         }
     }
     
+    //Set anything that will not fit into this robot's setAll command
+    /*
+    func setExtrasCommand() -> Data? {
+        switch robotType {
+        case .Hummingbird, .Flutter: return nil
+        case .HummingbirdBit, .MicroBit: return robotType.ledArrayCommand(self.ledArray)
+        case .Finch:
+            return nil
+        }
+    }*/
+    
     static func ==(lhs: BBTRobotOutputState, rhs: BBTRobotOutputState) -> Bool {
         return (lhs.trileds == rhs.trileds) && (lhs.servos == rhs.servos) &&
             (lhs.leds == rhs.leds) && (lhs.motors == rhs.motors) &&
             (lhs.vibrators == rhs.vibrators) && (lhs.buzzer == rhs.buzzer) &&
-            (lhs.ledArray == rhs.ledArray) && (lhs.pins == rhs.pins) && (lhs.mode == rhs.mode)
+            (lhs.ledArray == rhs.ledArray) && (lhs.pins == rhs.pins) &&
+            (lhs.mode == rhs.mode)
     }
 }
 

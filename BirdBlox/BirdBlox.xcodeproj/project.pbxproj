@@ -7,6 +7,43 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3123E707222EBE77003B572C /* BBTBackendServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F5F6D281EDDB3A800799277 /* BBTBackendServer.swift */; };
+		3123E708222EBE77003B572C /* SharedUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAE1FD9F1E920A6600304BEE /* SharedUtilities.swift */; };
+		3123E709222EBE77003B572C /* BBTRobotBLEPeripheral.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FFA170E1F1D492B0085CE71 /* BBTRobotBLEPeripheral.swift */; };
+		3123E70A222EBE77003B572C /* BBTRobotState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FA7D5E21EF2E65800FE4882 /* BBTRobotState.swift */; };
+		3123E70B222EBE77003B572C /* BBTRobotType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31686091209A615C008D92AF /* BBTRobotType.swift */; };
+		3123E70C222EBE77003B572C /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31A4AF9C2108AF480097CE01 /* Socket.swift */; };
+		3123E70D222EBE77003B572C /* HttpRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31A4AF962108AE8E0097CE01 /* HttpRequest.swift */; };
+		3123E70E222EBE77003B572C /* DeviceUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F0E4A721ED37D3900369F70 /* DeviceUtilities.swift */; };
+		3123E70F222EBE77003B572C /* Errno.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31A4AF9E2108AFD50097CE01 /* Errno.swift */; };
+		3123E710222EBE77003B572C /* BBXDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FA4F8A61F02F2BB005EB384 /* BBXDocument.swift */; };
+		3123E711222EBE77003B572C /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8A75981EB27CF700ECFABC /* AudioManager.swift */; };
+		3123E712222EBE77003B572C /* SettingsRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8A759A1EB2817E00ECFABC /* SettingsRequests.swift */; };
+		3123E713222EBE77003B572C /* PropertiesRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FDE24E71ED36910000BC24B /* PropertiesRequests.swift */; };
+		3123E714222EBE77003B572C /* FrontendRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8169671E81B72D00AAF7A3 /* FrontendRequests.swift */; };
+		3123E715222EBE77003B572C /* DataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA81696A1E81B7BC00AAF7A3 /* DataModel.swift */; };
+		3123E716222EBE77003B572C /* AVAudioSessionPatch.m in Sources */ = {isa = PBXBuildFile; fileRef = 31665821217A2B1D00B17C20 /* AVAudioSessionPatch.m */; };
+		3123E717222EBE77003B572C /* Files.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31A4AFA02108B09C0097CE01 /* Files.swift */; };
+		3123E718222EBE77003B572C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8169501E81A98A00AAF7A3 /* AppDelegate.swift */; };
+		3123E719222EBE77003B572C /* HttpResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31A4AF982108AEC30097CE01 /* HttpResponse.swift */; };
+		3123E71A222EBE77003B572C /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA81696C1E81BC3F00AAF7A3 /* StringExtensions.swift */; };
+		3123E71B222EBE77003B572C /* SoundRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8A75961EB27A8C00ECFABC /* SoundRequests.swift */; };
+		3123E71C222EBE77003B572C /* DataRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8A75921EB2481F00ECFABC /* DataRequests.swift */; };
+		3123E71D222EBE77003B572C /* RobotRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9F72461F223D2000C29FEB /* RobotRequests.swift */; };
+		3123E71E222EBE77003B572C /* HostDeviceRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8A75941EB2519200ECFABC /* HostDeviceRequests.swift */; };
+		3123E71F222EBE77003B572C /* String+File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3188E84A2108B68C00AD54AB /* String+File.swift */; };
+		3123E720222EBE77003B572C /* FrontendCallbackCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FEC5DA31EF987640067C41B /* FrontendCallbackCenter.swift */; };
+		3123E721222EBE77003B572C /* String+Misc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3188E84C2108B70D00AD54AB /* String+Misc.swift */; };
+		3123E722222EBE77003B572C /* CallbackManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FF13C051F15692F00D1F358 /* CallbackManager.swift */; };
+		3123E723222EBE77003B572C /* BLECentralManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAE2EBCE1E84417000198B19 /* BLECentralManager.swift */; };
+		3123E724222EBE77003B572C /* HttpRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31A4AF9A2108AEF50097CE01 /* HttpRouter.swift */; };
+		3123E725222EBE77003B572C /* BBXDocumentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FA4F8A81F03EE56005EB384 /* BBXDocumentViewController.swift */; };
+		3123E727222EBE77003B572C /* Pods_BirdBlox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B9CF54964A1E1D488464E38 /* Pods_BirdBlox.framework */; };
+		3123E729222EBE77003B572C /* Frontend in Resources */ = {isa = PBXBuildFile; fileRef = BA8169651E81B17600AAF7A3 /* Frontend */; };
+		3123E72A222EBE77003B572C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BA8169591E81A98A00AAF7A3 /* LaunchScreen.storyboard */; };
+		3123E72B222EBE77003B572C /* BluetoothDeviceNames.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3FE5C65C1ED8974100433262 /* BluetoothDeviceNames.plist */; };
+		3123E72C222EBE77003B572C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BA8169571E81A98A00AAF7A3 /* Assets.xcassets */; };
+		3123E72D222EBE77003B572C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BA8169541E81A98A00AAF7A3 /* Main.storyboard */; };
 		31665822217A2B1D00B17C20 /* AVAudioSessionPatch.m in Sources */ = {isa = PBXBuildFile; fileRef = 31665821217A2B1D00B17C20 /* AVAudioSessionPatch.m */; };
 		31686092209A615C008D92AF /* BBTRobotType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31686091209A615C008D92AF /* BBTRobotType.swift */; };
 		3188E84B2108B68C00AD54AB /* String+File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3188E84A2108B68C00AD54AB /* String+File.swift */; };
@@ -48,6 +85,8 @@
 
 /* Begin PBXFileReference section */
 		1CBEFB40603958D76A5BFE44 /* Pods-BirdBlox.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BirdBlox.release.xcconfig"; path = "Pods/Target Support Files/Pods-BirdBlox/Pods-BirdBlox.release.xcconfig"; sourceTree = "<group>"; };
+		3123E733222EBE77003B572C /* FinchBlox.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FinchBlox.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3123E734222EBE78003B572C /* FinchBlox-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "FinchBlox-Info.plist"; path = "/Users/krissie/Dropbox (Krissie Lauwers Work)/BirdBrain/GitHub/Hummingbird-iOS-Support/BirdBlox/FinchBlox-Info.plist"; sourceTree = "<absolute>"; };
 		31665820217A2B1D00B17C20 /* BirdBlox-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BirdBlox-Bridging-Header.h"; sourceTree = "<group>"; };
 		31665821217A2B1D00B17C20 /* AVAudioSessionPatch.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AVAudioSessionPatch.m; sourceTree = "<group>"; };
 		31665823217A2B4400B17C20 /* AVAudioSessionPatch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AVAudioSessionPatch.h; sourceTree = "<group>"; };
@@ -94,6 +133,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		3123E726222EBE77003B572C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3123E727222EBE77003B572C /* Pods_BirdBlox.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BA81694A1E81A98A00AAF7A3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -168,6 +215,7 @@
 			isa = PBXGroup;
 			children = (
 				BA81694D1E81A98A00AAF7A3 /* BirdBlox.app */,
+				3123E733222EBE77003B572C /* FinchBlox.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -186,6 +234,7 @@
 				BA8169571E81A98A00AAF7A3 /* Assets.xcassets */,
 				BA8169591E81A98A00AAF7A3 /* LaunchScreen.storyboard */,
 				BA81695C1E81A98A00AAF7A3 /* Info.plist */,
+				3123E734222EBE78003B572C /* FinchBlox-Info.plist */,
 				BA81696C1E81BC3F00AAF7A3 /* StringExtensions.swift */,
 			);
 			path = BirdBlox;
@@ -230,6 +279,26 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		3123E704222EBE77003B572C /* FinchBlox */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3123E730222EBE77003B572C /* Build configuration list for PBXNativeTarget "FinchBlox" */;
+			buildPhases = (
+				3123E705222EBE77003B572C /* [CP] Check Pods Manifest.lock */,
+				3123E706222EBE77003B572C /* Sources */,
+				3123E726222EBE77003B572C /* Frameworks */,
+				3123E728222EBE77003B572C /* Resources */,
+				3123E72E222EBE77003B572C /* [CP] Embed Pods Frameworks */,
+				3123E72F222EBE77003B572C /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FinchBlox;
+			productName = BirdBlox;
+			productReference = 3123E733222EBE77003B572C /* FinchBlox.app */;
+			productType = "com.apple.product-type.application";
+		};
 		BA81694C1E81A98A00AAF7A3 /* BirdBlox */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = BA81695F1E81A98A00AAF7A3 /* Build configuration list for PBXNativeTarget "BirdBlox" */;
@@ -260,6 +329,9 @@
 				LastUpgradeCheck = 0900;
 				ORGANIZATIONNAME = "Birdbrain Technologies LLC.";
 				TargetAttributes = {
+					3123E704222EBE77003B572C = {
+						DevelopmentTeam = N6XC9HC8PB;
+					};
 					BA81694C1E81A98A00AAF7A3 = {
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = N6XC9HC8PB;
@@ -281,6 +353,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -290,11 +363,24 @@
 			projectRoot = "";
 			targets = (
 				BA81694C1E81A98A00AAF7A3 /* BirdBlox */,
+				3123E704222EBE77003B572C /* FinchBlox */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		3123E728222EBE77003B572C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3123E729222EBE77003B572C /* Frontend in Resources */,
+				3123E72A222EBE77003B572C /* LaunchScreen.storyboard in Resources */,
+				3123E72B222EBE77003B572C /* BluetoothDeviceNames.plist in Resources */,
+				3123E72C222EBE77003B572C /* Assets.xcassets in Resources */,
+				3123E72D222EBE77003B572C /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BA81694B1E81A98A00AAF7A3 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -310,6 +396,57 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		3123E705222EBE77003B572C /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-BirdBlox-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		3123E72E222EBE77003B572C /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-BirdBlox/Pods-BirdBlox-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/Zip/Zip.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Zip.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BirdBlox/Pods-BirdBlox-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		3123E72F222EBE77003B572C /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BirdBlox/Pods-BirdBlox-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		34A648280F2DC120B983B97B /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -364,6 +501,44 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		3123E706222EBE77003B572C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3123E707222EBE77003B572C /* BBTBackendServer.swift in Sources */,
+				3123E708222EBE77003B572C /* SharedUtilities.swift in Sources */,
+				3123E709222EBE77003B572C /* BBTRobotBLEPeripheral.swift in Sources */,
+				3123E70A222EBE77003B572C /* BBTRobotState.swift in Sources */,
+				3123E70B222EBE77003B572C /* BBTRobotType.swift in Sources */,
+				3123E70C222EBE77003B572C /* Socket.swift in Sources */,
+				3123E70D222EBE77003B572C /* HttpRequest.swift in Sources */,
+				3123E70E222EBE77003B572C /* DeviceUtilities.swift in Sources */,
+				3123E70F222EBE77003B572C /* Errno.swift in Sources */,
+				3123E710222EBE77003B572C /* BBXDocument.swift in Sources */,
+				3123E711222EBE77003B572C /* AudioManager.swift in Sources */,
+				3123E712222EBE77003B572C /* SettingsRequests.swift in Sources */,
+				3123E713222EBE77003B572C /* PropertiesRequests.swift in Sources */,
+				3123E714222EBE77003B572C /* FrontendRequests.swift in Sources */,
+				3123E715222EBE77003B572C /* DataModel.swift in Sources */,
+				3123E716222EBE77003B572C /* AVAudioSessionPatch.m in Sources */,
+				3123E717222EBE77003B572C /* Files.swift in Sources */,
+				3123E718222EBE77003B572C /* AppDelegate.swift in Sources */,
+				3123E719222EBE77003B572C /* HttpResponse.swift in Sources */,
+				3123E71A222EBE77003B572C /* StringExtensions.swift in Sources */,
+				3123E71B222EBE77003B572C /* SoundRequests.swift in Sources */,
+				3123E71C222EBE77003B572C /* DataRequests.swift in Sources */,
+				3123E71D222EBE77003B572C /* RobotRequests.swift in Sources */,
+				3123E71E222EBE77003B572C /* HostDeviceRequests.swift in Sources */,
+				3123E71F222EBE77003B572C /* String+File.swift in Sources */,
+				3123E720222EBE77003B572C /* FrontendCallbackCenter.swift in Sources */,
+				3123E721222EBE77003B572C /* String+Misc.swift in Sources */,
+				3123E722222EBE77003B572C /* CallbackManager.swift in Sources */,
+				3123E723222EBE77003B572C /* BLECentralManager.swift in Sources */,
+				3123E724222EBE77003B572C /* HttpRouter.swift in Sources */,
+				3123E725222EBE77003B572C /* BBXDocumentViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BA8169491E81A98A00AAF7A3 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -424,6 +599,51 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		3123E731222EBE77003B572C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E8B8191F17118ABB8EDC2784 /* Pods-BirdBlox.debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = BirdBlox/BirdBlox.entitlements;
+				DEVELOPMENT_TEAM = N6XC9HC8PB;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				INFOPLIST_FILE = "$(SRCROOT)/FinchBlox-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" \"COCOAPODS\" \"-DFINCHBLOX\"";
+				PRODUCT_BUNDLE_IDENTIFIER = com.BirdBrainTech.FinchBlox;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "BirdBlox/BirdBlox-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.2;
+			};
+			name = Debug;
+		};
+		3123E732222EBE77003B572C /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1CBEFB40603958D76A5BFE44 /* Pods-BirdBlox.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = BirdBlox/BirdBlox.entitlements;
+				DEVELOPMENT_TEAM = N6XC9HC8PB;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				INFOPLIST_FILE = "$(SRCROOT)/FinchBlox-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" \"COCOAPODS\" \"-DFINCHBLOX\"";
+				PRODUCT_BUNDLE_IDENTIFIER = com.BirdBrainTech.FinchBlox;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "BirdBlox/BirdBlox-Bridging-Header.h";
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.2;
+			};
+			name = Release;
+		};
 		BA81695D1E81A98A00AAF7A3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -575,6 +795,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		3123E730222EBE77003B572C /* Build configuration list for PBXNativeTarget "FinchBlox" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3123E731222EBE77003B572C /* Debug */,
+				3123E732222EBE77003B572C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		BA8169481E81A98A00AAF7A3 /* Build configuration list for PBXProject "BirdBlox" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

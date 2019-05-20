@@ -88,11 +88,20 @@ class DataModel: NSObject, FileManagerDelegate {
 			self.frontendLoc = URL(fileURLWithPath: bundleLoc.appendingPathComponent("Frontend").path)
 		#endif
 		
-		if #available(iOS 10.0, *) {
-			self.frontendPageLoc = self.frontendLoc.appendingPathComponent("HummingbirdDragAndDrop.html")
-		} else {
-			self.frontendPageLoc = self.frontendLoc.appendingPathComponent("HummingbirdDragAndDropiOS9.html")
-		}
+        /*#if FINCHBLOX
+            if #available(iOS 10.0, *) {
+                self.frontendPageLoc = self.frontendLoc.appendingPathComponent("FinchBloxDragAndDrop.html")
+            } else {
+                self.frontendPageLoc = self.frontendLoc.appendingPathComponent("FinchBloxDragAndDropiOS9.html")
+            }
+        #else*/
+            if #available(iOS 10.0, *) {
+                self.frontendPageLoc = self.frontendLoc.appendingPathComponent("HummingbirdDragAndDrop.html")
+            } else {
+                self.frontendPageLoc = self.frontendLoc.appendingPathComponent("HummingbirdDragAndDropiOS9.html")
+            }
+        //#endif
+        
 		self.soundsLoc = self.frontendLoc.appendingPathComponent("SoundClips")
 		self.uiSoundsLoc = self.frontendLoc.appendingPathComponent("SoundsForUI")
 		

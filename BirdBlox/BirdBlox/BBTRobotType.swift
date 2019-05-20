@@ -69,23 +69,24 @@ enum BBTRobotType {
         switch self{
         case .Hummingbird: return 4
         case .HummingbirdBit: return 3
-        case .Flutter, .Finch, .MicroBit: return nil
+        case .Finch: return 6
+        case .Flutter, .MicroBit: return nil
         }
     }
     var batteryGreenThreshold: Double? { //battery must be > this value for green status
         switch self {
-        case .HummingbirdBit, .Hummingbird: return 4.75
+        case .HummingbirdBit, .Hummingbird, .Finch: return 4.75
         //case .MicroBit: return 2.25
-        case .Flutter, .Finch, .MicroBit: return nil
+        case .Flutter, .MicroBit: return nil
         }
     }
     var batteryYellowThreshold: Double? { //battery must be > this value for yellow status
         switch self {
         //case .HummingbirdBit, .Hummingbird: return 4.63
-        case .HummingbirdBit: return 4.4
+        case .HummingbirdBit, .Finch: return 4.4
         case .Hummingbird: return 4.63
         //case .MicroBit: return 2.0
-        case .Flutter, .Finch, .MicroBit: return nil
+        case .Flutter, .MicroBit: return nil
         }
     }
     
@@ -95,7 +96,7 @@ enum BBTRobotType {
         switch self {
         case .Hummingbird: return 2
         case .Flutter: return 2
-        case .Finch: return 1
+        case .Finch: return 5 //Beak, then tail
         case .HummingbirdBit: return 2
         case .MicroBit: return 0
         }
@@ -164,6 +165,20 @@ enum BBTRobotType {
         case .Hummingbird: return 4
         case .HummingbirdBit, .MicroBit: return 3
         case .Finch, .Flutter: return 0
+        }
+    }
+    var accXindex: Int {
+        switch self {
+        case .HummingbirdBit, .MicroBit: return 4
+        case .Finch: return 13
+        case .Hummingbird, .Flutter: return 0 //not used
+        }
+    }
+    var buttonShakeIndex: Int {
+        switch self {
+        case .HummingbirdBit, .MicroBit: return 7
+        case .Finch: return 16
+        case .Hummingbird, .Flutter: return 0 //not used
         }
     }
     
@@ -236,7 +251,7 @@ enum BBTRobotType {
         switch self {
         case .Hummingbird: return 5
         case .Flutter: return 1
-        case .Finch: return 10
+        case .Finch: return 20
         case .HummingbirdBit: return 14
         case .MicroBit: return 14
         }
@@ -276,8 +291,9 @@ enum BBTRobotType {
             let letter: UInt8 = 0xC4 + port
             return Data(bytes: UnsafePointer<UInt8>([letter, real_red, real_green, real_blue] as [UInt8]), count: 4)
         case .Finch:
-        //TODO: implement something here. Finch should have a triled.
-            return nil
+            //TODO: Test
+            //Beak
+            return Data(bytes: UnsafePointer<UInt8>([0xD0, real_red, real_green, real_blue, 0xFF, 0xFF, 0xFF] as [UInt8]), count: 7)
         case .Flutter:
             return nil
         case .MicroBit: return nil
@@ -305,6 +321,7 @@ enum BBTRobotType {
             return Data(bytes: UnsafePointer<UInt8>([letter, real_port, real_direction, real_speed] as [UInt8]), count: 4)
         case .Finch:
         //TODO: implement something here
+            //0xD2, L_Dir--Speed(0-100), L_TicksMSB, L_TicksLSB, R_Dir--Speed(0-100), R_TicksMSB, R_TicksLSB
             return nil
         case .Flutter, .HummingbirdBit, .MicroBit: return nil
         }
@@ -340,12 +357,19 @@ enum BBTRobotType {
     }
     
     func buzzerCommand(period: UInt16, dur: UInt16) -> Data? {
+        var letter: UInt8 = 0
         switch self{
-        case .Flutter, .Finch:
+        case .Finch:
+            letter = 0xD3
+        case .HummingbirdBit:
+            letter = 0xCD
+        case .Flutter, .Hummingbird, .MicroBit: ()
+        }
+        switch self{
+        case .Flutter:
         //TODO:
             return nil
-        case .HummingbirdBit: //TODO: test
-            let letter: UInt8 = 0xCD
+        case .HummingbirdBit, .Finch: //TODO: test
             let buzzer = BBTBuzzer(period: period, duration: dur)
             let buzzerArray = buzzer.array()
             return Data(bytes: UnsafePointer<UInt8>([letter, buzzerArray[0], buzzerArray[1], buzzerArray[2], buzzerArray[3]] as [UInt8]), count: 5)
@@ -354,6 +378,7 @@ enum BBTRobotType {
     }
     
     func ledArrayCommand(_ status: String) -> Data? {
+   
         switch self {
         case .Hummingbird, .Flutter: return nil
         case .HummingbirdBit, .Finch, .MicroBit:
@@ -383,7 +408,7 @@ enum BBTRobotType {
                     let led16to9 = UInt8(led16to9String, radix: 2),
                     let led24to17 = UInt8(led24to17String, radix: 2),
                     let led25 = UInt8(String(ledStatusChars[25])) else {
-                        fatalError()
+                        return nil
                 }
                 
                 NSLog("Symbol command \([letter, symbol, led25, led24to17, led16to9, leds8to1])")
@@ -423,8 +448,7 @@ enum BBTRobotType {
             let letter: UInt8 = 0xCB
             return Data(bytes: UnsafePointer<UInt8>([letter, 0xFF, 0xFF, 0xFF] as [UInt8]), count: 4)
         case .Finch:
-            //TODO:
-            return Data()
+            return Data(bytes: UnsafePointer<UInt8>([0xD3] as [UInt8]), count: 1)
         case .MicroBit:
             return Data(bytes: UnsafePointer<UInt8>([144, 0, 0, 0, 0, 0, 0, 0] as [UInt8]), count: 8)
         }
@@ -446,7 +470,9 @@ enum BBTRobotType {
             return "G4".data(using: .utf8)!
         case .HummingbirdBit, .MicroBit:
             return Data(bytes: UnsafePointer<UInt8>([0xCF, 0xFF, 0xFF, 0xFF] as [UInt8]), count: 4)
-        case .Flutter, .Finch: return nil
+        case .Finch:
+            return Data(bytes: UnsafePointer<UInt8>([0xD4] as [UInt8]), count: 1)
+        case .Flutter: return nil
         }
     }
 }
