@@ -182,8 +182,6 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         //let oldLineIn = self.lineIn
         let blankLine: [UInt8] = [0, 0, 0, 0, 0, 0, 0, 0]
         self.lineIn = blankLine
-        //TODO: remove when real firmware responses are established.
-        if self.type == .Finch { self.lineIn = [1, 1, 1, 0, 0, 0, 0, 0] }
         
         guard let versioningCommand = type.hardwareFirmwareVersionCommand() else {
             BLE_Manager.disconnect(byID: self.id)
@@ -226,13 +224,13 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             self.hardwareString = String(versionArray[0]) + "." + String(versionArray[1])
             self.firmwareVersionString = String(versionArray[2]) + "." + String(versionArray[3]) +
                 (String(bytes: [versionArray[4]], encoding: .ascii) ?? "")
-        case .HummingbirdBit:
+        case .HummingbirdBit, .Finch:
             self.hardwareString = String(versionArray[0])
             self.firmwareVersionString = "\(versionArray[1])/\(versionArray[2])"
         case .MicroBit:
             self.hardwareString = String(versionArray[0])
             self.firmwareVersionString = String(versionArray[1])
-        case .Flutter, .Finch:
+        case .Flutter:
             NSLog("Firmware and Hardware version not set for types not supported.")
         }
         
@@ -339,13 +337,13 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             return
         }
         //print("didupdatevaluefor \(characteristic)")
-        let temp = [UInt8](inData)
+        //let temp = [UInt8](inData)
         //print("Characteristic updated to \(temp)")
         
         //This block used for getting the firmware info
         guard self.initialized else {
             self.initializingCondition.lock()
-            print("Got version data in: \(inData.debugDescription) \(self.lineIn)")
+            //print("Got version data in: \(inData.debugDescription) \(self.lineIn)")
             if self.type == .Hummingbird && inData.count > 5 {
                 //In this case, the version information is appended to the end of a sensor poll update
                 print("Copying lineIn from end of data array");
@@ -355,7 +353,6 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
                 //inData.copyBytes(to: &self.lineIn, count: self.lineIn.count)
                 inData.copyBytes(to: &self.lineIn, count: inData.count)
             }
-            print("Copied to lineIn: \(self.lineIn)")
             self.initializingCondition.signal()
             self.initializingCondition.unlock()
             return
@@ -369,7 +366,11 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         }
         
         //Assume it's sensor in data
-        inData.copyBytes(to: &self.lastSensorUpdate, count: type.sensorByteCount)
+        if (inData.count <= type.sensorByteCount) {
+            inData.copyBytes(to: &self.lastSensorUpdate, count: inData.count)
+        } else {
+            NSLog("Data in exceeds sensor byte count.")
+        }
         
         //Check the state of compass calibration
         if (type == .HummingbirdBit || type == .MicroBit || type == .Finch) && self.compassCalibrating {
@@ -569,13 +570,22 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
                          set: {self.nextOutputState.vibrators![i] = intensity})
     }
     
-    func setMotor(port: Int, speed: Int8, ticks: Int = 0) -> Bool {
+    func setMotor(port: Int, speed: Int8) -> Bool {
         
         let i = Int(port - 1)
         
         return setOutput(ifCheck: (self.type.motorCount >= port),
                          when: {self.nextOutputState.motors![i] == self.currentOutputState.motors![i]},
-                         set: {self.nextOutputState.motors![i] = BBTMotor(speed, ticks)})
+                         set: {self.nextOutputState.motors![i] = BBTMotor(speed)})
+    }
+    
+    func setMotors(speedL: Int8, ticksL: Int, speedR: Int8, ticksR: Int) -> Bool {
+        return setOutput(ifCheck: (self.type.motorCount == 2),
+                         when: {self.nextOutputState.motors == self.currentOutputState.motors},
+                         set: {
+                            self.nextOutputState.motors![0] = BBTMotor(speedL, ticksL)
+                            self.nextOutputState.motors![1] = BBTMotor(speedR, ticksR)
+        })
     }
     
     func setServo(port: UInt, value: UInt8) -> Bool {
@@ -718,6 +728,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
                 var setSymbol = false
                 var setFlash = false
                 var ledArrayArray:[UInt8] = []
+                var motorArray:[UInt8] = []
                 
                 if setLedArray, let ledArray = nextCopy.ledArray {
                     let ledStatusChars = Array(ledArray)
@@ -759,6 +770,21 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
                     }
                 }
                 
+                if setMotors {
+                    guard let motors = nextCopy.motors else {
+                        NSLog("Finch motors not found in output state.")
+                        return
+                    }
+                    
+                    motorArray = motors[0].array() + motors[1].array()
+                    
+                    if nextCopy.motors == self.nextOutputState.motors {
+                        self.nextOutputState.motors = FixedLengthArray(length: type.motorCount, repeating: BBTMotor())
+                    } else {
+                        print("the motors have already changed")
+                    }
+                }
+                
                 if setMotors && setFlash {
                     mode = 0x80 + UInt8(ledArrayArray.count)
                 } else if setMotors && setSymbol {
@@ -772,23 +798,12 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
                 }
                 
                 if mode != 0 {
-                    guard let motors = nextCopy.motors else {
-                        NSLog("Finch motors not found in output state.")
-                        return
-                    }
-                    let cv:(Int8)->UInt8 = { velocity in
-                        var v = UInt8(abs(velocity)) //TODO: handle the case where velocity = -128? this will cause an overflow error here
-                        if velocity < 0 { v += 128 }
-                        return v
-                    }
-                    
                     /* 0xD2, symbol/motors/flash--length,
                      L_Dir--Speed, L_Ticks_3, L_Ticks_2, L_Ticks_1,
                      R_Dir--Speed, R_Ticks_3, R_Ticks_2, R_Ticks_1,
                      M_L_4/C1, M_L_3/C2, M_L_2/C3, M_L_1/C4,
                      C5, C6, C7, C8, C9, C10 */
-                    let command: [UInt8] = [0xD2, mode,
-                        cv(motors[0].velocity), motors[0].ticksMSB, motors[0].ticksSSB, motors[0].ticksLSB, cv(motors[1].velocity), motors[1].ticksMSB, motors[1].ticksSSB, motors[1].ticksLSB] + ledArrayArray
+                    let command: [UInt8] = [0xD2, mode] + motorArray + ledArrayArray
                     let commandData = Data(bytes: UnsafePointer<UInt8>(command), count: command.count)
                     
                     if sentSetAll {
@@ -852,7 +867,9 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         self.nextOutputState = BBTRobotOutputState(robotType: type)
         self.writtenCondition.unlock()
         
-        if type != .Hummingbird { //The duo command also turns off sensor polling
+        //The duo command also turns off sensor polling. This command
+        // is needed for bit and finch to stop running motors and buzzers
+        if type != .Hummingbird {
             sendData(data: type.turnOffCommand())
         }
         
@@ -871,6 +888,15 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                 self.compassCalibrating = true
             }
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    func resetEncoders() -> Bool {
+        if let command = self.type.resetEncodersCommand() {
+            sendData(data: command)
             return true
         } else {
             return false

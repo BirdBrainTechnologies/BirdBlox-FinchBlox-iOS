@@ -241,7 +241,6 @@ enum BBTRobotType {
         case .Finch, .HummingbirdBit, .MicroBit:
             letter = 0x62
             if commandName == "pollStart" {
-                print("poll start hummingbird bit")
                 num = 0x67
             } else { num = 0x73 }//pollStop
         }
@@ -448,7 +447,7 @@ enum BBTRobotType {
             let letter: UInt8 = 0xCB
             return Data(bytes: UnsafePointer<UInt8>([letter, 0xFF, 0xFF, 0xFF] as [UInt8]), count: 4)
         case .Finch:
-            return Data(bytes: UnsafePointer<UInt8>([0xD3] as [UInt8]), count: 1)
+            return Data(bytes: UnsafePointer<UInt8>([0xDF] as [UInt8]), count: 1)
         case .MicroBit:
             return Data(bytes: UnsafePointer<UInt8>([144, 0, 0, 0, 0, 0, 0, 0] as [UInt8]), count: 8)
         }
@@ -461,6 +460,14 @@ enum BBTRobotType {
         case .HummingbirdBit, .MicroBit, .Finch:
             return Data(bytes: UnsafePointer<UInt8>([0xCE, 0xFF, 0xFF, 0xFF] as [UInt8]), count: 4)
         case .Flutter, .Hummingbird: return nil
+        }
+    }
+    
+    func resetEncodersCommand() -> Data? {
+        switch self {
+        case .Finch:
+            return Data(bytes: UnsafePointer<UInt8>([0xD5] as [UInt8]), count: 1)
+        case .HummingbirdBit, .MicroBit, .Flutter, .Hummingbird: return nil
         }
     }
     

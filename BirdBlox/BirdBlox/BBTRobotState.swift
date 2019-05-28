@@ -44,7 +44,7 @@ struct BBTBuzzer: Equatable {
         self.period = period
     }
     
-    //convert to array used to set the Hummingbird Bit buzzer
+    //convert to array used to set the buzzer
     func array() -> [UInt8] {
         
         var buzzerArray: [UInt8] = []
@@ -63,11 +63,11 @@ struct BBTBuzzer: Equatable {
 struct BBTMotor: Equatable {
     
     public let velocity: Int8
-    public let ticksMSB: UInt8
-    public let ticksSSB: UInt8 //second significant byte
-    public let ticksLSB: UInt8
+    private let ticksMSB: UInt8
+    private let ticksSSB: UInt8 //second significant byte
+    private let ticksLSB: UInt8
     
-    init(_ speed: Int8, _ ticks: Int = 0) {
+    init(_ speed: Int8 = 0, _ ticks: Int = 0) {
         print("creating new Motor state with speed \(speed) and distance \(ticks)")
         velocity = speed
         
@@ -76,6 +76,18 @@ struct BBTMotor: Equatable {
         ticksSSB = UInt8((ticks & 0x00ff00) >> 8)
         ticksLSB = UInt8(ticks & 0x0000ff)
         print("motor state created. \(ticks) \(ticksMSB) \(ticksSSB) \(ticksLSB)")
+    }
+    
+    //convert to array used to set the motor
+    func array() -> [UInt8] {
+        
+        let cv:(Int8)->UInt8 = { velocity in
+            var v = UInt8(abs(velocity)) //TODO: handle the case where velocity = -128? this will cause an overflow error here
+            if velocity > 0 { v += 128 }
+            return v
+        }
+        
+        return [cv(velocity), ticksMSB, ticksSSB, ticksLSB]
     }
     
     static func == (lhs: BBTMotor, rhs: BBTMotor) -> Bool {
@@ -116,7 +128,7 @@ struct BBTRobotOutputState: Equatable {
         }
         
         if robotType.motorCount > 0 {
-            self.motors = FixedLengthArray(length: robotType.motorCount, repeating: BBTMotor(0,0))
+            self.motors = FixedLengthArray(length: robotType.motorCount, repeating: BBTMotor())
         }
         
         if robotType.vibratorCount > 0 {

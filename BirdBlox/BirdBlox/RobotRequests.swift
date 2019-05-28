@@ -76,6 +76,8 @@ class RobotRequests {
             RobotRequests.handler(fromIDAndTypeHandler: self.compassCalibrateRequest)
         server["robot/out/write"] =
             RobotRequests.handler(fromIDAndTypeHandler: self.writeToMBPinRequest)
+        server["robot/out/resetEncoders"] =
+            RobotRequests.handler(fromIDAndTypeHandler: self.resetEncodersRequest)
 		
 		server["/robot/in"] = RobotRequests.handler(fromIDAndTypeHandler: self.inputRequest)
         //server["/robot/out/compass"] = RobotRequests.handler(fromIDAndTypeHandler: self.compassRequest)
@@ -341,6 +343,7 @@ class RobotRequests {
         case "battery":
             if let i = robot.type.batteryVoltageIndex {
                 sensorValue = String(rawToVoltage(values[i]))
+                print("\(sensorValue)")
             } else {
                 return .badRequest(.text("robot type not supported battery values."))
             }
@@ -440,7 +443,11 @@ class RobotRequests {
                 if position == "right" {
                     i = 10
                 }
-                sensorValue = String( (Int(values[i]) << 16) + (Int(values[i+1]) << 8) + Int(values[i+2]) )
+                //3 bytes is a 24bit int which is not a type in swift. Therefore, we shove the bytes over such that the sign will be carried over correctly when converted and then divide to go back to 24bit.
+                let uNum = (UInt32(values[i]) << 24) + (UInt32(values[i+1]) << 16) + (UInt32(values[i+2]) << 8)
+                let num = Int32(bitPattern: uNum) / 256
+                print("encoder \(values[i]) \(values[i+1]) \(values[i+2]) \(uNum) \(num)")
+                sensorValue = String( num )
                 
             case "other":
                 sensorValue = String(Double(value) * (3.3/255))
@@ -570,7 +577,7 @@ class RobotRequests {
                 guard let portNum = UInt(portStr) else {
                     return .badRequest(.text("Invalid tail port"))
                 }
-                port = portNum
+                port = portNum + 1
             }
         } else { //Hummingbird Duo and Bit tri-leds
             guard let portStr = queries["port"], let portNum = UInt(portStr) else {
@@ -754,8 +761,9 @@ class RobotRequests {
             return requesto!
         }
         print("found robot, ready to set motors... \(speedL) \(ticksL) \(speedR) \(ticksR)")
-        if robot.setMotor(port: 1, speed: speedL, ticks: ticksL) &&
-            robot.setMotor(port: 2, speed: speedR, ticks: ticksR){
+        //if robot.setMotor(port: 1, speed: speedL, ticks: ticksL) &&
+        //    robot.setMotor(port: 2, speed: speedR, ticks: ticksR){
+        if robot.setMotors(speedL: speedL, ticksL: ticksL, speedR: speedR, ticksR: ticksR) {
             return .ok(.text("set"))
         } else {
             return .internalServerError
@@ -863,6 +871,22 @@ class RobotRequests {
         
         if robot.calibrateCompass() {
             return .ok(.text("calibrating"))
+        } else {
+            return .internalServerError
+        }
+    }
+    
+    private func resetEncodersRequest(id: String, type: BBTRobotType,
+                                      request: HttpRequest) -> HttpResponse {
+        let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
+                                                         acceptTypes: [.MicroBit, .HummingbirdBit, .Finch])
+        
+        guard let robot = roboto else {
+            return requesto!
+        }
+        
+        if robot.resetEncoders() {
+            return .ok(.text("encoders reset"))
         } else {
             return .internalServerError
         }
