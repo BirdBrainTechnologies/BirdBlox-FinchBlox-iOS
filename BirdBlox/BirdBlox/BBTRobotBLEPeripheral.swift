@@ -66,6 +66,10 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     private var firmwareVersionString = ""
     private var oldFirmware = false
     
+    //Finch only
+    private var wasMoving = false
+    public var finchMoveResponseIDs: [String] = []
+    
     
     //MARK: INIT
     
@@ -372,6 +376,22 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             NSLog("Data in exceeds sensor byte count.")
         }
         
+        //The finch will send a flag when it is done with motion commands that have specific distances
+        if (type == .Finch) {
+            let isMoving = (self.lastSensorUpdate[4] > 127)
+            
+            if self.wasMoving && !isMoving {
+                print("Finch Motion Ended!  \(self.finchMoveResponseIDs.count) IDs waiting...")
+                for responseID in self.finchMoveResponseIDs {
+                    print("Finch Motion Sending response for id \(responseID)")
+                    let _ = FrontendCallbackCenter.shared
+                        .sendFauxHTTPResponse(id: responseID, status: HttpResponse.ok(.text("done")).statusCode(), obody: "")
+                }
+                self.finchMoveResponseIDs = []
+            }
+            self.wasMoving = isMoving
+        }
+        
         //Check the state of compass calibration
         if (type == .HummingbirdBit || type == .MicroBit || type == .Finch) && self.compassCalibrating {
             
@@ -400,6 +420,47 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         if let i = type.batteryVoltageIndex, let greenThreshold = type.batteryGreenThreshold, let yellowThreshold = type.batteryYellowThreshold {
             let voltage = rawToVoltage( lastSensorUpdate[i] )
             
+            
+            let newStatus: BatteryStatus
+            if let oldStatus = self.batteryStatus {
+                switch oldStatus {
+                case .green:
+                    if voltage < yellowThreshold {
+                        newStatus = .red
+                    } else if voltage < greenThreshold - 0.05 {
+                        newStatus = .yellow
+                    } else {
+                        newStatus = .green
+                    }
+                case .yellow:
+                    if voltage > greenThreshold + 0.05 {
+                        newStatus = .green
+                    } else if voltage < yellowThreshold - 0.05 {
+                        newStatus = .red
+                    } else {
+                        newStatus = .yellow
+                    }
+                case .red:
+                    if voltage > greenThreshold {
+                        newStatus = .green
+                    } else if voltage > yellowThreshold + 0.05 {
+                        newStatus = .yellow
+                    } else {
+                        newStatus = .red
+                    }
+                }
+            } else {
+                if voltage > greenThreshold {
+                    newStatus = BatteryStatus.green
+                } else if voltage > yellowThreshold {
+                    newStatus = BatteryStatus.yellow
+                } else {
+                    newStatus = BatteryStatus.red
+                }
+            }
+            
+            
+            /*
             let newStatus: BatteryStatus
             if voltage > greenThreshold {
                 newStatus = BatteryStatus.green
@@ -407,7 +468,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
                 newStatus = BatteryStatus.yellow
             } else {
                 newStatus = BatteryStatus.red
-            }
+            }*/
             
             if self.batteryStatus != newStatus {
                 self.batteryStatus = newStatus
@@ -465,7 +526,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         self.status = .attemptingConnection
         self.connectionAttempts += 1
         self._initialized = false
-        self.batteryStatus = nil
+        self.batteryStatus = .red
         self.commandPending = nil
         self.nextOutputState = BBTRobotOutputState(robotType: type)
         Thread.sleep(forTimeInterval: 3.0) //make sure that the HB is booted up
@@ -860,6 +921,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     }
     
     func setAllOutputsToOff() -> Bool {
+        NSLog("Setting all outputs off for \(name)")
         //Sending an ASCII capital X should do the same thing.
         //Useful for legacy firmware
 

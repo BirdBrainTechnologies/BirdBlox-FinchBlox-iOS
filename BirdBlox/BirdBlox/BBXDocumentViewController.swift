@@ -558,7 +558,7 @@ SFSafariViewControllerDelegate, WKNavigationDelegate {
                 //they wake from sleep (when they are waiting to write out). Then delete this timer.
                 if #available(iOS 10.0, *) {
                     DispatchQueue.main.sync {
-                        self.stopTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: false) {
+                        self.stopTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) {
                             t in
                             
                             let _ = stopAll(req)

@@ -119,8 +119,19 @@ class BBTBackendServer: NSObject, WKScriptMessageHandler {
 				}
 			}
 			
-			let _ = FrontendCallbackCenter.shared
-				.sendFauxHTTPResponse(id: responseID, status: code, obody: bodyStr)
+            if (code == HttpResponse.finchMoving.statusCode()){
+                let queries = BBTSequentialQueryArrayToDict(request.queryParams)
+                guard let idStr = queries["id"], let robot = BLECentralManager.shared.robotForID(idStr) else {
+                    let _ = FrontendCallbackCenter.shared
+                        .sendFauxHTTPResponse(id: responseID, status: HttpResponse.notFound.statusCode(), obody: bodyStr)
+                    return
+                }
+                print("Finch Motion got another request \(responseID)")
+                robot.finchMoveResponseIDs.append(responseID)
+            } else {
+                let _ = FrontendCallbackCenter.shared
+                    .sendFauxHTTPResponse(id: responseID, status: code, obody: bodyStr)
+            }
 		}
 		
 		if background == "false" {

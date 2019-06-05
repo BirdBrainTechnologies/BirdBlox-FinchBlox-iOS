@@ -80,6 +80,7 @@ public enum HttpResponse {
     case badRequest(HttpResponseBody?), unauthorized, forbidden, notFound
     case internalServerError
     case raw(Int, String, [String:String]?, ((HttpResponseBodyWriter) throws -> Void)? )
+    case finchMoving
 
     public func statusCode() -> Int {
         switch self {
@@ -94,6 +95,7 @@ public enum HttpResponse {
         case .notFound                : return 404
         case .internalServerError     : return 500
         case .raw(let code, _ , _, _) : return code
+        case .finchMoving             : return 800
         }
     }
     
@@ -110,6 +112,7 @@ public enum HttpResponse {
         case .notFound                 : return "Not Found"
         case .internalServerError      : return "Internal Server Error"
         case .raw(_, let phrase, _, _) : return phrase
+        case .finchMoving              : return "Finch move incomplete"
         }
     }
     

@@ -433,7 +433,10 @@ class RobotRequests {
                 if position == "right" {
                     sensorValue = String(values[5])
                 } else {
-                    sensorValue = String(values[4])
+                    //the value for the left line sensor also contains the move flag
+                    var val = values[4]
+                    if val > 127 { val -= 128 }
+                    sensorValue = String(val)
                 }
             case "encoder":
                 guard let position = queries["position"] else {
@@ -743,6 +746,7 @@ class RobotRequests {
 	}
     
     //Handle a request that sets 2 motors at once
+    //Just used with the finch
     private func setMotorsRequest(id: String, type: BBTRobotType,
                                  request: HttpRequest) -> HttpResponse {
         let queries = BBTSequentialQueryArrayToDict(request.queryParams)
@@ -761,10 +765,13 @@ class RobotRequests {
             return requesto!
         }
         print("found robot, ready to set motors... \(speedL) \(ticksL) \(speedR) \(ticksR)")
-        //if robot.setMotor(port: 1, speed: speedL, ticks: ticksL) &&
-        //    robot.setMotor(port: 2, speed: speedR, ticks: ticksR){
+
         if robot.setMotors(speedL: speedL, ticksL: ticksL, speedR: speedR, ticksR: ticksR) {
-            return .ok(.text("set"))
+            if (ticksL != 0 || ticksR != 0) && (speedL != 0 || speedR != 0){
+                return .finchMoving
+            } else {
+                return .ok(.text("set"))
+            }
         } else {
             return .internalServerError
         }

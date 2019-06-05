@@ -75,7 +75,8 @@ enum BBTRobotType {
     }
     var batteryGreenThreshold: Double? { //battery must be > this value for green status
         switch self {
-        case .HummingbirdBit, .Hummingbird, .Finch: return 4.75
+        case .HummingbirdBit, .Hummingbird: return 4.75
+        case .Finch: return 3.6
         //case .MicroBit: return 2.25
         case .Flutter, .MicroBit: return nil
         }
@@ -83,7 +84,8 @@ enum BBTRobotType {
     var batteryYellowThreshold: Double? { //battery must be > this value for yellow status
         switch self {
         //case .HummingbirdBit, .Hummingbird: return 4.63
-        case .HummingbirdBit, .Finch: return 4.4
+        case .HummingbirdBit: return 4.4
+        case .Finch: return 3.4
         case .Hummingbird: return 4.63
         //case .MicroBit: return 2.0
         case .Flutter, .MicroBit: return nil
