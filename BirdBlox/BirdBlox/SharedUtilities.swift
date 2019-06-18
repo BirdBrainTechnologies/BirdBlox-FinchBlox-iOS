@@ -297,11 +297,11 @@ public func BBTkidNameFromMacSuffix(_ deviceName: String) -> String? {
             
             abbreviatedName = String(firstName.prefix(1) + middleName.prefix(1) + lastName.prefix(1))
             name = firstName + " " + middleName + " " + lastName
-            print("\(deviceName) \(mac) \(firstIndex), \(middleIndex), \(lastIndex); \(abbreviatedName) \(name ?? "?")")
+            //print("\(deviceName) \(mac) \(firstIndex), \(middleIndex), \(lastIndex); \(abbreviatedName) \(name ?? "?")")
             
             //if the abbreviation is in the bad words list, move to the next middle name
             middleIndex = (middleIndex + 1) % middleNames.count
-            print(middleIndex)
+
         } while badNames.contains(abbreviatedName)
 		
 		return name

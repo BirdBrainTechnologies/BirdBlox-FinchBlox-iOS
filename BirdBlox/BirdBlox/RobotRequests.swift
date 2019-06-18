@@ -113,7 +113,7 @@ class RobotRequests {
                 "RSSI": mode(Array(rssi.suffix(50))).stringValue] //peripherals are discovered more than 30 times per second
 			}
             //print("list: \(peripherals) filteredList: \(filteredList) darray: \(darray.map{ $0["RSSI"] })")
-            //print("Updating: \(darray.map{ "\($0["name"] ?? "?"): \($0["RSSI"] ?? "?"): \($0["id"] ?? "?"): \($0["device"] ?? "?")" })")
+            print("Updating: \(darray.map{ "\($0["name"] ?? "?"): \($0["RSSI"] ?? "?"): \($0["id"] ?? "?"): \($0["device"] ?? "?")" })")
 			let _ = FrontendCallbackCenter.shared.updateDiscoveredRobotList(robotList: darray)
 		}, scanEnded: {
 			let _ = FrontendCallbackCenter.shared.scanHasStopped()

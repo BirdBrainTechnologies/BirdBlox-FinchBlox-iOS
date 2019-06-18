@@ -55,7 +55,7 @@ class FrontendCallbackCenter {
 		DispatchQueue.main.async {
 			wv.evaluateJavaScript(js, completionHandler: { ret, error in
 				if let error = error {
-					NSLog("Error running '\(js)': \(error)")
+					NSLog("Error '\(error)' while running '\(js)'")
 					return
 				}
 				

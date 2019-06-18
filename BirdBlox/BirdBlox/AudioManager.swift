@@ -219,10 +219,10 @@ class AudioManager: NSObject, AVAudioRecorderDelegate {
     }
     
 	func playSound(filename: String, type: DataModel.BBXFileType) -> Bool {
-		print("play sound")
+		NSLog("play sound \(filename)")
         do {
 			let loc = DataModel.shared.fileLocation(forName: filename, type: type)
-			print("\(FileManager.default.fileExists(atPath: loc.path))")
+			NSLog("sound file found = \(FileManager.default.fileExists(atPath: loc.path))")
             let player = try AVAudioPlayer(contentsOf: loc)
 			
             player.prepareToPlay()
