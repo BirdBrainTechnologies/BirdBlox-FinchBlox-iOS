@@ -68,14 +68,14 @@ struct BBTMotor: Equatable {
     private let ticksLSB: UInt8
     
     init(_ speed: Int8 = 0, _ ticks: Int = 0) {
-        print("creating new Motor state with speed \(speed) and distance \(ticks)")
+        //print("creating new Motor state with speed \(speed) and distance \(ticks)")
         velocity = speed
         
         //let ticks = Int(round(distance * 80))
         ticksMSB = UInt8(ticks >> 16)
         ticksSSB = UInt8((ticks & 0x00ff00) >> 8)
         ticksLSB = UInt8(ticks & 0x0000ff)
-        print("motor state created. \(ticks) \(ticksMSB) \(ticksSSB) \(ticksLSB)")
+        //print("motor state created. \(ticks) \(ticksMSB) \(ticksSSB) \(ticksLSB)")
     }
     
     //convert to array used to set the motor

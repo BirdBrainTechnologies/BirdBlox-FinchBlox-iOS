@@ -767,7 +767,8 @@ class RobotRequests {
         print("found robot, ready to set motors... \(speedL) \(ticksL) \(speedR) \(ticksR)")
 
         if robot.setMotors(speedL: speedL, ticksL: ticksL, speedR: speedR, ticksR: ticksR) {
-            if (ticksL != 0 || ticksR != 0) && (speedL != 0 || speedR != 0){
+            //if (ticksL != 0 || ticksR != 0) && (speedL != 0 || speedR != 0){
+            if (ticksL != 0 && speedL != 0) && (ticksR != 0 && speedR != 0) { //assumes all turns involve both wheels.
                 return .finchMoving
             } else {
                 return .ok(.text("set"))
