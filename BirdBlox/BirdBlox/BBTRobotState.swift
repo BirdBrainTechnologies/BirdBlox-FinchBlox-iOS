@@ -67,7 +67,7 @@ struct BBTMotor: Equatable {
     private let ticksSSB: UInt8 //second significant byte
     private let ticksLSB: UInt8
     
-    init(_ speed: Int8 = 0, _ ticks: Int = 0) {
+    init(_ speed: Int8 = 0, _ ticks: Int = 1) {//speed=0, ticks=1 is the do nothing state
         //print("creating new Motor state with speed \(speed) and distance \(ticks)")
         velocity = speed
         

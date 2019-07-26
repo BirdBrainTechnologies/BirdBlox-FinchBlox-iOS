@@ -227,9 +227,9 @@ public func rawToCompass(rawAcc: [UInt8], rawMag: [UInt8]) -> Int? {
     
     var mx, my, mz:Double
     if rawMag.count == 3 { //values have already been converted to uT
-        mx = Double(Int8(bitPattern: rawMag[0]))
-        my = Double(Int8(bitPattern: rawMag[1]))
-        mz = Double(Int8(bitPattern: rawMag[2]))
+        mx = Double(Int8(bitPattern: rawMag[0])) * 10
+        my = Double(Int8(bitPattern: rawMag[1])) * 10
+        mz = Double(Int8(bitPattern: rawMag[2])) * 10
     } else {
         mx = rawToRawMag(rawMag[0], rawMag[1])
         my = rawToRawMag(rawMag[2], rawMag[3])
