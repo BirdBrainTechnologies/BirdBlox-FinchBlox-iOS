@@ -39,6 +39,8 @@ class PropertiesManager {
 		let height = mmFromPoints(p: self.heightInPoints)
 		
 		let width = mmFromPoints(p: self.widthInPoints)
+        
+        NSLog("getPhysicalDims \(width) \(height)")
 		
 		return .ok(.text("\(width),\(height)"))
 	}
@@ -46,6 +48,8 @@ class PropertiesManager {
 	func getVersion(request: HttpRequest) -> HttpResponse {
 		let os = "iOS"
 		let version = ProcessInfo().operatingSystemVersion
+        
+        NSLog("getVersion \(os) (\(version.majorVersion).\(version.minorVersion).\(version.patchVersion))")
 		
 		return .ok(.text("\(os) " +
 		               "(\(version.majorVersion).\(version.minorVersion).\(version.patchVersion))"))
