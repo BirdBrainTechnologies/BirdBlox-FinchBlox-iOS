@@ -396,7 +396,8 @@ class RobotRequests {
                     let msb = Int(values[0])
                     let lsb = Int(values[1])
                     let num = (msb << 8) + lsb
-                    sensorValue = String(Int(round(Double(num) * (117/100))))
+                    //sensorValue = String(Int(round(Double(num) * (117/100))))
+                    sensorValue = String(num)
                 } else if robot.type == .HummingbirdBit {
                     sensorValue = String(Int(round(Double(value) * (117/100))))
                 } else {
