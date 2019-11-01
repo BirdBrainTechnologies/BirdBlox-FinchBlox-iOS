@@ -32,7 +32,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>1.3.21</string>
 	<key>CFBundleVersion</key>
-	<string>37</string>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -40,6 +40,8 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Uses BLE to connect to various robots</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>Uses BLE to connect to various robots</string>
 	<key>NSLocationWhenInUseUsageDescription</key>

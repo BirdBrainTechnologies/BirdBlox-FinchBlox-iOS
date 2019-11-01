@@ -42,6 +42,8 @@
 	</dict>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>Uses BLE to connect to various robots</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Uses BLE to connect to various robots</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Location data is required to properly use the Device Latitude and Longitude blocks. Location data is not used or recorded for any other purpose.</string>
 	<key>NSMicrophoneUsageDescription</key>
