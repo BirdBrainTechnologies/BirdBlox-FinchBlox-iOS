@@ -30,9 +30,9 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.3</string>
+	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
-	<string>7</string>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -40,9 +40,9 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
-	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>Uses BLE to connect to various robots</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Uses BLE to connect to various robots</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>Uses BLE to connect to various robots</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Location data is required to properly use the Device Latitude and Longitude blocks. Location data is not used or recorded for any other purpose.</string>

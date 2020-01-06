@@ -221,8 +221,17 @@ class RobotRequests {
 		
 		let values = robot.sensorValues
 		var sensorValue: String
+        
         let rawAcc = Array(values[robot.type.accXindex...(robot.type.accXindex + 2)])
-		print("about to return sensor values \(values)")
+        var accValues = [0.0, 0.0, 0.0]
+        if (type == .Finch) {
+            let rawFinchAcc = rawToRawFinchAccelerometer(rawAcc)
+            accValues = [rawToAccelerometer(rawFinchAcc[0]), rawToAccelerometer(rawFinchAcc[1]), rawToAccelerometer(rawFinchAcc[2])]
+        } else {
+            accValues = [rawToAccelerometer(rawAcc[0]), rawToAccelerometer(rawAcc[1]), rawToAccelerometer(rawAcc[2])]
+        }
+        
+		//print("about to return sensor values \(values)")
 		switch sensor {
             
         //Screen up and Screen down are z: Acc Z > 0.8*g screen down, Acc Z < -0.8*g screen up
@@ -230,29 +239,35 @@ class RobotRequests {
         //Logo up and logo down are y: Acc Y > 0.8g logo down, Acc Y < -0.8g logo up
         // 0.8g = 7.848m/s2
         case "screenUp":
-            let val = rawToAccelerometer(rawAcc[2])
+            //let val = rawToAccelerometer(rawAcc[2])
             //if val < -0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
-            if val < -7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
+            //if val < -7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
+            if accValues[2] < -7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
         case "screenDown":
-            let val = rawToAccelerometer(rawAcc[2])
+            //let val = rawToAccelerometer(rawAcc[2])
             //if val > 0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
-            if val > 7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
+            //if val > 7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
+            if accValues[2] > 7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
         case "tiltLeft":
-            let val = rawToAccelerometer(rawAcc[0])
+            //let val = rawToAccelerometer(rawAcc[0])
             //if val > 0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
-            if val > 7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
+            //if val > 7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
+            if accValues[0] > 7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
         case "tiltRight":
-            let val = rawToAccelerometer(rawAcc[0])
+            //let val = rawToAccelerometer(rawAcc[0])
             //if val < -0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
-            if val < -7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
+            //if val < -7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
+            if accValues[0] < -7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
         case "logoUp":
-            let val = rawToAccelerometer(rawAcc[1])
+            //let val = rawToAccelerometer(rawAcc[1])
             //if val < -0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
-            if val < -7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
+            //if val < -7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
+            if accValues[1] < -7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
         case "logoDown":
-            let val = rawToAccelerometer(rawAcc[1])
+            //let val = rawToAccelerometer(rawAcc[1])
             //if val > 0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
-            if val > 7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
+            //if val > 7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
+            if accValues[1] > 7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
         case "buttonA", "buttonB", "shake": //microbit buttons and shake
             let buttonShake = values[robot.type.buttonShakeIndex]
             let bsBitValues = byteToBits(buttonShake)
@@ -282,12 +297,19 @@ class RobotRequests {
                 return .badRequest(.text("Accelerometer axis not specified."))
             }
             
-            let xIndex = robot.type.accXindex
+            /*let xIndex = robot.type.accXindex
             
             switch axis {
             case "x": sensorValue = String(rawToAccelerometer(values[xIndex]))
             case "y": sensorValue = String(rawToAccelerometer(values[xIndex + 1]))
             case "z": sensorValue = String(rawToAccelerometer(values[xIndex + 2]))
+            default:
+                return .badRequest(.text("Accelerometer axis incorrectly specified as \(axis)"))
+            }*/
+            switch axis {
+            case "x": sensorValue = String(accValues[0])
+            case "y": sensorValue = String(accValues[1])
+            case "z": sensorValue = String(accValues[2])
             default:
                 return .badRequest(.text("Accelerometer axis incorrectly specified as \(axis)"))
             }
@@ -307,14 +329,24 @@ class RobotRequests {
             */
             //let (x, y, z) = magnetometerValues(values)
             switch robot.type {
-            case .Finch: //Values for the finch are already in uT, and don't need conversion
+            case .Finch:
+                let finchMag = rawToFinchMagnetometer(Array(values[17...19]))
+                switch axis {
+                case "x": sensorValue = String(Int(finchMag[0].rounded()))
+                case "y": sensorValue = String(Int(finchMag[1].rounded()))
+                case "z": sensorValue = String(Int(finchMag[2].rounded()))
+                default:
+                    return .badRequest(.text("Magnetometer axis not specified."))
+                }
+                /*
+                //Values for the finch are already in uT, and don't need conversion
                 switch axis {
                 case "x": sensorValue = String(Int8(bitPattern: values[17]))
                 case "y": sensorValue = String(Int8(bitPattern: values[18]))
                 case "z": sensorValue = String(Int8(bitPattern: values[19]))
                 default:
                     return .badRequest(.text("Magnetometer axis not specified."))
-                }
+                }*/
             case .HummingbirdBit, .MicroBit:
                 switch axis {
                 case "x": sensorValue = String(rawToMagnetometer(values[8], values[9]))
@@ -327,7 +359,30 @@ class RobotRequests {
                 return .badRequest(.text("robot type not supported for magnetometer block."))
             }
         case "compass":
-            var magArray:[UInt8]
+            switch robot.type {
+            case .Finch:
+                let finchMaguT = rawToFinchMagnetometer(Array(values[17...19]))
+                let finchMag = finchMaguT
+                //let finchMag = finchMaguT.map { $0 * 10 } //convert to units used in microbit
+                let rawFinchAcc = rawToRawFinchAccelerometer(rawAcc)
+                if let finchRawCompass = DoubleToCompass(acc: rawFinchAcc, mag: finchMag) {
+                    //turn it around so that the finch beak points north at 0
+                    let finchCompass = (finchRawCompass + 180) % 360
+                    sensorValue = String(finchCompass)
+                } else {
+                    sensorValue = "nil"
+                }
+            case .HummingbirdBit, .MicroBit:
+                let magArray = Array(values[8...13])
+                if let compass = rawToCompass(rawAcc: rawAcc, rawMag: magArray) {
+                    sensorValue = String(compass)
+                } else {
+                    sensorValue = "nil"
+                }
+            default:
+                return .badRequest(.text("robot type not supported for compass block."))
+            }
+            /*var magArray:[UInt8]
             switch robot.type {
             case .Finch:
                 magArray = Array(values[17...19])
@@ -339,7 +394,7 @@ class RobotRequests {
                 sensorValue = String(compass)
             } else {
                 sensorValue = "nil"
-            }
+            }*/
         case "battery":
             if let i = robot.type.batteryVoltageIndex {
                 sensorValue = String(rawToVoltage(values[i]))
