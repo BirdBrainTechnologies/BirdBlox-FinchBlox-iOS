@@ -234,6 +234,9 @@ class RobotRequests {
 		//print("about to return sensor values \(values)")
 		switch sensor {
             
+        case "isMoving":
+            if values[4] > 127 {sensorValue = String(1)} else {sensorValue = String(0)}
+            
         //Screen up and Screen down are z: Acc Z > 0.8*g screen down, Acc Z < -0.8*g screen up
         //Tilt left and tilt right are x: Acc X > 0.8g tilt left, Acc X < -0.8g tilt right
         //Logo up and logo down are y: Acc Y > 0.8g logo down, Acc Y < -0.8g logo up
@@ -397,7 +400,8 @@ class RobotRequests {
             }*/
         case "battery":
             if let i = robot.type.batteryVoltageIndex {
-                sensorValue = String(rawToVoltage(values[i]))
+                //sensorValue = String(rawToVoltage(values[i]))
+                sensorValue = String(Double(values[i]) * robot.type.rawToBatteryVoltage)
                 print("\(sensorValue)")
             } else {
                 return .badRequest(.text("robot type not supported battery values."))
@@ -824,11 +828,11 @@ class RobotRequests {
 
         if robot.setMotors(speedL: speedL, ticksL: ticksL, speedR: speedR, ticksR: ticksR) {
             //if (ticksL != 0 || ticksR != 0) && (speedL != 0 || speedR != 0){
-            if (ticksL != 0 && speedL != 0) && (ticksR != 0 && speedR != 0) { //assumes all turns involve both wheels.
+            /*if (ticksL != 0 && speedL != 0) && (ticksR != 0 && speedR != 0) { //assumes all turns involve both wheels.
                 return .finchMoving
-            } else {
+            } else {*/
                 return .ok(.text("set"))
-            }
+            //}
         } else {
             return .internalServerError
         }

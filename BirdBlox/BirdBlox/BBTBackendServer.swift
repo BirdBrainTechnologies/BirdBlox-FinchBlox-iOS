@@ -119,7 +119,7 @@ class BBTBackendServer: NSObject, WKScriptMessageHandler {
 				}
 			}
 			
-            if (code == HttpResponse.finchMoving.statusCode()){
+            /*if (code == HttpResponse.finchMoving.statusCode()){
                 let queries = BBTSequentialQueryArrayToDict(request.queryParams)
                 guard let idStr = queries["id"], let robot = BLECentralManager.shared.robotForID(idStr) else {
                     let _ = FrontendCallbackCenter.shared
@@ -128,10 +128,10 @@ class BBTBackendServer: NSObject, WKScriptMessageHandler {
                 }
                 print("Finch Motion got another request \(responseID)")
                 robot.finchMoveResponseIDs.append(responseID)
-            } else {
+            } else {*/
                 let _ = FrontendCallbackCenter.shared
                     .sendFauxHTTPResponse(id: responseID, status: code, obody: bodyStr)
-            }
+            //}
 		}
 		
 		if background == "false" {

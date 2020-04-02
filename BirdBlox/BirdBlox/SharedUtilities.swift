@@ -168,10 +168,10 @@ public func rawToDistance(_ raw_val: UInt8) -> Int{
 /**
  Converts a raw value from a robot into a voltage
  */
-public func rawToVoltage(_ raw_val: UInt8) -> Double {
+/*public func rawToVoltage(_ raw_val: UInt8) -> Double {
     return Double(raw_val) * 0.0406
     //return Int(floor((100.0 * Double(raw_val) / 51.0) / 100))
-}
+}*/
 
 /**
  Converts a raw value from a robot into a sound value

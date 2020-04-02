@@ -67,8 +67,8 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     private var oldFirmware = false
     
     //Finch only
-    private var wasMoving = false
-    public var finchMoveResponseIDs: [String] = []
+    //private var wasMoving = false
+    //public var finchMoveResponseIDs: [String] = []
     
     
     //MARK: INIT
@@ -377,7 +377,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         }
         
         //The finch will send a flag when it is done with motion commands that have specific distances
-        if (type == .Finch) {
+        /*if (type == .Finch) {
             let isMoving = (self.lastSensorUpdate[4] > 127)
             
             if self.wasMoving && !isMoving {
@@ -390,7 +390,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
                 self.finchMoveResponseIDs = []
             }
             self.wasMoving = isMoving
-        }
+        }*/
         
         //Check the state of compass calibration
         if (type == .HummingbirdBit || type == .MicroBit || type == .Finch) && self.compassCalibrating {
@@ -418,7 +418,8 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         
         //Check battery status. Stored in sensor 4 for bit and sensor 5 for duo
         if let i = type.batteryVoltageIndex, let greenThreshold = type.batteryGreenThreshold, let yellowThreshold = type.batteryYellowThreshold {
-            let voltage = rawToVoltage( lastSensorUpdate[i] )
+            //let voltage = rawToVoltage( lastSensorUpdate[i] )
+            let voltage = Double(lastSensorUpdate[i]) * self.type.rawToBatteryVoltage
             
             
             let newStatus: BatteryStatus

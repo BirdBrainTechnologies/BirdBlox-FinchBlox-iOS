@@ -32,6 +32,7 @@ SFSafariViewControllerDelegate, WKNavigationDelegate {
 //	var reloadTimer = Timer()
 	var stopTimer = Timer()
 	var utilTimer = Timer()
+    var docIsClosing = false
 	
 	override func viewDidLoad() {
 		NSLog("Document View Controller viewDidLoad")
@@ -244,7 +245,9 @@ SFSafariViewControllerDelegate, WKNavigationDelegate {
 	}
 	
 	private func closeCurrentProgram(completion: ((Bool) -> Void)? = nil) {
+        self.docIsClosing = true;
 		self.document.close(completionHandler: { suc in
+            self.docIsClosing = false;
             let curDocName = DataModel.shared.getSetting(self.curDocNameKey)
             UserDefaults.standard.set(curDocName, forKey: self.lastDocNameKey)
 			UserDefaults.standard.set(nil, forKey: self.curDocNameKey)
@@ -438,19 +441,30 @@ SFSafariViewControllerDelegate, WKNavigationDelegate {
 				openBlock()
 			} else {
                 //TODO: Actually try to close the file here? What if it is already in the process of closing?
-				if #available(iOS 10.0, *) {
-					DispatchQueue.main.sync {
-						self.utilTimer = Timer.scheduledTimer(withTimeInterval: 0.75,
-						                                      repeats: false,
-						                                      block: { t in
-							if self.document.documentState == .closed {
-								openBlock()
-							} else {
-								NSLog("Unable to open file.")
-							}
-						})
-					}
-				}
+                if (self.docIsClosing) {
+                    if #available(iOS 10.0, *) {
+                        DispatchQueue.main.sync {
+                            self.utilTimer = Timer.scheduledTimer(withTimeInterval: 0.75,
+                                                                  repeats: false,
+                                                                  block: { t in
+                                if self.document.documentState == .closed {
+                                    openBlock()
+                                } else {
+                                    NSLog("Unable to open file \(name).")
+                                }
+                            })
+                        }
+                    }
+                } else {
+                    self.closeCurrentProgram(completion: { suc in
+                        if !suc || self.document.documentState != .closed  {
+                            NSLog("Unable to close current document to open a new one")
+                            return
+                        }
+                        
+                        openBlock()
+                    })
+                }
 			}
 			
 			return .ok(.text(""))
@@ -499,14 +513,17 @@ SFSafariViewControllerDelegate, WKNavigationDelegate {
 					
 					switch (resp) {
 					case .ok(_):
-						self.webView.evaluateJavaScript("CallbackManager.data.filesChanged()") {
+                       DispatchQueue.main.async{ self.webView.evaluateJavaScript("CallbackManager.data.filesChanged()") {
 							result, error in
 							UserDefaults.standard.set(newFilename, forKey: self.curDocNameKey)
 							UserDefaults.standard.set(false, forKey: self.curDocNeedsNameKey)
 							let _ = self.openProgram(byName: newFilename)
+                            }
 						}
 					default:
-						self.webView.evaluateJavaScript("CallbackManager.data.close()")
+                        DispatchQueue.main.async{
+                            self.webView.evaluateJavaScript("CallbackManager.data.close()")
+                        }
 						return
 					}
 				})
@@ -536,8 +553,10 @@ SFSafariViewControllerDelegate, WKNavigationDelegate {
 				self.closeCurrentProgram(completion: { suc in
 					if suc {
 						let _ = deleteHandler(request)
-						self.wv.evaluateJavaScript("CallbackManager.data.close()")
-						self.wv.evaluateJavaScript("CallbackManager.data.filesChanged()")
+                        DispatchQueue.main.async{
+                            self.wv.evaluateJavaScript("CallbackManager.data.close()")
+                            self.wv.evaluateJavaScript("CallbackManager.data.filesChanged()")
+                        }
 					}
 				})
 				return .ok(.text("We'll see"))
