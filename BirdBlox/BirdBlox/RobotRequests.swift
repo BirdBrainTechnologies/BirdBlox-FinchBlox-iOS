@@ -401,7 +401,7 @@ class RobotRequests {
         case "battery":
             if let i = robot.type.batteryVoltageIndex {
                 //sensorValue = String(rawToVoltage(values[i]))
-                sensorValue = String(Double(values[i]) * robot.type.rawToBatteryVoltage)
+                sensorValue = String((Double(values[i]) + robot.type.batteryConstant) * robot.type.rawToBatteryVoltage)
                 print("\(sensorValue)")
             } else {
                 return .badRequest(.text("robot type not supported battery values."))

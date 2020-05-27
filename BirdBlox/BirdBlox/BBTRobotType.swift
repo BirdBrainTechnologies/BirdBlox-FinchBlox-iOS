@@ -75,15 +75,20 @@ enum BBTRobotType {
     }
     var rawToBatteryVoltage: Double {
         switch self {
-        case .Finch: return 0.0376
+        case .Finch: return 0.00937
         default: return 0.0406
+        }
+    }
+    var batteryConstant: Double { //value to add to raw before conversion
+        switch self {
+        case .Finch: return 320
+        default: return 0
         }
     }
     var batteryGreenThreshold: Double? { //battery must be > this value for green status
         switch self {
         case .HummingbirdBit, .Hummingbird: return 4.75
-        case .Finch: return 3.385
-        //case .MicroBit: return 2.25
+        case .Finch: return 3.51375 //3.385
         case .Flutter, .MicroBit: return nil
         }
     }
@@ -91,9 +96,8 @@ enum BBTRobotType {
         switch self {
         //case .HummingbirdBit, .Hummingbird: return 4.63
         case .HummingbirdBit: return 4.4
-        case .Finch: return 3.271
+        case .Finch: return 3.3732 //3.271
         case .Hummingbird: return 4.63
-        //case .MicroBit: return 2.0
         case .Flutter, .MicroBit: return nil
         }
     }

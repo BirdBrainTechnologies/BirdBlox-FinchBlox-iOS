@@ -419,7 +419,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         //Check battery status. Stored in sensor 4 for bit and sensor 5 for duo
         if let i = type.batteryVoltageIndex, let greenThreshold = type.batteryGreenThreshold, let yellowThreshold = type.batteryYellowThreshold {
             //let voltage = rawToVoltage( lastSensorUpdate[i] )
-            let voltage = Double(lastSensorUpdate[i]) * self.type.rawToBatteryVoltage
+            let voltage = (Double(lastSensorUpdate[i]) + self.type.batteryConstant) * self.type.rawToBatteryVoltage
             
             
             let newStatus: BatteryStatus
