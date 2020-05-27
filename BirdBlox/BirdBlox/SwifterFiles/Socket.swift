@@ -36,7 +36,10 @@ open class Socket: Hashable, Equatable {
         close()
     }
     
-    public var hashValue: Int { return Int(self.socketFileDescriptor) }
+    //public var hashValue: Int { return Int(self.socketFileDescriptor) }
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.socketFileDescriptor)
+    }
     
     public func close() {
         if shutdown {
