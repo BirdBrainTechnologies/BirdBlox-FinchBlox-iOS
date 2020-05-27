@@ -380,7 +380,10 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 			
 		case CBCentralManagerState.unsupported:
 			break
-		}
+            
+        @unknown default:
+            break
+        }
 	}
 	
     //MARK: Connect/disconnect robot

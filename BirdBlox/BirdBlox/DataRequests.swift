@@ -228,7 +228,7 @@ class DataManager: NSObject {
 //			return .badRequest(.text("Missing Parameter"))
 //		}
 		
-		let data = Data(bytes: request.body)
+		let data = Data(request.body)
 		guard let message = String(data: data, encoding: .utf8) else {
 			return .badRequest(.text("Invalid body"))
 		}

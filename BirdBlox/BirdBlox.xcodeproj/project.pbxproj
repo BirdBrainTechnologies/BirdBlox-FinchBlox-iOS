@@ -331,6 +331,7 @@
 				TargetAttributes = {
 					3123E704222EBE77003B572C = {
 						DevelopmentTeam = N6XC9HC8PB;
+						LastSwiftMigration = 1130;
 					};
 					BA81694C1E81A98A00AAF7A3 = {
 						CreatedOnToolsVersion = 8.2.1;
@@ -618,8 +619,8 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "BirdBlox/BirdBlox-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_SWIFT3_OBJC_INFERENCE = On;
-				SWIFT_VERSION = 4.2;
+				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -642,8 +643,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.BirdBrainTech.FinchBlox;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "BirdBlox/BirdBlox-Bridging-Header.h";
-				SWIFT_SWIFT3_OBJC_INFERENCE = On;
-				SWIFT_VERSION = 4.2;
+				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};

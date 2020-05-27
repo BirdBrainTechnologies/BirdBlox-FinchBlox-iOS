@@ -95,11 +95,11 @@ open class Socket: Hashable, Equatable {
         try writeBuffer(data.bytes, length: data.length)
     }
     
-    public func writeData(_ data: Data) throws {
+/*    public func writeData(_ data: Data) throws {
         try data.withUnsafeBytes { (pointer: UnsafePointer<UInt8>) -> Void in
             try self.writeBuffer(pointer, length: data.count)
         }
-    }
+    }*/
 
     private func writeBuffer(_ pointer: UnsafeRawPointer, length: Int) throws {
         var sent = 0
