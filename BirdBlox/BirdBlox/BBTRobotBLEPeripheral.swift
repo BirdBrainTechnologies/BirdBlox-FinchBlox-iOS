@@ -965,4 +965,12 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             return false
         }
     }
+    
+    /**
+     * Return the current state of the beak led. Finch only.
+     */
+    func getCurrentBeak() -> BBTTriLED? {
+        if (self.type != .Finch) { return nil }
+        return self.currentOutputState.trileds?[0]
+    }
 }

@@ -478,11 +478,25 @@ class RobotRequests {
                     guard let position = queries["position"] else {
                         return .badRequest(.text("Specific light sensor not specified."))
                     }
-                    if position == "right" {
-                        sensorValue = String(values[3])
-                    } else {
-                        sensorValue = String(values[2])
+                    //We must add a correction to remove the light cast by the finch beak
+                    guard let currentBeak = robot.getCurrentBeak() else {
+                        return .badRequest(.text("Could not make correction to light sensor."))
                     }
+                    let R = Double(currentBeak.red) / 2.55
+                    let G = Double(currentBeak.green) / 2.55
+                    let B = Double(currentBeak.blue) / 2.55
+                    var correction = 0.0
+                    var raw = 0.0
+                    if position == "right" {
+                        correction = 6.40473070e-03*R + 1.41015162e-02*G + 5.05547817e-02*B + 3.98301391e-04*R*G + 4.41091223e-04*R*B + 6.40756862e-04*G*B + -4.76971242e-06*R*G*B
+                        raw = Double(values[3])
+                    } else {
+                        correction = 1.06871493e-02*R + 1.94526614e-02*G + 6.12409825e-02*B + 4.01343475e-04*R*G + 4.25761981e-04*R*B + 6.46091068e-04*G*B + -4.41056971e-06*R*G*B
+                        raw = Double(values[2])
+                    }
+                    NSLog("correcting raw light value \(raw) with \(R), \(G), \(B) -> \(correction)")
+                    let finalVal = raw - correction
+                    sensorValue = String( bound(Int(finalVal.rounded()), min: 0, max: 100) )
                 } else {
                     return .ok(.text(String(realPercent)))
                 }
