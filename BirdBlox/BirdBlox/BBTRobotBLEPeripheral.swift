@@ -472,6 +472,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             }*/
             
             if self.batteryStatus != newStatus {
+                NSLog("Updating battery status from \(self.batteryStatus?.rawValue ?? -1) to \(newStatus)")
                 self.batteryStatus = newStatus
                 let _ = FrontendCallbackCenter.shared.robotUpdateBattery(id: self.peripheral.identifier.uuidString, batteryStatus: newStatus.rawValue)
             }
@@ -527,7 +528,6 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         self.status = .attemptingConnection
         self.connectionAttempts += 1
         self._initialized = false
-        self.batteryStatus = .red
         self.commandPending = nil
         self.nextOutputState = BBTRobotOutputState(robotType: type)
         Thread.sleep(forTimeInterval: 3.0) //make sure that the HB is booted up

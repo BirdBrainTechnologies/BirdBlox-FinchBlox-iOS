@@ -103,6 +103,7 @@ class FrontendCallbackCenter {
 		return self.runJS(function: function, parameters: parameters)
 	}
     public func robotUpdateBattery(id: String, batteryStatus: Int) -> Bool {
+        NSLog("Updating battery for \(id) to \(batteryStatus)")
         let safeResponse = FrontendCallbackCenter.safeString(from: id)
         
         let function = "CallbackManager.robot.updateBatteryStatus"
