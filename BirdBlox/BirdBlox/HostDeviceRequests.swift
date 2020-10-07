@@ -29,12 +29,17 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
     init(view_controller: BBTWebViewController){
         self.view_controller = view_controller
         super.init()
+        
+        //This block sends a message to the user requesting location services
+        // authorization. We don't need that for FinchBlox.
+        #if !FINCHBLOX
         if (CLLocationManager.locationServicesEnabled()){
             self.locationManager.delegate = self
             self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
             self.locationManager.requestWhenInUseAuthorization()
             self.locationManager.startUpdatingLocation()
         }
+        #endif
         
         if(CMAltimeter.isRelativeAltitudeAvailable()){
             altimeter.startRelativeAltitudeUpdates(to: OperationQueue.main,
