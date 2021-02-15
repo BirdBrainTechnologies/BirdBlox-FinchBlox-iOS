@@ -429,8 +429,10 @@ enum BBTRobotType {
                 let length = ledStatusChars.count - 1
                 let flash = UInt8(64 + length)
                 var commandArray = [letter, flash]
-                for i in 1 ... length {
-                    commandArray.append(getUnicode(ledStatusChars[i]))
+                if (length > 0) {
+                    for i in 1 ... length {
+                        commandArray.append(getUnicode(ledStatusChars[i]))
+                    }
                 }
                 
                 NSLog("Flash command \(commandArray)")
@@ -461,7 +463,7 @@ enum BBTRobotType {
         case .Finch:
             return Data(bytes: UnsafePointer<UInt8>([0xDF] as [UInt8]), count: 1)
         case .MicroBit:
-            return Data(bytes: UnsafePointer<UInt8>([144, 0, 0, 0, 0, 0, 0, 0] as [UInt8]), count: 8)
+            return Data(bytes: UnsafePointer<UInt8>([0xCB, 0xFF, 0xFF, 0xFF] as [UInt8]), count: 4)
         }
     }
     
