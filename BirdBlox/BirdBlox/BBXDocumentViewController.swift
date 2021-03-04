@@ -33,6 +33,8 @@ SFSafariViewControllerDelegate, WKNavigationDelegate {
 	var stopTimer = Timer()
 	var utilTimer = Timer()
     var docIsClosing = false
+    
+    static var needsFullScreen = true
 	
 	override func viewDidLoad() {
 		NSLog("Document View Controller viewDidLoad")
@@ -112,9 +114,22 @@ SFSafariViewControllerDelegate, WKNavigationDelegate {
 		
 		//Setup callback center
 		FrontendCallbackCenter.shared.webView = webView
+        
+        //self.view.window?.setFrame(NSRect(x:0,y:0,width: 1440,height: 790), display: true)
+             
 		
 		NSLog("Document View Controller exiting viewDidLoad")
 	}
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        #if targetEnvironment(macCatalyst)
+            //Make full screen for macOS
+            (NSClassFromString("NSApplication")?.value(forKeyPath: "sharedApplication.windows") as? [AnyObject])?.first?.perform(Selector("toggleFullScreen:"))
+            Self.needsFullScreen = false
+        #endif
+    }
 	
 	//MARK: Document Handling
 	static let curDocNeedsNameKey = "CurrentDocumentNeedsName"

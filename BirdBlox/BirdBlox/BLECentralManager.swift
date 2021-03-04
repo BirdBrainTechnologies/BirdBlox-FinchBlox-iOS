@@ -187,6 +187,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 			self.deviceCount += 1
 		case .searchingScan:
 			let id = peripheral.identifier.uuidString
+            //NSLog("FOUND \(id) with adv. name \(advertisementData["kCBAdvDataLocalName"] ?? "NONE") and periph. name \(peripheral.name ?? "NONE").")
             guard let robotType = BBTRobotType.fromString(advertisementData["kCBAdvDataLocalName"] as? String ?? peripheral.name ?? "unknown") else {
                 //NSLog("Could not determine type of peripheral with id \(id)")
                 return

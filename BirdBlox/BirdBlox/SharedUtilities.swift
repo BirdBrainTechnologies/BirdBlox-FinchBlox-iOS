@@ -9,7 +9,7 @@
 //
 
 import Foundation
-import GLKit
+//import GLKit
 
 /**
     Takes an int and returns the unicode value for the int as a string
@@ -103,6 +103,11 @@ public func mode(_ array: [NSNumber]) -> NSNumber {
 
 
 //MARK: data Conversions
+
+extension FloatingPoint {
+    var degreesToRadians: Self { self * .pi / 180 }
+    var radiansToDegrees: Self { self * 180 / .pi }
+}
 
 /**
  * Convert a byte of data into an array of bits
@@ -329,7 +334,8 @@ public func DoubleToCompass(acc: [Double], mag: [Double]) -> Int? {
     let xPP = xP * cos(theta) + zP * sin(theta)
     let yPP = yP
     
-    let angle = 180 + GLKMathRadiansToDegrees(Float(atan2(xPP, yPP)))
+    //let angle = 180 + GLKMathRadiansToDegrees(Float(atan2(xPP, yPP)))
+    let angle = 180 + Float(atan2(xPP, yPP)).radiansToDegrees
     let roundedAngle = Int(angle.rounded())
     
     return roundedAngle
@@ -344,7 +350,8 @@ public func BBTkidNameFromMacSuffix(_ deviceName: String) -> String? {
 	
 	//The name should be seven characters, with the first two identifying the type of device
 	//The last five characters should be from the device's MAC address
-	
+	NSLog("PARSING DEVICE NAME \(deviceName)")
+    
 	if deviceName.utf8.count == 7,
 		let namesPath = Bundle.main.path(forResource: "BluetoothDeviceNames", ofType: "plist"),
 		let namesDict = NSDictionary(contentsOfFile: namesPath),

@@ -254,6 +254,8 @@ enum BBTRobotType {
             letter = 0x62
             if commandName == "pollStart" {
                 num = 0x67
+            } else if commandName == "V2pollStart" {
+                num = 0x70
             } else { num = 0x73 }//pollStop
         }
         return Data(bytes: UnsafePointer<UInt8>([letter,num] as [UInt8]), count: 2)

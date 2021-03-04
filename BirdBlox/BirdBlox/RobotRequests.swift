@@ -271,28 +271,27 @@ class RobotRequests {
             //if val > 0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
             //if val > 7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
             if accValues[1] > 7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
-        case "buttonA", "buttonB", "shake": //microbit buttons and shake
+        case "buttonA", "buttonB", "shake", "V2touch": //microbit buttons and shake
             let buttonShake = values[robot.type.buttonShakeIndex]
             let bsBitValues = byteToBits(buttonShake)
-            //TODO: should the buttons return true when pressed?
-            switch sensor {
-            case "buttonA":
-                let val = bsBitValues[4]
+            
+            if sensor == "shake" {
+                sensorValue = String(bsBitValues[0])
+            } else {
+                let val: UInt8
+                switch sensor {
+                case "buttonA": val = bsBitValues[4]
+                case "buttonB": val = bsBitValues[5]
+                case "V2touch": val = bsBitValues[1]
+                default: return .badRequest(.text("sensor not specified correctly"))
+                }
                 if val == 0 {
                     sensorValue = String(1)
                 } else {
                     sensorValue = String(0)
                 }
-            case "buttonB":
-                let val = bsBitValues[5]
-                if val == 0 {
-                    sensorValue = String(1)
-                } else {
-                    sensorValue = String(0)
-                }
-            case "shake": sensorValue = String(bsBitValues[0])
-            default: return .badRequest(.text("sensor not specified correctly"))
             }
+            
             
         //TODO: add a check to make sure there is an accelerometer or magnetometer when requested
         case "accelerometer": 
@@ -452,9 +451,14 @@ class RobotRequests {
                 sensorValue = String(scaledVal)
             case "distance":
                 if robot.type == .Finch {
-                    let msb = Int(values[0])
-                    let lsb = Int(values[1])
-                    let num = (msb << 8) + lsb
+                    let num: Int
+                    if robot.hasV2Microbit() {
+                        num = Int(values[1])
+                    } else {
+                        let msb = Int(values[0])
+                        let lsb = Int(values[1])
+                        num = (msb << 8) + lsb
+                    }
                     //sensorValue = String(Int(round(Double(num) * (117/100))))
                     sensorValue = String(num)
                 } else if robot.type == .HummingbirdBit {
@@ -525,7 +529,17 @@ class RobotRequests {
                 let num = Int32(bitPattern: uNum) / 256
                 print("encoder \(values[i]) \(values[i+1]) \(values[i+2]) \(uNum) \(num)")
                 sensorValue = String( num )
-                
+            case "V2sound":
+                guard robot.hasV2Microbit() else {
+                    return .badRequest(.text("V2sound only available for V2 micro:bit"))
+                }
+                sensorValue = String(Int(values[0]))
+            case "V2temperature":
+                guard robot.hasV2Microbit() else {
+                    return .badRequest(.text("V2temperature only available for V2 micro:bit"))
+                }
+                let num = Int( values[6] >> 2 )
+                sensorValue = String(num)
             case "other":
                 sensorValue = String(Double(value) * (3.3/255))
             default:

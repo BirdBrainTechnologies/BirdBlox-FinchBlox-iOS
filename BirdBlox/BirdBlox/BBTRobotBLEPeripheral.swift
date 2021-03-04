@@ -65,6 +65,9 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     private var hardwareString = ""
     private var firmwareVersionString = ""
     private var oldFirmware = false
+    private var foundV2Microbit = false
+    
+    func hasV2Microbit() -> Bool { return foundV2Microbit }
     
     //Finch only
     //private var wasMoving = false
@@ -168,7 +171,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         if type == .Hummingbird, let name = peripheral.name, name.starts(with: "HB") {
             print("\(self.name) will use .withResponse.")
             self.useWithResponse = true
-        } else if type == .HummingbirdBit || type == .MicroBit {
+        } else if type == .HummingbirdBit || type == .MicroBit || type == .Finch {
             //If you want to use .withResponse, you must change the
             // way that led array commands are handled.
             self.useWithResponse = false
@@ -200,7 +203,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         //Wait until we get a response or until we timeout.
         //while (self.lineIn == oldLineIn) {
         while (self.lineIn == blankLine) {
-            print("hi")
+            //print("hi")
             if (Date().timeIntervalSince(timeoutTime) >= 0) {
                 
                 NSLog("\(self.name) initialization failed due to timeout. Connected? \(self.connected)")
@@ -300,11 +303,23 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         //TODO: do we really need this?
         Thread.sleep(forTimeInterval: 0.1)
         
-        self.sendData(data: type.turnOffCommand()) //TODO: Do this here? 
+        self.sendData(data: type.turnOffCommand()) //TODO: Do this here?
+        
+        //Check for micro:bit V2
+        if (type == .HummingbirdBit || type == .MicroBit || type == .Finch) {
+            if versionArray[3] == 0x22 {
+                foundV2Microbit = true
+            }
+            let updated = FrontendCallbackCenter.shared.robotUpdateHasV2Microbit(id: self.id, hasV2: hasV2Microbit())
+            NSLog("Microbit based robot. Microbit is V2? \(hasV2Microbit()). Frontend updated? \(updated)")
+        }
         
         //Start polling for sensor data
-        print("Sending poll start")
-        self.sendData(data: type.sensorCommand("pollStart"))
+        var pollStart = type.sensorCommand("pollStart")
+        if hasV2Microbit() { pollStart = type.sensorCommand("V2pollStart") }
+        let temp = [UInt8](pollStart)
+        print("Sending poll start \(temp)")
+        self.sendData(data: pollStart)
         
         
         //Start sending periodic updates. All changes to outputs will be set at this time.
@@ -423,7 +438,15 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             
             
             let newStatus: BatteryStatus
-            if let oldStatus = self.batteryStatus {
+            if hasV2Microbit() && self.type == .Finch {
+                var val = lastSensorUpdate[i] & 0x3
+                if val == 3 { val = 2 } //3 is finch full charge - not currently handled
+                guard let status = BatteryStatus(rawValue: Int(val)) else {
+                    NSLog("Unknown battery status \(val)")
+                    return
+                }
+                newStatus = status
+            } else if let oldStatus = self.batteryStatus {
                 switch oldStatus {
                 case .green:
                     if voltage < yellowThreshold {

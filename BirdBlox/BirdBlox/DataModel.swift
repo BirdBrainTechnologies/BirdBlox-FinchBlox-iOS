@@ -72,7 +72,11 @@ class DataModel: NSObject, FileManagerDelegate {
 		self.currentDocLoc = self.tmpLoc.appendingPathComponent("currentDoc")
 		self.recordingsLoc = self.currentDocLoc.appendingPathComponent("recordings")
 		
-		self.bundleLoc = URL(string: Bundle.main.bundleURL.path)!
+        #if targetEnvironment(macCatalyst)
+            self.bundleLoc = URL(string: Bundle.main.resourcePath ?? "")!
+        #else
+            self.bundleLoc = URL(string: Bundle.main.bundleURL.path)!
+        #endif
 		
 		self.bbxSaveLoc = self.documentLoc
 		
@@ -87,20 +91,12 @@ class DataModel: NSObject, FileManagerDelegate {
 			NSLog("Running in a non-DEBUG mode, going to use local frontend.")
 			self.frontendLoc = URL(fileURLWithPath: bundleLoc.appendingPathComponent("Frontend").path)
 		#endif
-		
-        /*#if FINCHBLOX
-            if #available(iOS 10.0, *) {
-                self.frontendPageLoc = self.frontendLoc.appendingPathComponent("FinchBloxDragAndDrop.html")
-            } else {
-                self.frontendPageLoc = self.frontendLoc.appendingPathComponent("FinchBloxDragAndDropiOS9.html")
-            }
-        #else*/
-            if #available(iOS 10.0, *) {
-                self.frontendPageLoc = self.frontendLoc.appendingPathComponent("HummingbirdDragAndDrop.html")
-            } else {
-                self.frontendPageLoc = self.frontendLoc.appendingPathComponent("HummingbirdDragAndDropiOS9.html")
-            }
-        //#endif
+        
+        if #available(iOS 10.0, *) {
+            self.frontendPageLoc = self.frontendLoc.appendingPathComponent("HummingbirdDragAndDrop.html")
+        } else {
+            self.frontendPageLoc = self.frontendLoc.appendingPathComponent("HummingbirdDragAndDropiOS9.html")
+        }
         
 		self.soundsLoc = self.frontendLoc.appendingPathComponent("SoundClips")
 		self.uiSoundsLoc = self.frontendLoc.appendingPathComponent("SoundsForUI")

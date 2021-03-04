@@ -57,7 +57,7 @@ class BBTBackendServer: NSObject, WKScriptMessageHandler {
 			if let handler = handler {
                 func guardedHandler(request: HttpRequest) -> HttpResponse {
                     
-                    NSLog("Faux HTTP Request \(request.path) from address \(request.address ?? "unknown").")
+                    //NSLog("Faux HTTP Request \(request.path) from address \(request.address ?? "unknown").")
                     
                     if request.address == nil || request.address != BBTLocalHostIP{
                         #if DEBUG
@@ -197,7 +197,7 @@ class BBTBackendServer: NSObject, WKScriptMessageHandler {
 			return
 		}
 		
-		NSLog("bg \(background) faux req \(requestStr)")
+		//NSLog("bg \(background) faux req \(requestStr)")
         
 		self.handleNativeCall(responseID: id, requestStr: requestStr, body: body,
 		                      background: background)
