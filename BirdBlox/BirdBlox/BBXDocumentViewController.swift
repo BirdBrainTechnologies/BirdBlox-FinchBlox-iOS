@@ -121,15 +121,18 @@ SFSafariViewControllerDelegate, WKNavigationDelegate {
 		NSLog("Document View Controller exiting viewDidLoad")
 	}
     
-    override func viewDidAppear(_ animated: Bool) {
+    /*override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
         #if targetEnvironment(macCatalyst)
             //Make full screen for macOS
+        if Self.needsFullScreen {
+            NSLog("Entering full screen.")
             (NSClassFromString("NSApplication")?.value(forKeyPath: "sharedApplication.windows") as? [AnyObject])?.first?.perform(Selector("toggleFullScreen:"))
             Self.needsFullScreen = false
+        }
         #endif
-    }
+    }*/
 	
 	//MARK: Document Handling
 	static let curDocNeedsNameKey = "CurrentDocumentNeedsName"

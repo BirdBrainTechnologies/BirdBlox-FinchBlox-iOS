@@ -231,7 +231,7 @@ class RobotRequests {
             accValues = [rawToAccelerometer(rawAcc[0]), rawToAccelerometer(rawAcc[1]), rawToAccelerometer(rawAcc[2])]
         }
         
-		//print("about to return sensor values \(values)")
+		//print("\(sensor) requested. Current sensor values: \(values)")
 		switch sensor {
             
         case "isMoving":
@@ -242,34 +242,16 @@ class RobotRequests {
         //Logo up and logo down are y: Acc Y > 0.8g logo down, Acc Y < -0.8g logo up
         // 0.8g = 7.848m/s2
         case "screenUp":
-            //let val = rawToAccelerometer(rawAcc[2])
-            //if val < -0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
-            //if val < -7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
             if accValues[2] < -7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
         case "screenDown":
-            //let val = rawToAccelerometer(rawAcc[2])
-            //if val > 0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
-            //if val > 7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
             if accValues[2] > 7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
         case "tiltLeft":
-            //let val = rawToAccelerometer(rawAcc[0])
-            //if val > 0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
-            //if val > 7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
             if accValues[0] > 7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
         case "tiltRight":
-            //let val = rawToAccelerometer(rawAcc[0])
-            //if val < -0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
-            //if val < -7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
             if accValues[0] < -7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
         case "logoUp":
-            //let val = rawToAccelerometer(rawAcc[1])
-            //if val < -0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
-            //if val < -7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
             if accValues[1] < -7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
         case "logoDown":
-            //let val = rawToAccelerometer(rawAcc[1])
-            //if val > 0.8 {sensorValue = String(1)} else {sensorValue = String(0)}
-            //if val > 7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
             if accValues[1] > 7.848 {sensorValue = String(1)} else {sensorValue = String(0)}
         case "buttonA", "buttonB", "shake", "V2touch": //microbit buttons and shake
             let buttonShake = values[robot.type.buttonShakeIndex]
@@ -299,15 +281,6 @@ class RobotRequests {
                 return .badRequest(.text("Accelerometer axis not specified."))
             }
             
-            /*let xIndex = robot.type.accXindex
-            
-            switch axis {
-            case "x": sensorValue = String(rawToAccelerometer(values[xIndex]))
-            case "y": sensorValue = String(rawToAccelerometer(values[xIndex + 1]))
-            case "z": sensorValue = String(rawToAccelerometer(values[xIndex + 2]))
-            default:
-                return .badRequest(.text("Accelerometer axis incorrectly specified as \(axis)"))
-            }*/
             switch axis {
             case "x": sensorValue = String(accValues[0])
             case "y": sensorValue = String(accValues[1])
@@ -318,18 +291,8 @@ class RobotRequests {
         case "magnetometer":
             guard let axis = queries["axis"] else {
                 return .badRequest(.text("Accelerometer axis not specified."))
-            }/*
-            let adjust: ((UInt8, UInt8) -> String) = { msb, lsb in
-                let uIntVal = (UInt16(msb) << 8) | UInt16(lsb)
-                let intVal = Int16(bitPattern: uIntVal)
-                print( "MAGNETOMETER VALUES! \(msb) \(lsb) \(uIntVal) \(intVal)" )
-                return String( intVal / 10 ) //TODO: check
             }
-            let x = adjust(values[8], values[9])
-            let y = adjust(values[10], values[11])
-            let z = adjust(values[12], values[13])
-            */
-            //let (x, y, z) = magnetometerValues(values)
+            
             switch robot.type {
             case .Finch:
                 let finchMag = rawToFinchMagnetometer(Array(values[17...19]))
@@ -340,15 +303,6 @@ class RobotRequests {
                 default:
                     return .badRequest(.text("Magnetometer axis not specified."))
                 }
-                /*
-                //Values for the finch are already in uT, and don't need conversion
-                switch axis {
-                case "x": sensorValue = String(Int8(bitPattern: values[17]))
-                case "y": sensorValue = String(Int8(bitPattern: values[18]))
-                case "z": sensorValue = String(Int8(bitPattern: values[19]))
-                default:
-                    return .badRequest(.text("Magnetometer axis not specified."))
-                }*/
             case .HummingbirdBit, .MicroBit:
                 switch axis {
                 case "x": sensorValue = String(rawToMagnetometer(values[8], values[9]))
@@ -384,19 +338,6 @@ class RobotRequests {
             default:
                 return .badRequest(.text("robot type not supported for compass block."))
             }
-            /*var magArray:[UInt8]
-            switch robot.type {
-            case .Finch:
-                magArray = Array(values[17...19])
-            default: //.HummingbirdBit and .MicroBit
-                magArray = Array(values[8...13])
-            }
-            //print("Compass!! \(values) \(accArray) \(magArray)")
-            if let compass = rawToCompass(rawAcc: rawAcc, rawMag: magArray) {
-                sensorValue = String(compass)
-            } else {
-                sensorValue = "nil"
-            }*/
         case "battery":
             if let i = robot.type.batteryVoltageIndex {
                 //sensorValue = String(rawToVoltage(values[i]))
@@ -404,6 +345,25 @@ class RobotRequests {
                 print("\(sensorValue)")
             } else {
                 return .badRequest(.text("robot type not supported battery values."))
+            }
+        case "V2sound":
+            guard robot.hasV2Microbit() else {
+                return .badRequest(.text("V2sound only available for V2 micro:bit"))
+            }
+            if robot.type == .Finch {
+                sensorValue = String(Int(values[0]))
+            } else {
+                sensorValue = String(Int(values[14]))
+            }
+        case "V2temperature":
+            guard robot.hasV2Microbit() else {
+                return .badRequest(.text("V2temperature only available for V2 micro:bit"))
+            }
+            if robot.type == .Finch {
+                let num = Int( values[6] >> 2 )
+                sensorValue = String(num)
+            } else {
+                sensorValue = String(Int(values[15]))
             }
 		default:
             
@@ -529,17 +489,6 @@ class RobotRequests {
                 let num = Int32(bitPattern: uNum) / 256
                 print("encoder \(values[i]) \(values[i+1]) \(values[i+2]) \(uNum) \(num)")
                 sensorValue = String( num )
-            case "V2sound":
-                guard robot.hasV2Microbit() else {
-                    return .badRequest(.text("V2sound only available for V2 micro:bit"))
-                }
-                sensorValue = String(Int(values[0]))
-            case "V2temperature":
-                guard robot.hasV2Microbit() else {
-                    return .badRequest(.text("V2temperature only available for V2 micro:bit"))
-                }
-                let num = Int( values[6] >> 2 )
-                sensorValue = String(num)
             case "other":
                 sensorValue = String(Double(value) * (3.3/255))
             default:
@@ -549,94 +498,6 @@ class RobotRequests {
 		
 		return .ok(.text(sensorValue))
 	}
-	/*
-    private func compassRequest(id: String, type: BBTRobotType,
-                                request: HttpRequest) -> HttpResponse {
-        let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
-                                                         acceptTypes: [.HummingbirdBit, .Finch, .MicroBit])
-        
-        guard let robot = roboto else {
-            return requesto!
-        }
-        
-        //let (imx, imy, imz) = magnetometerValues(robot.sensorValues)
-        //let (mx, my, mz) = (Double(imx), Double(imy), Double(imz))
-        //let (ax, ay, az) = accelerometerValues(robot.sensorValues)
-        let values = robot.sensorValues
-        //let mx = Double(magVal(values[8], values[9]))
-        //let my = Double(magVal(values[10], values[11]))
-        //let mz = Double(magVal(values[12], values[13]))
-        
-        let mx = rawToRawMag(values[8], values[9])
-        let my = rawToRawMag(values[10], values[11])
-        let mz = rawToRawMag(values[12], values[13])
-        
-        let ax = Double(Int8(bitPattern: values[4]))
-        let ay = Double(Int8(bitPattern: values[5]))
-        let az = Double(Int8(bitPattern: values[6]))
-        
-        //let mx = Double((UInt16(values[9]) & 0xFF) | (UInt16(values[8]) << 8))
-        //let my = Double((UInt16(values[11]) & 0xFF) | (UInt16(values[10]) << 8))
-        //let mz = Double((UInt16(values[13]) & 0xFF) | (UInt16(values[12]) << 8))
-        
-        let phi = atan(-ay/az)
-        let theta = atan( ax / (ay*sin(phi) + az*cos(phi)) )
-        
-        let xP = mx
-        let yP = my * cos(phi) - mz * sin(phi)
-        let zP = my * sin(phi) + mz * cos(phi)
-        
-        let xPP = xP * cos(theta) + zP * sin(theta)
-        let yPP = yP
-        
-        //let angle = 180 + atan2(xPP, yPP)
-        let angle = 180 + GLKMathRadiansToDegrees(Float(atan2(xPP, yPP)))
-        let roundedAngle = Int(angle.rounded())
-        
-        return .ok(.text(String(roundedAngle)))
-    }*/
-    /*
-    private func magnetometerValues(_ values: [UInt8]) -> (Int, Int, Int) {
-        /*let adjust: ((UInt8, UInt8) -> Int) = { msb, lsb in
-            let uIntVal = (UInt16(msb) << 8) | UInt16(lsb)
-            let intVal = Int16(bitPattern: uIntVal)
-            print( "MAGNETOMETER VALUES! \(msb) \(lsb) \(uIntVal) \(intVal)" )
-            return Int( intVal / 10 ) //TODO: check
-        }
-        let x = adjust(values[8], values[9])
-        let y = adjust(values[10], values[11])
-        let z = adjust(values[12], values[13])
-        */
-        let x = magVal(values[8], values[9]) // / 10
-        let y = magVal(values[10], values[11]) // / 10
-        let z = magVal(values[12], values[13]) // / 10
-        
-        return (x, y, z)
-    }
-    
-    private func magVal(_ msb: UInt8, _ lsb: UInt8) -> Int {
-        let uIntVal = (UInt16(msb) << 8) | UInt16(lsb)
-        let intVal = Int16(bitPattern: uIntVal)
-        print( "MAGNETOMETER VALUES! \(msb) \(lsb) \(uIntVal) \(intVal)" )
-        return Int( intVal )
-    }
-    
-    private func accelerometerValues(_ values: [UInt8]) -> (Double, Double, Double) {
-        let x = accelerometerAdjust(values[4])
-        let y = accelerometerAdjust(values[5])
-        let z = accelerometerAdjust(values[6])
-        
-        return (x, y, z)
-    }
-    
-    //The accelerometer values are used for multiple blocks
-    private func accelerometerAdjust (_ x: UInt8) -> Double {
-        let intVal = Int8(bitPattern: x) //convert to 2's complement signed int
-        let scaledVal = Double(intVal) * 196/1280 //scaling from bambi
-        print("ACCELEROMETER VALUES! \(x) \(intVal) \(scaledVal)")
-        return scaledVal
-    }*/
-    
     
 	
 	//MARK: Outputs
