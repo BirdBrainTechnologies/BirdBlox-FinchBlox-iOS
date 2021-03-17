@@ -149,7 +149,8 @@ struct BBTRobotOutputState: Equatable {
         
     }
     
-    func setAllCommand() -> Data {
+    //func setAllCommand() -> Data {
+    func setAllCommand() -> [UInt8] {
         switch robotType {
         case .Hummingbird:
             let letter: UInt8 = 0x41
@@ -157,7 +158,8 @@ struct BBTRobotOutputState: Equatable {
             guard let motors = motors, let servos = servos, let trileds = trileds,
                 let leds = leds, let vibrators = vibrators else {
                 NSLog("Missing information in hummingbird duo output state")
-                return Data()
+                //return Data()
+                return []
             }
             
             var adjusted_motors: [UInt8] = [0,0]
@@ -186,12 +188,14 @@ struct BBTRobotOutputState: Equatable {
                                   adjusted_motors[0], adjusted_motors[1]]
             assert(array.count == 19)
             
-            return Data(bytes: UnsafePointer<UInt8>(array), count: array.count)
+            //return Data(bytes: UnsafePointer<UInt8>(array), count: array.count)
+            return array
         case .HummingbirdBit:
         //Set all: 0xCA LED1 Reserved R1 G1 B1 R2 G2 B2 SS1 SS2 SS3 SS4 LED2 LED3 Time us(MSB) Time us(LSB) Time ms(MSB) Time ms(LSB)
             guard let leds = leds, let trileds = trileds, let servos = servos, let buzzer = buzzer else {
                 NSLog("Missing information in the hummingbird bit output state")
-                return Data()
+                //return Data()
+                return []
             }
             
             let letter: UInt8 = 0xCA
@@ -207,15 +211,18 @@ struct BBTRobotOutputState: Equatable {
             assert(array.count == 19)
             
             //NSLog("Set all \(array)")
-            return Data(bytes: UnsafePointer<UInt8>(array), count: array.count)
-        case .Flutter: return Data()
+            //return Data(bytes: UnsafePointer<UInt8>(array), count: array.count)
+            return array
+        //case .Flutter: return Data()
+        case .Flutter: return []
         case .Finch: 
             // 0xD0, B_R(0-255), B_G(0-255), B_B(0-255), T1_R(0-255), T1_G(0-255), T1_B(0-255), T2_R(0-255),
             // T2_R(0-255), T2_R(0-255), T3_R(0-255), T3_G(0-255), T3_B(0-255), T4_R(0-255), T4_G(0-255), T4_B(0-255),
             // Time_us_MSB, Time_us_LSB, Time_ms_MSB, Time_ms_LSB
             guard let trileds = trileds, let buzzer = buzzer else {
                 NSLog("Missing information in the hummingbird bit output state")
-                return Data()
+                //return Data()
+                return []
             }
             
             let letter: UInt8 = 0xD0
@@ -232,7 +239,8 @@ struct BBTRobotOutputState: Equatable {
         
             assert(array.count == 20)
             //NSLog("Set all \(array)")
-            return Data(bytes: UnsafePointer<UInt8>(array), count: array.count)
+            //return Data(bytes: UnsafePointer<UInt8>(array), count: array.count)
+            return array
 
         case .MicroBit:
         /** Micro:bit I/O :
@@ -244,7 +252,8 @@ struct BBTRobotOutputState: Equatable {
          */
             guard let pins = pins, let buzzer = buzzer, let mode = mode, let modeByte = bitsToByte(mode) else {
                 NSLog("Missing information in the micro:bit output state")
-                return Data()
+                //return Data()
+                return []
             }
             let letter: UInt8 = 0x90
             let buzzerArray = buzzer.array()
@@ -257,7 +266,8 @@ struct BBTRobotOutputState: Equatable {
             }
             
             //NSLog("micro:bit set all \(array)")
-            return Data(bytes: UnsafePointer<UInt8>(array), count: array.count)
+            //return Data(bytes: UnsafePointer<UInt8>(array), count: array.count)
+            return array
         }
     }
     

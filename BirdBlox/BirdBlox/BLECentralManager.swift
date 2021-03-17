@@ -198,14 +198,14 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
             if let robot = self.robots[id] {
                 //NSLog("Found robot \(robot.name) with status \(robot.status)")
                 if robot.type != robotType {
-                    print("Type missmatch! \(robot.type.description) not \(robotType.description)")
+                    NSLog("Type missmatch! \(robot.type.description) not \(robotType.description)")
                     robot.type = robotType
                 }
                 
                 switch robot.status {
                 case .attemptingConnection: return //TODO: remove from discovered list?
                 case .oughtToBeConnected:
-                    print("Found a robot that ought to be connected! \(peripheral.name ?? "unknown") \(robot.status) \(robot.type)")
+                    //print("Found a robot that ought to be connected! \(peripheral.name ?? "unknown") \(robot.status) \(robot.type)")
                     //let _ = self.connectToRobot(byID: id, ofType: robotType)
                     robot.connect()
                 case .shouldBeDisconnected: ()
@@ -274,7 +274,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
             //should be .attemptingConnection at this time.
             // Will switch to .oughtToBeConnected when initialization is finished
             case .attemptingConnection:
-                print("Just connected to \(robot.name), \(peripheral == robot.peripheral) \(String(describing: peripheral.services))")
+                //print("Just connected to \(robot.name), \(peripheral == robot.peripheral) \(String(describing: peripheral.services))")
                 peripheral.discoverServices([robot.type.SERVICE_UUID])
             case .oughtToBeConnected: //TODO: What?
                 NSLog("Just connected to \(robot.name) but robot should already be connected.")
@@ -390,7 +390,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
     //MARK: Connect/disconnect robot
     
 	func disconnect(byID id: String) {
-		print("disconnect running")
+		//print("disconnect running")
         /*
 		guard self.oughtToBeConnected.keys.contains(id) ||
 			self.connectedPeripherals.keys.contains(id) else {
@@ -427,7 +427,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 		centralManager.cancelPeripheralConnection(robot.peripheral)
 		//self.currentlyConnecting = 5
 		
-		print("disconnect done")
+		//print("disconnect done")
 	}
 	
 	//Returns false if no robot with id is in the discovered list

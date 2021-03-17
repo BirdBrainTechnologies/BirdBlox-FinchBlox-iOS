@@ -239,7 +239,8 @@ enum BBTRobotType {
     }
     
     //MARK: Sensor polling
-    func sensorCommand(_ commandName: String) -> Data {
+    //func sensorCommand(_ commandName: String) -> Data {
+    func sensorCommand(_ commandName: String) -> [UInt8] {
         var letter: UInt8 = 0
         var num: UInt8 = 0
         
@@ -258,7 +259,8 @@ enum BBTRobotType {
                 num = 0x70
             } else { num = 0x73 }//pollStop
         }
-        return Data(bytes: UnsafePointer<UInt8>([letter,num] as [UInt8]), count: 2)
+        //return Data(bytes: UnsafePointer<UInt8>([letter,num] as [UInt8]), count: 2)
+        return [letter, num]
     }
     var sensorByteCount: Int {
         switch self {
@@ -271,7 +273,7 @@ enum BBTRobotType {
     }
     
     //MARK: output commands
-    func ledCommand(_ port: UInt8, intensity: UInt8) -> Data? {
+    /*func ledCommand(_ port: UInt8, intensity: UInt8) -> Data? {
         let bounded_intensity = bound(intensity, min: 0, max: 100)
         let real_intensity = UInt8(floor(Double(bounded_intensity)*2.55))
         switch self {
@@ -285,9 +287,9 @@ enum BBTRobotType {
             return Data(bytes: UnsafePointer<UInt8>([letter, real_intensity, 0xFF, 0xFF] as [UInt8]), count: 4)
         case .Finch, .Flutter, .MicroBit: return nil
         }
-    }
+    }*/
     
-    func triLEDCommand (_ port: UInt8, red_val: UInt8, green_val: UInt8, blue_val: UInt8) ->Data? {
+    /*func triLEDCommand (_ port: UInt8, red_val: UInt8, green_val: UInt8, blue_val: UInt8) ->Data? {
         let bounded_red = bound(red_val, min: 0, max: 100)
         let real_red = UInt8(floor(Double(bounded_red)*2.55))
         let bounded_green = bound(green_val, min: 0, max: 100)
@@ -312,9 +314,9 @@ enum BBTRobotType {
         case .MicroBit: return nil
             
         }
-    }
+    }*/
     
-    func motorCommand (_ port: UInt8, speed: Int) -> Data? {
+    /*func motorCommand (_ port: UInt8, speed: Int) -> Data? {
         
         switch self {
         case .Hummingbird:
@@ -338,9 +340,9 @@ enum BBTRobotType {
             return nil
         case .Flutter, .HummingbirdBit, .MicroBit: return nil
         }
-    }
+    }*/
     
-    func vibrationCommand(_ port: UInt8, intensity: UInt8) -> Data? {
+    /*func vibrationCommand(_ port: UInt8, intensity: UInt8) -> Data? {
         switch self{
         case .Hummingbird:
             let real_port: UInt8 = getUnicode(port-1)
@@ -350,9 +352,9 @@ enum BBTRobotType {
             return Data(bytes: UnsafePointer<UInt8>([letter, real_port, real_intensity] as [UInt8]), count: 3)
         case .Flutter, .Finch, .HummingbirdBit, .MicroBit: return nil
         }
-    }
+    }*/
     
-    func servoCommand(_ port: UInt8, angle: UInt8) -> Data? {
+    /*func servoCommand(_ port: UInt8, angle: UInt8) -> Data? {
         switch self{
         case .Hummingbird://TODO: fix this? scaled when message received
             let real_port: UInt8 = getUnicode(port-1)
@@ -367,9 +369,9 @@ enum BBTRobotType {
             return nil
         case .Finch, .MicroBit: return nil
         }
-    }
+    }*/
     
-    func buzzerCommand(period: UInt16, dur: UInt16) -> Data? {
+    /*func buzzerCommand(period: UInt16, dur: UInt16) -> Data? {
         var letter: UInt8 = 0
         switch self{
         case .Finch:
@@ -388,9 +390,10 @@ enum BBTRobotType {
             return Data(bytes: UnsafePointer<UInt8>([letter, buzzerArray[0], buzzerArray[1], buzzerArray[2], buzzerArray[3]] as [UInt8]), count: 5)
         case .Hummingbird, .MicroBit: return nil
         }
-    }
+    }*/
     
-    func ledArrayCommand(_ status: String) -> Data? {
+    //func ledArrayCommand(_ status: String) -> Data? {
+    func ledArrayCommand(_ status: String) -> [UInt8]? {
    
         switch self {
         case .Hummingbird, .Flutter: return nil
@@ -425,7 +428,8 @@ enum BBTRobotType {
                 }
                 
                 NSLog("Symbol command \([letter, symbol, led25, led24to17, led16to9, leds8to1])")
-                return Data(bytes: UnsafePointer<UInt8>([letter, symbol, led25, led24to17, led16to9, leds8to1] as [UInt8]), count: 6)
+                //return Data(bytes: UnsafePointer<UInt8>([letter, symbol, led25, led24to17, led16to9, leds8to1] as [UInt8]), count: 6)
+                return [letter, symbol, led25, led24to17, led16to9, leds8to1]
                 
             case "F": //flash a string
                 let length = ledStatusChars.count - 1
@@ -438,63 +442,79 @@ enum BBTRobotType {
                 }
                 
                 NSLog("Flash command \(commandArray)")
-                return Data(bytes: UnsafePointer<UInt8>(commandArray), count: length + 2)
+                //return Data(bytes: UnsafePointer<UInt8>(commandArray), count: length + 2)
+                return commandArray
             default: return nil
             }
         }
     }
     
-    func clearLedArrayCommand() -> Data? {
+    //func clearLedArrayCommand() -> Data? {
+    func clearLedArrayCommand() -> [UInt8]? {
         //To stop flashing or clearing the screen use
         //0xCC 0x00 0xFF 0xFF 0xFF
         switch self {
         case .Finch, .HummingbirdBit, .MicroBit:
-            return Data(bytes: UnsafePointer<UInt8>([0xCC, 0x00, 0xFF, 0xFF, 0xFF] as [UInt8]), count: 5)
+            //return Data(bytes: UnsafePointer<UInt8>([0xCC, 0x00, 0xFF, 0xFF, 0xFF] as [UInt8]), count: 5)
+            return [0xCC, 0x00, 0xFF, 0xFF, 0xFF]
         case .Flutter, .Hummingbird: return nil
         }
     }
     
-    func turnOffCommand() -> Data{
+    //func turnOffCommand() -> Data{
+    func turnOffCommand() -> [UInt8] {
         switch self {
         case .Hummingbird, .Flutter:
             let letter: UInt8 = 0x58
-            return Data(bytes: UnsafePointer<UInt8>([letter] as [UInt8]), count: 1)
+            //return Data(bytes: UnsafePointer<UInt8>([letter] as [UInt8]), count: 1)
+            return [letter]
         case .HummingbirdBit:
             let letter: UInt8 = 0xCB
-            return Data(bytes: UnsafePointer<UInt8>([letter, 0xFF, 0xFF, 0xFF] as [UInt8]), count: 4)
+            //return Data(bytes: UnsafePointer<UInt8>([letter, 0xFF, 0xFF, 0xFF] as [UInt8]), count: 4)
+            return [letter, 0xFF, 0xFF, 0xFF]
         case .Finch:
-            return Data(bytes: UnsafePointer<UInt8>([0xDF] as [UInt8]), count: 1)
+            //return Data(bytes: UnsafePointer<UInt8>([0xDF] as [UInt8]), count: 1)
+            return [0xDF]
         case .MicroBit:
-            return Data(bytes: UnsafePointer<UInt8>([0xCB, 0xFF, 0xFF, 0xFF] as [UInt8]), count: 4)
+            //return Data(bytes: UnsafePointer<UInt8>([0xCB, 0xFF, 0xFF, 0xFF] as [UInt8]), count: 4)
+            return [0xCB, 0xFF, 0xFF, 0xFF]
         }
     }
     
     //MARK: Other commands
-    func calibrateMagnetometerCommand() -> Data? {
+    //func calibrateMagnetometerCommand() -> Data? {
+    func calibrateMagnetometerCommand() -> [UInt8]? {
         //Calibrate Magnetometer: 0xCE 0xFF 0xFF 0xFF
         switch self {
         case .HummingbirdBit, .MicroBit, .Finch:
-            return Data(bytes: UnsafePointer<UInt8>([0xCE, 0xFF, 0xFF, 0xFF] as [UInt8]), count: 4)
+            //return Data(bytes: UnsafePointer<UInt8>([0xCE, 0xFF, 0xFF, 0xFF] as [UInt8]), count: 4)
+            return [0xCE, 0xFF, 0xFF, 0xFF]
         case .Flutter, .Hummingbird: return nil
         }
     }
     
-    func resetEncodersCommand() -> Data? {
+    //func resetEncodersCommand() -> Data? {
+    func resetEncodersCommand() -> [UInt8]? {
         switch self {
         case .Finch:
-            return Data(bytes: UnsafePointer<UInt8>([0xD5] as [UInt8]), count: 1)
+            //return Data(bytes: UnsafePointer<UInt8>([0xD5] as [UInt8]), count: 1)
+            return [0xD5]
         case .HummingbirdBit, .MicroBit, .Flutter, .Hummingbird: return nil
         }
     }
     
-    func hardwareFirmwareVersionCommand() -> Data? {
+    //func hardwareFirmwareVersionCommand() -> Data? {
+    func hardwareFirmwareVersionCommand() -> [UInt8]? {
         switch self {
         case .Hummingbird:
-            return "G4".data(using: .utf8)!
+            //return "G4".data(using: .utf8)!
+            return Array("G4".utf8)
         case .HummingbirdBit, .MicroBit:
-            return Data(bytes: UnsafePointer<UInt8>([0xCF, 0xFF, 0xFF, 0xFF] as [UInt8]), count: 4)
+            //return Data(bytes: UnsafePointer<UInt8>([0xCF, 0xFF, 0xFF, 0xFF] as [UInt8]), count: 4)
+            return [0xCF, 0xFF, 0xFF, 0xFF]
         case .Finch:
-            return Data(bytes: UnsafePointer<UInt8>([0xD4] as [UInt8]), count: 1)
+            //return Data(bytes: UnsafePointer<UInt8>([0xD4] as [UInt8]), count: 1)
+            return [0xD4]
         case .Flutter: return nil
         }
     }

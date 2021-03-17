@@ -58,7 +58,8 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     
     let creationTime = DispatchTime.now()
     
-    var commandPending: Data? = nil //For use with led arrays
+    //var commandPending: Data? = nil //For use with led arrays
+    var commandPending: [UInt8]? = nil //For use with led arrays
     
     private var initializingCondition = NSCondition()
     private var lineIn: [UInt8] = []
@@ -178,10 +179,10 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         }
         
         //Get ourselves a fresh slate
-        print("About to send poll stop")
+        //print("About to send poll stop")
         self.sendData(data: type.sensorCommand("pollStop"))
         //peripheral.writeValue(type.sensorCommand("pollStop"), for: tx_line!, type: .withResponse)
-        print("just sent poll stop")
+        //print("just sent poll stop")
         
         //Check firmware version.
         let timeoutTime = Date(timeIntervalSinceNow: TimeInterval(7)) //seconds
@@ -195,10 +196,10 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             NSLog("Initialization failed. Device type \(type.description) not supported.")
             return
         }
-        print("about to send versioning command")
+        //print("about to send versioning command")
         //peripheral.writeValue(versioningCommand, for: tx_line!, type: .withResponse)
         self.sendData(data: versioningCommand)
-        print("sent versioning command")
+        //print("sent versioning command")
         
         //Wait until we get a response or until we timeout.
         //while (self.lineIn == oldLineIn) {
@@ -242,7 +243,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         }
         
         
-        print("Version array: \(versionArray)")
+        NSLog("\(self.name) version array: \(versionArray)")
 
         self.initializingCondition.unlock()
         
@@ -311,14 +312,14 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
                 foundV2Microbit = true
             }
             let updated = FrontendCallbackCenter.shared.robotUpdateHasV2Microbit(id: self.id, hasV2: hasV2Microbit())
-            NSLog("Microbit based robot. Microbit is V2? \(hasV2Microbit()). Frontend updated? \(updated)")
+            NSLog("\(self.name) is a micro:bit based robot. V2? \(hasV2Microbit()). Frontend updated? \(updated)")
         }
         
         //Start polling for sensor data
         var pollStart = type.sensorCommand("pollStart")
         if hasV2Microbit() { pollStart = type.sensorCommand("V2pollStart") }
-        let temp = [UInt8](pollStart)
-        print("Sending poll start \(temp)")
+        //let temp = [UInt8](pollStart)
+        //print("Sending poll start \(temp)")
         self.sendData(data: pollStart)
         
         
@@ -329,7 +330,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         self.syncTimer.fire()
         
         self._initialized = true
-        print("\(self.type.description) \(self.name) initialized")
+        NSLog("\(self.type.description) \(self.name) initialized")
         if let completion = self.initializationCompletion {
             completion(self)
         }
@@ -571,7 +572,12 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
      * Main function used to send data to the robot.
      * Called from syncronizeOutputs, and also during initialization
      */
-    private func sendData(data: Data) {
+    //private func sendData(data: Data) {
+    private func sendData(data bytes: [UInt8]) {
+        //bytes.withUnsafeBufferPointer
+        //let data = Data(bytes: UnsafePointer<UInt8>(bytes), count: bytes.count)
+        let data = Data(bytes)
+        
         if self.connected {
             guard let tx_line = tx_line else {
                 NSLog("tx_line not defined in sendData!")
@@ -889,14 +895,16 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
                      M_L_4/C1, M_L_3/C2, M_L_2/C3, M_L_1/C4,
                      C5, C6, C7, C8, C9, C10 */
                     let command: [UInt8] = [0xD2, mode] + motorArray + ledArrayArray
-                    let commandData = Data(bytes: UnsafePointer<UInt8>(command), count: command.count)
+                    //let commandData = Data(bytes: UnsafePointer<UInt8>(command), count: command.count)
                     
                     if sentSetAll {
                         NSLog("Putting led array and/or motor command into pending...")
-                        self.commandPending = commandData
+                        //self.commandPending = commandData
+                        self.commandPending = command
                     } else {
                         NSLog("Sending led array and/or motor change. \(command)")
-                        self.sendData(data: commandData)
+                        //self.sendData(data: commandData)
+                        self.sendData(data: command)
                     }
                     
                     

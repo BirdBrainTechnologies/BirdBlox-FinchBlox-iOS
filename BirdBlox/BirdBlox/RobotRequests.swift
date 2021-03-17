@@ -339,6 +339,7 @@ class RobotRequests {
                 return .badRequest(.text("robot type not supported for compass block."))
             }
         case "battery":
+            //TODO: Finch with micro:bit V2 doesn't have a battery voltage value
             if let i = robot.type.batteryVoltageIndex {
                 //sensorValue = String(rawToVoltage(values[i]))
                 sensorValue = String((Double(values[i]) + robot.type.batteryConstant) * robot.type.rawToBatteryVoltage)

@@ -106,33 +106,76 @@ SFSafariViewControllerDelegate, WKNavigationDelegate {
 		let htmlLoc = DataModel.shared.frontendPageLoc
 		let frontLoc = DataModel.shared.frontendLoc
 		
-		print("pre-req")
 		self.webView.loadFileURL(htmlLoc, allowingReadAccessTo: frontLoc)
-		print("post-req")
 		
 		self.view.addSubview(self.webView)
 		
 		//Setup callback center
 		FrontendCallbackCenter.shared.webView = webView
         
-        //self.view.window?.setFrame(NSRect(x:0,y:0,width: 1440,height: 790), display: true)
-             
+        //To capture key presses from the when key pressed block, the webView must be the first responder.
+        self.webView.becomeFirstResponder()
 		
 		NSLog("Document View Controller exiting viewDidLoad")
 	}
     
-    /*override func viewDidAppear(_ animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
         #if targetEnvironment(macCatalyst)
             //Make full screen for macOS
-        if Self.needsFullScreen {
+    /*    if Self.needsFullScreen {
             NSLog("Entering full screen.")
             (NSClassFromString("NSApplication")?.value(forKeyPath: "sharedApplication.windows") as? [AnyObject])?.first?.perform(Selector("toggleFullScreen:"))
             Self.needsFullScreen = false
-        }
+        }*/
+        
+        //Dynamic.NSApplication.sharedApplication.windows.firstObject.toggleFullScreen(nil)
+        
+        //Very stupid results
+        /*if let f = UIApplication.shared.windows.first {
+            NSLog("macCatalyst another way")
+            var w = f.frame
+            let newWidth: CGFloat = 800
+            let newHeight: CGFloat = 600
+            w.size = NSMakeSize(newWidth, newHeight)
+            f.frame = CGRect(x: 0, y: 0, width: newWidth, height: newHeight)
+        }*/
+        
+        
+        /*if  let NSApplication = NSClassFromString("NSApplication") as? NSObject.Type,
+                let sharedApplication = NSApplication.value(forKeyPath: "sharedApplication") as? NSObject,
+                let windows = sharedApplication.value(forKeyPath: "windows") as? [NSObject]//,
+                //let first = windows.first as? UIWindow //, first.responds(to: Selector("toggleFullScreen:"))
+                //let first = windows.first, let wFrame = first.frame?
+            {
+            /*if let first = windows.first, first.responds(to: Selector("frame")) {
+                NSLog("LLLLLLLLLLLLLLL")
+            }*/
+            NSLog("macCatalyst entering full screen")
+            if let first = windows.first as? UIWindow  {
+                NSLog("macCatalyst entering full screen for real")
+                var wFrame = first.frame
+                let newWidth: CGFloat = 800
+                let newHeight: CGFloat = 600
+                wFrame.size = NSMakeSize(newWidth, newHeight)
+                first.frame = CGRect(x: 0, y: 0, width: newWidth, height: newHeight)
+            } else {
+                NSLog("macCatalyst fail to cast as UIWindow")
+            }
+            
+            //first.perform(Selector("toggleFullScreen:"))
+            /*var windowFrame = first.frame
+            let newWidth: CGFloat = 800
+            let newHeight: CGFloat = 600
+            windowFrame.size = NSMakeSize(newWidth, newHeight)
+            first.frame = CGRect(x: 0, y: 0, width: newWidth, height: newHeight)//.setFrame(windowFrame, display: true)
+            */
+        } else {
+            NSLog("macCatalyst failed to enter full screen")
+        }*/
         #endif
-    }*/
+    }
 	
 	//MARK: Document Handling
 	static let curDocNeedsNameKey = "CurrentDocumentNeedsName"

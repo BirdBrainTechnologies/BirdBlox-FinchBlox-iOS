@@ -243,9 +243,11 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
 				
 				alertController.addAction(okayAction)
 				alertController.addAction(cancelAction)
+                
+                UIApplication.shared.windows.filter {$0.isKeyWindow}.first?.rootViewController?.present(alertController, animated: true) {
 				
-				UIApplication.shared.keyWindow?.rootViewController!.present(alertController,
-				                                                            animated: true) {
+				//UIApplication.shared.keyWindow?.rootViewController!.present(alertController,
+				  //                                                          animated: true) {
 					if shouldSelectAll {
 						let field = alertController.textFields![0]
 						field.selectedTextRange = field.textRange(from: field.beginningOfDocument,
@@ -290,9 +292,12 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
 			}
 			
 			DispatchQueue.main.async{
-				UIApplication.shared.keyWindow?.rootViewController!.present(alertController,
-				                                                            animated: true,
-																			completion: nil)
+                UIApplication.shared.windows.filter {$0.isKeyWindow}.first?.rootViewController?.present(alertController,
+                                                                                                        animated: true,
+                                                                                                        completion: nil)
+				//UIApplication.shared.keyWindow?.rootViewController!.present(alertController,
+				  //                                                          animated: true,
+					//														completion: nil)
 			}
 			return .ok(.text("Choice Dialog Presented"))
 		}

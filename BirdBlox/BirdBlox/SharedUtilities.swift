@@ -36,7 +36,7 @@ public func getUnicode(_ char: Character) -> UInt8{
     Takes a string and splits it into a byte array with end of line characters
     at the end
  */
-public func StringToCommand(_ phrase: String) -> Data{
+/*public func StringToCommand(_ phrase: String) -> Data{
     var result: [UInt8] = []
     for character in phrase.utf8{
         result.append(character)
@@ -44,18 +44,18 @@ public func StringToCommand(_ phrase: String) -> Data{
     result.append(0x0D)
     result.append(0x0A)
     return Data(bytes: UnsafePointer<UInt8>(result), count: result.count)
-}
+}*/
 
 /**
     Takes a string and splits it into a byte array
  */
-public func StringToCommandNoEOL(_ phrase: String) -> Data{
+/*public func StringToCommandNoEOL(_ phrase: String) -> Data{
     var result: [UInt8] = []
     for character in phrase.utf8{
         result.append(character)
     }
     return Data(bytes: UnsafePointer<UInt8>(result), count: result.count)
-}
+}*/
 
 /**
     Bounds a UInt8 with a min and max value
@@ -224,7 +224,7 @@ public func rawToFinchMagnetometer(_ rawMag: [UInt8]) -> [Double] {
     let finchY = y * __cospi(40/180) + z * __sinpi(40/180)
     let finchZ = z * __cospi(40/180) - y * __sinpi(40/180)
     
-    print("rawToFinchMagnetometer \(rawMag) \([x, y, z]) \([finchX, finchY, finchZ])")
+    //print("rawToFinchMagnetometer \(rawMag) \([x, y, z]) \([finchX, finchY, finchZ])")
     
     return [finchX, finchY, finchZ]
 }

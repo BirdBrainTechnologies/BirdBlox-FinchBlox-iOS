@@ -143,7 +143,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 		
 		defer {
 			do {
-				let inboxLoc = DataModel.shared.documentLoc.appendingPathComponent("Inbox")
+				//let inboxLoc = DataModel.shared.documentLoc.appendingPathComponent("Inbox")
 				print("trying to delete \(url)")
 				try FileManager.default.removeItem(at: url)
 			} catch {
