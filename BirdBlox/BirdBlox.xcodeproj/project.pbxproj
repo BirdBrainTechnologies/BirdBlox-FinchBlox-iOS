@@ -38,7 +38,6 @@
 		3123E723222EBE77003B572C /* BLECentralManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAE2EBCE1E84417000198B19 /* BLECentralManager.swift */; };
 		3123E724222EBE77003B572C /* HttpRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31A4AF9A2108AEF50097CE01 /* HttpRouter.swift */; };
 		3123E725222EBE77003B572C /* BBXDocumentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FA4F8A81F03EE56005EB384 /* BBXDocumentViewController.swift */; };
-		3123E727222EBE77003B572C /* Pods_BirdBlox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B9CF54964A1E1D488464E38 /* Pods_BirdBlox.framework */; };
 		3123E729222EBE77003B572C /* Frontend in Resources */ = {isa = PBXBuildFile; fileRef = BA8169651E81B17600AAF7A3 /* Frontend */; };
 		3123E72A222EBE77003B572C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BA8169591E81A98A00AAF7A3 /* LaunchScreen.storyboard */; };
 		3123E72B222EBE77003B572C /* BluetoothDeviceNames.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3FE5C65C1ED8974100433262 /* BluetoothDeviceNames.plist */; };
@@ -65,6 +64,8 @@
 		3FEC5DA41EF987640067C41B /* FrontendCallbackCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FEC5DA31EF987640067C41B /* FrontendCallbackCenter.swift */; };
 		3FF13C061F15692F00D1F358 /* CallbackManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FF13C051F15692F00D1F358 /* CallbackManager.swift */; };
 		3FFA170F1F1D492B0085CE71 /* BBTRobotBLEPeripheral.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FFA170E1F1D492B0085CE71 /* BBTRobotBLEPeripheral.swift */; };
+		BA29D50F262F4A3E00EDFD07 /* Pods_BirdBlox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA29D502262F495F00EDFD07 /* Pods_BirdBlox.framework */; };
+		BA758D3A262F639400C30375 /* Zip.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA758D39262F639400C30375 /* Zip.framework */; };
 		BA8169511E81A98A00AAF7A3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8169501E81A98A00AAF7A3 /* AppDelegate.swift */; };
 		BA8169561E81A98A00AAF7A3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BA8169541E81A98A00AAF7A3 /* Main.storyboard */; };
 		BA8169581E81A98A00AAF7A3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BA8169571E81A98A00AAF7A3 /* Assets.xcassets */; };
@@ -80,11 +81,12 @@
 		BA8A759B1EB2817E00ECFABC /* SettingsRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8A759A1EB2817E00ECFABC /* SettingsRequests.swift */; };
 		BAE1FDA01E920A6600304BEE /* SharedUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAE1FD9F1E920A6600304BEE /* SharedUtilities.swift */; };
 		BAE2EBCF1E84417000198B19 /* BLECentralManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAE2EBCE1E84417000198B19 /* BLECentralManager.swift */; };
+		CA47CC3E45CE4DF623C95514 /* Pods_BirdBlox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B9CF54964A1E1D488464E38 /* Pods_BirdBlox.framework */; };
 		DB4B601313BCF127ED80CC5E /* Pods_BirdBlox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B9CF54964A1E1D488464E38 /* Pods_BirdBlox.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		1CBEFB40603958D76A5BFE44 /* Pods-BirdBlox.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BirdBlox.release.xcconfig"; path = "Pods/Target Support Files/Pods-BirdBlox/Pods-BirdBlox.release.xcconfig"; sourceTree = "<group>"; };
+		1C621227CD2D9D1D411510B7 /* Pods-BirdBlox.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BirdBlox.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BirdBlox/Pods-BirdBlox.debug.xcconfig"; sourceTree = "<group>"; };
 		3123E733222EBE77003B572C /* FinchBlox.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FinchBlox.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3123E734222EBE78003B572C /* FinchBlox-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "FinchBlox-Info.plist"; path = "/Users/krissie/Dropbox (Krissie Lauwers Work)/BirdBrain/GitHub/Hummingbird-iOS-Support/BirdBlox/FinchBlox-Info.plist"; sourceTree = "<absolute>"; };
 		31665820217A2B1D00B17C20 /* BirdBlox-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BirdBlox-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -112,6 +114,11 @@
 		3FF13C051F15692F00D1F358 /* CallbackManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallbackManager.swift; sourceTree = "<group>"; };
 		3FFA170E1F1D492B0085CE71 /* BBTRobotBLEPeripheral.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BBTRobotBLEPeripheral.swift; sourceTree = "<group>"; };
 		4B9CF54964A1E1D488464E38 /* Pods_BirdBlox.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BirdBlox.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		BA12BDAD6619B57264DF16FD /* Pods-BirdBlox.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BirdBlox.release.xcconfig"; path = "Pods/Target Support Files/Pods-BirdBlox/Pods-BirdBlox.release.xcconfig"; sourceTree = "<group>"; };
+		BA29D4F7262F48D500EDFD07 /* Zip.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Zip.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		BA29D502262F495F00EDFD07 /* Pods_BirdBlox.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Pods_BirdBlox.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		BA758D33262F605D00C30375 /* Zip.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Zip.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		BA758D39262F639400C30375 /* Zip.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Zip.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA81694D1E81A98A00AAF7A3 /* BirdBlox.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BirdBlox.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA8169501E81A98A00AAF7A3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BA8169551E81A98A00AAF7A3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -129,7 +136,6 @@
 		BA8A759A1EB2817E00ECFABC /* SettingsRequests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsRequests.swift; sourceTree = "<group>"; };
 		BAE1FD9F1E920A6600304BEE /* SharedUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharedUtilities.swift; sourceTree = "<group>"; };
 		BAE2EBCE1E84417000198B19 /* BLECentralManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BLECentralManager.swift; sourceTree = "<group>"; };
-		E8B8191F17118ABB8EDC2784 /* Pods-BirdBlox.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BirdBlox.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BirdBlox/Pods-BirdBlox.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -137,7 +143,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3123E727222EBE77003B572C /* Pods_BirdBlox.framework in Frameworks */,
+				BA758D3A262F639400C30375 /* Zip.framework in Frameworks */,
+				BA29D50F262F4A3E00EDFD07 /* Pods_BirdBlox.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -146,6 +153,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DB4B601313BCF127ED80CC5E /* Pods_BirdBlox.framework in Frameworks */,
+				CA47CC3E45CE4DF623C95514 /* Pods_BirdBlox.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -186,8 +194,8 @@
 		57E3AA007C026CA11E6DC062 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				E8B8191F17118ABB8EDC2784 /* Pods-BirdBlox.debug.xcconfig */,
-				1CBEFB40603958D76A5BFE44 /* Pods-BirdBlox.release.xcconfig */,
+				1C621227CD2D9D1D411510B7 /* Pods-BirdBlox.debug.xcconfig */,
+				BA12BDAD6619B57264DF16FD /* Pods-BirdBlox.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -195,6 +203,10 @@
 		B5B6F9AE55235342912C86D5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				BA758D39262F639400C30375 /* Zip.framework */,
+				BA758D33262F605D00C30375 /* Zip.framework */,
+				BA29D502262F495F00EDFD07 /* Pods_BirdBlox.framework */,
+				BA29D4F7262F48D500EDFD07 /* Zip.framework */,
 				4B9CF54964A1E1D488464E38 /* Pods_BirdBlox.framework */,
 			);
 			name = Frameworks;
@@ -283,12 +295,10 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 3123E730222EBE77003B572C /* Build configuration list for PBXNativeTarget "FinchBlox" */;
 			buildPhases = (
-				3123E705222EBE77003B572C /* [CP] Check Pods Manifest.lock */,
 				3123E706222EBE77003B572C /* Sources */,
 				3123E726222EBE77003B572C /* Frameworks */,
 				3123E728222EBE77003B572C /* Resources */,
-				3123E72E222EBE77003B572C /* [CP] Embed Pods Frameworks */,
-				3123E72F222EBE77003B572C /* [CP] Copy Pods Resources */,
+				BA758D3F262F665400C30375 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -308,7 +318,6 @@
 				BA81694A1E81A98A00AAF7A3 /* Frameworks */,
 				BA81694B1E81A98A00AAF7A3 /* Resources */,
 				34A648280F2DC120B983B97B /* [CP] Embed Pods Frameworks */,
-				3EC9D73D6B08B732DA3AAFF4 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -396,64 +405,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		3123E705222EBE77003B572C /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-BirdBlox-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		3123E72E222EBE77003B572C /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-BirdBlox/Pods-BirdBlox-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/Zip/Zip.framework",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Zip.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BirdBlox/Pods-BirdBlox-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		3123E72F222EBE77003B572C /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BirdBlox/Pods-BirdBlox-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		34A648280F2DC120B983B97B /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-BirdBlox/Pods-BirdBlox-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-BirdBlox/Pods-BirdBlox-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Zip/Zip.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -462,22 +420,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BirdBlox/Pods-BirdBlox-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		3EC9D73D6B08B732DA3AAFF4 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BirdBlox/Pods-BirdBlox-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BirdBlox/Pods-BirdBlox-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		AF272EDB977A6E683F2D4546 /* [CP] Check Pods Manifest.lock */ = {
@@ -496,6 +439,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		BA758D3F262F665400C30375 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-BirdBlox/Pods-BirdBlox-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/Zip/Zip.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Zip.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BirdBlox/Pods-BirdBlox-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -601,9 +566,8 @@
 /* Begin XCBuildConfiguration section */
 		3123E731222EBE77003B572C /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E8B8191F17118ABB8EDC2784 /* Pods-BirdBlox.debug.xcconfig */;
+			baseConfigurationReference = 1C621227CD2D9D1D411510B7 /* Pods-BirdBlox.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-FinchBlox";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = BirdBlox/BirdBlox.entitlements;
@@ -612,6 +576,7 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/FinchBlox-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				"IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]" = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.1;
 				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" \"COCOAPODS\" \"-DFINCHBLOX\"";
@@ -628,17 +593,18 @@
 		};
 		3123E732222EBE77003B572C /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1CBEFB40603958D76A5BFE44 /* Pods-BirdBlox.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-FinchBlox";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = BirdBlox/BirdBlox.entitlements;
 				CURRENT_PROJECT_VERSION = 17;
 				DEVELOPMENT_TEAM = N6XC9HC8PB;
+				FRAMEWORK_SEARCH_PATHS = "\"${PODS_CONFIGURATION_BUILD_DIR}/Zip\"";
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				HEADER_SEARCH_PATHS = "\"${PODS_CONFIGURATION_BUILD_DIR}/Zip/Zip.framework/Headers\"";
 				INFOPLIST_FILE = "$(SRCROOT)/FinchBlox-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				"IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]" = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.1;
 				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" \"COCOAPODS\" \"-DFINCHBLOX\"";
@@ -763,7 +729,7 @@
 		};
 		BA8169601E81A98A00AAF7A3 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E8B8191F17118ABB8EDC2784 /* Pods-BirdBlox.debug.xcconfig */;
+			baseConfigurationReference = 1C621227CD2D9D1D411510B7 /* Pods-BirdBlox.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -774,6 +740,7 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				INFOPLIST_FILE = BirdBlox/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				"IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]" = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.3.26;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.BirdBrainTech.HB-Drag-and-Drop";
@@ -788,7 +755,7 @@
 		};
 		BA8169611E81A98A00AAF7A3 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1CBEFB40603958D76A5BFE44 /* Pods-BirdBlox.release.xcconfig */;
+			baseConfigurationReference = BA12BDAD6619B57264DF16FD /* Pods-BirdBlox.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -799,6 +766,7 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				INFOPLIST_FILE = BirdBlox/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				"IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]" = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.3.26;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.BirdBrainTech.HB-Drag-and-Drop";
