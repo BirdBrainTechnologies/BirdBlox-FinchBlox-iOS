@@ -68,6 +68,7 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
     //get ssid
     func getSSIDInfo() -> String{
         var currentSSID = "null"
+        #if !FINCHBLOX
         if let interfaces:CFArray = CNCopySupportedInterfaces() {
             for i in 0..<CFArrayGetCount(interfaces){
                 let interfaceName: UnsafeRawPointer = CFArrayGetValueAtIndex(interfaces, i)
@@ -82,6 +83,7 @@ class HostDeviceManager: NSObject, CLLocationManagerDelegate {
                 }
             }
         }
+        #endif
         return currentSSID
     }
     //end ssid
