@@ -10,13 +10,14 @@ import Foundation
 import CoreBluetooth
 
 enum BBTRobotType {
-    case Hummingbird, Flutter, Finch, HummingbirdBit, MicroBit
+    case Hummingbird, Flutter, Finch, HummingbirdBit, MicroBit, Hatchling
     
     //MARK: UUIDs
     //UUID for the BLE adapter
     var scanningUUID: CBUUID {
         switch self {
-        case .Hummingbird, .Finch, .HummingbirdBit, .MicroBit: return CBUUID(string: "6E400001-B5A3-F393-E0A9-E50E24DCCA9E")
+        case .Hummingbird, .Finch, .HummingbirdBit, .MicroBit, .Hatchling:
+            return CBUUID(string: "6E400001-B5A3-F393-E0A9-E50E24DCCA9E")
         case .Flutter: return CBUUID(string: "BC2F4CC6-AAEF-4351-9034-D66268E328F0")
         }
     }
@@ -24,7 +25,7 @@ enum BBTRobotType {
     //UART Service UUID
     var SERVICE_UUID: CBUUID {
         switch self {
-        case .Hummingbird, .Finch, .HummingbirdBit, .MicroBit:
+        case .Hummingbird, .Finch, .HummingbirdBit, .MicroBit, .Hatchling:
             return CBUUID(string: "6E400001-B5A3-F393-E0A9-E50E24DCCA9E")
         case .Flutter: return CBUUID(string: "BC2F4CC6-AAEF-4351-9034-D66268E328F0")
         }
@@ -33,7 +34,7 @@ enum BBTRobotType {
     //sending
     var TX_UUID: CBUUID {
         switch self {
-        case .Hummingbird, .Finch, .HummingbirdBit, .MicroBit:
+        case .Hummingbird, .Finch, .HummingbirdBit, .MicroBit, .Hatchling:
             return CBUUID(string: "6E400002-B5A3-F393-E0A9-E50E24DCCA9E")
         case .Flutter: return CBUUID(string: "06D1E5E7-79AD-4A71-8FAA-373789F7D93C")
         }
@@ -42,7 +43,7 @@ enum BBTRobotType {
     //receiving
     var RX_UUID: CBUUID {
         switch self {
-        case .Hummingbird, .Finch, .HummingbirdBit, .MicroBit:
+        case .Hummingbird, .Finch, .HummingbirdBit, .MicroBit, .Hatchling:
             return CBUUID(string: "6E400003-B5A3-F393-E0A9-E50E24DCCA9E")
         case .Flutter: return CBUUID(string: "818AE306-9C5B-448D-B51A-7ADD6A5D314D")
         }
@@ -50,7 +51,8 @@ enum BBTRobotType {
     
     var RX_CONFIG_UUID: CBUUID {
         switch self {
-        case .Hummingbird, .Finch, .HummingbirdBit, .MicroBit: return CBUUID(string: "00002902-0000-1000-8000-00805f9b34fb")
+        case .Hummingbird, .Finch, .HummingbirdBit, .MicroBit, .Hatchling:
+            return CBUUID(string: "00002902-0000-1000-8000-00805f9b34fb")
         case .Flutter: return CBUUID(string: "00002902-0000-1000-8000-00805f9b34fb")
         }
     }
@@ -71,6 +73,7 @@ enum BBTRobotType {
         case .HummingbirdBit: return 3
         case .Finch: return 6
         case .Flutter, .MicroBit: return nil
+        case .Hatchling: return 2
         }
     }
     var rawToBatteryVoltage: Double {
@@ -88,7 +91,7 @@ enum BBTRobotType {
     var batteryGreenThreshold: Double? { //battery must be > this value for green status
         switch self {
         case .HummingbirdBit, .Hummingbird: return 4.75
-        case .Finch: return 3.51375 //3.385
+        case .Finch, .Hatchling: return 3.51375 //3.385
         case .Flutter, .MicroBit: return nil
         }
     }
@@ -96,7 +99,7 @@ enum BBTRobotType {
         switch self {
         //case .HummingbirdBit, .Hummingbird: return 4.63
         case .HummingbirdBit: return 4.4
-        case .Finch: return 3.3732 //3.271
+        case .Finch, .Hatchling: return 3.3732 //3.271
         case .Hummingbird: return 4.63
         case .Flutter, .MicroBit: return nil
         }
@@ -111,6 +114,7 @@ enum BBTRobotType {
         case .Finch: return 5 //Beak, then tail
         case .HummingbirdBit: return 2
         case .MicroBit: return 0
+        case .Hatchling: return 6
         }
     }
     var ledCount: UInt {
@@ -120,6 +124,7 @@ enum BBTRobotType {
         case .Finch: return 0
         case .HummingbirdBit: return 3
         case .MicroBit: return 0
+        case .Hatchling: return 6
         }
     }
     var servoCount: UInt {
@@ -129,6 +134,7 @@ enum BBTRobotType {
         case .Finch: return 0
         case .HummingbirdBit: return 4
         case .MicroBit: return 0
+        case .Hatchling: return 6
         }
     }
     var motorCount: UInt {
@@ -138,6 +144,7 @@ enum BBTRobotType {
         case .Finch: return 2
         case .HummingbirdBit: return 0
         case .MicroBit: return 0
+        case .Hatchling: return 0
         }
     }
     var vibratorCount: UInt {
@@ -147,6 +154,7 @@ enum BBTRobotType {
         case .Finch: return 0
         case .HummingbirdBit: return 0
         case .MicroBit: return 0
+        case .Hatchling: return 0
         }
     }
     var buzzerCount: UInt {
@@ -156,17 +164,18 @@ enum BBTRobotType {
         case .Finch: return 1
         case .HummingbirdBit: return 1
         case .MicroBit: return 1
+        case .Hatchling: return 1
         }
     }
     var ledArrayCount: UInt {
         switch self {
         case .Hummingbird, .Flutter: return 0
-        case .Finch, .HummingbirdBit, .MicroBit: return 1
+        case .Finch, .HummingbirdBit, .MicroBit, .Hatchling: return 1
         }
     }
     var pinCount: UInt {
         switch self {
-        case .Hummingbird, .Flutter, .Finch, .HummingbirdBit: return 0
+        case .Hummingbird, .Flutter, .Finch, .HummingbirdBit, .Hatchling: return 0
         case .MicroBit: return 3
         }
     }
@@ -177,6 +186,7 @@ enum BBTRobotType {
         case .Hummingbird: return 4
         case .HummingbirdBit, .MicroBit: return 3
         case .Finch, .Flutter: return 0
+        case .Hatchling: return 6
         }
     }
     var accXindex: Int {
@@ -184,6 +194,7 @@ enum BBTRobotType {
         case .HummingbirdBit, .MicroBit: return 4
         case .Finch: return 13
         case .Hummingbird, .Flutter: return 0 //not used
+        case .Hatchling: return 3
         }
     }
     var buttonShakeIndex: Int {
@@ -191,6 +202,7 @@ enum BBTRobotType {
         case .HummingbirdBit, .MicroBit: return 7
         case .Finch: return 16
         case .Hummingbird, .Flutter: return 0 //not used
+        case .Hatchling: return 6
         }
     }
     
@@ -202,6 +214,7 @@ enum BBTRobotType {
         case .Finch: return "Finch"
         case .HummingbirdBit: return "Bit"
         case .MicroBit: return "micro:bit"
+        case .Hatchling: return "Hatch"
         }
     }
     
@@ -214,6 +227,7 @@ enum BBTRobotType {
         case "FN": return .Finch
         case "HB", "HM": return .Hummingbird
         case "FL": return .Flutter
+        case "HL": return .Hatchling
         default:
             switch s {
             case "hummingbird",
@@ -232,6 +246,9 @@ enum BBTRobotType {
             case "MicroBit",
                  "microbit":
                 return .MicroBit
+            case "Hatchling",
+                "hatchling":
+                return .Hatchling
             default:
                 return nil
             }
@@ -251,7 +268,7 @@ enum BBTRobotType {
                 num = getUnicode(UInt8(5))
             } else { num = getUnicode(UInt8(6)) } //pollStop
         case .Flutter: ()
-        case .Finch, .HummingbirdBit, .MicroBit:
+        case .Finch, .HummingbirdBit, .MicroBit, .Hatchling:
             letter = 0x62
             if commandName == "pollStart" {
                 num = 0x67
@@ -269,6 +286,7 @@ enum BBTRobotType {
         case .Finch: return 20
         case .HummingbirdBit: return 16 //14 for V1
         case .MicroBit: return 16 //14 for V1
+        case .Hatchling: return 20
         }
     }
     
@@ -397,7 +415,7 @@ enum BBTRobotType {
    
         switch self {
         case .Hummingbird, .Flutter: return nil
-        case .HummingbirdBit, .Finch, .MicroBit:
+        case .HummingbirdBit, .Finch, .MicroBit, .Hatchling:
             let letter: UInt8 = 0xCC
             let ledStatusChars = Array(status)
             
@@ -454,7 +472,7 @@ enum BBTRobotType {
         //To stop flashing or clearing the screen use
         //0xCC 0x00 0xFF 0xFF 0xFF
         switch self {
-        case .Finch, .HummingbirdBit, .MicroBit:
+        case .Finch, .HummingbirdBit, .MicroBit, .Hatchling:
             //return Data(bytes: UnsafePointer<UInt8>([0xCC, 0x00, 0xFF, 0xFF, 0xFF] as [UInt8]), count: 5)
             return [0xCC, 0x00, 0xFF, 0xFF, 0xFF]
         case .Flutter, .Hummingbird: return nil
@@ -472,7 +490,7 @@ enum BBTRobotType {
             let letter: UInt8 = 0xCB
             //return Data(bytes: UnsafePointer<UInt8>([letter, 0xFF, 0xFF, 0xFF] as [UInt8]), count: 4)
             return [letter, 0xFF, 0xFF, 0xFF]
-        case .Finch:
+        case .Finch, .Hatchling:
             //return Data(bytes: UnsafePointer<UInt8>([0xDF] as [UInt8]), count: 1)
             return [0xDF]
         case .MicroBit:
@@ -486,7 +504,7 @@ enum BBTRobotType {
     func calibrateMagnetometerCommand() -> [UInt8]? {
         //Calibrate Magnetometer: 0xCE 0xFF 0xFF 0xFF
         switch self {
-        case .HummingbirdBit, .MicroBit, .Finch:
+        case .HummingbirdBit, .MicroBit, .Finch, .Hatchling:
             //return Data(bytes: UnsafePointer<UInt8>([0xCE, 0xFF, 0xFF, 0xFF] as [UInt8]), count: 4)
             return [0xCE, 0xFF, 0xFF, 0xFF]
         case .Flutter, .Hummingbird: return nil
@@ -499,7 +517,7 @@ enum BBTRobotType {
         case .Finch:
             //return Data(bytes: UnsafePointer<UInt8>([0xD5] as [UInt8]), count: 1)
             return [0xD5]
-        case .HummingbirdBit, .MicroBit, .Flutter, .Hummingbird: return nil
+        case .HummingbirdBit, .MicroBit, .Flutter, .Hummingbird, .Hatchling: return nil
         }
     }
     
@@ -509,7 +527,7 @@ enum BBTRobotType {
         case .Hummingbird:
             //return "G4".data(using: .utf8)!
             return Array("G4".utf8)
-        case .HummingbirdBit, .MicroBit:
+        case .HummingbirdBit, .MicroBit, .Hatchling:
             //return Data(bytes: UnsafePointer<UInt8>([0xCF, 0xFF, 0xFF, 0xFF] as [UInt8]), count: 4)
             return [0xCF, 0xFF, 0xFF, 0xFF]
         case .Finch:

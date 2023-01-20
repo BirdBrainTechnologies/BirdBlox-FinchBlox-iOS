@@ -454,6 +454,10 @@ struct FixedLengthArray<T: Equatable>: Equatable {
 		}
 	}
 	
+    func getArray() -> Array<T> {
+        return array
+    }
+    
 	static func ==(inLeft: FixedLengthArray, inRight: FixedLengthArray) -> Bool {
 		return (inLeft.length == inRight.length) && (inLeft.array == inRight.array)
 	}

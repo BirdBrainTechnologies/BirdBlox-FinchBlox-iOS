@@ -447,7 +447,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate {
 		
         //connectToRobot(byPeripheral: peripheral, ofType: type)
         
-        print("Connect to \(peripheral.name ?? "unknown") while robots list is \(robots.mapValues({ return "\($0.name): \($0.status)" }))")
+        NSLog("Connect to \(peripheral.name ?? "unknown") while robots list is \(robots.mapValues({ return "\($0.name): \($0.status)" }))")
         
         if let robot = self.robots[id] {
             switch robot.status {

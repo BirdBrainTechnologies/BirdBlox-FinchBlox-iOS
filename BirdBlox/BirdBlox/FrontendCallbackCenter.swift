@@ -94,9 +94,14 @@ class FrontendCallbackCenter {
 	}
 	
 	//MARK: Robot Related
+    public func robotUpdateHLState(state: [UInt8]) -> Bool {
+        let function = "CallbackManager.robot.setHLState"
+        let parameters = [state.map({ String($0) }).joined(separator: ", ")]
+
+        return self.runJS(function: function, parameters: parameters)
+    }
 	public func robotUpdateStatus(id: String, connected: Bool) -> Bool {
 		let safeResponse = FrontendCallbackCenter.safeString(from: id)
-		
 		let function = "CallbackManager.robot.updateStatus"
 		let parameters = [safeResponse, boolToJSString(connected)]
 		

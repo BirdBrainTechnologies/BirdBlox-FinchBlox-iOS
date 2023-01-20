@@ -52,9 +52,17 @@ class RobotRequests {
             RobotRequests.handler(fromIDAndTypeHandler: self.setTriLEDRequest)
         server["/robot/out/tail"] =
             RobotRequests.handler(fromIDAndTypeHandler: self.setTriLEDRequest)
+        server["/robot/out/singleNeopix"] =
+            RobotRequests.handler(fromIDAndTypeHandler: self.setNeoPixRequest)
+        server["/robot/out/neopixStrip"] =
+            RobotRequests.handler(fromIDAndTypeHandler: self.setNeopixStripRequest)
         
 		server["/robot/out/servo"] =
 			RobotRequests.handler(fromIDAndTypeHandler: self.setServoRequest)
+        server["/robot/out/rotationServo"] =
+            RobotRequests.handler(fromIDAndTypeHandler: self.setServoRequest)
+        server["/robot/out/positionServo"] =
+            RobotRequests.handler(fromIDAndTypeHandler: self.setServoRequest)
 		
 		server["/robot/out/stopEverything"] = self.stopAllRequest
 		server["/robot/out/led"] = RobotRequests.handler(fromIDAndTypeHandler: self.setLEDRequest)
@@ -214,7 +222,7 @@ class RobotRequests {
 		}
 		
 		let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
-		                                                 acceptTypes: [.Flutter, .Hummingbird, .HummingbirdBit, .Finch, .MicroBit])
+                                                         acceptTypes: [.Flutter, .Hummingbird, .HummingbirdBit, .Finch, .MicroBit, .Hatchling])
 		guard let robot = roboto else {
 			return requesto!
 		}
@@ -303,6 +311,14 @@ class RobotRequests {
                 default:
                     return .badRequest(.text("Magnetometer axis not specified."))
                 }
+            case .Hatchling:
+                switch axis {
+                case "x": sensorValue = String(Int(values[7]))
+                case "y": sensorValue = String(Int(values[8]))
+                case "z": sensorValue = String(Int(values[9]))
+                default:
+                    return .badRequest(.text("Magnetometer axis not specified."))
+                }
             case .HummingbirdBit, .MicroBit:
                 switch axis {
                 case "x": sensorValue = String(rawToMagnetometer(values[8], values[9]))
@@ -351,7 +367,7 @@ class RobotRequests {
             guard robot.hasV2Microbit() else {
                 return .badRequest(.text("V2sound only available for V2 micro:bit"))
             }
-            if robot.type == .Finch {
+            if robot.type == .Finch || robot.type == .Hatchling {
                 sensorValue = String(Int(values[0]))
             } else {
                 sensorValue = String(Int(values[14]))
@@ -363,10 +379,19 @@ class RobotRequests {
             if robot.type == .Finch {
                 let num = Int( values[6] >> 2 )
                 sensorValue = String(num)
+            } else if robot.type == .Hatchling, let index = robot.type.batteryVoltageIndex {
+                let num = Int( values[index] >> 2 )
+                sensorValue = String(num)
             } else {
                 sensorValue = String(Int(values[15]))
             }
 		default:
+            
+            if robot.type == .Hatchling {
+                if sensor == "light" {
+                    return .ok(.text(String(values[1])))
+                }
+            }
             
             var value:UInt8 = 0
             var port:Int = 0
@@ -384,6 +409,9 @@ class RobotRequests {
                 }
                 
                 value = values[port]
+                if robot.type == .Hatchling {
+                    value = values[port + 14]
+                }
             }
             let percent = UInt8(rawToPercent(value))
             let realPercent = Double(value) / 2.55
@@ -503,6 +531,63 @@ class RobotRequests {
 	
 	//MARK: Outputs
     
+    private func setNeopixStripRequest(id: String, type: BBTRobotType,
+                                  request: HttpRequest) -> HttpResponse {
+        let queries = BBTSequentialQueryArrayToDict(request.queryParams)
+        
+        guard let colors = queries["colors"], let portStr = queries["port"], let port = UInt(portStr) else {
+            NSLog("Bad request: \(request.path)")
+            return .badRequest(.text("Missing or invalid parameters"))
+        }
+        
+        let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
+                                                         acceptTypes: [.Hatchling])
+        guard let robot = roboto else {
+            return requesto!
+        }
+        
+        let colorArray = colors.split(",").compactMap{ UInt8($0) }
+        guard colorArray.count == 12 else {
+            NSLog("Bad request: \(request.path)")
+            return .badRequest(.text("Missing or invalid parameters"))
+        }
+        
+        if robot.setNeopixStrip(port: port, intensities: colorArray) {
+            return .ok(.text("set"))
+        } else {
+            return .internalServerError
+        }
+    }
+    
+    private func setNeoPixRequest(id: String, type: BBTRobotType,
+                                  request: HttpRequest) -> HttpResponse {
+        let queries = BBTSequentialQueryArrayToDict(request.queryParams)
+        
+        guard let color = queries["color"], let portStr = queries["port"], let port = UInt(portStr) else {
+            NSLog("Bad request: \(request.path)")
+            return .badRequest(.text("Missing or invalid parameters"))
+        }
+        
+        let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
+                                                         acceptTypes: [.Hatchling])
+        guard let robot = roboto else {
+            return requesto!
+        }
+        
+        let colors = color.split(":").map{ UInt8($0) }
+        guard colors.count == 3, let red = colors[0], let green = colors[1], let blue = colors[2] else {
+            NSLog("Bad request: \(request.path)")
+            return .badRequest(.text("Missing or invalid parameters"))
+        }
+        
+        if robot.setTriLED(port: port, intensities: BBTTriLED(red, green, blue)) {
+            return .ok(.text("set"))
+        } else {
+            return .internalServerError
+        }
+        
+    }
+    
     private func setTriLEDRequest(id: String, type: BBTRobotType,
                                   request: HttpRequest) -> HttpResponse {
         let queries = BBTSequentialQueryArrayToDict(request.queryParams)
@@ -588,7 +673,7 @@ class RobotRequests {
             case .Hummingbird:
                 let adjustServo: ((UInt8) -> UInt8) = { ($0 > 180) ? 255 : $0 + ($0 >> 2) }
                 value = adjustServo(angle)
-            case .HummingbirdBit:
+            case .HummingbirdBit, .Hatchling:
                 if angle > 180 { value = UInt8(254)
                 } else {
                     value = UInt8( round(Double(angle) * (254 / 180)) )
@@ -601,12 +686,15 @@ class RobotRequests {
             } else if percent > 100 { value = UInt8(254)
             } else if percent < -100 { value = UInt8(0)
             } else { value = UInt8( ( (percent * 23) / 100 ) + 122 ) } //from bambi
+        } else if let valueStr = queries["value"], let v = Int(valueStr) {
+            value = UInt8(v)
         } else {
+            NSLog("Bad request parameters: \(queries)")
             return .badRequest(.text("Missing or invalid parameter"))
         }
         
         let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
-                                                         acceptTypes: [.Hummingbird, .HummingbirdBit, .Flutter])
+                                                         acceptTypes: [.Hummingbird, .HummingbirdBit, .Flutter, .Hatchling])
         guard let robot = roboto else {
             return requesto!
         }
@@ -739,7 +827,7 @@ class RobotRequests {
         }
         
         let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
-                                                         acceptTypes: [.Finch, .HummingbirdBit, .MicroBit])
+                                                         acceptTypes: [.Finch, .HummingbirdBit, .MicroBit, .Hatchling])
         guard let robot = roboto else {
             return requesto!
         }
@@ -777,7 +865,7 @@ class RobotRequests {
         }
         
         let (roboto, requesto) = self.getRobotOrResponse(id: id, type: type,
-                                                         acceptTypes: [.MicroBit, .HummingbirdBit, .Finch])
+                                                         acceptTypes: [.MicroBit, .HummingbirdBit, .Finch, .Hatchling])
         
         guard let robot = roboto else {
             return requesto!

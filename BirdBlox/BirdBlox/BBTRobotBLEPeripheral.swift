@@ -60,6 +60,8 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     
     //var commandPending: Data? = nil //For use with led arrays
     var commandPending: [UInt8]? = nil //For use with led arrays
+    var portsPending: [UInt8]? = nil //For use with hatchling ports
+    var neopixelPending: [[UInt8]] = [] //For use with hatchling neopixels
     
     private var initializingCondition = NSCondition()
     private var lineIn: [UInt8] = []
@@ -153,7 +155,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
                 }
                 if(wasTXSet && wasRXSet){
                     switch type{
-                    case .Hummingbird, .HummingbirdBit, .MicroBit, .Finch:
+                    case .Hummingbird, .HummingbirdBit, .MicroBit, .Finch, .Hatchling:
                         DispatchQueue.main.async {
                             self.initializeDevice()
                         }
@@ -232,7 +234,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             self.hardwareString = String(versionArray[0]) + "." + String(versionArray[1])
             self.firmwareVersionString = String(versionArray[2]) + "." + String(versionArray[3]) +
                 (String(bytes: [versionArray[4]], encoding: .ascii) ?? "")
-        case .HummingbirdBit, .Finch:
+        case .HummingbirdBit, .Finch, .Hatchling:
             self.hardwareString = String(versionArray[0])
             self.firmwareVersionString = "\(versionArray[1])/\(versionArray[2])"
         case .MicroBit:
@@ -282,7 +284,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
                 self.oldFirmware = true
             }
             
-        case .HummingbirdBit, .MicroBit, .Finch:
+        case .HummingbirdBit, .MicroBit, .Finch, .Hatchling:
             
             //versionArray[1] is micro:bit firmware, versionArray[2] is SAMD (on bit board)
             //As of now, there is no firmware for these that is not compatible.
@@ -307,7 +309,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
         self.sendData(data: type.turnOffCommand()) //TODO: Do this here?
         
         //Check for micro:bit V2
-        if (type == .HummingbirdBit || type == .MicroBit || type == .Finch) {
+        if (type == .HummingbirdBit || type == .MicroBit || type == .Finch || type == .Hatchling) {
             if versionArray[3] == 0x22 {
                 foundV2Microbit = true
             }
@@ -392,6 +394,10 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             NSLog("Data in exceeds sensor byte count.")
         }
         
+        if type == .Hatchling {
+            let _ = FrontendCallbackCenter.shared.robotUpdateHLState(state: self.sensorValues)
+        }
+        
         //The finch will send a flag when it is done with motion commands that have specific distances
         /*if (type == .Finch) {
             let isMoving = (self.lastSensorUpdate[4] > 127)
@@ -439,7 +445,7 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             
             
             let newStatus: BatteryStatus
-            if hasV2Microbit() && self.type == .Finch {
+            if hasV2Microbit() && self.type == .Finch || self.type == .Hatchling {
                 var val = lastSensorUpdate[i] & 0x3
                 if val == 3 { val = 2 } //3 is finch full charge - not currently handled
                 guard let status = BatteryStatus(rawValue: Int(val)) else {
@@ -644,12 +650,45 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     }
     
     func setTriLED(port: UInt, intensities: BBTTriLED) -> Bool {
+        if (type == .Hatchling) {
+            guard let nextPorts = self.nextOutputState.ports, let currentPorts = self.currentOutputState.ports else {
+                return false
+            }
+            let index = Int(port * 3)
+            return setOutput(ifCheck: port < 6, when: {
+                nextPorts[index] == currentPorts[index] &&
+                nextPorts[index + 1] == currentPorts[index + 1] &&
+                nextPorts[index + 2] == currentPorts[index + 2]
+            }, set: {
+                self.nextOutputState.ports?[index] = intensities.red
+                self.nextOutputState.ports?[index + 1] = intensities.green
+                self.nextOutputState.ports?[index + 2] = intensities.blue
+            })
+        }
         
         let i = Int(port - 1)
         
         return setOutput(ifCheck: (self.type.triledCount >= port),
                          when: {self.nextOutputState.trileds![i] == self.currentOutputState.trileds![i]},
                          set: {self.nextOutputState.trileds![i] = intensities})
+    }
+    
+    func setNeopixStrip(port: UInt, intensities: [UInt8]) -> Bool {
+        guard let next = self.nextOutputState.neopixels, let curr = self.currentOutputState.neopixels else {
+            return false
+        }
+        let index = Int(port * 12)
+        return setOutput(ifCheck: port < 6, when: {
+            var eq = true
+            for i in index..<(index+12) {
+                eq = eq && (next[i] == curr[i])
+            }
+            return eq
+        }, set: {
+            for i in 0..<12 {
+                self.nextOutputState.neopixels?[index + i] = intensities[i]
+            }
+        })
     }
     
     func setVibration(port: Int, intensity: UInt8) -> Bool {
@@ -680,6 +719,17 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
     }
     
     func setServo(port: UInt, value: UInt8) -> Bool {
+        if (type == .Hatchling) {
+            guard let nextPorts = self.nextOutputState.ports, let currentPorts = self.currentOutputState.ports else {
+                return false
+            }
+            let index = Int(port * 3)
+            return setOutput(ifCheck: port < 6, when: {
+                nextPorts[index + 2] == currentPorts[index + 2]
+            }, set: {
+                self.nextOutputState.ports?[index + 2] = value
+            })
+        }
         
         let i = Int(port - 1)
         
@@ -768,6 +818,24 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
             print("sending a pending command.")
             self.sendData(data: command)
             self.commandPending = nil
+            self.lastWriteStart = DispatchTime.now()
+            self.writtenCondition.signal()
+            self.writtenCondition.unlock()
+            return
+        }
+        if self.type == .Hatchling, let command = self.portsPending, self.initialized {
+            print("sending a pending ports command: \(command)")
+            self.sendData(data: command)
+            self.portsPending = nil
+            self.lastWriteStart = DispatchTime.now()
+            self.writtenCondition.signal()
+            self.writtenCondition.unlock()
+            return
+        }
+        if self.type == .Hatchling, let command = self.neopixelPending.popLast(), self.initialized {
+            print("sending a pending neopixel command.")
+            self.sendData(data: command)
+            //self.neopixelPending = nil
             self.lastWriteStart = DispatchTime.now()
             self.writtenCondition.signal()
             self.writtenCondition.unlock()
@@ -938,6 +1006,29 @@ class BBTRobotBLEPeripheral: NSObject, CBPeripheralDelegate {
                         print("And now setting to \(BBTRobotOutputState.flashSent)")
                         nextOutputState.ledArray = BBTRobotOutputState.flashSent
                     }//TODO: is this ok??
+                }
+                
+                if type == .Hatchling {
+                    if nextCopy.ports != currentOutputState.ports, let ports = nextCopy.ports {
+                        let command: [UInt8] = [0xE2] + ports.getArray()
+                        
+                        //TODO - maybe send right away? must first check to see if setall or ledarray were sent.
+                        self.portsPending = command
+                        
+                    }
+                    if nextCopy.neopixels != currentOutputState.neopixels, let next = nextCopy.neopixels?.getArray(), let curr = self.currentOutputState.neopixels?.getArray() {
+                        
+                        for i in 0..<6 {
+                            var eq = true
+                            for j in 0..<12 {
+                                eq = eq && (next[i*12+j] == curr[i*12+j])
+                            }
+                            if !eq {
+                                let command: [UInt8] = [0xE3, UInt8(i)] + Array(next[(i*12)..<((i+1)*12)])
+                                self.neopixelPending.insert(command, at: 0)
+                            }
+                        }
+                    }
                 }
             }
             self.currentOutputState = nextCopy

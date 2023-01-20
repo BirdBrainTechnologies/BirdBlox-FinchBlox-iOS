@@ -109,6 +109,8 @@ struct BBTRobotOutputState: Equatable {
     public var ledArray: String?
     public var pins: FixedLengthArray<UInt8>?
     public var mode: [UInt8]? //8 bits
+    public var ports: FixedLengthArray<UInt8>? //Hatchling generic ports
+    public var neopixels: FixedLengthArray<UInt8>? //Hatchling neopixels need extra data
     
     public static let flashSent: String = "CommandFlashSent"
     
@@ -137,6 +139,7 @@ struct BBTRobotOutputState: Equatable {
             
         if robotType.buzzerCount == 1 {
             self.buzzer = BBTBuzzer()
+            self.mode = [0,0,0,0,0,0,0,0]
         }
         if robotType.ledArrayCount == 1 {
             self.ledArray = "S0000000000000000000000000"
@@ -145,6 +148,11 @@ struct BBTRobotOutputState: Equatable {
         if robotType.pinCount > 0 {
             self.pins = FixedLengthArray(length: robotType.pinCount, repeating: UInt8(0))
             self.mode = [0,0,0,0,0,0,0,0]
+        }
+        
+        if robotType == .Hatchling {
+            self.ports = FixedLengthArray(length: 18, repeating: UInt8(0))
+            self.neopixels = FixedLengthArray(length: 72, repeating: UInt8(0))
         }
         
     }
@@ -268,6 +276,22 @@ struct BBTRobotOutputState: Equatable {
             //NSLog("micro:bit set all \(array)")
             //return Data(bytes: UnsafePointer<UInt8>(array), count: array.count)
             return array
+        case .Hatchling:
+            guard let buzzer = buzzer, let mode = mode, let modeByte = bitsToByte(mode) else {
+                NSLog("Missing information in the hatchling output state")
+                return []
+            }
+            let letter: UInt8 = 0x90
+            let buzzerArray = buzzer.array()
+            
+            var array: [UInt8]
+            if mode[2] == 1 {
+                array = [letter, buzzerArray[0], buzzerArray[1], buzzerArray[2], modeByte, buzzerArray[3], 0, 0]
+            } else {
+                array = [letter, 0, 0, 0, modeByte, 0, 0, 0]
+            }
+            
+            return array
         }
     }
     
@@ -287,7 +311,8 @@ struct BBTRobotOutputState: Equatable {
             (lhs.leds == rhs.leds) && (lhs.motors == rhs.motors) &&
             (lhs.vibrators == rhs.vibrators) && (lhs.buzzer == rhs.buzzer) &&
             (lhs.ledArray == rhs.ledArray) && (lhs.pins == rhs.pins) &&
-            (lhs.mode == rhs.mode)
+            (lhs.mode == rhs.mode) && (lhs.ports == rhs.ports) &&
+            (lhs.neopixels == rhs.neopixels)
     }
 }
 
