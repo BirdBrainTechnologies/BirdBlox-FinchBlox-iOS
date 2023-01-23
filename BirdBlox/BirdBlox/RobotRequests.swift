@@ -118,7 +118,8 @@ class RobotRequests {
                  //"device": BBTRobotType.fromString(peripheral.name ?? altName)?.description ?? altName,
                  "device": type.description,
                  //"RSSI": rssi.stringValue]
-                "RSSI": mode(Array(rssi.suffix(50))).stringValue] //peripherals are discovered more than 30 times per second
+                "RSSI": mode(Array(rssi.suffix(50))).stringValue,
+                "advertisedName": peripheral.name ?? altName] //peripherals are discovered more than 30 times per second
 			}
             //print("list: \(peripherals) filteredList: \(filteredList) darray: \(darray.map{ $0["RSSI"] })")
             print("Updating: \(darray.map{ "\($0["name"] ?? "?"): \($0["RSSI"] ?? "?"): \($0["id"] ?? "?"): \($0["device"] ?? "?")" })")
