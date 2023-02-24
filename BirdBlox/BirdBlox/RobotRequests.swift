@@ -56,6 +56,8 @@ class RobotRequests {
             RobotRequests.handler(fromIDAndTypeHandler: self.setNeoPixRequest)
         server["/robot/out/neopixStrip"] =
             RobotRequests.handler(fromIDAndTypeHandler: self.setNeopixStripRequest)
+        server["/robot/out/fairyLights"] =
+            RobotRequests.handler(fromIDAndTypeHandler: self.setServoRequest) //TODO: need own handler?
         
 		server["/robot/out/servo"] =
 			RobotRequests.handler(fromIDAndTypeHandler: self.setServoRequest)
@@ -411,6 +413,7 @@ class RobotRequests {
                 
                 value = values[port]
                 if robot.type == .Hatchling {
+                    port = port + 1
                     value = values[port + 14]
                 }
             }
@@ -453,6 +456,8 @@ class RobotRequests {
                     sensorValue = String(num)
                 } else if robot.type == .HummingbirdBit {
                     sensorValue = String(Int(round(Double(value) * (117/100))))
+                } else if robot.type == .Hatchling {
+                    sensorValue = String(value)
                 } else {
                     sensorValue = String(rawToDistance(value))
                 }
@@ -674,11 +679,13 @@ class RobotRequests {
             case .Hummingbird:
                 let adjustServo: ((UInt8) -> UInt8) = { ($0 > 180) ? 255 : $0 + ($0 >> 2) }
                 value = adjustServo(angle)
-            case .HummingbirdBit, .Hatchling:
+            case .HummingbirdBit:
                 if angle > 180 { value = UInt8(254)
                 } else {
                     value = UInt8( round(Double(angle) * (254 / 180)) )
                 }
+            case .Hatchling:
+                value = UInt8( angle )
             default: fatalError("position servo not set up for type \(type)")
             }
             //This is only for rotation servos. Currently only available in hummingbird bit
